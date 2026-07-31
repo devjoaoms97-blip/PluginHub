@@ -1,0 +1,22 @@
+name: SkillsPlugin
+version: '1.0.0'
+main: com.example.skills.SkillsPlugin
+api-version: '26.2'
+author: Você
+description: Sistema de skills de combate estilo RPG (Espadas, Arqueiro, Esquiva, etc).
+softdepend: [Vault]
+
+commands:
+  skills:
+    description: Abre o menu de skills ou mostra seu progresso.
+    usage: "Uso: /skills [ver|admin setlevel <jogador> <skill> <nível>]"
+    permission: skills.usar
+    permission-message: "§cVocê não tem permissão para usar skills."
+
+permissions:
+  skills.usar:
+    description: Permite usar o sistema de skills.
+    default: true
+  skills.admin:
+    description: Permite comandos administrativos de skills.
+    default: op

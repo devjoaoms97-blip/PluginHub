@@ -1,0 +1,42 @@
+# Configuração do SkillsPlugin
+# Todos os valores aqui podem ser ajustados sem precisar recompilar o plugin.
+
+nivel-maximo: 50
+
+xp:
+  # XP necessário para o nível N = base * (N ^ expoente)
+  base: 50
+  expoente: 1.6
+  # Dano contra mobs (PvE) vale essa fração do XP que valeria contra jogador (PvP)
+  multiplicador-pve: 0.5
+  # Multiplicador de XP ganho por ponto de dano causado, nas skills de arma
+  xp-por-dano: 2.0
+
+recompensa:
+  # Dinheiro dado ao subir de nível = nivel-novo * este valor
+  dinheiro-por-nivel: 25
+
+# Taxa de bônus por nível de cada skill (fração, ex: 0.005 = 0,5% por nível)
+bonus-por-nivel:
+  espadas: 0.005
+  machado: 0.004
+  arqueiro: 0.005
+  porradeiro: 0.006
+  tridente: 0.005
+  esquiva: 0.004
+  defesa: 0.003
+  bloqueio: 0.004
+  critico: 0.003
+  regeneracao: 0.01
+  agilidade: 0.002
+
+porradeiro:
+  # Chance de atordoar (aplicar Lentidão breve) por nível
+  chance-atordoar-por-nivel: 0.002
+  atordoar-ticks: 20
+  atordoar-amplificador: 3
+
+passivas:
+  # Intervalo (em segundos) entre concessões de XP passivo (Regeneração/Agilidade)
+  intervalo-segundos: 10
+  xp-por-tick: 3.0
