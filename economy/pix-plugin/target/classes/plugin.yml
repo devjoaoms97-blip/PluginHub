@@ -1,0 +1,19 @@
+name: PixPlugin
+version: '1.0.0'
+main: com.example.pix.PixPlugin
+api-version: '26.2'
+author: Você
+description: Sistema de pagamentos e cobranças entre jogadores (Pix), via Vault.
+softdepend: [Vault]
+
+commands:
+  pix:
+    description: Sistema de pagamentos entre jogadores.
+    usage: "Uso: /pix <pagar|receber|aceitar|recusar|pendentes|cancelar|historico|qrcode>"
+    permission: pix.usar
+    permission-message: "§cVocê não tem permissão para usar o Pix."
+
+permissions:
+  pix.usar:
+    description: Permite usar o sistema de Pix.
+    default: true

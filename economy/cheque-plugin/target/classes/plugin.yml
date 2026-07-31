@@ -1,0 +1,22 @@
+name: ChequePlugin
+version: '1.0.0'
+main: com.example.cheque.ChequePlugin
+api-version: '26.2'
+author: Você
+description: Transforma papel em cheques resgatáveis por dinheiro (via Vault).
+softdepend: [Vault]
+
+commands:
+  cheque:
+    description: Transforma o papel que você segura em um cheque.
+    usage: "Uso correto: /cheque <valor>"
+    permission: cheque.criar
+    permission-message: "§cVocê não tem permissão para criar cheques."
+
+permissions:
+  cheque.criar:
+    description: Permite criar cheques a partir de papel.
+    default: op
+  cheque.resgatar:
+    description: Permite resgatar cheques.
+    default: true
