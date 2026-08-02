@@ -19,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -48,7 +49,7 @@ public class CombatListener implements Listener {
         double xpPorDano = plugin.getConfig().getDouble("xp.xp-por-dano", 2.0);
 
         // ------------------------------------------------------------------
-        // LADO DO ATACANTE: xp de arma + bônus de dano + crítico + atordoar
+        // LADO DO ATACANTE: xp de arma + bônus de dano + atordoar
         // ------------------------------------------------------------------
         if (atacante != null) {
             combatTagManager.marcar(atacante.getUniqueId());
@@ -58,8 +59,12 @@ public class CombatListener implements Listener {
                 double xpArma = event.getDamage() * xpPorDano * multiplicadorXp;
                 xpManager.adicionarXp(atacante, skillArma, xpArma);
 
-                double bonusDano = bonusCalculator.getBonus(atacante.getUniqueId(), skillArma);
-                event.setDamage(event.getDamage() * (1 + bonusDano));
+                // Crítico não tem "bônus por nível" genérico (é chance + multiplicador fixo),
+                // então só aplica o bônus percentual pras outras skills de arma.
+                if (skillArma != Skill.CRITICO) {
+                    double bonusDano = bonusCalculator.getBonus(atacante.getUniqueId(), skillArma);
+                    event.setDamage(event.getDamage() * (1 + bonusDano));
+                }
 
                 if (skillArma == Skill.PORRADEIRO) {
                     double chanceAtordoar = bonusCalculator.getChanceAtordoar(atacante.getUniqueId());
@@ -67,17 +72,65 @@ public class CombatListener implements Listener {
                         int ticks = plugin.getConfig().getInt("porradeiro.atordoar-ticks", 20);
                         int amp = plugin.getConfig().getInt("porradeiro.atordoar-amplificador", 3);
                         vitimaEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, ticks, amp));
+                        // Sem mensagem de propósito (efeito silencioso)
+                    }
+                } else if (skillArma == Skill.MARRETEIRO) {
+                    double chanceAtordoar = bonusCalculator.getChanceAtordoarMarreteiro(atacante.getUniqueId());
+                    if (ThreadLocalRandom.current().nextDouble() < chanceAtordoar) {
+                        int duracao = plugin.getConfig().getInt("marreteiro.atordoar-duracao-segundos", 3);
+
+                        if (vitimaEntity instanceof Player) {
+                            // Stun de verdade: trava o movimento (via StunListener)
+                            plugin.getAtordoamentoManager().aplicar(vitimaEntity, duracao);
+                        } else {
+                            // Mobs não têm PlayerMoveEvent pra travar; usa Lentidão forte como substituto
+                            vitimaEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, duracao * 20, 6));
+                        }
+
+                        atacante.sendMessage("§c✦ Você atordoou o inimigo!");
                         if (vitimaEntity instanceof Player vitimaJogador) {
                             vitimaJogador.sendMessage("§c✦ Você foi atordoado!");
+                        }
+                    }
+                } else if (skillArma == Skill.LANCEIRO) {
+                    double chanceSangramento = bonusCalculator.getChanceSangramento(atacante.getUniqueId());
+                    if (ThreadLocalRandom.current().nextDouble() < chanceSangramento) {
+                        double danoPorTick = plugin.getConfig().getDouble("lanceiro.sangramento-dano-por-tick", 2.0);
+                        int duracao = plugin.getConfig().getInt("lanceiro.sangramento-duracao-segundos", 4);
+                        plugin.getSangramentoManager().aplicar(vitimaEntity, danoPorTick, duracao);
+                        atacante.sendMessage("§4✦ Inimigo perfurado!");
+                        if (vitimaEntity instanceof Player vitimaJogador) {
+                            vitimaJogador.sendMessage("§4✦ Você foi perfurado!");
+                        }
+                    }
+                } else if (skillArma == Skill.TRIDENTE) {
+                    double chanceEmpurrao = bonusCalculator.getChanceEmpurrao(atacante.getUniqueId());
+                    if (ThreadLocalRandom.current().nextDouble() < chanceEmpurrao) {
+                        Vector direcao = vitimaEntity.getLocation().toVector()
+                                .subtract(atacante.getLocation().toVector())
+                                .normalize();
+                        direcao.setY(Math.max(direcao.getY(), 0.3));
+                        vitimaEntity.setVelocity(direcao.multiply(bonusCalculator.getForcaEmpurrao()));
+                        atacante.sendMessage("§b✦ Você empurrou o inimigo!");
+                        if (vitimaEntity instanceof Player vitimaJogador) {
+                            vitimaJogador.sendMessage("§b✦ Você foi empurrado!");
                         }
                     }
                 }
             }
 
-            if (ehCriticoAproximado(atacante)) {
-                xpManager.adicionarXp(atacante, Skill.CRITICO, 5.0 * multiplicadorXp);
-                double bonusCritico = bonusCalculator.getBonus(atacante.getUniqueId(), Skill.CRITICO);
-                event.setDamage(event.getDamage() * (1 + bonusCritico));
+            // Crítico: proca em QUALQUER arma (não só na Adaga), com chance baseada no nível de Crítico.
+            // Aplicado por cima de tudo (dano base + bônus de arma + crítico vanilla do pulo, se houver).
+            double chanceCritico = bonusCalculator.getChanceCritico(atacante.getUniqueId());
+            if (chanceCritico > 0 && ThreadLocalRandom.current().nextDouble() < chanceCritico) {
+                double multiplicador = bonusCalculator.getMultiplicadorCritico();
+                event.setDamage(event.getDamage() * (1 + multiplicador));
+
+                if (skillArma == Skill.ARQUEIRO) {
+                    atacante.sendMessage("§6§lHEADSHOT!");
+                } else {
+                    atacante.sendMessage("§6✦ Golpe crítico!");
+                }
             }
         }
 
@@ -97,6 +150,9 @@ public class CombatListener implements Listener {
                 event.setCancelled(true);
                 vitima.sendMessage("§b✦ Você esquivou do ataque!");
                 vitima.playSound(vitima.getLocation(), Sound.ENTITY_PLAYER_ATTACK_NODAMAGE, 1f, 1.4f);
+                if (atacante != null) {
+                    atacante.sendMessage("§b✦ Seu ataque foi esquivado!");
+                }
                 if (estaMovendo) {
                     xpManager.adicionarXp(vitima, Skill.ESQUIVA, 8.0 * multiplicadorXp);
                 }
@@ -109,6 +165,10 @@ public class CombatListener implements Listener {
                 double reducaoBloqueio = bonusCalculator.getBonus(vitima.getUniqueId(), Skill.BLOQUEIO);
                 danoRestante *= (1 - reducaoBloqueio);
                 xpManager.adicionarXp(vitima, Skill.BLOQUEIO, 6.0 * multiplicadorXp);
+                vitima.sendMessage("§9✦ Você bloqueou o ataque!");
+                if (atacante != null) {
+                    atacante.sendMessage("§9✦ Seu ataque foi bloqueado!");
+                }
             }
 
             double reducaoDefesa = bonusCalculator.getBonus(vitima.getUniqueId(), Skill.DEFESA);
@@ -146,27 +206,23 @@ public class CombatListener implements Listener {
         // Corpo a corpo: olha o item na mão do atacante
         if (causador == atacante) {
             ItemStack itemNaMao = atacante.getInventory().getItemInMainHand();
+
+            // A Adaga é uma espada marcada — treina Crítico em vez de Espadas
+            if (plugin.getAdagaUtil().ehAdaga(itemNaMao)) {
+                return Skill.CRITICO;
+            }
+
             Material tipo = itemNaMao.getType();
             String nome = tipo.name();
 
             if (tipo == Material.TRIDENT) return Skill.TRIDENTE;
+            if (tipo == Material.MACE) return Skill.MARRETEIRO;
             if (nome.endsWith("_SWORD")) return Skill.ESPADAS;
             if (nome.endsWith("_AXE")) return Skill.MACHADO;
+            if (nome.endsWith("_SPEAR")) return Skill.LANCEIRO;
             if (tipo == Material.AIR) return Skill.PORRADEIRO;
         }
 
         return null;
-    }
-
-    /**
-     * Aproximação do "critical hit" vanilla, já que o Bukkit não expõe essa flag diretamente
-     * no evento. Baseado nas condições clássicas: caindo, fora do chão, sem sprint.
-     */
-    private boolean ehCriticoAproximado(Player atacante) {
-        return atacante.getFallDistance() > 0f
-                && !atacante.isOnGround()
-                && !atacante.isSprinting()
-                && !atacante.isInsideVehicle()
-                && !atacante.hasPotionEffect(PotionEffectType.BLINDNESS);
     }
 }

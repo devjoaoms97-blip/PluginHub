@@ -23,15 +23,33 @@ bonus-por-nivel:
   arqueiro: 0.005
   porradeiro: 0.006
   tridente: 0.005
+  lanceiro: 0.005
+  marreteiro: 0.005
   esquiva: 0.004
   defesa: 0.003
   bloqueio: 0.004
-  critico: 0.003
   regeneracao: 0.01
   agilidade: 0.002
 
+critico:
+  chance-por-nivel: 0.002
+  multiplicador-dano: 0.40
+
+tridente:
+  chance-empurrao-por-nivel: 0.002
+  forca-empurrao: 1.4
+
+lanceiro:
+  chance-sangramento-por-nivel: 0.002
+  sangramento-duracao-segundos: 4
+  sangramento-dano-por-tick: 2.0
+
+marreteiro:
+  chance-atordoar-por-nivel: 0.002
+  atordoar-duracao-segundos: 3
+
 porradeiro:
-  # Chance de atordoar (aplicar Lentidão breve) por nível
+  # Chance de aplicar Lentidão breve por nível
   chance-atordoar-por-nivel: 0.002
   atordoar-ticks: 20
   atordoar-amplificador: 3

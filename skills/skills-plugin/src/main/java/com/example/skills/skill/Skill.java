@@ -9,10 +9,12 @@ public enum Skill {
     ARQUEIRO("Arqueiro", Material.BOW, "Dano causado com arco/besta", "arqueiro"),
     PORRADEIRO("Porradeiro", Material.STICK, "Dano causado com a mão vazia", "porradeiro"),
     TRIDENTE("Tridente", Material.TRIDENT, "Dano causado com tridente", "tridente"),
+    LANCEIRO("Lanceiro", Material.DIAMOND_SPEAR, "Dano causado com lanças", "lanceiro"),
+    MARRETEIRO("Marreteiro", Material.MACE, "Dano causado com maça", "marreteiro"),
     ESQUIVA("Esquiva", Material.FEATHER, "Tomar dano enquanto está se movendo", "esquiva"),
     DEFESA("Defesa", Material.IRON_CHESTPLATE, "Tomar dano e sobreviver", "defesa"),
     BLOQUEIO("Bloqueio", Material.SHIELD, "Bloquear ataques com escudo levantado", "bloqueio"),
-    CRITICO("Crítico", Material.NETHER_STAR, "Acertar golpes críticos", "critico"),
+    CRITICO("Crítico", Material.NETHER_STAR, "Golpes usando a Adaga", "critico"),
     REGENERACAO("Regeneração", Material.GOLDEN_APPLE, "Tempo em combate recente", "regeneracao"),
     AGILIDADE("Agilidade", Material.SUGAR, "Se mover durante o combate", "agilidade");
 

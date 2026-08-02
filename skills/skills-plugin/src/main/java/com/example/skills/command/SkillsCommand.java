@@ -53,8 +53,13 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (args.length >= 2 && args[1].equalsIgnoreCase("criaradaga")) {
+            return tratarCriarAdaga(sender);
+        }
+
         if (args.length < 2 || !args[1].equalsIgnoreCase("setlevel")) {
             sender.sendMessage("§cUso: §f/skills admin setlevel <jogador> <skill> <nível>");
+            sender.sendMessage("§cOu: §f/skills admin criaradaga §c(transforma a espada na mão em Adaga)");
             return true;
         }
 
@@ -110,6 +115,32 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    // ---------------------------------------------------------------------
+    // /skills admin criaradaga
+    // ---------------------------------------------------------------------
+    private boolean tratarCriarAdaga(CommandSender sender) {
+        if (!(sender instanceof Player jogador)) {
+            sender.sendMessage("§cSomente jogadores podem usar este comando (precisa segurar a espada na mão).");
+            return true;
+        }
+
+        org.bukkit.inventory.ItemStack itemNaMao = jogador.getInventory().getItemInMainHand();
+
+        if (!plugin.getAdagaUtil().ehEspadaValida(itemNaMao.getType())) {
+            jogador.sendMessage("§cVocê precisa estar segurando uma espada (qualquer material) pra transformar em Adaga.");
+            return true;
+        }
+
+        if (plugin.getAdagaUtil().ehAdaga(itemNaMao)) {
+            jogador.sendMessage("§cEsse item já é uma Adaga.");
+            return true;
+        }
+
+        plugin.getAdagaUtil().transformarEmAdaga(itemNaMao);
+        jogador.sendMessage("§d§lA espada na sua mão virou uma Adaga! §7Golpes com ela treinam Crítico.");
+        return true;
+    }
+
     private Skill resolverSkill(String texto) {
         String normalizado = texto.toLowerCase(Locale.ROOT);
         for (Skill skill : Skill.values()) {
@@ -160,6 +191,7 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
             opcoes.add("setlevel");
+            opcoes.add("criaradaga");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("setlevel")) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 opcoes.add(p.getName());

@@ -6,10 +6,14 @@ import com.example.skills.gui.SkillsGUIListener;
 import com.example.skills.listener.CombatListener;
 import com.example.skills.listener.PlayerConnectionListener;
 import com.example.skills.listener.RegenListener;
+import com.example.skills.listener.StunListener;
+import com.example.skills.item.AdagaUtil;
+import com.example.skills.manager.AtordoamentoManager;
 import com.example.skills.manager.BonusCalculator;
 import com.example.skills.manager.CombatTagManager;
 import com.example.skills.manager.PassiveSkillsTask;
 import com.example.skills.manager.RewardManager;
+import com.example.skills.manager.SangramentoManager;
 import com.example.skills.manager.SkillDataManager;
 import com.example.skills.manager.XpManager;
 import net.milkbowl.vault.economy.Economy;
@@ -27,6 +31,9 @@ public class SkillsPlugin extends JavaPlugin {
     private BonusCalculator bonusCalculator;
     private SkillsGUI skillsGUI;
     private PassiveSkillsTask passiveSkillsTask;
+    private AdagaUtil adagaUtil;
+    private SangramentoManager sangramentoManager;
+    private AtordoamentoManager atordoamentoManager;
 
     @Override
     public void onEnable() {
@@ -45,6 +52,9 @@ public class SkillsPlugin extends JavaPlugin {
         this.combatTagManager = new CombatTagManager();
         this.bonusCalculator = new BonusCalculator(this, skillDataManager);
         this.skillsGUI = new SkillsGUI(this);
+        this.adagaUtil = new AdagaUtil(this);
+        this.sangramentoManager = new SangramentoManager(this);
+        this.atordoamentoManager = new AtordoamentoManager(this);
 
         SkillsCommand skillsCommand = new SkillsCommand(this);
         getCommand("skills").setExecutor(skillsCommand);
@@ -54,6 +64,7 @@ public class SkillsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new RegenListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
         getServer().getPluginManager().registerEvents(new SkillsGUIListener(), this);
+        getServer().getPluginManager().registerEvents(new StunListener(this), this);
 
         this.passiveSkillsTask = new PassiveSkillsTask(this);
         int intervaloSegundos = getConfig().getInt("passivas.intervalo-segundos", 10);
@@ -67,6 +78,12 @@ public class SkillsPlugin extends JavaPlugin {
     public void onDisable() {
         if (skillDataManager != null) {
             skillDataManager.salvarTodos();
+        }
+        if (sangramentoManager != null) {
+            sangramentoManager.cancelarTodas();
+        }
+        if (atordoamentoManager != null) {
+            atordoamentoManager.cancelarTodas();
         }
         getLogger().info("SkillsPlugin desativado!");
     }
@@ -113,5 +130,17 @@ public class SkillsPlugin extends JavaPlugin {
 
     public PassiveSkillsTask getPassiveSkillsTask() {
         return passiveSkillsTask;
+    }
+
+    public AdagaUtil getAdagaUtil() {
+        return adagaUtil;
+    }
+
+    public SangramentoManager getSangramentoManager() {
+        return sangramentoManager;
+    }
+
+    public AtordoamentoManager getAtordoamentoManager() {
+        return atordoamentoManager;
     }
 }

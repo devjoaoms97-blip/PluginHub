@@ -28,4 +28,42 @@ public class BonusCalculator {
         double taxa = plugin.getConfig().getDouble("porradeiro.chance-atordoar-por-nivel", 0.002);
         return nivel * taxa;
     }
+
+    public double getChanceEmpurrao(java.util.UUID jogadorId) {
+        PlayerSkillData dados = dataManager.get(jogadorId);
+        int nivel = dados.getNivel(Skill.TRIDENTE);
+        double taxa = plugin.getConfig().getDouble("tridente.chance-empurrao-por-nivel", 0.002);
+        return nivel * taxa;
+    }
+
+    public double getForcaEmpurrao() {
+        return plugin.getConfig().getDouble("tridente.forca-empurrao", 1.4);
+    }
+
+    public double getChanceSangramento(java.util.UUID jogadorId) {
+        PlayerSkillData dados = dataManager.get(jogadorId);
+        int nivel = dados.getNivel(Skill.LANCEIRO);
+        double taxa = plugin.getConfig().getDouble("lanceiro.chance-sangramento-por-nivel", 0.002);
+        return nivel * taxa;
+    }
+
+    public double getChanceAtordoarMarreteiro(java.util.UUID jogadorId) {
+        PlayerSkillData dados = dataManager.get(jogadorId);
+        int nivel = dados.getNivel(Skill.MARRETEIRO);
+        double taxa = plugin.getConfig().getDouble("marreteiro.chance-atordoar-por-nivel", 0.002);
+        return nivel * taxa;
+    }
+
+    /** Chance (fração) de proc-ar o Crítico da skill, baseada no nível de Crítico do jogador. */
+    public double getChanceCritico(java.util.UUID jogadorId) {
+        PlayerSkillData dados = dataManager.get(jogadorId);
+        int nivel = dados.getNivel(Skill.CRITICO);
+        double taxa = plugin.getConfig().getDouble("critico.chance-por-nivel", 0.002);
+        return nivel * taxa;
+    }
+
+    /** Multiplicador de dano fixo aplicado quando o Crítico da skill proca. */
+    public double getMultiplicadorCritico() {
+        return plugin.getConfig().getDouble("critico.multiplicador-dano", 0.40);
+    }
 }

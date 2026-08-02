@@ -62,8 +62,15 @@ public class SkillsGUI {
         }
 
         lore.add("");
-        double bonus = plugin.getBonusCalculator().getBonus(dados.getJogadorId(), skill);
-        lore.add("§aBônus atual: §f+" + String.format(Locale.forLanguageTag("pt-BR"), "%.1f", bonus * 100) + "%");
+        if (skill == Skill.CRITICO) {
+            double chance = plugin.getBonusCalculator().getChanceCritico(dados.getJogadorId());
+            double multiplicador = plugin.getBonusCalculator().getMultiplicadorCritico();
+            lore.add("§aChance de crítico: §f" + String.format(Locale.forLanguageTag("pt-BR"), "%.1f", chance * 100) + "%");
+            lore.add("§aDano do crítico: §f+" + String.format(Locale.forLanguageTag("pt-BR"), "%.0f", multiplicador * 100) + "%");
+        } else {
+            double bonus = plugin.getBonusCalculator().getBonus(dados.getJogadorId(), skill);
+            lore.add("§aBônus atual: §f+" + String.format(Locale.forLanguageTag("pt-BR"), "%.1f", bonus * 100) + "%");
+        }
 
         meta.setLore(lore);
         item.setItemMeta(meta);
