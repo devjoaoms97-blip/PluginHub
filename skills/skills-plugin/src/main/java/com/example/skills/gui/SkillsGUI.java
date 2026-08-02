@@ -70,6 +70,33 @@ public class SkillsGUI {
         } else {
             double bonus = plugin.getBonusCalculator().getBonus(dados.getJogadorId(), skill);
             lore.add("§aBônus atual: §f+" + String.format(Locale.forLanguageTag("pt-BR"), "%.1f", bonus * 100) + "%");
+
+            // Skills de arma que aplicam efeitos: mostra a chance do efeito procar
+            String efeito = null;
+            double chanceEfeito = 0.0;
+            switch (skill) {
+                case PORRADEIRO -> {
+                    efeito = "Lentidão";
+                    chanceEfeito = plugin.getBonusCalculator().getChanceAtordoar(dados.getJogadorId());
+                }
+                case TRIDENTE -> {
+                    efeito = "Empurrão";
+                    chanceEfeito = plugin.getBonusCalculator().getChanceEmpurrao(dados.getJogadorId());
+                }
+                case LANCEIRO -> {
+                    efeito = "Sangramento";
+                    chanceEfeito = plugin.getBonusCalculator().getChanceSangramento(dados.getJogadorId());
+                }
+                case MARRETEIRO -> {
+                    efeito = "Atordoamento";
+                    chanceEfeito = plugin.getBonusCalculator().getChanceAtordoarMarreteiro(dados.getJogadorId());
+                }
+                default -> { }
+            }
+
+            if (efeito != null) {
+                lore.add("§aChance de " + efeito.toLowerCase() + ": §f" + String.format(Locale.forLanguageTag("pt-BR"), "%.1f", chanceEfeito * 100) + "%");
+            }
         }
 
         meta.setLore(lore);

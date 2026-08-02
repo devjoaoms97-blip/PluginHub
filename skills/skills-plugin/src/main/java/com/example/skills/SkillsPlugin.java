@@ -16,7 +16,9 @@ import com.example.skills.manager.RewardManager;
 import com.example.skills.manager.SangramentoManager;
 import com.example.skills.manager.SkillDataManager;
 import com.example.skills.manager.XpManager;
+import com.example.skills.skill.Skill;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -86,6 +88,33 @@ public class SkillsPlugin extends JavaPlugin {
             atordoamentoManager.cancelarTodas();
         }
         getLogger().info("SkillsPlugin desativado!");
+    }
+
+    /**
+     * Configs gerados por versões antigas do plugin não possuem as chaves das skills
+     * adicionadas depois (Lanceiro e Marreteiro), o que faz o bônus de dano ficar
+     * permanentemente em 0%. Este método adiciona as chaves faltantes ao config.yml
+     * existente, preservando os valores já configurados das demais skills.
+     */
+    private void garantirChavesNoConfig() {
+        FileConfiguration config = getConfig();
+        boolean modificado = false;
+
+        for (Skill skill : Skill.values()) {
+            // Crítico não usa bônus percentual genérico (usa chance + multiplicador)
+            if (skill == Skill.CRITICO) continue;
+
+            String caminho = "bonus-por-nivel." + skill.getChaveConfig();
+            if (!config.contains(caminho)) {
+                config.set(caminho, 0.005); // +0,5% por nível (mesmo padrão das demais skills de dano)
+                modificado = true;
+            }
+        }
+
+        if (modificado) {
+            saveConfig();
+            getLogger().info("Config atualizado: chaves de bônus por nível adicionadas ao config.yml.");
+        }
     }
 
     private boolean setupEconomy() {

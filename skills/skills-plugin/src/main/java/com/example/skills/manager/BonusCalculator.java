@@ -18,7 +18,7 @@ public class BonusCalculator {
     public double getBonus(java.util.UUID jogadorId, Skill skill) {
         PlayerSkillData dados = dataManager.get(jogadorId);
         int nivel = dados.getNivel(skill);
-        double taxa = plugin.getConfig().getDouble("bonus-por-nivel." + skill.getChaveConfig(), 0.0);
+        double taxa = plugin.getConfig().getDouble("bonus-por-nivel." + skill.getChaveConfig(), 0.005);
         return nivel * taxa;
     }
 
