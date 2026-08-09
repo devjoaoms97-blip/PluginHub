@@ -5,9 +5,11 @@ import com.example.skills.manager.BonusCalculator;
 import com.example.skills.manager.CombatTagManager;
 import com.example.skills.manager.XpManager;
 import com.example.skills.skill.Skill;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -171,8 +173,17 @@ public class CombatListener implements Listener {
                 }
             }
 
-            double reducaoDefesa = bonusCalculator.getBonus(vitima.getUniqueId(), Skill.DEFESA);
+            double reducaoDefesa = ehAtaquePelasCostas(vitima, event.getDamager())
+                    ? 0.0
+                    : bonusCalculator.getBonus(vitima.getUniqueId(), Skill.DEFESA);
             danoRestante *= (1 - reducaoDefesa);
+
+            // Enquanto atordoado, o alvo fica parado e apanha muito mais rápido do que o normal.
+            // Sem isso, o período de invulnerabilidade vanilla (~0.5s) acaba anulando praticamente
+            // todo hit "extra" que chegar antes desse tempo passar — dando a impressão de imunidade.
+            if (plugin.getAtordoamentoManager().estaAtordoado(vitima.getUniqueId())) {
+                vitima.setNoDamageTicks(0);
+            }
 
             event.setDamage(Math.max(0, danoRestante));
 
@@ -182,6 +193,35 @@ public class CombatListener implements Listener {
                 xpManager.adicionarXp(vitima, Skill.ESQUIVA, 4.0 * multiplicadorXp);
             }
         }
+    }
+
+    /**
+     * Verifica se o ataque veio de trás da vítima (ângulo maior que 90° entre pra
+     * onde ela está olhando e a direção de onde o golpe partiu). Usado pra ignorar
+     * a redução da Defesa em ataques surpresa/pelas costas.
+     */
+    private boolean ehAtaquePelasCostas(LivingEntity vitima, Entity causador) {
+        Location origemAtaque = obterOrigemDoAtaque(causador);
+        if (origemAtaque == null || !origemAtaque.getWorld().equals(vitima.getWorld())) {
+            return false;
+        }
+
+        org.bukkit.util.Vector direcaoParaOrigem = origemAtaque.toVector().subtract(vitima.getLocation().toVector());
+        if (direcaoParaOrigem.lengthSquared() < 0.0001) {
+            return false; // ataque veio de cima praticamente em cima da vítima, ignora
+        }
+        direcaoParaOrigem.normalize();
+
+        double anguloGraus = Math.toDegrees(vitima.getLocation().getDirection().angle(direcaoParaOrigem));
+        return anguloGraus > 90;
+    }
+
+    /** Pra projéteis, usa a posição de quem atirou (mais preciso que a posição da flecha no impacto). */
+    private Location obterOrigemDoAtaque(Entity causador) {
+        if (causador instanceof Projectile proj && proj.getShooter() instanceof Entity atirador) {
+            return atirador.getLocation();
+        }
+        return causador.getLocation();
     }
 
     private Player resolverAtacante(org.bukkit.entity.Entity causador) {

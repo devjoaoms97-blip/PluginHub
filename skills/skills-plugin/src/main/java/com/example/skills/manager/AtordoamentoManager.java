@@ -53,6 +53,16 @@ public class AtordoamentoManager {
                     return;
                 }
 
+                if (tiquesRestantes[0] <= 0) {
+                    // Tick final "silencioso": só limpa, sem mostrar "0s" nem sobrepor a última contagem
+                    tarefasAtivas.remove(id);
+                    if (vitima instanceof Player p) {
+                        p.sendActionBar(Component.empty());
+                    }
+                    cancel();
+                    return;
+                }
+
                 if (vitima instanceof Player p) {
                     p.sendActionBar(Component.text("★ Atordoado (" + tiquesRestantes[0] + "s)", NamedTextColor.YELLOW));
                 }
@@ -60,13 +70,6 @@ public class AtordoamentoManager {
                 vitima.getWorld().spawnParticle(Particle.ANGRY_VILLAGER, vitima.getLocation().add(0, 2.2, 0), 3, 0.2, 0.1, 0.2, 0);
 
                 tiquesRestantes[0]--;
-                if (tiquesRestantes[0] <= 0) {
-                    tarefasAtivas.remove(id);
-                    if (vitima instanceof Player p) {
-                        p.sendActionBar(Component.empty());
-                    }
-                    cancel();
-                }
             }
         }.runTaskTimer(plugin, 0L, 20L);
 

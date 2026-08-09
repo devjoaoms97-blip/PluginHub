@@ -51,6 +51,16 @@ public class SangramentoManager {
                     return;
                 }
 
+                if (tiquesRestantes[0] <= 0) {
+                    // Tick final "silencioso": só limpa, sem mostrar "0s" nem sobrepor a última contagem
+                    tarefasAtivas.remove(id);
+                    if (vitima instanceof Player p) {
+                        p.sendActionBar(Component.empty());
+                    }
+                    cancel();
+                    return;
+                }
+
                 if (vitima instanceof Player p) {
                     p.sendActionBar(Component.text("❤ Sangrando (" + tiquesRestantes[0] + "s)", NamedTextColor.DARK_RED));
                 }
@@ -67,15 +77,8 @@ public class SangramentoManager {
                 vitima.damage(danoPorTick);
 
                 tiquesRestantes[0]--;
-                if (tiquesRestantes[0] <= 0) {
-                    tarefasAtivas.remove(id);
-                    if (vitima instanceof Player p) {
-                        p.sendActionBar(Component.empty());
-                    }
-                    cancel();
-                }
             }
-        }.runTaskTimer(plugin, 20L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L);
 
         tarefasAtivas.put(id, tarefa);
     }
