@@ -1,0 +1,15 @@
+com\example\boss\listener\BossDeathListener.class
+com\example\boss\model\TipoGatilhoFase.class
+com\example\boss\BossPlugin.class
+com\example\boss\manager\BossManager.class
+com\example\boss\manager\BossManager$1.class
+com\example\boss\manager\ScheduleManager.class
+com\example\boss\manager\LootManager.class
+com\example\boss\model\TipoAcaoFase.class
+com\example\boss\util\BossTagUtil.class
+com\example\boss\model\FaseConfig.class
+com\example\boss\model\LootEntry.class
+com\example\boss\command\BossCommand.class
+com\example\boss\manager\ScheduleManager$Horario.class
+com\example\boss\manager\ArenaManager.class
+com\example\boss\manager\ChampionManager.class

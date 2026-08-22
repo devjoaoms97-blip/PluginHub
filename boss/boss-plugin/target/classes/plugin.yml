@@ -1,0 +1,19 @@
+name: BossPlugin
+version: '1.0.0'
+main: com.example.boss.BossPlugin
+api-version: '26.2'
+author: Você
+description: Boss mundial agendado, com fases por vida/tempo, loot configurável e tag de campeão via LuckPerms.
+softdepend: [LuckPerms]
+
+commands:
+  boss:
+    description: Gerencia o boss mundial.
+    usage: "Uso: /boss <start|stop|setlocal|additem|addchampionitem|reload>"
+    permission: boss.admin
+    permission-message: "§cVocê não tem permissão para gerenciar o boss."
+
+permissions:
+  boss.admin:
+    description: Permite gerenciar o boss mundial (start, loot, arena, etc).
+    default: op

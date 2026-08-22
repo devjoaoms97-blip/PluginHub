@@ -1,0 +1,24 @@
+# Configuração da Loja Dinâmica
+
+regeneracao:
+  # A cada quantos segundos o preço de venda tenta se recuperar um pouco em direção à âncora
+  intervalo-segundos: 60
+  # Fração da distância até a âncora recuperada a cada intervalo (0.02 = 2% mais perto por vez)
+  fator-por-tick: 0.02
+
+# Quantidade máxima permitida numa única transação de /sell ou /buy, pra evitar
+# comandos absurdos acidentais (ex: vender 999999 de uma vez por engano)
+limite-por-transacao: 6400
+
+imposto:
+  # Percentual descontado de toda venda (o dinheiro simplesmente some, não vai pra ninguém —
+  # ajuda a controlar inflação no servidor). 0 desativa.
+  percentual-venda: 2.0
+
+historico:
+  # A cada quantos minutos tira uma "foto" do preço de venda de cada item, pro gráfico de /shop historico
+  intervalo-minutos: 15
+
+integracao:
+  # Se true e o PixPlugin estiver instalado, toda compra/venda também aparece no /pix historico do jogador
+  pix: true

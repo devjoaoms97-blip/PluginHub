@@ -78,7 +78,7 @@ public class CombatListener implements Listener {
                     }
                 } else if (skillArma == Skill.MARRETEIRO) {
                     double chanceAtordoar = bonusCalculator.getChanceAtordoarMarreteiro(atacante.getUniqueId());
-                    if (ThreadLocalRandom.current().nextDouble() < chanceAtordoar) {
+                    if (ThreadLocalRandom.current().nextDouble() < chanceAtordoar && !ehBossImuneAControle(vitimaEntity)) {
                         int duracao = plugin.getConfig().getInt("marreteiro.atordoar-duracao-segundos", 3);
 
                         if (vitimaEntity instanceof Player) {
@@ -107,7 +107,7 @@ public class CombatListener implements Listener {
                     }
                 } else if (skillArma == Skill.TRIDENTE) {
                     double chanceEmpurrao = bonusCalculator.getChanceEmpurrao(atacante.getUniqueId());
-                    if (ThreadLocalRandom.current().nextDouble() < chanceEmpurrao) {
+                    if (ThreadLocalRandom.current().nextDouble() < chanceEmpurrao && !ehBossImuneAControle(vitimaEntity)) {
                         Vector direcao = vitimaEntity.getLocation().toVector()
                                 .subtract(atacante.getLocation().toVector())
                                 .normalize();
@@ -222,6 +222,19 @@ public class CombatListener implements Listener {
             return atirador.getLocation();
         }
         return causador.getLocation();
+    }
+
+    /**
+     * Checa se a entidade tem a marca compartilhada "pluginhub:boss_mob" (usada pelo
+     * BossPlugin pra identificar chefes mundiais). Se tiver, ela é imune ao Atordoamento
+     * do Marreteiro e ao Empurrão do Tridente — sem isso, um boss gigante ficaria fácil
+     * demais de travar/empurrar com essas skills.
+     */
+    private boolean ehBossImuneAControle(Entity entidade) {
+        return entidade.getPersistentDataContainer().has(
+                new org.bukkit.NamespacedKey("pluginhub", "boss_mob"),
+                org.bukkit.persistence.PersistentDataType.BYTE
+        );
     }
 
     private Player resolverAtacante(org.bukkit.entity.Entity causador) {

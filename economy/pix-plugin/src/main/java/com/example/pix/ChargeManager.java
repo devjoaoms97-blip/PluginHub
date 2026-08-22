@@ -30,6 +30,14 @@ public class ChargeManager {
     private static final int HISTORICO_MAX_POR_JOGADOR = 20;
     public static final long EXPIRACAO_TICKS = 20L * 60 * 5; // 5 minutos (20 ticks/segundo)
 
+    /**
+     * UUID "fictício" usado pra representar a Loja do Servidor (EconomyShopPlugin) no
+     * histórico de transações — não corresponde a nenhuma conta de jogador de verdade.
+     * O PixCommand reconhece esse UUID especificamente e mostra "Loja do Servidor" em
+     * vez de tentar resolver um nome de jogador (que daria null).
+     */
+    public static final UUID ENTIDADE_LOJA = UUID.fromString("00000000-0000-0000-0000-000000000001");
+
     private final PixPlugin plugin;
 
     // cobradoId -> (cobradorId -> cobrança)
@@ -110,6 +118,18 @@ public class ChargeManager {
         long agora = System.currentTimeMillis();
         adicionarAoHistorico(de, new TransacaoRegistro(de, para, valor, tipo, agora));
         adicionarAoHistorico(para, new TransacaoRegistro(de, para, valor, tipo, agora));
+    }
+
+    /**
+     * Registra uma transação entre um jogador e a Loja do Servidor (compra/venda no
+     * EconomyShopPlugin), pra unificar tudo no mesmo extrato do /pix historico.
+     * Só adiciona a entrada pro jogador (a "loja" não é uma conta de verdade).
+     */
+    public void registrarTransacaoComLoja(UUID jogador, double valor, boolean jogadorRecebeu, String tipo) {
+        long agora = System.currentTimeMillis();
+        UUID de = jogadorRecebeu ? ENTIDADE_LOJA : jogador;
+        UUID para = jogadorRecebeu ? jogador : ENTIDADE_LOJA;
+        adicionarAoHistorico(jogador, new TransacaoRegistro(de, para, valor, tipo, agora));
     }
 
     private void adicionarAoHistorico(UUID jogador, TransacaoRegistro registro) {

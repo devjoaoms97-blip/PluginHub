@@ -1,0 +1,29 @@
+name: EconomyShopPlugin
+version: '1.0.0'
+main: com.example.shop.ShopPlugin
+api-version: '26.2'
+author: Você
+description: Loja do servidor com preço de venda dinâmico (oferta/demanda), integrada ao Vault.
+softdepend: [Vault]
+
+commands:
+  shop:
+    description: Abre a loja, mostra o histórico de preços, ou gerencia itens (admin).
+    usage: "Uso: /shop [historico <item>|admin ...]"
+    permission: shop.usar
+  buy:
+    description: Compra um item da loja pelo preço fixo.
+    usage: "Uso: /buy <item> <quantidade>"
+    permission: shop.usar
+  sell:
+    description: Vende o item na mão (ou tudo) pro servidor.
+    usage: "Uso: /sell [all]"
+    permission: shop.usar
+
+permissions:
+  shop.usar:
+    description: Permite comprar/vender na loja do servidor.
+    default: true
+  shop.admin:
+    description: Permite cadastrar e gerenciar itens da loja.
+    default: op

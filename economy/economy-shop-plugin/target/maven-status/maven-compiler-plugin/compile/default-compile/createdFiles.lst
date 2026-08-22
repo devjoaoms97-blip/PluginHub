@@ -1,0 +1,15 @@
+com\example\shop\command\BuyCommand.class
+com\example\shop\model\ShopItem.class
+com\example\shop\manager\PriceHistoryManager.class
+com\example\shop\manager\PriceHistoryManager$Ponto.class
+com\example\shop\manager\ShopManager.class
+com\example\shop\util\GraficoUtil.class
+com\example\shop\gui\ShopGUIHolder$Tela.class
+com\example\shop\util\PixIntegration.class
+com\example\shop\command\ShopCommand.class
+com\example\shop\gui\ShopGUIListener.class
+com\example\shop\gui\ShopGUI.class
+com\example\shop\gui\ShopGUIHolder.class
+com\example\shop\ShopPlugin.class
+com\example\shop\manager\PriceRegenTask.class
+com\example\shop\command\SellCommand.class

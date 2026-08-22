@@ -1,0 +1,75 @@
+# Configuração do Boss Mundial
+
+# Tipos de mob possíveis (sorteia um a cada spawn se tiver mais de um)
+mobs-possiveis:
+  - ZOMBIE
+  - SKELETON
+
+nome: "&4&l☠ Titã Sombrio ☠"
+vida-maxima: 500
+dano-ataque: 8
+escala: 3.0
+
+mensagem-spawn: "&4&l⚠ Um chefe apareceu! Corram para enfrentá-lo! ⚠"
+mensagem-vitoria: "&6★ &e%jogador% &6derrotou o chefe e agora é o novo campeão! ★"
+
+barra:
+  # Cores válidas: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+  cor: RED
+  # Estilos válidos: SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
+  estilo: SEGMENTED_10
+
+# Agenda recorrente (dia da semana + horário, formato 24h). Deixe a lista vazia
+# se quiser controlar só na mão com /boss start.
+agenda:
+  - "SEXTA 20:00"
+  - "SABADO 21:00"
+
+# Grupo do LuckPerms que recebe a tag de campeão. Crie esse grupo e configure
+# o prefixo dele direto no LuckPerms, por exemplo:
+#   /lp creategroup boss_campeao
+#   /lp group boss_campeao meta setprefix "&6[Herói] "
+#   /lp group boss_campeao setweight 10
+campeao:
+  grupo-luckperms: "boss_campeao"
+
+# Fases: disparam por percentual de vida (uma vez só, ao cruzar aquele valor pela
+# primeira vez) ou por intervalo de tempo (repete a cada X segundos desde o spawn).
+#
+# Tipos de ação disponíveis:
+#   invocar_mobs -> mob: <TIPO>, quantidade: <numero>
+#   efeito_area  -> efeito: <TIPO_DE_EFEITO>, duracao-segundos, amplificador, raio
+#   buff_boss    -> efeito: <TIPO_DE_EFEITO>, duracao-segundos, amplificador
+#   mensagem     -> texto: "<mensagem com & para cores>"
+fases:
+  - tipo: percentual_vida
+    valor: 80
+    acao: invocar_mobs
+    mob: ZOMBIFIED_PIGLIN
+    quantidade: 30
+
+  - tipo: percentual_vida
+    valor: 60
+    acao: invocar_mobs
+    mob: SKELETON
+    quantidade: 20
+
+  - tipo: percentual_vida
+    valor: 40
+    acao: efeito_area
+    efeito: BLINDNESS
+    duracao-segundos: 5
+    amplificador: 0
+    raio: 12
+
+  - tipo: percentual_vida
+    valor: 20
+    acao: buff_boss
+    efeito: SPEED
+    duracao-segundos: 15
+    amplificador: 1
+
+  - tipo: intervalo_tempo
+    segundos: 45
+    acao: mensagem
+    texto: "&4O chefe ruge furiosamente!"

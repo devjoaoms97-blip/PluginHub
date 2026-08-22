@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.UUID;
 import java.util.List;
 import java.util.Locale;
 
@@ -289,12 +290,16 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage(cor("§e§lÚltimas transações:"));
         for (TransacaoRegistro r : registros) {
             boolean recebeu = r.getPara().equals(jogador.getUniqueId());
-            OfflinePlayer outro = Bukkit.getOfflinePlayer(recebeu ? r.getDe() : r.getPara());
+            UUID outroId = recebeu ? r.getDe() : r.getPara();
             String seta = recebeu ? "§a+" : "§c-";
             String prep = recebeu ? "de" : "para";
 
+            String nomeOutro = outroId.equals(ChargeManager.ENTIDADE_LOJA)
+                    ? "Loja do Servidor"
+                    : Bukkit.getOfflinePlayer(outroId).getName();
+
             jogador.sendMessage(cor("  §7[" + sdf.format(new Date(r.getData())) + "] " + seta
-                    + formatarValor(r.getValor()) + " §7" + prep + " §f" + outro.getName()
+                    + formatarValor(r.getValor()) + " §7" + prep + " §f" + nomeOutro
                     + " §7(" + r.getTipo() + ")"));
         }
     }
