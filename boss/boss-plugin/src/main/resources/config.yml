@@ -1,75 +1,253 @@
 # Configuração do Boss Mundial
 
-# Tipos de mob possíveis (sorteia um a cada spawn se tiver mais de um)
-mobs-possiveis:
-  - ZOMBIE
-  - SKELETON
-
-nome: "&4&l☠ Titã Sombrio ☠"
-vida-maxima: 500
-dano-ataque: 8
-escala: 3.0
+# Vida/dano/escala GLOBAIS — usados por qualquer perfil de boss que não defina o
+# próprio valor (veja "bosses:" mais abaixo). Cada perfil pode sobrescrever isso
+# individualmente adicionando vida-maxima/dano-ataque/escala dentro dele.
+vida-maxima: 5000
+dano-ataque: 18
+escala: 9.0
 
 mensagem-spawn: "&4&l⚠ Um chefe apareceu! Corram para enfrentá-lo! ⚠"
 mensagem-vitoria: "&6★ &e%jogador% &6derrotou o chefe e agora é o novo campeão! ★"
 
 barra:
-  # Cores válidas: PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
   cor: RED
-  # Estilos válidos: SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
   estilo: SEGMENTED_10
 
-# Agenda recorrente (dia da semana + horário, formato 24h). Deixe a lista vazia
-# se quiser controlar só na mão com /boss start.
+# Agenda recorrente. Sempre sorteia entre os bosses NÃO especiais (o Wither fica de
+# fora da agenda/aleatoriedade, só sobe com /boss start wither).
 agenda:
   - "SEXTA 20:00"
   - "SABADO 21:00"
 
-# Grupo do LuckPerms que recebe a tag de campeão. Crie esse grupo e configure
-# o prefixo dele direto no LuckPerms, por exemplo:
-#   /lp creategroup boss_campeao
-#   /lp group boss_campeao meta setprefix "&6[Herói] "
-#   /lp group boss_campeao setweight 10
 campeao:
   grupo-luckperms: "boss_campeao"
 
-# Fases: disparam por percentual de vida (uma vez só, ao cruzar aquele valor pela
-# primeira vez) ou por intervalo de tempo (repete a cada X segundos desde o spawn).
+dificuldade:
+  # Multiplicador sobre a velocidade de movimento padrão do mob (1.5 = 50% mais rápido)
+  velocidade-multiplicador: 1.5
+  # Alcance (em blocos) que o boss consegue perseguir um jogador sem perder o alvo
+  alcance-perseguicao: 48
+  # A cada quantos segundos o boss sorteia e dispara um ataque do próprio arsenal
+  intervalo-ataque-aleatorio-segundos: 20
+
+# ---------------------------------------------------------------------------------
+# PERFIS DE BOSS — um por mob. "fases" são marcos fixos (por % de vida ou por tempo),
+# disparam sempre, na ordem/condição configurada. "ataques-aleatorios" é o arsenal:
+# a cada X segundos (dificuldade.intervalo-ataque-aleatorio-segundos), o boss sorteia
+# UM item dessa lista e executa — cada perfil tem seu próprio arsenal temático.
 #
-# Tipos de ação disponíveis:
-#   invocar_mobs -> mob: <TIPO>, quantidade: <numero>
-#   efeito_area  -> efeito: <TIPO_DE_EFEITO>, duracao-segundos, amplificador, raio
-#   buff_boss    -> efeito: <TIPO_DE_EFEITO>, duracao-segundos, amplificador
-#   mensagem     -> texto: "<mensagem com & para cores>"
-fases:
-  - tipo: percentual_vida
-    valor: 80
-    acao: invocar_mobs
-    mob: ZOMBIFIED_PIGLIN
-    quantidade: 30
+# Ações disponíveis: invocar_mobs, efeito_area, buff_boss, mensagem, investida,
+# chuva_projeteis, onda_de_choque, curar, teleporte_ataque
+# ---------------------------------------------------------------------------------
+bosses:
 
-  - tipo: percentual_vida
-    valor: 60
-    acao: invocar_mobs
+  zombie:
+    mob: ZOMBIE
+    nome: "&4&l☠ Titã Sombrio ☠"
+    fases:
+      - tipo: percentual_vida
+        valor: 50
+        acao: invocar_mobs
+        mob: ZOMBIFIED_PIGLIN
+        quantidade: 15
+      - tipo: percentual_vida
+        valor: 20
+        acao: curar
+        percentual: 15
+    ataques-aleatorios:
+      - acao: investida
+        forca: 2.2
+      - acao: onda_de_choque
+        raio: 6
+        dano: 5
+        forca: 1.3
+      - acao: efeito_area
+        efeito: SLOWNESS
+        duracao-segundos: 4
+        amplificador: 1
+        raio: 8
+      - acao: mensagem
+        texto: "&4O Titã Sombrio ruge de fúria!"
+
+  skeleton:
     mob: SKELETON
-    quantidade: 20
+    nome: "&7&l☠ Carrasco Ósseo ☠"
+    fases:
+      - tipo: percentual_vida
+        valor: 60
+        acao: invocar_mobs
+        mob: SKELETON
+        quantidade: 10
+      - tipo: percentual_vida
+        valor: 30
+        acao: buff_boss
+        efeito: SPEED
+        duracao-segundos: 15
+        amplificador: 1
+    ataques-aleatorios:
+      - acao: chuva_projeteis
+        quantidade: 6
+        raio: 15
+        dano-por-projetil: 4
+      - acao: efeito_area
+        efeito: WEAKNESS
+        duracao-segundos: 6
+        amplificador: 0
+        raio: 10
+      - acao: mensagem
+        texto: "&7O Carrasco Ósseo prepara suas flechas..."
 
-  - tipo: percentual_vida
-    valor: 40
-    acao: efeito_area
-    efeito: BLINDNESS
-    duracao-segundos: 5
-    amplificador: 0
-    raio: 12
+  spider:
+    mob: SPIDER
+    nome: "&5&l☠ Rainha Aracnídea ☠"
+    fases:
+      - tipo: percentual_vida
+        valor: 50
+        acao: invocar_mobs
+        mob: CAVE_SPIDER
+        quantidade: 12
+      - tipo: percentual_vida
+        valor: 25
+        acao: efeito_area
+        efeito: POISON
+        duracao-segundos: 6
+        amplificador: 1
+        raio: 12
+    ataques-aleatorios:
+      - acao: teleporte_ataque
+        distancia: 2.0
+        dano-bonus: 6
+      - acao: efeito_area
+        efeito: POISON
+        duracao-segundos: 4
+        amplificador: 0
+        raio: 8
+      - acao: mensagem
+        texto: "&5A Rainha Aracnídea se aproxima em silêncio..."
 
-  - tipo: percentual_vida
-    valor: 20
-    acao: buff_boss
-    efeito: SPEED
-    duracao-segundos: 15
-    amplificador: 1
+  zombified_piglin:
+    mob: ZOMBIFIED_PIGLIN
+    nome: "&6&l☠ Açougueiro Infernal ☠"
+    fases:
+      - tipo: percentual_vida
+        valor: 50
+        acao: invocar_mobs
+        mob: ZOMBIFIED_PIGLIN
+        quantidade: 20
+      - tipo: percentual_vida
+        valor: 20
+        acao: curar
+        percentual: 20
+    ataques-aleatorios:
+      - acao: investida
+        forca: 2.5
+      - acao: onda_de_choque
+        raio: 7
+        dano: 7
+        forca: 1.5
+      - acao: buff_boss
+        efeito: STRENGTH
+        duracao-segundos: 10
+        amplificador: 1
+      - acao: mensagem
+        texto: "&6O Açougueiro Infernal avança sedento por sangue!"
 
-  - tipo: intervalo_tempo
-    segundos: 45
-    acao: mensagem
-    texto: "&4O chefe ruge furiosamente!"
+  creeper:
+    mob: CREEPER
+    nome: "&2&l☠ Estilhaço Verde ☠"
+    fases:
+      - tipo: percentual_vida
+        valor: 50
+        acao: onda_de_choque
+        raio: 10
+        dano: 10
+        forca: 2.0
+      - tipo: percentual_vida
+        valor: 20
+        acao: invocar_mobs
+        mob: CREEPER
+        quantidade: 5
+    ataques-aleatorios:
+      - acao: onda_de_choque
+        raio: 8
+        dano: 8
+        forca: 1.8
+      - acao: teleporte_ataque
+        distancia: 1.5
+        dano-bonus: 5
+      - acao: mensagem
+        texto: "&2Um silvo perigoso ecoa pela arena..."
+
+  witch:
+    mob: WITCH
+    nome: "&d&l☠ Feiticeira Maldita ☠"
+    fases:
+      - tipo: percentual_vida
+        valor: 60
+        acao: efeito_area
+        efeito: WITHER
+        duracao-segundos: 5
+        amplificador: 0
+        raio: 12
+      - tipo: percentual_vida
+        valor: 30
+        acao: curar
+        percentual: 20
+    ataques-aleatorios:
+      - acao: efeito_area
+        efeito: POISON
+        duracao-segundos: 5
+        amplificador: 1
+        raio: 10
+      - acao: efeito_area
+        efeito: WEAKNESS
+        duracao-segundos: 6
+        amplificador: 1
+        raio: 10
+      - acao: curar
+        percentual: 8
+      - acao: mensagem
+        texto: "&dA Feiticeira Maldita prepara uma nova poção..."
+
+  wither:
+    mob: WITHER
+    nome: "&0&l☠ Flagelo das Trevas ☠"
+    especial: true
+    vida-maxima: 8000
+    dano-ataque: 25
+    fases:
+      - tipo: percentual_vida
+        valor: 75
+        acao: invocar_mobs
+        mob: WITHER_SKELETON
+        quantidade: 10
+      - tipo: percentual_vida
+        valor: 50
+        acao: onda_de_choque
+        raio: 12
+        dano: 10
+        forca: 2.0
+      - tipo: percentual_vida
+        valor: 25
+        acao: curar
+        percentual: 15
+    ataques-aleatorios:
+      - acao: chuva_projeteis
+        quantidade: 8
+        raio: 18
+        dano-por-projetil: 5
+      - acao: onda_de_choque
+        raio: 10
+        dano: 9
+        forca: 1.8
+      - acao: teleporte_ataque
+        distancia: 2.0
+        dano-bonus: 8
+      - acao: efeito_area
+        efeito: WITHER
+        duracao-segundos: 6
+        amplificador: 1
+        raio: 14
+      - acao: mensagem
+        texto: "&0&lO Flagelo das Trevas desperta seu poder ancestral!"

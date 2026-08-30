@@ -4,5 +4,10 @@ public enum TipoAcaoFase {
     INVOCAR_MOBS,
     EFEITO_AREA,
     BUFF_BOSS,
-    MENSAGEM
+    MENSAGEM,
+    INVESTIDA,
+    CHUVA_PROJETEIS,
+    ONDA_DE_CHOQUE,
+    CURAR,
+    TELEPORTE_ATAQUE
 }

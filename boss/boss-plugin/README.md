@@ -1,35 +1,59 @@
 # BossPlugin
 
-Boss mundial agendado, com fases dinâmicas, loot configurável em jogo e tag de campeão via LuckPerms.
+Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases dinâmicas, arsenal de ataques aleatórios, loot configurável em jogo e tag de campeão via LuckPerms.
 
 ## O que ele faz
 
-1. **Agenda recorrente + comando manual**: você configura dias/horários fixos no `config.yml`, e também pode forçar com `/boss start` a qualquer momento
-2. **Boss gigante de verdade**: escala aumentada via atributo do próprio jogo (não é só cosmético), vida/dano configuráveis, resistente a knockback
-3. **Barra de vida nativa** (igual Wither/Ender Dragon), visível pra todo mundo, atualizada em tempo real
-4. **Fases por % de vida e por tempo**: invoca mobs, aplica efeitos em área nos jogadores, se buffa, ou manda mensagens dramáticas — tudo configurável sem recompilar
-5. **Loot do chão**: itens com chance independente cada, cadastrados em jogo (`/boss additem`)
-6. **Prêmio do campeão**: sorteio ponderado entre itens cadastrados (`/boss addchampionitem`) — vai direto pro inventário de quem der o último hit
-7. **Tag de campeão via LuckPerms de verdade**: um grupo com prefixo (ex: `[Herói]`) passa automaticamente de quem tinha antes pra quem acabou de matar o boss
+1. **7 perfis de boss**: 6 normais (Zumbi, Esqueleto, Aranha, Zumbi Porco, Creeper, Bruxa) que entram na aleatoriedade da agenda/comando, + 1 especial (Wither) que só sobe forçado (`/boss start wither`)
+2. **Cada perfil tem nome, fases e arsenal de ataques próprios** — definidos no `config.yml`, sem precisar recompilar
+3. **Agenda recorrente + comando manual**: dias/horários fixos, e também `/boss start [id]` a qualquer momento
+4. **Boss gigante e mais perigoso**: escala aumentada de verdade, velocidade 50% acima do padrão, alcance de perseguição maior, resistente a knockback
+5. **Barra de vida nativa** (igual Wither/Ender Dragon), visível pra todo mundo
+6. **Fases fixas por % de vida e por tempo** (marcos da luta) **+ arsenal de ataques aleatórios** (dispara a cada X segundos, sorteando um ataque do próprio arsenal do mob) — isso é o que dá o "perigo constante" durante a luta toda, não só em marcos pontuais
+7. **Loot do chão + prêmio exclusivo do campeão** (sorteio ponderado)
+8. **Tag de campeão via LuckPerms**
 
 ## Requisitos
 
 - Paper 26.2 (Java 25)
-- **LuckPerms** (pra tag de campeão funcionar — sem ele, o resto do plugin funciona normal, só a tag fica desativada)
-- **SkillsPlugin** (opcional, mas recomendado) — se instalado, o boss fica automaticamente imune ao Atordoamento do Marreteiro e ao Empurrão do Tridente
+- **LuckPerms** (pra tag de campeão funcionar)
+- **SkillsPlugin** (opcional, recomendado) — se instalado, o boss fica imune ao Atordoamento/Empurrão
 
 ## Comandos
 
 | Comando | Ação |
 |---|---|
-| `/boss start` | Inicia o boss manualmente |
+| `/boss start` | Inicia um boss **aleatório** entre os normais (não especiais) |
+| `/boss start <id>` | Inicia um perfil específico (ex: `/boss start wither`) |
+| `/boss list` | Lista os perfis configurados e seus ids |
 | `/boss stop` | Remove o boss ativo |
 | `/boss setlocal` | Define a arena na sua posição atual |
 | `/boss additem <chance%>` | Adiciona o item na mão ao loot do chão |
 | `/boss addchampionitem <peso%>` | Adiciona o item na mão ao sorteio de prêmio do campeão |
 | `/boss reload` | Recarrega o `config.yml` |
 
+## Tipos de ação disponíveis (fases e arsenal aleatório usam os mesmos)
+
+| Ação | O que faz |
+|---|---|
+| `invocar_mobs` | Spawna reforços ao redor do boss |
+| `efeito_area` | Aplica um efeito de poção nos jogadores num raio |
+| `buff_boss` | Aplica um efeito de poção no próprio boss |
+| `mensagem` | Manda uma mensagem dramática no chat |
+| `investida` *(novo)* | Avança rápido na direção do jogador mais próximo, empurrando no impacto |
+| `chuva_projeteis` *(novo)* | Flechas caem do céu ao redor de jogadores próximos |
+| `onda_de_choque` *(novo)* | Empurra e causa dano em todo mundo num raio ao redor do boss |
+| `curar` *(novo)* | O boss recupera uma % da vida máxima (mecânica de fúria/desespero) |
+| `teleporte_ataque` *(novo)* | Teleporta pra perto de um jogador aleatório e desfere um golpe surpresa |
+
 Todos exigem a permissão `boss.admin` (padrão: op).
+
+## ⚠️ Atualizando de uma versão anterior
+
+O `config.yml` mudou de estrutura (agora tem uma seção `bosses:` com os 7 perfis, em vez de um único `nome`/`fases`/`mobs-possiveis` no topo). **Substitua o `config.yml` inteiro pelo novo.** Como consequência:
+
+- **A arena precisa ser redefinida** (`/boss setlocal`) — o arquivo novo não tem a seção `arena:` que foi salva automaticamente antes
+- **O campeão atual "reseta"** (`campeao-atual-uuid` também não vem no arquivo novo) — não é grave, o próximo boss morto já define um campeão de novo normalmente
 
 ## Configuração inicial (passo a passo)
 

@@ -36,7 +36,7 @@ public class BossPlugin extends JavaPlugin {
         // Checa a agenda a cada minuto (20 ticks * 60 = 1200 ticks)
         getServer().getScheduler().runTaskTimer(this, () -> {
             if (scheduleManager.deveDispararAgora() && !bossManager.estaAtivo()) {
-                bossManager.iniciar(null);
+                bossManager.iniciarAleatorio(null);
             }
         }, 20L * 10, 20L * 60);
 

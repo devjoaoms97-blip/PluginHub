@@ -33,7 +33,19 @@ public class BossCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase(Locale.ROOT)) {
-            case "start" -> plugin.getBossManager().iniciar(sender);
+            case "start" -> {
+                if (args.length > 1) {
+                    plugin.getBossManager().iniciarPorId(args[1], sender);
+                } else {
+                    plugin.getBossManager().iniciarAleatorio(sender);
+                }
+            }
+
+            case "list" -> {
+                sender.sendMessage("§e§l--- Perfis de Boss ---");
+                plugin.getBossManager().getPerfis().forEach((id, perfil) -> sender.sendMessage(
+                        "§f" + id + " §7- " + perfil.getNome() + (perfil.isEspecial() ? " §c(especial)" : "")));
+            }
 
             case "stop" -> {
                 if (plugin.getBossManager().estaAtivo()) {
@@ -90,7 +102,7 @@ public class BossCommand implements CommandExecutor, TabCompleter {
 
             case "reload" -> {
                 plugin.reloadConfig();
-                plugin.getBossManager().recarregarFases();
+                plugin.getBossManager().recarregarPerfis();
                 plugin.getScheduleManager().recarregar();
                 sender.sendMessage("§aConfiguração recarregada.");
             }
@@ -118,7 +130,8 @@ public class BossCommand implements CommandExecutor, TabCompleter {
 
     private void enviarAjuda(CommandSender sender) {
         sender.sendMessage("§e§l--- Comandos do Boss ---");
-        sender.sendMessage("§f/boss start §7- inicia o boss manualmente");
+        sender.sendMessage("§f/boss start [id] §7- inicia um boss aleatório (ou um específico pelo id)");
+        sender.sendMessage("§f/boss list §7- lista os perfis de boss configurados");
         sender.sendMessage("§f/boss stop §7- remove o boss ativo");
         sender.sendMessage("§f/boss setlocal §7- define a arena na sua posição atual");
         sender.sendMessage("§f/boss additem <chance%> §7- adiciona item ao loot do chão (segure na mão)");
@@ -130,8 +143,14 @@ public class BossCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             List<String> opcoes = new ArrayList<>(List.of(
-                    "start", "stop", "setlocal", "additem", "addchampionitem", "reload"));
+                    "start", "list", "stop", "setlocal", "additem", "addchampionitem", "reload"));
             String digitado = args[0].toLowerCase(Locale.ROOT);
+            opcoes.removeIf(o -> !o.startsWith(digitado));
+            return opcoes;
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("start")) {
+            List<String> opcoes = new ArrayList<>(plugin.getBossManager().getPerfis().keySet());
+            String digitado = args[1].toLowerCase(Locale.ROOT);
             opcoes.removeIf(o -> !o.startsWith(digitado));
             return opcoes;
         }
