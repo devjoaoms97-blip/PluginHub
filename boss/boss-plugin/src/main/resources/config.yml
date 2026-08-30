@@ -1,14 +1,25 @@
 # Configuração do Boss Mundial
 
-# Tipos de mob possíveis (sorteia um a cada spawn se tiver mais de um)
+# Tipos de mob possíveis (sorteia um a cada spawn se tiver mais de um).
+# Dica: o CREEPER tem explosão própria de boss — veja a seção "explosao" abaixo.
 mobs-possiveis:
   - ZOMBIE
   - SKELETON
+  - CREEPER
 
 nome: "&4&l☠ Titã Sombrio ☠"
 vida-maxima: 500
 dano-ataque: 8
 escala: 3.0
+
+# Explosão do boss Creeper: dá dano SÓ em players (nada de mobs), não destrói
+# blocos e o boss NÃO morre nem perde vida ao explodir. O dano cai com a distância
+# (cheio no centro, zero na borda do raio).
+explosao:
+  raio: 8.0
+  dano-maximo: 25.0
+  cooldown-segundos: 6
+  knockback: 1.0
 
 mensagem-spawn: "&4&l⚠ Um chefe apareceu! Corram para enfrentá-lo! ⚠"
 mensagem-vitoria: "&6★ &e%jogador% &6derrotou o chefe e agora é o novo campeão! ★"

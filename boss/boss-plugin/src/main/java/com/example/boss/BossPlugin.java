@@ -2,6 +2,7 @@ package com.example.boss;
 
 import com.example.boss.command.BossCommand;
 import com.example.boss.listener.BossDeathListener;
+import com.example.boss.listener.BossExplosionListener;
 import com.example.boss.manager.ArenaManager;
 import com.example.boss.manager.BossManager;
 import com.example.boss.manager.ChampionManager;
@@ -32,6 +33,7 @@ public class BossPlugin extends JavaPlugin {
         getCommand("boss").setTabCompleter(comando);
 
         getServer().getPluginManager().registerEvents(new BossDeathListener(this), this);
+        getServer().getPluginManager().registerEvents(new BossExplosionListener(this), this);
 
         // Checa a agenda a cada minuto (20 ticks * 60 = 1200 ticks)
         getServer().getScheduler().runTaskTimer(this, () -> {
