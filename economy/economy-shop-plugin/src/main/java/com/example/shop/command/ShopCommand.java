@@ -106,7 +106,8 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             case "list" -> tratarList(sender);
             case "reload" -> {
                 plugin.reloadConfig();
-                sender.sendMessage("§aConfiguração recarregada.");
+                plugin.getShopManager().recarregar();
+                sender.sendMessage("§aConfiguração e itens recarregados (itens.yml lido do disco).");
             }
             default -> enviarAjudaAdmin(sender);
         }

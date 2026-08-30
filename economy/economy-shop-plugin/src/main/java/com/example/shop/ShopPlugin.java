@@ -65,9 +65,11 @@ public class ShopPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (shopManager != null) {
-            shopManager.salvar();
-        }
+        // NÃO salvar itens.yml aqui: o arquivo é editável à mão (o dono do servidor
+        // substitui direto com a lista de itens). Se salvássemos no desligamento,
+        // gravaríamos o estado antigo em memória por cima do arquivo novo, revertendo
+        // edições externas. A persistência continua garantida pelo PriceRegenTask
+        // (salva a cada 60s quando o preço mexe) e pelos saves de venda/compra.
         getLogger().info("EconomyShopPlugin desativado!");
     }
 

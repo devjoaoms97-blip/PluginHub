@@ -93,6 +93,12 @@ public class ShopManager {
         }
     }
 
+    /** Recarrega a lista de itens direto do itens.yml do disco (usado no /shop admin reload). */
+    public void recarregar() {
+        itens.clear();
+        carregar();
+    }
+
     private void carregar() {
         if (!arquivo.exists()) return;
 
