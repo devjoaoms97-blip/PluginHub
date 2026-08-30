@@ -1,0 +1,31 @@
+# Configuração da Limpeza Automática de Itens no Chão
+
+# A cada quantos segundos a limpeza automática roda.
+intervalo-segundos: 300
+
+# Em quais segundos antes da limpeza os jogadores recebem aviso no chat (contagem regressiva).
+# Pode ter quantos avisos quiser, em qualquer ordem.
+avisos-segundos: [60, 30, 10, 5]
+
+# Só remove itens que já estão no chão há pelo menos esse tempo, em segundos — evita apagar
+# algo que acabou de cair na frente do jogador (ex: bloco que ele acabou de minerar).
+idade-minima-segundos: 60
+
+# Não remove itens que foram renomeados (ex: na bigorna). Costuma ser sinal de que o jogador
+# se importa com aquele item (troféu de evento, item guardado de propósito, etc.)
+ignorar-itens-nomeados: true
+
+mundos:
+  # "todos" limpa em todos os mundos.
+  # "somente-listados" limpa só nos mundos da lista abaixo.
+  # "exceto-listados" limpa em todos os mundos, menos os da lista abaixo.
+  modo: todos
+  lista: []
+
+mensagens:
+  # Use '&' pros códigos de cor. {segundos} e {quantidade} são substituídos automaticamente.
+  aviso: "&e[Limpeza] Itens no chão serão removidos em &f{segundos}s&e! Pegue o que for importante."
+  executado: "&a[Limpeza] &f{quantidade} &aitens removidos do chão."
+  # Se false, a limpeza automática continua rodando, só não avisa no chat quando termina
+  # (o aviso de contagem regressiva antes de limpar continua acontecendo normalmente).
+  anunciar-execucao: true
