@@ -103,7 +103,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             case "additem" -> tratarAdditem(sender, args);
             case "removeitem" -> tratarRemoveitem(sender);
             case "resetprice" -> tratarResetprice(sender);
-            case "list" -> tratarList(sender);
+            case "list" -> tratarList(sender, args);
             case "reload" -> {
                 plugin.reloadConfig();
                 plugin.getShopManager().recarregar();
@@ -179,19 +179,75 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void tratarList(CommandSender sender) {
+    /**
+     * /shop admin list [piso]
+     *
+     * Sem argumento extra: lista todos os itens cadastrados, marcando com [NO PISO]
+     * os que estão travados no preço mínimo de venda, e mostra um resumo no final.
+     * Com "piso": mostra só os itens travados, pra facilitar auditoria rápida.
+     *
+     * Um item "travado no piso" é sinal de que a oferta de venda (passo * regen) não
+     * está acompanhando o volume vendido — considere baixar ainda mais o `minimo` desse
+     * item, ou aumentar `imposto.percentual-venda` no config.yml pra segurar a inflação.
+     */
+    private void tratarList(CommandSender sender, String[] args) {
         Map<Material, ShopItem> itens = plugin.getShopManager().getTodosItens();
         if (itens.isEmpty()) {
             sender.sendMessage("§7Nenhum item cadastrado na loja ainda.");
             return;
         }
-        sender.sendMessage("§e§l--- Itens da Loja (" + itens.size() + ") ---");
+
+        boolean somentePiso = args.length > 2 && args[2].equalsIgnoreCase("piso");
+
+        int travados = 0;
+        List<ShopItem> exibidos = new ArrayList<>();
         for (ShopItem item : itens.values()) {
+            if (estaNoPiso(item)) {
+                travados++;
+                exibidos.add(item);
+            } else if (!somentePiso) {
+                exibidos.add(item);
+            }
+        }
+
+        String titulo = somentePiso
+                ? "§e§l--- Itens travados no piso (" + travados + "/" + itens.size() + ") ---"
+                : "§e§l--- Itens da Loja (" + itens.size() + ") ---";
+        sender.sendMessage(titulo);
+
+        if (somentePiso && travados == 0) {
+            sender.sendMessage("§7Nenhum item travado no preço mínimo no momento.");
+            return;
+        }
+
+        for (ShopItem item : exibidos) {
+            String tagPiso = estaNoPiso(item) ? " §c[NO PISO]" : "";
             sender.sendMessage("§f" + item.getMaterial().name() + " §7[" + item.getCategoria() + "] - Compra: §f"
                     + formatar(item.getPrecoBase())
                     + " §7| Venda atual: §f" + formatar(item.getPrecoVendaAtual())
-                    + " §7(min " + formatar(item.getPrecoMinimo()) + " / max " + formatar(item.getPrecoMaximo()) + ")");
+                    + " §7(min " + formatar(item.getPrecoMinimo()) + " / max " + formatar(item.getPrecoMaximo()) + ")"
+                    + tagPiso);
         }
+
+        if (!somentePiso) {
+            sender.sendMessage("§7---");
+            if (travados > 0) {
+                double percentual = (100.0 * travados) / itens.size();
+                sender.sendMessage("§e⚠ §f" + travados + " §7de §f" + itens.size() + " §7itens ("
+                        + String.format(Locale.forLanguageTag("pt-BR"), "%.0f", percentual)
+                        + "%) estão travados no preço mínimo.");
+                sender.sendMessage("§7Oferta acima do que §fpasso§7/regeneração aguentam — considere baixar o §fminimo§7 "
+                        + "desses itens ou aumentar §fimposto.percentual-venda§7 no config.yml.");
+                sender.sendMessage("§7Dica: use §f/shop admin list piso §7pra ver só esses itens.");
+            } else {
+                sender.sendMessage("§aNenhum item travado no preço mínimo no momento.");
+            }
+        }
+    }
+
+    /** Um item está "no piso" quando o preço de venda atual já bateu no mínimo configurado. */
+    private boolean estaNoPiso(ShopItem item) {
+        return item.getPrecoVendaAtual() <= item.getPrecoMinimo();
     }
 
     private Player exigirJogador(CommandSender sender) {
@@ -219,6 +275,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/shop admin removeitem §7- remove o item na mão do catálogo");
         sender.sendMessage("§f/shop admin resetprice §7- reseta o preço de venda do item na mão pra âncora");
         sender.sendMessage("§f/shop admin list §7- lista todos os itens cadastrados e preços atuais");
+        sender.sendMessage("§f/shop admin list piso §7- lista só os itens travados no preço mínimo");
         sender.sendMessage("§f/shop admin reload §7- recarrega o config.yml");
         sender.sendMessage("§f/shop historico <item> §7- mostra o gráfico de tendência das últimas 24h");
     }
@@ -233,6 +290,9 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
             return List.of("additem", "removeitem", "resetprice", "list", "reload");
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("list")) {
+            return List.of("piso");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("historico")) {
             List<String> opcoes = new ArrayList<>();

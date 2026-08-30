@@ -61,6 +61,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             case "cancelar" -> cancelar(jogador, resto);
             case "historico", "extrato" -> historico(jogador, resto);
             case "qrcode" -> qrcode(jogador, resto);
+            case "admin" -> admin(jogador, resto);
             default -> enviarAjuda(jogador);
         }
 
@@ -98,17 +99,22 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        double taxa = plugin.calcularTaxaTransacao(valor);
+        double valorLiquido = valor - taxa;
+
         econ.withdrawPlayer(pagador, valor);
-        econ.depositPlayer(alvo, valor);
+        econ.depositPlayer(alvo, valorLiquido);
         plugin.getChargeManager().registrarTransacao(pagador.getUniqueId(), alvo.getUniqueId(), valor, "Pagamento");
 
         pagador.sendMessage(cor("§aVocê pagou §f" + formatarValor(valor) + " §apara §f" + alvo.getName()
-                + (motivo != null ? " §7(" + motivo + ")" : "")));
+                + (motivo != null ? " §7(" + motivo + ")" : "")
+                + (taxa > 0 ? " §7(taxa: " + formatarValor(taxa) + ")" : "")));
 
         if (alvo.isOnline()) {
             Player alvoOnline = alvo.getPlayer();
-            alvoOnline.sendMessage(cor("§aVocê recebeu §f" + formatarValor(valor) + " §ade §f" + pagador.getName()
-                    + (motivo != null ? " §7(" + motivo + ")" : "")));
+            alvoOnline.sendMessage(cor("§aVocê recebeu §f" + formatarValor(valorLiquido) + " §ade §f" + pagador.getName()
+                    + (motivo != null ? " §7(" + motivo + ")" : "")
+                    + (taxa > 0 ? " §7(taxa descontada: " + formatarValor(taxa) + ")" : "")));
         }
     }
 
@@ -186,16 +192,21 @@ public class PixCommand implements CommandExecutor, TabCompleter {
 
         OfflinePlayer cobrador = Bukkit.getOfflinePlayer(charge.getCobradorId());
 
+        double taxa = plugin.calcularTaxaTransacao(charge.getValor());
+        double valorLiquido = charge.getValor() - taxa;
+
         econ.withdrawPlayer(jogador, charge.getValor());
-        econ.depositPlayer(cobrador, charge.getValor());
+        econ.depositPlayer(cobrador, valorLiquido);
         plugin.getChargeManager().removerCobranca(charge.getCobradorId(), charge.getCobradoId());
         plugin.getChargeManager().registrarTransacao(jogador.getUniqueId(), cobrador.getUniqueId(), charge.getValor(), "Cobrança aceita");
 
-        jogador.sendMessage(cor("§aVocê pagou a cobrança de §f" + cobrador.getName() + " §a(§f" + formatarValor(charge.getValor()) + "§a)"));
+        jogador.sendMessage(cor("§aVocê pagou a cobrança de §f" + cobrador.getName() + " §a(§f" + formatarValor(charge.getValor()) + "§a)"
+                + (taxa > 0 ? " §7(taxa: " + formatarValor(taxa) + ")" : "")));
 
         if (cobrador.isOnline()) {
-            cobrador.getPlayer().sendMessage(cor("§a" + jogador.getName() + " aceitou e pagou sua cobrança de §f"
-                    + formatarValor(charge.getValor())));
+            cobrador.getPlayer().sendMessage(cor("§a" + jogador.getName() + " aceitou e pagou sua cobrança. Você recebeu §f"
+                    + formatarValor(valorLiquido)
+                    + (taxa > 0 ? " §7(taxa descontada: " + formatarValor(taxa) + ")" : "")));
         }
     }
 
@@ -333,6 +344,26 @@ public class PixCommand implements CommandExecutor, TabCompleter {
     }
 
     // ---------------------------------------------------------------------
+    // /pix admin reload
+    // ---------------------------------------------------------------------
+    private void admin(Player jogador, String[] args) {
+        if (!jogador.hasPermission("pix.admin")) {
+            jogador.sendMessage(cor("§cVocê não tem permissão pra administrar o Pix."));
+            return;
+        }
+
+        if (args.length < 1 || !args[0].equalsIgnoreCase("reload")) {
+            jogador.sendMessage(cor("§cUso: §f/pix admin reload"));
+            return;
+        }
+
+        plugin.reloadConfig();
+        double percentual = plugin.getConfig().getDouble("taxa.percentual-transacao", 1.0);
+        jogador.sendMessage(cor("§aConfiguração recarregada. §7Taxa de transação atual: §f"
+                + String.format(Locale.forLanguageTag("pt-BR"), "%.2f", percentual) + "%"));
+    }
+
+    // ---------------------------------------------------------------------
     // Ajuda
     // ---------------------------------------------------------------------
     private void enviarAjuda(Player jogador) {
@@ -345,6 +376,9 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage(cor("§f/pix pendentes §7- lista cobranças em aberto"));
         jogador.sendMessage(cor("§f/pix historico [qtd] §7- suas últimas transações"));
         jogador.sendMessage(cor("§f/pix qrcode <valor> [motivo] §7- anuncia um pagamento pra qualquer um clicar"));
+        if (jogador.hasPermission("pix.admin")) {
+            jogador.sendMessage(cor("§f/pix admin reload §7- (staff) recarrega o config.yml"));
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -407,6 +441,9 @@ public class PixCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             opcoes.addAll(Arrays.asList("pagar", "receber", "aceitar", "recusar", "pendentes", "cancelar", "historico", "qrcode"));
+            if (sender.hasPermission("pix.admin")) {
+                opcoes.add("admin");
+            }
         } else if (args.length == 2) {
             String sub = args[0].toLowerCase(Locale.ROOT);
             if (sub.equals("pagar") || sub.equals("receber") || sub.equals("cobrar")
@@ -414,6 +451,8 @@ public class PixCommand implements CommandExecutor, TabCompleter {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     opcoes.add(p.getName());
                 }
+            } else if (sub.equals("admin")) {
+                opcoes.add("reload");
             }
         }
 

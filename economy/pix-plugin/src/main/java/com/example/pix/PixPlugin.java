@@ -11,6 +11,8 @@ public class PixPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+
         this.chargeManager = new ChargeManager(this);
 
         if (!setupEconomy()) {
@@ -50,5 +52,20 @@ public class PixPlugin extends JavaPlugin {
 
     public ChargeManager getChargeManager() {
         return chargeManager;
+    }
+
+    /**
+     * Calcula a taxa (em valor monetário, não percentual) cobrada sobre uma transação de
+     * "valor" entre jogadores, de acordo com {@code taxa.percentual-transacao} e
+     * {@code taxa.minimo} no config.yml. A taxa nunca ultrapassa o próprio valor da
+     * transação (evita zerar ou inverter o pagamento em transações muito pequenas).
+     */
+    public double calcularTaxaTransacao(double valor) {
+        double percentual = getConfig().getDouble("taxa.percentual-transacao", 1.0);
+        double minimo = getConfig().getDouble("taxa.minimo", 0.0);
+
+        double taxa = valor * (percentual / 100.0);
+        taxa = Math.max(taxa, minimo);
+        return Math.min(taxa, valor);
     }
 }

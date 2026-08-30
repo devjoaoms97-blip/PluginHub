@@ -23,7 +23,8 @@ Loja do servidor com preço de venda dinâmico (oferta e demanda), categorias, h
 | `/shop admin additem <categoria> <base> <margem%> <min> <max> <passo%>` | (staff) Cadastra o item na mão |
 | `/shop admin removeitem` | (staff) Remove o item na mão |
 | `/shop admin resetprice` | (staff) Reseta o preço de venda do item na mão |
-| `/shop admin list` | (staff) Lista tudo cadastrado |
+| `/shop admin list` | (staff) Lista tudo cadastrado, marcando itens travados no preço mínimo |
+| `/shop admin list piso` | (staff) Lista só os itens travados no preço mínimo |
 | `/shop admin reload` | (staff) Recarrega o config.yml |
 
 ### Na GUI
@@ -31,7 +32,7 @@ Loja do servidor com preço de venda dinâmico (oferta e demanda), categorias, h
 - Dentro da categoria: **clique esquerdo** vende 1, **shift+esquerdo** vende tudo, **clique direito** compra 1, **shift+direito** compra 64
 - Botão de baú (canto inferior) volta pra tela de categorias
 
-## As 4 novidades desta rodada
+## As 5 novidades desta rodada
 
 ### 1. Histórico de preços (gráfico)
 Como não dá pra desenhar um gráfico "de verdade" numa interface de Minecraft, uso uma **sparkline em texto** (barrinhas Unicode ▁▂▃▄▅▆▇█ que sobem e descem representando a variação). Uma tarefa tira uma "foto" do preço de cada item a cada `historico.intervalo-minutos` (padrão: 15 min), guardando os últimos pontos das últimas 24h, com persistência em `historico.yml`.
@@ -52,6 +53,10 @@ Pra desligar essa integração sem desinstalar o Pix: `integracao.pix: false` no
 
 ### 4. Imposto sobre vendas (sinkhole)
 Uma pequena porcentagem de toda venda **desaparece** (não vai pra ninguém, nem pro "caixa" da loja) — isso ajuda a controlar a inflação do servidor com o tempo, tirando dinheiro de circulação aos poucos. Configurável em `imposto.percentual-venda` (padrão: 2%). O jogador vê no chat quanto foi de imposto em cada venda.
+
+### 5. Diagnóstico de itens travados no piso
+
+`/shop admin list` agora marca com `[NO PISO]` todo item cujo preço de venda atual já bateu no `minimo` configurado, e mostra um resumo (quantos itens e qual %) no final. Isso é um sinal de que a oferta de venda daquele item está acima do que `passo` + regeneração conseguem absorver — ou seja, o preço está permanentemente "no chão" e o mínimo provavelmente está alto demais (ou o imposto está baixo demais) pra segurar aquele volume. Use `/shop admin list piso` pra ver só os itens nessa situação, sem precisar rolar a lista inteira.
 
 ## Requisitos
 

@@ -14,6 +14,24 @@ Sistema de pagamentos entre jogadores, com pagamento direto e cobranças aceitá
 | `/pix pendentes` | Lista cobranças enviadas e recebidas em aberto |
 | `/pix historico [quantidade]` | Mostra suas últimas transações (padrão: 10, máx: 20) |
 | `/pix qrcode <valor> [motivo]` | Anuncia publicamente um pagamento — qualquer um pode clicar para te pagar |
+| `/pix admin reload` | (staff) Recarrega o `config.yml` (ex: depois de mudar a taxa) |
+
+## Taxa de transação (sinkhole)
+
+Toda transação entre jogadores (`/pix pagar` e cobranças aceitas via `/pix aceitar`) agora desconta uma pequena taxa, configurável em `config.yml`:
+
+```yaml
+taxa:
+  percentual-transacao: 1.0   # % descontado de cada transação
+  minimo: 0.0                 # taxa mínima em R$, opcional
+```
+
+- Quem paga (`/pix pagar`) sempre perde o valor cheio da conta.
+- Quem recebe fica com `valor − taxa`. O dinheiro da taxa **desaparece** da economia — não vai pro servidor nem pra ninguém — funcionando como mais um sink, igual ao imposto sobre venda do `EconomyShopPlugin`.
+- `0` em `percentual-transacao` desativa a taxa completamente.
+- `/pix qrcode` usa o mesmo caminho de código de `/pix pagar` (é um botão clicável que roda `/pix pagar`), então já sai taxado automaticamente sem nenhuma mudança extra.
+
+**Simplificação atual:** o histórico (`/pix historico`) ainda registra o valor bruto da transação, não o valor líquido recebido — a taxa aparece só na mensagem de chat no momento da transação, não fica gravada por transação individual no extrato. Se quiser ver a taxa no histórico também, dá pra estender `TransacaoRegistro` pra guardar os dois valores; é só pedir.
 
 ## Requisitos
 
@@ -40,6 +58,5 @@ As cobranças e o histórico ficam **em memória** — se o servidor reiniciar, 
 - **`/pix agendar <jogador> <valor> <intervalo>`** — pagamentos recorrentes automáticos (ex: aluguel de terreno toda semana)
 - **`/pix limite`** — limite diário de transferência, pra evitar abuso/fraude entre contas
 - **Persistência** — salvar cobranças e histórico em arquivo, sobrevivendo a reinícios do servidor
-- **Taxa de transação** — cobrar uma pequena porcentagem em cada pix, como uma sinkhole de economia (ajuda a controlar inflação no servidor)
 - **Notificação por som/título** — tocar um som e mostrar um título na tela quando alguém recebe um pagamento ou cobrança
 - **Log administrativo** — comando `/pix admin log <jogador>` pra staff investigar transações suspeitas

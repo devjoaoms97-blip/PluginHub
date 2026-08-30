@@ -17,3 +17,6 @@ permissions:
   pix.usar:
     description: Permite usar o sistema de Pix.
     default: true
+  pix.admin:
+    description: Permite recarregar a configuração do Pix (ex: taxa de transação).
+    default: op
