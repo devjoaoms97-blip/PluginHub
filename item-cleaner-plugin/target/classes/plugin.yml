@@ -1,0 +1,18 @@
+name: ItemCleanerPlugin
+version: '1.0.0'
+main: com.example.itemcleaner.ItemCleanerPlugin
+api-version: '26.2'
+author: Você
+description: Limpa periodicamente itens dropados no chão pra reduzir lag, com aviso em contagem regressiva.
+
+commands:
+  limparchao:
+    description: Limpa itens do chão manualmente, ou mostra/recarrega a limpeza automática.
+    usage: "Uso: /limparchao [agora|status|reload]"
+    permission: itemcleaner.admin
+    permission-message: "§cVocê não tem permissão para gerenciar a limpeza de itens."
+
+permissions:
+  itemcleaner.admin:
+    description: Permite gerenciar a limpeza automática de itens no chão.
+    default: op

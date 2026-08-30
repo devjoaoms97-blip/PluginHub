@@ -1,0 +1,13 @@
+# Configuração do PixPlugin
+
+taxa:
+  # Percentual descontado de cada transação entre jogadores (/pix pagar e cobranças aceitas
+  # via /pix aceitar). O valor da taxa simplesmente desaparece da economia — não vai pra
+  # ninguém, nem pro "caixa" de ninguém — funcionando como mais um sink pra ajudar a
+  # controlar a inflação do servidor. 0 desativa.
+  percentual-transacao: 1.0
+
+  # Valor mínimo de taxa cobrado por transação, na moeda do servidor. Evita que pagamentos
+  # de centavos passem sem custo nenhum por causa de arredondamento. 0 desativa esse piso
+  # (a taxa mínima nunca é maior que o próprio valor da transação).
+  minimo: 0.0
