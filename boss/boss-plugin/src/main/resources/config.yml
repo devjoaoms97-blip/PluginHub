@@ -7,6 +7,15 @@ vida-maxima: 5000
 dano-ataque: 18
 escala: 9.0
 
+# Explosão do boss Creeper: dá dano SÓ em players (nada de mobs), não destrói
+# blocos e o boss NÃO morre nem perde vida ao explodir. O dano cai com a distância
+# (cheio no centro, zero na borda do raio).
+explosao:
+  raio: 8.0
+  dano-maximo: 25.0
+  cooldown-segundos: 6
+  knockback: 1.0
+
 mensagem-spawn: "&4&l⚠ Um chefe apareceu! Corram para enfrentá-lo! ⚠"
 mensagem-vitoria: "&6★ &e%jogador% &6derrotou o chefe e agora é o novo campeão! ★"
 
