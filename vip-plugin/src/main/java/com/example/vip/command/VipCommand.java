@@ -4,6 +4,12 @@ import com.example.vip.VipPlugin;
 import com.example.vip.model.VipAtivo;
 import com.example.vip.model.VipCode;
 import com.example.vip.model.VipTier;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -300,8 +306,38 @@ public class VipCommand implements CommandExecutor, TabCompleter {
 
         player.sendMessage("§aCódigo §fVIP-" + code.getCodigo() + " §a(" + plugin.getNomeExibicao(code.getTier())
                 + " §a, " + code.getDias() + " dias) colocado à venda por §f" + formatarCoins(preco) + "§a.");
-        player.sendMessage("§7Repasse o código pra quem for comprar — a pessoa resgata com §f/vip resgatar VIP-" + code.getCodigo());
         player.sendMessage("§7Mudou de ideia? §f/vip cancelarvenda");
+
+        anunciarVenda(player, code);
+    }
+
+    /** Anuncia publicamente um botão clicável que roda `/vip resgatar <codigo>` — igual o `/pix qrcode`. */
+    private void anunciarVenda(Player vendedor, VipCode code) {
+        if (!plugin.getConfig().getBoolean("revenda.anunciar-publicamente", true)) {
+            avisarApenasVendedor(vendedor, code);
+            return;
+        }
+
+        Component tagTier = LegacyComponentSerializer.legacySection().deserialize(plugin.getNomeExibicao(code.getTier()));
+
+        Component botao = Component.text("[ COMPRAR ]")
+                .color(NamedTextColor.GREEN)
+                .decorate(TextDecoration.BOLD)
+                .clickEvent(ClickEvent.runCommand("/vip resgatar " + code.getCodigo()))
+                .hoverEvent(HoverEvent.showText(Component.text("Clique para comprar por " + formatarCoins(code.getPreco()))));
+
+        Component mensagem = Component.text(vendedor.getName() + " está vendendo VIP ")
+                .color(NamedTextColor.AQUA)
+                .append(tagTier)
+                .append(Component.text(" (" + code.getDias() + " dias) por " + formatarCoins(code.getPreco()) + ":  ")
+                        .color(NamedTextColor.AQUA))
+                .append(botao);
+
+        Bukkit.broadcast(mensagem);
+    }
+
+    private void avisarApenasVendedor(Player vendedor, VipCode code) {
+        vendedor.sendMessage("§7Repasse o código pra quem for comprar — a pessoa resgata com §f/vip resgatar VIP-" + code.getCodigo());
     }
 
     private void tratarCancelarVenda(CommandSender sender) {

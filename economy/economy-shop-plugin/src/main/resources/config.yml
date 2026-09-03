@@ -22,3 +22,25 @@ historico:
 integracao:
   # Se true e o PixPlugin estiver instalado, toda compra/venda também aparece no /pix historico do jogador
   pix: true
+
+vip-descontos:
+  # Desconto na compra (/buy) por permissão — desacoplado do VipPlugin, funciona com qualquer
+  # plugin de permissões. Se o VipPlugin estiver instalado, ele já concede automaticamente o
+  # grupo do LuckPerms certo pro tier do jogador; quem decide se esse grupo tem a permissão
+  # abaixo é o próprio LuckPerms (configure isso ao configurar os grupos vip_bronze/vip_prata/
+  # vip_ouro/vip_diamante — veja o README do vip-plugin).
+  #
+  # IMPORTANTE: é uma LISTA, não um mapa de "permissao: percentual" — chaves com ponto (tipo
+  # "vip.desconto.diamante") viram seção aninhada quando o Bukkit carrega YAML, então um mapa
+  # quebraria silenciosamente. Deixa nesse formato de lista mesmo.
+  ativado: true
+  permissoes:
+    - permissao: "vip.desconto.diamante"
+      percentual: 20
+    - permissao: "vip.desconto.ouro"
+      percentual: 15
+    - permissao: "vip.desconto.prata"
+      percentual: 10
+    - permissao: "vip.desconto.bronze"
+      percentual: 5
+

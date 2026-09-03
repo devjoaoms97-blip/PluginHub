@@ -68,7 +68,7 @@ perks:
   particulas: true
   warp: true
 
-# Destino do /vipwarp — uma área exclusiva pra quem tem qualquer tier de VIP com o perk "warp".
+# Destino do /vip warp — uma área exclusiva pra quem tem qualquer tier de VIP com o perk "warp".
 warp-vip:
   mundo: world
   x: 0
@@ -79,8 +79,13 @@ warp-vip:
 verificacao-expiracao-minutos: 5
 
 revenda:
-  # Permite jogadores venderem o próprio VIP pra outros jogadores por coins (/vip vender).
+  # Permite jogadores revenderem, por coins, um código de VIP que eles ainda não resgataram
+  # (ex: recebido da staff numa compra no Discord) — nunca um VIP já ativo (/vip vender).
   ativado: true
+  # Quando um jogador coloca um código à venda, anuncia pra TODO o servidor uma mensagem
+  # clicável (igual o /pix qrcode) que já roda /vip resgatar na hora do clique. Se false, o
+  # vendedor só recebe o código em privado pra repassar manualmente (ex: combinado no Discord).
+  anunciar-publicamente: true
   # Percentual descontado de toda revenda entre jogadores — o dinheiro simplesmente some,
   # não vai pra ninguém. Funciona como sink, igual o imposto da loja e a taxa do Pix: sem
   # isso, comprar código de staff e revender pro servidor inteiro viraria uma forma de
