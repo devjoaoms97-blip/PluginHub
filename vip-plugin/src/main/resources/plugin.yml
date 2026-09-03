@@ -1,0 +1,47 @@
+name: VipPlugin
+version: '1.0.0'
+main: com.example.vip.VipPlugin
+api-version: '26.2'
+author: Você
+description: Sistema de VIPs por tempo (Bronze/Prata/Ouro/Diamante) via grupos do LuckPerms, com perks (fly, heal, feed, kit, partículas, warp), desconto na loja e resgate por código pra vender fora do Minecraft (Discord/site).
+softdepend: [LuckPerms, EconomyShopPlugin, Vault]
+
+commands:
+  vip:
+    description: Sistema de VIPs — perks, consulta e resgate de código pros jogadores; gestão pra staff.
+    usage: "Uso: /vip <check|tiers|resgatar|vender|cancelarvenda|fly|heal|feed|kit|particula|warp|add|remove|list|reload|gerarcodigo|codigos|revogarcodigo>"
+
+permissions:
+  vip.admin:
+    description: Permite conceder, remover, listar VIPs e gerar/revogar códigos de resgate.
+    default: op
+  vip.perk.fly:
+    description: Concede o perk de voo (/vip fly). Dê essa permissão nos grupos vip_* pelo LuckPerms.
+    default: false
+  vip.perk.heal:
+    description: Concede o perk de cura instantânea (/vip heal). Dê essa permissão nos grupos vip_* pelo LuckPerms.
+    default: false
+  vip.perk.feed:
+    description: Concede o perk de restaurar fome (/vip feed). Dê essa permissão nos grupos vip_* pelo LuckPerms.
+    default: false
+  vip.perk.kit:
+    description: Concede o perk de kit (/vip kit). Dê essa permissão nos grupos vip_* pelo LuckPerms.
+    default: false
+  vip.perk.particulas:
+    description: Concede o perk de partículas (/vip particula). Dê essa permissão nos grupos vip_* pelo LuckPerms.
+    default: false
+  vip.perk.warp:
+    description: Concede o perk de warp exclusivo (/vip warp). Dê essa permissão nos grupos vip_* pelo LuckPerms.
+    default: false
+  vip.desconto.bronze:
+    description: Desconto de VIP Bronze na loja (usado pelo EconomyShopPlugin, se instalado).
+    default: false
+  vip.desconto.prata:
+    description: Desconto de VIP Prata na loja (usado pelo EconomyShopPlugin, se instalado).
+    default: false
+  vip.desconto.ouro:
+    description: Desconto de VIP Ouro na loja (usado pelo EconomyShopPlugin, se instalado).
+    default: false
+  vip.desconto.diamante:
+    description: Desconto de VIP Diamante na loja (usado pelo EconomyShopPlugin, se instalado).
+    default: false

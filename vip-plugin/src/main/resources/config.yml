@@ -1,0 +1,92 @@
+# Configuração do VipPlugin
+#
+# IMPORTANTE: este plugin só cuida de QUEM tem VIP, por quanto tempo, e adiciona/remove o
+# jogador do grupo certo no LuckPerms (definido em "grupo-luckperms" abaixo). As permissões
+# que cada grupo realmente concede (perks, desconto na loja, prefixo, etc.) são configuradas
+# no PRÓPRIO LuckPerms — veja o README pra copiar os comandos prontos de setup.
+
+tiers:
+  BRONZE:
+    nome-exibicao: "&7[Bronze]"
+    grupo-luckperms: vip_bronze
+    desconto-loja-percentual: 5
+    kit:
+      - "IRON_INGOT:8"
+      - "BREAD:16"
+      - "GOLDEN_APPLE:1"
+    particulas-disponiveis: [FLAME, HEART]
+    cooldown-kit-horas: 24
+    cooldown-heal-minutos: 30
+    cooldown-feed-minutos: 15
+
+  PRATA:
+    nome-exibicao: "&f[&bPrata&f]"
+    grupo-luckperms: vip_prata
+    desconto-loja-percentual: 10
+    kit:
+      - "DIAMOND:2"
+      - "GOLDEN_APPLE:2"
+      - "COOKED_BEEF:32"
+    particulas-disponiveis: [FLAME, HEART, HAPPY_VILLAGER]
+    cooldown-kit-horas: 24
+    cooldown-heal-minutos: 20
+    cooldown-feed-minutos: 10
+
+  OURO:
+    nome-exibicao: "&6[Ouro]"
+    grupo-luckperms: vip_ouro
+    desconto-loja-percentual: 15
+    kit:
+      - "DIAMOND:4"
+      - "GOLDEN_APPLE:4"
+      - "ENDER_PEARL:8"
+    particulas-disponiveis: [FLAME, HEART, HAPPY_VILLAGER, PORTAL]
+    cooldown-kit-horas: 12
+    cooldown-heal-minutos: 10
+    cooldown-feed-minutos: 5
+
+  DIAMANTE:
+    nome-exibicao: "&b[Diamante]"
+    grupo-luckperms: vip_diamante
+    desconto-loja-percentual: 20
+    kit:
+      - "DIAMOND_BLOCK:2"
+      - "NETHERITE_INGOT:1"
+      - "GOLDEN_APPLE:8"
+    particulas-disponiveis: [FLAME, HEART, HAPPY_VILLAGER, PORTAL, TOTEM_OF_UNDYING]
+    cooldown-kit-horas: 6
+    cooldown-heal-minutos: 5
+    cooldown-feed-minutos: 0
+
+# Liga/desliga cada perk globalmente, independente de permissão. Útil pra desativar um perk
+# temporariamente (ex: manutenção) sem mexer nos grupos do LuckPerms.
+perks:
+  fly: true
+  heal: true
+  feed: true
+  kit: true
+  particulas: true
+  warp: true
+
+# Destino do /vipwarp — uma área exclusiva pra quem tem qualquer tier de VIP com o perk "warp".
+warp-vip:
+  mundo: world
+  x: 0
+  y: 100
+  z: 0
+
+# A cada quantos minutos o plugin varre os VIPs ativos e remove quem já expirou.
+verificacao-expiracao-minutos: 5
+
+revenda:
+  # Permite jogadores venderem o próprio VIP pra outros jogadores por coins (/vip vender).
+  ativado: true
+  # Percentual descontado de toda revenda entre jogadores — o dinheiro simplesmente some,
+  # não vai pra ninguém. Funciona como sink, igual o imposto da loja e a taxa do Pix: sem
+  # isso, comprar código de staff e revender pro servidor inteiro viraria uma forma de
+  # imprimir coins do nada. 0 desativa.
+  taxa-percentual: 10.0
+
+mensagens:
+  vip-adicionado: "&aVocê recebeu o VIP &f{tier}&a! Válido até &f{data}&a."
+  vip-expirado: "&cSeu VIP &f{tier}&c expirou. Fale com a staff pra renovar!"
