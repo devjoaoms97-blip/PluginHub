@@ -71,7 +71,7 @@ public class BuyCommand implements CommandExecutor, TabCompleter {
 
         double custoTotal = item.getPrecoBase() * quantidade;
 
-        int descontoPercentual = calcularDescontoVip(jogador);
+        int descontoPercentual = plugin.calcularDescontoVip(jogador);
         if (descontoPercentual > 0) {
             custoTotal = custoTotal * (1 - descontoPercentual / 100.0);
         }
@@ -98,46 +98,6 @@ public class BuyCommand implements CommandExecutor, TabCompleter {
                 + "§a.");
 
         return true;
-    }
-
-    /**
-     * Desconto de VIP na compra, calculado só por permissão — sem nenhuma dependência do
-     * VipPlugin em tempo de compilação. Se o VipPlugin estiver instalado, ele concede o
-     * grupo do LuckPerms correspondente ao tier do jogador, e é o próprio LuckPerms quem
-     * decide se esse grupo tem a permissão `vip.desconto.<tier>` configurada (veja
-     * `vip-descontos.permissoes` no config.yml). Sem VipPlugin/LuckPerms instalado, ou sem
-     * nenhuma dessas permissões concedidas, o desconto simplesmente fica em 0%.
-     *
-     * `vip-descontos.permissoes` é uma LISTA de mapas ({@code permissao}/{@code percentual}),
-     * não um mapa direto de "permissao: percentual" — chaves de mapa com ponto (tipo
-     * "vip.desconto.diamante") viram seção aninhada quando o Bukkit carrega o YAML, então um
-     * mapa quebraria essa leitura silenciosamente.
-     */
-    private int calcularDescontoVip(Player jogador) {
-        if (!plugin.getConfig().getBoolean("vip-descontos.ativado", true)) {
-            return 0;
-        }
-
-        List<?> permissoes = plugin.getConfig().getList("vip-descontos.permissoes");
-        if (permissoes == null) {
-            return 0;
-        }
-
-        int maiorDesconto = 0;
-        for (Object item : permissoes) {
-            if (!(item instanceof Map<?, ?> mapa)) {
-                continue;
-            }
-            Object permissao = mapa.get("permissao");
-            Object percentual = mapa.get("percentual");
-            if (permissao == null || percentual == null) {
-                continue;
-            }
-            if (jogador.hasPermission(permissao.toString())) {
-                maiorDesconto = Math.max(maiorDesconto, ((Number) percentual).intValue());
-            }
-        }
-        return maiorDesconto;
     }
 
     private String nomeAmigavel(Material material) {

@@ -4,6 +4,7 @@ import com.example.shop.ShopPlugin;
 import com.example.shop.model.ShopItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -62,7 +63,7 @@ public class ShopGUI {
     // ------------------------------------------------------------------
     // Tela de itens de uma categoria (paginada)
     // ------------------------------------------------------------------
-    public Inventory montarItens(String categoria, int pagina) {
+    public Inventory montarItens(String categoria, int pagina, Player jogador) {
         List<ShopItem> todos = plugin.getShopManager().getItensDaCategoria(categoria);
         int totalPaginas = Math.max(1, (int) Math.ceil(todos.size() / (double) ITENS_POR_PAGINA));
         pagina = Math.max(0, Math.min(pagina, totalPaginas - 1));
@@ -75,7 +76,7 @@ public class ShopGUI {
         int fim = Math.min(inicio + ITENS_POR_PAGINA, todos.size());
 
         for (int i = inicio; i < fim; i++) {
-            inv.setItem(i - inicio, criarItemVisual(todos.get(i)));
+            inv.setItem(i - inicio, criarItemVisual(todos.get(i), jogador));
         }
 
         inv.setItem(45, criarBotaoNavegacao("§a◀ Categorias", Material.CHEST));
@@ -94,15 +95,21 @@ public class ShopGUI {
         return TITULO_CATEGORIAS + " §7- " + categoria;
     }
 
-    private ItemStack criarItemVisual(ShopItem item) {
+    private ItemStack criarItemVisual(ShopItem item, Player jogador) {
         ItemStack visual = new ItemStack(item.getMaterial());
         ItemMeta meta = visual.getItemMeta();
 
         meta.setDisplayName("§e" + nomeAmigavel(item.getMaterial()));
 
+        int desconto = jogador == null ? 0 : plugin.calcularDescontoVip(jogador);
+        double precoCompra = item.getPrecoBase();
+        if (desconto > 0) {
+            precoCompra = precoCompra * (1 - desconto / 100.0);
+        }
+
         List<String> lore = new ArrayList<>();
         lore.add("");
-        lore.add("§aComprar: §f" + formatar(item.getPrecoBase()) + " §7(fixo)");
+        lore.add("§aComprar: §f" + formatar(precoCompra) + (desconto > 0 ? " §7(com " + desconto + "% de VIP)" : " §7(fixo)"));
         lore.add("§cVender: §f" + formatar(item.getPrecoVendaAtual()) + " §7(varia)");
         lore.add("§7  min " + formatar(item.getPrecoMinimo()) + " / max " + formatar(item.getPrecoMaximo()));
         lore.add("");

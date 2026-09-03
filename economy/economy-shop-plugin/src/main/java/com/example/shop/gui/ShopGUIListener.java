@@ -35,7 +35,7 @@ public class ShopGUIListener implements Listener {
 
         if (holder.getTela() == ShopGUIHolder.Tela.CATEGORIAS) {
             String categoria = ChatColor.stripColor(clicado.getItemMeta().getDisplayName());
-            jogador.openInventory(plugin.getShopGUI().montarItens(categoria, 0));
+            jogador.openInventory(plugin.getShopGUI().montarItens(categoria, 0, jogador));
             return;
         }
 
@@ -49,11 +49,11 @@ public class ShopGUIListener implements Listener {
             return;
         }
         if (clicado.getType() == Material.ARROW && event.getSlot() == 46) {
-            jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina() - 1));
+            jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina() - 1, jogador));
             return;
         }
         if (clicado.getType() == Material.ARROW && event.getSlot() == 52) {
-            jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina() + 1));
+            jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina() + 1, jogador));
             return;
         }
 
@@ -72,7 +72,7 @@ public class ShopGUIListener implements Listener {
         }
 
         // Reabre a GUI atualizada com o preço já ajustado
-        jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina()));
+        jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina(), jogador));
     }
 
     private void venderQuantidade(Player jogador, ShopItem item, int quantidade) {
@@ -114,6 +114,11 @@ public class ShopGUIListener implements Listener {
         Economy econ = plugin.getEconomy();
         double custoTotal = item.getPrecoBase() * quantidade;
 
+        int descontoPercentual = plugin.calcularDescontoVip(jogador);
+        if (descontoPercentual > 0) {
+            custoTotal = custoTotal * (1 - descontoPercentual / 100.0);
+        }
+
         if (!econ.has(jogador, custoTotal)) {
             jogador.sendMessage("§cSaldo insuficiente. Custo: §f" + formatar(custoTotal));
             return;
@@ -128,7 +133,9 @@ public class ShopGUIListener implements Listener {
         plugin.getPixIntegration().registrarTransacao(jogador, custoTotal, false, "Compra na loja");
 
         jogador.sendMessage("§aComprou §f" + quantidade + "x " + item.getMaterial().name()
-                + " §apor §f" + formatar(custoTotal) + "§a.");
+                + " §apor §f" + formatar(custoTotal)
+                + (descontoPercentual > 0 ? " §7(desconto de VIP: " + descontoPercentual + "%)" : "")
+                + "§a.");
     }
 
     private int contarNoInventario(Player jogador, Material material) {

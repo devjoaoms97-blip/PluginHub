@@ -10,8 +10,12 @@ import com.example.shop.manager.PriceRegenTask;
 import com.example.shop.manager.ShopManager;
 import com.example.shop.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.Map;
 
 public class ShopPlugin extends JavaPlugin {
 
@@ -83,6 +87,46 @@ public class ShopPlugin extends JavaPlugin {
         }
         economy = rsp.getProvider();
         return economy != null;
+    }
+
+    /**
+     * Desconto de VIP na compra, calculado só por permissão — sem nenhuma dependência do
+     * VipPlugin em tempo de compilação. Se o VipPlugin estiver instalado, ele concede o
+     * grupo do LuckPerms correspondente ao tier do jogador, e é o próprio LuckPerms quem
+     * decide se esse grupo tem a permissão `vip.desconto.<tier>` configurada (veja
+     * `vip-descontos.permissoes` no config.yml). Sem VipPlugin/LuckPerms instalado, ou sem
+     * nenhuma dessas permissões concedidas, o desconto simplesmente fica em 0%.
+     * <p>
+     * `vip-descontos.permissoes` é uma LISTA de mapas ({@code permissao}/{@code percentual}),
+     * não um mapa direto de "permissao: percentual" — chaves de mapa com ponto (tipo
+     * "vip.desconto.diamante") viram seção aninhada quando o Bukkit carrega o YAML, então um
+     * mapa quebraria essa leitura silenciosamente.
+     */
+    public int calcularDescontoVip(Player jogador) {
+        if (!getConfig().getBoolean("vip-descontos.ativado", true)) {
+            return 0;
+        }
+
+        List<?> permissoes = getConfig().getList("vip-descontos.permissoes");
+        if (permissoes == null) {
+            return 0;
+        }
+
+        int maiorDesconto = 0;
+        for (Object item : permissoes) {
+            if (!(item instanceof Map<?, ?> mapa)) {
+                continue;
+            }
+            Object permissao = mapa.get("permissao");
+            Object percentual = mapa.get("percentual");
+            if (permissao == null || percentual == null) {
+                continue;
+            }
+            if (jogador.hasPermission(permissao.toString())) {
+                maiorDesconto = Math.max(maiorDesconto, ((Number) percentual).intValue());
+            }
+        }
+        return maiorDesconto;
     }
 
     public Economy getEconomy() {
