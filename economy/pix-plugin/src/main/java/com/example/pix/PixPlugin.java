@@ -31,6 +31,9 @@ public class PixPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (chargeManager != null) {
+            chargeManager.salvar();
+        }
         getLogger().info("PixPlugin desativado!");
     }
 

@@ -48,15 +48,18 @@ mvn clean package
 
 O `.jar` sai em `target/PixPlugin.jar`.
 
-## ⚠️ Limitação importante
+## Persistência
 
-As cobranças e o histórico ficam **em memória** — se o servidor reiniciar, cobranças pendentes são perdidas. Se isso for um problema pra você (ex: jogador cria uma cobrança e o servidor cai antes dele aceitar), dá pra evoluir isso pra salvar num arquivo YAML ou banco de dados. É só pedir.
+Cobranças pendentes e histórico (`/pix historico`) ficam salvos em `plugins/PixPlugin/dados.yml`, gravado a cada mudança e também no desligamento. Por isso sobrevivem a reinício ou queda do servidor:
+
+- A cobrança volta com o **tempo de expiração que faltava**. Se ela foi criada 2 min antes do restart, expira 3 min depois que o servidor subir.
+- Uma cobrança que venceu com o servidor desligado é descartada ao carregar, sem notificação.
+- O histórico mantém o mesmo limite de 20 transações por jogador.
 
 ## Ideias para expandir (ainda não implementadas)
 
 - **`/pix chave <apelido>`** — jogador registra um "apelido" (tipo chave Pix) pra receber pagamentos sem precisar do nome exato
 - **`/pix agendar <jogador> <valor> <intervalo>`** — pagamentos recorrentes automáticos (ex: aluguel de terreno toda semana)
 - **`/pix limite`** — limite diário de transferência, pra evitar abuso/fraude entre contas
-- **Persistência** — salvar cobranças e histórico em arquivo, sobrevivendo a reinícios do servidor
 - **Notificação por som/título** — tocar um som e mostrar um título na tela quando alguém recebe um pagamento ou cobrança
 - **Log administrativo** — comando `/pix admin log <jogador>` pra staff investigar transações suspeitas
