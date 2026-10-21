@@ -7,8 +7,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class ScheduleManager {
 
@@ -19,6 +21,12 @@ public class ScheduleManager {
     private final List<Horario> horarios = new ArrayList<>();
     private String ultimoMinutoDisparado = "";
 
+    // Quantos minutos antes de cada horário da agenda avisar no chat (ex: 10, 5, 1)
+    private final List<Integer> minutosDeAviso = new ArrayList<>();
+    // Avisos já mandados no minuto atual, pra não repetir quando a checagem roda mais de uma vez no mesmo minuto
+    private final Set<Integer> avisosDisparadosNoMinuto = new HashSet<>();
+    private String minutoDosAvisos = "";
+
     public ScheduleManager(BossPlugin plugin) {
         this.plugin = plugin;
         carregar();
@@ -26,6 +34,14 @@ public class ScheduleManager {
 
     private void carregar() {
         horarios.clear();
+        minutosDeAviso.clear();
+        // config.yml antigo (sem a chave) cai no padrão; lista vazia explícita desativa
+        List<Integer> avisos = plugin.getConfig().contains("aviso-agenda.minutos-antes")
+                ? plugin.getConfig().getIntegerList("aviso-agenda.minutos-antes")
+                : List.of(10, 5, 1);
+        for (int minutos : avisos) {
+            if (minutos > 0) minutosDeAviso.add(minutos);
+        }
         List<String> entradas = plugin.getConfig().getStringList("agenda");
 
         for (String entrada : entradas) {
@@ -79,6 +95,35 @@ public class ScheduleManager {
             }
         }
         return false;
+    }
+
+    /**
+     * Chamado periodicamente; retorna quantos minutos faltam pro próximo horário da agenda
+     * quando esse número bate com um dos avisos configurados (aviso-agenda.minutos-antes),
+     * ou -1 se não tem aviso pra mandar agora. Cada aviso dispara uma vez só.
+     */
+    public int avisoParaDispararAgora() {
+        LocalDateTime agora = LocalDateTime.now();
+        String chaveMinuto = agora.toLocalDate() + " " + agora.getHour() + ":" + agora.getMinute();
+        if (!chaveMinuto.equals(minutoDosAvisos)) {
+            minutoDosAvisos = chaveMinuto;
+            avisosDisparadosNoMinuto.clear();
+        }
+
+        for (int minutos : minutosDeAviso) {
+            if (avisosDisparadosNoMinuto.contains(minutos)) continue;
+
+            LocalDateTime alvo = agora.plusMinutes(minutos);
+            for (Horario h : horarios) {
+                if (h.dia() == alvo.getDayOfWeek()
+                        && h.hora().getHour() == alvo.getHour()
+                        && h.hora().getMinute() == alvo.getMinute()) {
+                    avisosDisparadosNoMinuto.add(minutos);
+                    return minutos;
+                }
+            }
+        }
+        return -1;
     }
 
     public void recarregar() {

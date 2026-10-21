@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BossManager {
@@ -52,6 +53,9 @@ public class BossManager {
     private final Set<FaseConfig> fasesPercentuaisDisparadas = new HashSet<>();
     private final Map<FaseConfig, Long> proximoDisparoTempo = new HashMap<>();
     private long proximoAtaqueAleatorio;
+
+    // Dano total causado no boss atual, por jogador (pro ranking anunciado na morte)
+    private final Map<UUID, Double> danoPorJogador = new HashMap<>();
 
     private BukkitTask taskMonitoramento;
 
@@ -78,6 +82,21 @@ public class BossManager {
 
     public void recarregarPerfis() {
         carregarPerfis();
+    }
+
+    public void registrarDano(UUID jogador, double dano) {
+        danoPorJogador.merge(jogador, dano, Double::sum);
+    }
+
+    /** Jogadores ordenados do maior pro menor dano causado no boss atual. */
+    public List<Map.Entry<UUID, Double>> getRankingDano() {
+        List<Map.Entry<UUID, Double>> ranking = new ArrayList<>(danoPorJogador.entrySet());
+        ranking.sort(Map.Entry.<UUID, Double>comparingByValue().reversed());
+        return ranking;
+    }
+
+    public double getVidaMaxima() {
+        return vidaMaxima;
     }
 
     // ---------------------------------------------------------------------
@@ -187,6 +206,7 @@ public class BossManager {
 
         fasesPercentuaisDisparadas.clear();
         proximoDisparoTempo.clear();
+        danoPorJogador.clear();
         long agora = System.currentTimeMillis();
         for (FaseConfig fase : perfil.getFases()) {
             if (fase.getGatilho() == TipoGatilhoFase.INTERVALO_TEMPO) {

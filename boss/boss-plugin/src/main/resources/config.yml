@@ -29,6 +29,18 @@ agenda:
   - "SEXTA 20:00"
   - "SABADO 21:00"
 
+# Contagem regressiva no chat antes de cada horário da agenda (não vale pro /boss start
+# manual). Lista vazia desativa. %minutos% é trocado pelo tempo que falta.
+aviso-agenda:
+  minutos-antes: [10, 5, 1]
+  mensagem: "&e&l⚠ &eUm boss vai aparecer em &f%minutos% min&e! Preparem-se."
+
+# Ranking de quem mais causou dano, anunciado no chat quando o boss morre. Conta dano
+# direto e de projéteis (flecha, tridente). O campeão continua sendo quem deu o último hit.
+ranking-dano:
+  ativado: true
+  top: 3
+
 campeao:
   grupo-luckperms: "boss_campeao"
 

@@ -12,6 +12,8 @@ Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases din
 6. **Fases fixas por % de vida e por tempo** (marcos da luta) **+ arsenal de ataques aleatórios** (dispara a cada X segundos, sorteando um ataque do próprio arsenal do mob) — isso é o que dá o "perigo constante" durante a luta toda, não só em marcos pontuais
 7. **Loot do chão + prêmio exclusivo do campeão** (sorteio ponderado)
 8. **Tag de campeão via LuckPerms**
+9. **Contagem regressiva** no chat antes do spawn agendado (padrão: 10, 5 e 1 min antes)
+10. **Ranking de dano**: quando o boss morre, o chat mostra o top 3 de quem mais bateu nele
 
 ## Requisitos
 
@@ -96,7 +98,22 @@ agenda:
 ```
 Deixe a lista vazia se quiser controlar só na mão com `/boss start`.
 
-### 6. Ajustar as fases (opcional)
+### 6. Contagem regressiva e ranking de dano (opcional)
+```yaml
+aviso-agenda:
+  minutos-antes: [10, 5, 1]   # [] desativa
+  mensagem: "&e&l⚠ &eUm boss vai aparecer em &f%minutos% min&e! Preparem-se."
+
+ranking-dano:
+  ativado: true
+  top: 3
+```
+- A contagem só vale pros horários da `agenda`. O `/boss start` manual continua instantâneo.
+- O ranking soma o dano que entrou de verdade: golpe direto ou projétil (flecha, tridente), já com os bônus do SkillsPlugin. O golpe final conta só a vida que faltava. Cada linha mostra o dano total e o % da vida máxima do boss.
+- O **campeão continua sendo quem deu o último hit**. O ranking é só reconhecimento e não muda prêmio nem tag.
+- Dano sem atacante, como o Sangramento do SkillsPlugin, não entra no ranking.
+
+### 7. Ajustar as fases (opcional)
 Já vem um exemplo funcional no `config.yml` — veja os comentários lá pra editar quais ações disparam em qual % de vida ou intervalo de tempo.
 
 ## Como compilar
@@ -123,7 +140,4 @@ O `.jar` sai em `target/BossPlugin.jar`.
 ## Ideias para expandir
 
 - Boss "elite" com raridade maior de vez em quando (dobro de vida/dano, loot melhor)
-- Múltiplos perfis de boss configuráveis (não só um), sorteados ou escolhidos por comando
-- Aviso de contagem regressiva antes do spawn agendado (10 min, 5 min, 1 min)
-- Ranking dos jogadores que mais causaram dano no boss (não só o último hit)
 - Integração com o Pix/economia: recompensa em dinheiro além do item
