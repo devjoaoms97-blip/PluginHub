@@ -180,6 +180,10 @@ Vá até o local desejado e anote as coordenadas (`F3`), depois edite `warp-vip.
 
 Se o `economy-shop-plugin` estiver instalado, `/buy` já aplica automaticamente o desconto do maior tier do jogador — não precisa configurar nada a mais além do passo 2 acima (a permissão `vip.desconto.<tier>` já cobre isso). Essa integração é **desacoplada**: o VipPlugin não sabe que o EconomyShopPlugin existe, e vice-versa — os dois só concordam no nome das permissões `vip.desconto.*`. Ver `economy-shop-plugin/README.md`, seção "Desconto de VIP na compra".
 
+## Integração com os clãs (ClasPlugin)
+
+Com o ClasPlugin instalado, a tab list mostra as duas tags: `[ABC] [VIP Ouro] Nome`. Quem monta o nome na tab é sempre o VipPlugin: ele pergunta ao ClasPlugin (por reflexão, `prefixoTab`) qual é a tag do clã, e o ClasPlugin pede pra ele refazer a tab (`refrescarTagJogador`) quando alguém entra ou sai de um clã. No chat, as duas tags já conviviam. Sem o ClasPlugin, nada muda.
+
 ## Permissões
 
 | Permissão | Padrão | Descrição |
