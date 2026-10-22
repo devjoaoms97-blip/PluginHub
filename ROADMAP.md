@@ -17,7 +17,7 @@ Tudo o que está planejado para os plugins, num só lugar. Os READMEs de cada pl
 | 1 | Painel da economia | 🟢 | Dá os números pra calibrar taxas, limites e recompensas de tudo o que vem depois |
 | 2 | Missões diárias | 🟡 | Coloca dinheiro novo na economia e dá algo pra fazer todo dia |
 | 3 | Recompensa por cabeça (Bounty) | 🟢 | Dá objetivo pro PvP usando o que já existe |
-| 4 | Mercado de Barracas | 🟡/🔴 | Comércio entre jogadores com aluguel, que também tira dinheiro de circulação |
+| 4 | ~~Mercado de Barracas~~ ✅ v1 | 🟡/🔴 | Comércio entre jogadores com aluguel, que também tira dinheiro de circulação |
 | 5 | Clãs ou Terrenos | 🔴 | Projetos grandes. Escolher conforme o perfil do servidor |
 
 O resto não tem ordem definida e pode ser puxado quando fizer sentido.
@@ -52,42 +52,20 @@ Três missões sorteadas por dia pra cada jogador, com recompensa em coins e XP 
 - Desconectar no meio da luta conta como derrota.
 - Ranking de vitórias.
 
-### Mercado de Barracas 🟡/🔴
-Comércio entre jogadores em **barracas alugadas no spawn**. O jogador paga aluguel ao servidor por um período (por exemplo, 24h) e, dentro da barraca, vende os próprios itens com **placas em baús**, até um número máximo de baús.
+### Mercado de Barracas ✅ v1 (`economy/barracas-plugin`)
+Comércio entre jogadores em barracas alugadas no spawn, com lojas por placa em baús. A v1 está implementada (veja o README do plugin), com estas decisões:
+- A área é definida por **dois pontos** (`/barraca pos1`, `/barraca pos2`).
+- O dono **só coloca baús e placas**. A construção da staff fica intacta.
+- O aluguel dura **6h**.
+- **Barracas normais**: por ordem de chegada, com renovação.
+- **Barracas especiais** (maiores, perto do spawn): vão a **leilão** quando ficam livres, com lance mínimo igual ao preço das normais. Não renovam.
+- A caixa de retirada guarda os itens por **7 dias**.
 
-**Como funciona**
-1. **A staff cria as barracas.** Cada barraca é uma área do spawn (`/barraca criar <id>` com seleção de área), com preço de aluguel e máximo de baús configuráveis.
-2. **O jogador aluga.** `/barraca alugar <id>` cobra o aluguel e dá a barraca pelo período configurado (padrão: 24h). `/barraca renovar` estende antes de vencer. Uma barraca por jogador.
-3. **O jogador monta a loja.** Dentro da barraca, coloca baús (até o máximo, por exemplo 4) e uma placa em cada um:
-   ```
-   [Vender]
-   64
-   R$ 150
-   ```
-   Isso vende 64 do item que estiver no baú por R$ 150. Quem compra clica na placa: o dinheiro sai da conta dele e vai pro dono da barraca, e o item vai pro inventário.
-   Opcionalmente, `[Comprar]` faz o contrário: o dono paga quem trouxer o item.
-4. **Fora da barraca não funciona.** Placa de loja só é aceita dentro de uma barraca alugada pelo próprio jogador. Ninguém mais pode quebrar ou abrir os baús.
-5. **Quando o aluguel vence:**
-   - As placas param de vender na hora.
-   - Os itens que estavam nos baús vão pra uma "caixa de retirada" (`/barraca retirar`), sem perder nada.
-   - A barraca fica livre pra outro jogador alugar.
-   - Aviso pro dono pouco antes de vencer (por exemplo, 1h antes, quando ele estiver online).
-
-**Ideias pra config**
-- Preço por barraca (as do centro do spawn podem ser mais caras).
-- Desconto de aluguel pra VIP (mesmo padrão de desconto da Loja).
-- Taxa sobre cada venda (mais uma forma de tirar dinheiro de circulação), além do aluguel.
-- Máximo de baús por barraca e duração do aluguel.
-
-**Integrações**
-- Vendas e compras aparecem no `/pix historico` do dono e do comprador.
-- Holograma ou placa na entrada com o nome do dono e "Aluga-se" quando estiver livre.
-
-**Decidir antes de implementar**
-- A área da barraca é definida por seleção de dois pontos ou por um esquemático pronto colado pela staff?
-- O dono pode decorar ou construir dentro da barraca, ou só colocar baús e placas?
-- Vale ter fila de espera, ou leilão, nas barracas mais disputadas?
-- Quanto tempo a caixa de retirada guarda os itens antes de descartar?
+**Próximos passos**
+- [ ] Placa `[Comprar]`: o dono paga quem traz o item. 🟡
+- [ ] Placa ou holograma na entrada, com o nome do dono ou "Aluga-se" quando estiver livre. 🟢
+- [ ] Preço de aluguel por barraca, em vez de um preço único. 🟢
+- [ ] Aluguel pago automaticamente pelo `/pix agendar`, quando ele existir. 🟡
 
 ### Clãs 🔴
 - Clã com nome, tag no chat e na tab, cargos (líder, oficial, membro) e convites.
@@ -184,3 +162,4 @@ Webhook com anúncios do servidor:
 - **Boss**: contagem regressiva antes do spawn agendado.
 - **VIP**: cooldowns de heal/feed/kit salvos em disco.
 - **VIP**: prazo opcional pra resgatar códigos.
+- **Barracas**: mercado de barracas alugadas, com lojas por placa e leilão das especiais (v1).
