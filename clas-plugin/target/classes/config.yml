@@ -17,3 +17,21 @@ banco:
 tag:
   # Como a tag aparece no chat e nos anúncios. %tag% vira a tag do clã. Códigos de cor com &.
   formato: "&8[&b%tag%&8]"
+  # Mostra a tag também na tab list (antes da tag do VIP, se o VipPlugin estiver instalado).
+  na-tab: true
+  # Formato da tag na tab. Sem essa chave, usa o mesmo "formato" do chat.
+  formato-tab: "&8[&b%tag%&8]"
+
+# Integração com o BossPlugin (reconhece o boss sozinho, não precisa configurar nada lá).
+boss:
+  ativado: true
+  # Pontos no ranking pro clã de quem dá o último golpe (o "clã do campeão").
+  pontos-campeao: 10
+  # Pontos pros outros clãs que, somando os membros, tiraram pelo menos esse % da vida do boss.
+  pontos-participacao: 3
+  participacao-minima-percentual: 10
+
+integracao:
+  # Registra a criação do clã e os depósitos/saques do banco no /pix historico (precisa do
+  # PixPlugin atualizado, com suporte a transação com clã).
+  pix: true

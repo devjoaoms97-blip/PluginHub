@@ -3,8 +3,8 @@ version: '1.0.0'
 main: com.example.clas.ClasPlugin
 api-version: '26.2'
 author: Você
-description: Clãs com tag no chat, cargos, banco compartilhado, fogo amigo desligado e ranking de abates.
-softdepend: [Vault]
+description: Clãs com tag no chat e na tab, cargos, banco compartilhado, fogo amigo desligado e ranking de abates e bosses.
+softdepend: [Vault, PixPlugin, VipPlugin]
 
 commands:
   cla:

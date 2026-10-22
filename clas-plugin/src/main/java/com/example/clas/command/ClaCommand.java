@@ -131,6 +131,7 @@ public class ClaCommand implements CommandExecutor, TabCompleter {
                 return;
             }
             econ.withdrawPlayer(jogador, custo);
+            plugin.getPixIntegration().registrarComServidor(jogador.getUniqueId(), custo, false, "Criação do clã " + tag);
         }
 
         Cla cla = clas().criar(tag, ChatColorStrip.limpar(nome), jogador.getUniqueId(), jogador.getName());
@@ -299,7 +300,7 @@ public class ClaCommand implements CommandExecutor, TabCompleter {
         double banco = cla.getBanco();
         avisarCla(cla, "§cO clã " + cla.getTag() + " foi desfeito pelo líder.");
         clas().desfazer(cla);
-        devolverBanco(jogador.getUniqueId(), banco);
+        devolverBanco(cla, jogador.getUniqueId(), banco);
         Bukkit.broadcastMessage("§7O clã §f" + cla.getTag() + " §7foi desfeito.");
     }
 
@@ -323,8 +324,11 @@ public class ClaCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§e§l--- " + cla.getTag() + " · " + cla.getNome() + " ---");
         sender.sendMessage("§7Líder: §f" + cla.getNomes().get(lider) + " §7| Membros: §f" + cla.getMembros().size()
                 + "/" + plugin.getConfig().getInt("membros-maximo", 10));
-        sender.sendMessage("§7Abates: §f" + cla.getAbates() + " §7| Mortes: §f" + cla.getMortes()
-                + " §7| Banco: §f" + ClasPlugin.formatarValor(cla.getBanco()));
+        sender.sendMessage("§7Pontos: §f" + cla.getPontos() + " §7| Abates: §f" + cla.getAbates() + " §7| Mortes: §f" + cla.getMortes()
+                + " §7| Bosses: §f" + cla.getBosses() + " §7| Banco: §f" + ClasPlugin.formatarValor(cla.getBanco()));
+        if (cla == clas().getClaCampeaoBoss()) {
+            sender.sendMessage("§6★ Clã do campeão do último boss");
+        }
         sender.sendMessage("§7Fogo amigo: " + (cla.isFogoAmigo() ? "§cligado" : "§adesligado")
                 + " §7| Fundado em §f" + FORMATO_DATA.format(Instant.ofEpochMilli(cla.getCriadoEm()).atZone(ZoneId.systemDefault())));
     }
@@ -352,8 +356,12 @@ public class ClaCommand implements CommandExecutor, TabCompleter {
         for (int i = 0; i < Math.min(10, ranking.size()); i++) {
             Cla cla = ranking.get(i);
             sender.sendMessage("§f" + (i + 1) + "º " + plugin.tagFormatada(cla) + " §f" + cla.getNome()
-                    + " §7- §f" + cla.getAbates() + " §7abates, §f" + cla.getMembros().size() + " §7membros");
+                    + (cla == clas().getClaCampeaoBoss() ? " §6★" : "")
+                    + " §7- §f" + cla.getPontos() + " §7pontos §8(" + cla.getAbates() + " abates + " + cla.getPontosBoss()
+                    + " de boss)§7, §f" + cla.getMembros().size() + " §7membros");
         }
+        sender.sendMessage("§8Cada abate vale 1 ponto; derrotar o boss vale " + plugin.getConfig().getInt("boss.pontos-campeao", 10)
+                + ", e ajudar bastante vale " + plugin.getConfig().getInt("boss.pontos-participacao", 3) + ". §6★ §8= clã do campeão do boss.");
     }
 
     // ---------------------------------------------------------------------
@@ -389,6 +397,7 @@ public class ClaCommand implements CommandExecutor, TabCompleter {
         cla.setBanco(cla.getBanco() + valor);
         cla.lancar(jogador.getName(), "depósito", valor);
         clas().salvar();
+        plugin.getPixIntegration().registrarComCla(jogador.getUniqueId(), ClasPlugin.nomeNoExtrato(cla), valor, false, "Depósito no banco do clã");
         avisarCla(cla, "§a" + jogador.getName() + " depositou §f" + ClasPlugin.formatarValor(valor)
                 + " §ano banco do clã. Saldo: §f" + ClasPlugin.formatarValor(cla.getBanco()));
     }
@@ -414,6 +423,7 @@ public class ClaCommand implements CommandExecutor, TabCompleter {
         cla.lancar(jogador.getName(), "saque", -valor);
         clas().salvar();
         econ.depositPlayer(jogador, valor);
+        plugin.getPixIntegration().registrarComCla(jogador.getUniqueId(), ClasPlugin.nomeNoExtrato(cla), valor, true, "Saque do banco do clã");
         avisarCla(cla, "§e" + jogador.getName() + " sacou §f" + ClasPlugin.formatarValor(valor)
                 + " §edo banco do clã. Saldo: §f" + ClasPlugin.formatarValor(cla.getBanco()));
     }
@@ -456,7 +466,7 @@ public class ClaCommand implements CommandExecutor, TabCompleter {
             double banco = cla.getBanco();
             avisarCla(cla, "§cO clã " + cla.getTag() + " foi desfeito pela staff.");
             clas().desfazer(cla);
-            devolverBanco(lider, banco);
+            devolverBanco(cla, lider, banco);
             sender.sendMessage("§aClã §f" + cla.getTag() + " §adesfeito. Banco (" + ClasPlugin.formatarValor(banco) + ") devolvido ao líder.");
             return;
         }
@@ -471,11 +481,12 @@ public class ClaCommand implements CommandExecutor, TabCompleter {
     // ---------------------------------------------------------------------
     // Auxiliares
     // ---------------------------------------------------------------------
-    private void devolverBanco(UUID lider, double valor) {
+    private void devolverBanco(Cla cla, UUID lider, double valor) {
         if (valor <= 0 || lider == null) return;
         Economy econ = plugin.getEconomy();
         if (econ != null) {
             econ.depositPlayer(Bukkit.getOfflinePlayer(lider), valor);
+            plugin.getPixIntegration().registrarComCla(lider, ClasPlugin.nomeNoExtrato(cla), valor, true, "Clã desfeito");
         } else {
             plugin.getLogger().severe("Economia indisponível: não deu pra devolver " + valor + " do banco do clã pro líder " + lider + ".");
         }

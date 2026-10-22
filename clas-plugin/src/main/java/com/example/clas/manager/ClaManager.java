@@ -33,6 +33,7 @@ public class ClaManager {
     private final Map<String, Cla> clas = new ConcurrentHashMap<>();       // tag minúscula -> clã
     private final Map<UUID, String> claDoJogador = new ConcurrentHashMap<>(); // jogador -> tag minúscula
     private final Map<UUID, Map<String, Long>> convites = new HashMap<>();    // convidado -> (tag -> expira em)
+    private volatile String claCampeaoBoss; // chave do clã de quem deu o último golpe no último boss
 
     public ClaManager(ClasPlugin plugin) {
         this.plugin = plugin;
@@ -57,15 +58,24 @@ public class ClaManager {
         return claA != null && claA.equals(claDoJogador.get(b));
     }
 
+    /** Ranking por pontos (abates + pontos de boss); desempate pelo banco. */
     public List<Cla> ranking() {
         List<Cla> lista = new ArrayList<>(clas.values());
-        lista.sort(Comparator.comparingInt(Cla::getAbates).reversed()
+        lista.sort(Comparator.comparingInt(Cla::getPontos).reversed()
                 .thenComparing(Comparator.comparingDouble(Cla::getBanco).reversed()));
         return lista;
     }
 
     public int totalClas() {
         return clas.size();
+    }
+
+    public Cla getClaCampeaoBoss() {
+        return claCampeaoBoss == null ? null : clas.get(claCampeaoBoss);
+    }
+
+    public void setClaCampeaoBoss(Cla cla) {
+        this.claCampeaoBoss = cla == null ? null : cla.chave();
     }
 
     // ---------------------------------------------------------------------
@@ -79,6 +89,7 @@ public class ClaManager {
         claDoJogador.put(lider, cla.chave());
         convites.remove(lider);
         salvar();
+        plugin.atualizarTab(lider);
         return cla;
     }
 
@@ -88,6 +99,7 @@ public class ClaManager {
         claDoJogador.put(jogador, cla.chave());
         convites.remove(jogador);
         salvar();
+        plugin.atualizarTab(jogador);
     }
 
     public void removerMembro(Cla cla, UUID jogador) {
@@ -95,6 +107,7 @@ public class ClaManager {
         cla.getNomes().remove(jogador);
         claDoJogador.remove(jogador);
         salvar();
+        plugin.atualizarTab(jogador);
     }
 
     public void definirCargo(Cla cla, UUID jogador, Cargo cargo) {
@@ -109,7 +122,9 @@ public class ClaManager {
         }
         clas.remove(cla.chave());
         convites.values().forEach(mapa -> mapa.remove(cla.chave()));
+        if (cla.chave().equals(claCampeaoBoss)) claCampeaoBoss = null;
         salvar();
+        cla.getMembros().keySet().forEach(plugin::atualizarTab);
     }
 
     // ---------------------------------------------------------------------
@@ -149,6 +164,7 @@ public class ClaManager {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(arquivo);
         ConfigurationSection secao = yaml.getConfigurationSection("clas");
         if (secao == null) return;
+        claCampeaoBoss = yaml.getString("campeao-boss");
 
         for (String chave : secao.getKeys(false)) {
             ConfigurationSection s = secao.getConfigurationSection(chave);
@@ -159,6 +175,8 @@ public class ClaManager {
                 cla.setFogoAmigo(s.getBoolean("fogo-amigo"));
                 cla.setAbates(s.getInt("abates"));
                 cla.setMortes(s.getInt("mortes"));
+                cla.setBosses(s.getInt("bosses"));
+                cla.setPontosBoss(s.getInt("pontos-boss"));
 
                 ConfigurationSection membros = s.getConfigurationSection("membros");
                 if (membros != null) {
@@ -198,6 +216,8 @@ public class ClaManager {
             yaml.set(base + ".fogo-amigo", cla.isFogoAmigo());
             yaml.set(base + ".abates", cla.getAbates());
             yaml.set(base + ".mortes", cla.getMortes());
+            yaml.set(base + ".bosses", cla.getBosses());
+            yaml.set(base + ".pontos-boss", cla.getPontosBoss());
             for (Map.Entry<UUID, Cargo> m : cla.getMembros().entrySet()) {
                 yaml.set(base + ".membros." + m.getKey() + ".cargo", m.getValue().name());
                 yaml.set(base + ".membros." + m.getKey() + ".nome", cla.getNomes().get(m.getKey()));
@@ -213,6 +233,7 @@ public class ClaManager {
             }
             yaml.set(base + ".extrato", extrato);
         }
+        yaml.set("campeao-boss", claCampeaoBoss);
         try {
             yaml.save(arquivo);
         } catch (IOException e) {

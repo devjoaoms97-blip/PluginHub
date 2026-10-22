@@ -8,7 +8,10 @@ import java.util.UUID;
 
 /**
  * Um clã: tag (2 a 5 letras/números, única sem diferenciar maiúscula), nome, membros com
- * cargo, banco compartilhado com extrato e placar de abates.
+ * cargo, banco compartilhado com extrato e placar de abates e de bosses.
+ *
+ * O ranking usa {@link #getPontos()}: cada abate vale 1 ponto, e os pontos de boss
+ * ({@code pontosBoss}) vêm de derrotar o boss mundial ou ajudar bastante a derrotá-lo.
  */
 public class Cla {
 
@@ -27,6 +30,8 @@ public class Cla {
     private boolean fogoAmigo;
     private int abates;
     private int mortes;
+    private int bosses;
+    private int pontosBoss;
 
     public Cla(String tag, String nome, long criadoEm) {
         this.tag = tag;
@@ -114,5 +119,26 @@ public class Cla {
 
     public void setMortes(int mortes) {
         this.mortes = mortes;
+    }
+
+    /** Quantos bosses um membro do clã derrotou (deu o último golpe). */
+    public int getBosses() {
+        return bosses;
+    }
+
+    public void setBosses(int bosses) {
+        this.bosses = bosses;
+    }
+
+    public int getPontosBoss() {
+        return pontosBoss;
+    }
+
+    public void setPontosBoss(int pontosBoss) {
+        this.pontosBoss = pontosBoss;
+    }
+
+    public int getPontos() {
+        return abates + pontosBoss;
     }
 }
