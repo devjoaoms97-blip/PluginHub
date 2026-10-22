@@ -2,7 +2,9 @@ package com.example.painel;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -53,13 +56,15 @@ public class PainelEconomiaPlugin extends JavaPlugin {
         getCommand("economia").setExecutor(comando);
         getCommand("economia").setTabCompleter(comando);
 
-        // Grava o fluxo a cada 5 min e tira a "foto" diária da circulação quando o dia virar
+        // Grava o fluxo a cada 5 min, tira a "foto" diária da circulação quando o dia virar e
+        // confere se o dia já passou do limite do alerta
         long cincoMin = 20L * 60 * 5;
         getServer().getScheduler().runTaskTimer(this, () -> {
-            fluxoManager.salvarSeMudou();
             if (real != null && fluxoManager.getCirculacao(LocalDate.now()) == null) {
                 calcularCirculacao(true);
             }
+            verificarAlerta();
+            fluxoManager.salvarSeMudou();
         }, 20L * 30, cincoMin);
 
         getLogger().info("PainelEconomiaPlugin ativado!");
@@ -134,6 +139,54 @@ public class PainelEconomiaPlugin extends JavaPlugin {
         cacheCirculacao = new Circulacao(total, contas, ranking, System.currentTimeMillis());
         fluxoManager.registrarCirculacao(LocalDate.now(), total);
         return cacheCirculacao;
+    }
+
+    /**
+     * Avisa a staff (uma vez por dia) quando o líquido de hoje passa de {@code alerta.percentual}% da
+     * circulação de ontem e também de {@code alerta.minimo}. Usa o fluxo registrado, e não um novo
+     * cálculo da circulação, que pode ser lento. Sem a foto de ontem (primeiro dia), não alerta.
+     */
+    private void verificarAlerta() {
+        if (!getConfig().getBoolean("alerta.ativado", true) || interceptada == null) return;
+        LocalDate hoje = LocalDate.now();
+        Double ontem = fluxoManager.getCirculacao(hoje.minusDays(1));
+        if (ontem == null || ontem <= 0) return;
+
+        double[] total = totalDoDia(hoje);
+        double liquido = total[FluxoManager.ENTROU] - total[FluxoManager.SAIU];
+        double percentual = liquido / ontem * 100;
+        if (liquido < getConfig().getDouble("alerta.minimo", 50000)
+                || percentual < getConfig().getDouble("alerta.percentual", 10)) {
+            return;
+        }
+        if (!fluxoManager.marcarAlerta(hoje)) return;
+
+        List<Map.Entry<String, double[]>> origens = new ArrayList<>(fluxoManager.getDia(hoje).entrySet());
+        origens.sort(Comparator.comparingDouble((Map.Entry<String, double[]> e) ->
+                e.getValue()[FluxoManager.ENTROU] - e.getValue()[FluxoManager.SAIU]).reversed());
+        StringBuilder maiores = new StringBuilder();
+        for (int i = 0; i < Math.min(3, origens.size()); i++) {
+            double[] v = origens.get(i).getValue();
+            if (v[FluxoManager.ENTROU] - v[FluxoManager.SAIU] <= 0) break;
+            if (!maiores.isEmpty()) maiores.append("§7, ");
+            maiores.append("§f").append(origens.get(i).getKey()).append(" §a+")
+                    .append(valor(v[FluxoManager.ENTROU] - v[FluxoManager.SAIU]));
+        }
+
+        String linha1 = String.format(Locale.ROOT, "§c§l[Economia] §cA circulação cresceu §f%s §c(%.1f%%) hoje.",
+                valor(liquido), percentual);
+        String linha2 = "§7Maiores entradas: " + maiores + " §8— /economia tipos <plugin>";
+        getLogger().warning(ChatColor.stripColor(linha1 + " " + linha2));
+        for (Player staff : getServer().getOnlinePlayers()) {
+            if (staff.hasPermission("painel.economia")) {
+                staff.sendMessage(linha1);
+                staff.sendMessage(linha2);
+            }
+        }
+    }
+
+    private static String valor(double valor) {
+        return String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", valor);
     }
 
     /** Soma de todas as origens de um dia: [entrou, saiu]. */

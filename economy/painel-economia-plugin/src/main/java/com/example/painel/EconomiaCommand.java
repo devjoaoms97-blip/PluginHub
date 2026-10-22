@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** /economia [resumo|dias [n]|top [n]|recalcular] — só staff. */
+/** /economia [resumo|dias [n]|tipos <plugin> [n]|top [n]|recalcular] — só staff. */
 public class EconomiaCommand implements CommandExecutor, TabCompleter {
 
     private static final DateTimeFormatter FORMATO_DIA = DateTimeFormatter.ofPattern("dd/MM");
@@ -35,6 +35,7 @@ public class EconomiaCommand implements CommandExecutor, TabCompleter {
         switch (sub) {
             case "resumo" -> resumo(sender);
             case "dias" -> dias(sender, lerNumero(args, 1, 7, 30));
+            case "tipos" -> tipos(sender, args);
             case "top" -> top(sender, lerNumero(args, 1, 10, plugin.getConfig().getInt("circulacao.top-maximo", 20)));
             case "recalcular" -> {
                 plugin.calcularCirculacao(true);
@@ -45,6 +46,7 @@ public class EconomiaCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage("§e§l--- Painel da economia ---");
                 sender.sendMessage("§f/economia §7- resumo: circulação e fluxo de hoje por origem");
                 sender.sendMessage("§f/economia dias [n] §7- entrou/saiu/líquido nos últimos n dias");
+                sender.sendMessage("§f/economia tipos <plugin> [n] §7- fluxo de um plugin separado por tipo (hoje ou n dias)");
                 sender.sendMessage("§f/economia top [n] §7- maiores saldos");
                 sender.sendMessage("§f/economia recalcular §7- recalcula a circulação agora (ignora o cache)");
             }
@@ -103,6 +105,35 @@ public class EconomiaCommand implements CommandExecutor, TabCompleter {
         }
     }
 
+    private void tipos(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage("§cUso: §f/economia tipos <plugin> [dias]");
+            return;
+        }
+        int quantidade = lerNumero(args, 2, 1, 90);
+        LocalDate hoje = LocalDate.now();
+        LocalDate de = hoje.minusDays(quantidade - 1);
+        String origem = plugin.getFluxoManager().getOrigens(de, hoje).stream()
+                .filter(o -> o.equalsIgnoreCase(args[1]))
+                .findFirst().orElse(args[1]);
+
+        Map<String, double[]> tipos = plugin.getFluxoManager().getTipos(origem, de, hoje);
+        sender.sendMessage("§e§l--- " + origem + (quantidade == 1 ? " hoje" : " nos últimos " + quantidade + " dias") + " ---");
+        if (tipos.isEmpty()) {
+            sender.sendMessage("§7  Nenhuma movimentação desse plugin no período.");
+            return;
+        }
+        List<Map.Entry<String, double[]>> ordenados = new ArrayList<>(tipos.entrySet());
+        ordenados.sort(Comparator.comparingDouble((Map.Entry<String, double[]> e) ->
+                e.getValue()[FluxoManager.ENTROU] + e.getValue()[FluxoManager.SAIU]).reversed());
+        for (Map.Entry<String, double[]> e : ordenados) {
+            double entrou = e.getValue()[FluxoManager.ENTROU];
+            double saiu = e.getValue()[FluxoManager.SAIU];
+            sender.sendMessage("  §f" + e.getKey() + "§7: §a+" + valor(entrou) + " §c-" + valor(saiu)
+                    + " §7= " + variacao(entrou - saiu));
+        }
+    }
+
     private void top(CommandSender sender, int quantidade) {
         PainelEconomiaPlugin.Circulacao circ = plugin.calcularCirculacao(false);
         sender.sendMessage("§e§l--- Maiores saldos ---");
@@ -135,8 +166,14 @@ public class EconomiaCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            List<String> opcoes = new ArrayList<>(List.of("resumo", "dias", "top", "recalcular"));
+            List<String> opcoes = new ArrayList<>(List.of("resumo", "dias", "tipos", "top", "recalcular"));
             opcoes.removeIf(o -> !o.startsWith(args[0].toLowerCase(Locale.ROOT)));
+            return opcoes;
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("tipos")) {
+            LocalDate hoje = LocalDate.now();
+            List<String> opcoes = new ArrayList<>(plugin.getFluxoManager().getOrigens(hoje.minusDays(29), hoje));
+            opcoes.removeIf(o -> !o.toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT)));
             return opcoes;
         }
         return List.of();

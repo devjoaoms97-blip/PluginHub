@@ -20,10 +20,16 @@ import java.util.Optional;
  * não depender da lista exata de métodos da VaultAPI. O plugin de origem é descoberto pelo
  * stack de execução: o primeiro frame cuja classe pertence a um plugin que não seja este
  * painel nem o Vault. Assim nenhum outro plugin precisa ser alterado pra aparecer no painel.
+ *
+ * O mesmo frame dá o "tipo" da movimentação dentro do plugin ({@code Classe#metodo}), que o
+ * {@code config.yml} traduz pra um nome amigável (ex.: {@code BuyCommand#onCommand} → "Compra").
  */
 public final class EconomiaInterceptada implements InvocationHandler {
 
     private static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+
+    private record Origem(Plugin plugin, String classe, String metodo) {
+    }
 
     private final Economy real;
     private final FluxoManager fluxo;
@@ -54,7 +60,10 @@ public final class EconomiaInterceptada implements InvocationHandler {
                 && resultado instanceof EconomyResponse resposta
                 && resposta.transactionSuccess() && resposta.amount > 0) {
             try {
-                fluxo.registrar(origem(), nome.equals("depositPlayer") ? resposta.amount : -resposta.amount);
+                Optional<Origem> origem = origem();
+                String nomePlugin = origem.map(o -> o.plugin().getName()).orElse("Outros");
+                String tipo = origem.map(this::tipo).orElse("Outros");
+                fluxo.registrar(nomePlugin, tipo, nome.equals("depositPlayer") ? resposta.amount : -resposta.amount);
             } catch (RuntimeException e) {
                 // o painel nunca pode quebrar uma transação de verdade
                 painel.getLogger().warning("Falha ao registrar fluxo: " + e.getMessage());
@@ -63,13 +72,34 @@ public final class EconomiaInterceptada implements InvocationHandler {
         return resultado;
     }
 
-    private String origem() {
-        Optional<String> nome = WALKER.walk(frames -> frames
-                .map(frame -> pluginDe(frame.getDeclaringClass()))
-                .filter(p -> p != null && p != painel && !p.getName().equals("Vault"))
-                .map(Plugin::getName)
+    private Optional<Origem> origem() {
+        return WALKER.walk(frames -> frames
+                .map(frame -> {
+                    Plugin p = pluginDe(frame.getDeclaringClass());
+                    if (p == null || p == painel || p.getName().equals("Vault")) return null;
+                    return new Origem(p, frame.getDeclaringClass().getSimpleName(), frame.getMethodName());
+                })
+                .filter(o -> o != null)
                 .findFirst());
-        return nome.orElse("Outros");
+    }
+
+    /**
+     * Nome do tipo: {@code tipos.<Plugin>.<Classe#metodo>} do config, depois {@code tipos.<Plugin>.<Classe>},
+     * e sem tradução fica o próprio {@code Classe#metodo}. Lambdas ({@code lambda$pagar$0}) contam como o
+     * método onde foram escritas.
+     */
+    private String tipo(Origem origem) {
+        String metodo = origem.metodo();
+        if (metodo.startsWith("lambda$")) {
+            String[] partes = metodo.split("\\$");
+            metodo = partes.length > 1 ? partes[1] : metodo;
+        }
+        String base = "tipos." + origem.plugin().getName() + ".";
+        String chave = origem.classe() + "#" + metodo;
+        String rotulo = painel.getConfig().getString(base + chave);
+        if (rotulo == null) rotulo = painel.getConfig().getString(base + origem.classe());
+        if (rotulo == null) rotulo = chave;
+        return rotulo.replace('.', ' '); // ponto é separador de caminho no historico.yml
     }
 
     private Plugin pluginDe(Class<?> classe) {

@@ -10,6 +10,7 @@ Todos exigem `painel.economia` (padrão: op). Aliases: `/ecostats`, `/painel`.
 |---|---|
 | `/economia` | Total em circulação (e a variação desde ontem), contas com saldo, média por conta, e o fluxo de hoje por origem |
 | `/economia dias [n]` | Entrou, saiu e líquido de cada um dos últimos `n` dias (padrão 7, máximo 30), com a circulação daquele dia |
+| `/economia tipos <plugin> [n]` | O fluxo de um plugin separado por tipo (na loja: compra e venda; nas barracas: aluguel, leilão, compras...), de hoje ou dos últimos `n` dias |
 | `/economia top [n]` | Maiores saldos e quanto cada um representa do total |
 | `/economia recalcular` | Recalcula a circulação agora, ignorando o cache |
 
@@ -36,6 +37,17 @@ O Pix sai negativo porque o líquido dele é a taxa: quem recebe ganha o valor m
 - Uma transferência entre jogadores (Pix, compra na barraca) aparece nas duas colunas. O **líquido** mostra o efeito real: no Pix, o líquido é só a taxa (negativo).
 - Um líquido positivo é dinheiro novo entrando na economia (venda pra loja, level up de skill, missão). Um líquido negativo é dinheiro saindo de circulação (imposto, taxa, aluguel, compra da loja).
 
+**Tipos.** O mesmo stack de execução mostra *de onde* dentro do plugin veio a chamada (a classe e o método). O `config.yml` traduz isso pra um nome legível: `BuyCommand#onCommand` vira "Compra (/buy)". Exemplo:
+```
+--- EconomyShopPlugin hoje ---
+  Venda (menu): +R$ 31.000,00 -R$ 0,00 = +R$ 31.000,00
+  Compra (menu): +R$ 0,00 -R$ 18.000,00 = -R$ 18.000,00
+  Venda (/sell all): +R$ 9.000,00 -R$ 0,00 = +R$ 9.000,00
+```
+Os tipos dos plugins do PluginHub já vêm com nome. Um tipo sem nome aparece como `Classe#metodo`. Pra dar nome a ele, copie o que aparecer e adicione em `tipos.<Plugin>` no config.
+
+**Alerta de crescimento.** A cada 5 min, o painel compara o dinheiro novo do dia (entrou − saiu) com a circulação de ontem. Se passar de `alerta.percentual` (10%) **e** de `alerta.minimo` (R$ 50.000), a staff online (`painel.economia`) e o console recebem um aviso, com os plugins que mais colocaram dinheiro. O alerta sai uma vez por dia e não aparece no primeiro dia, porque ainda não existe a circulação de ontem.
+
 **Circulação.** É a soma do saldo de todo jogador que já entrou no servidor. Fica em cache por 5 min (configurável), porque com muitas contas pode ser lento. Uma "foto" do total é guardada por dia, pra comparar.
 
 Os dados ficam em `plugins/PainelEconomiaPlugin/historico.yml`, com os últimos 90 dias (configurável). O fluxo é gravado a cada 5 min e quando o servidor desliga.
@@ -57,6 +69,14 @@ circulacao:
   top-maximo: 20
 historico:
   dias-guardados: 90
+alerta:
+  ativado: true
+  percentual: 10.0
+  minimo: 50000.0
+tipos:
+  EconomyShopPlugin:
+    "BuyCommand#onCommand": "Compra (/buy)"
+    # ... (todos os plugins do PluginHub já vêm configurados)
 ```
 
 ## Como compilar
@@ -73,3 +93,5 @@ O `.jar` sai em `target/PainelEconomiaPlugin.jar`.
 1. **Se a economia já estiver registrada no Vault com prioridade máxima**, o painel não consegue se colocar na frente dela. Ele avisa no console e mostra só a circulação.
 2. **O fluxo é gravado a cada 5 min.** Se o servidor cair (não desligar normalmente), perde-se no máximo esses 5 min de registro. O dinheiro dos jogadores não é afetado, só a estatística.
 3. **A origem é o primeiro plugin no stack de execução.** Se um plugin chamar outro que mexe no dinheiro, a movimentação conta pro plugin que fez a chamada de fato.
+4. **O tipo depende do nome da classe e do método.** Se um plugin for reescrito e o método mudar de nome, o tipo passa a aparecer como `Classe#metodo` até o config ser atualizado. Os dias anteriores ao painel ter tipos só mostram o total por plugin.
+5. **O alerta usa o fluxo registrado**, não a circulação recalculada. Dinheiro que entra por fora do Vault (`/eco give`) não dispara o alerta.

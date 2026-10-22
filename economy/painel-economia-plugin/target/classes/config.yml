@@ -11,3 +11,54 @@ circulacao:
 historico:
   # Quantos dias de entrada/saída e de "foto" da circulação ficam guardados em historico.yml.
   dias-guardados: 90
+
+alerta:
+  # Avisa a staff online (permissão painel.economia) e o console quando o dinheiro novo do dia
+  # (entrou - saiu) passar dos dois limites abaixo. Sai no máximo um alerta por dia.
+  ativado: true
+  # % da circulação de ontem.
+  percentual: 10.0
+  # Valor mínimo, pra não alarmar enquanto a economia ainda é pequena.
+  minimo: 50000.0
+
+# Nome de cada tipo de movimentação no /economia tipos <plugin>. A chave é o plugin e depois
+# "Classe#metodo" (ou só "Classe") de onde o dinheiro foi mexido. Um tipo sem nome aqui aparece
+# como "Classe#metodo" — pra dar nome a ele, copie o que aparecer no painel e adicione abaixo.
+tipos:
+  EconomyShopPlugin:
+    "BuyCommand#onCommand": "Compra (/buy)"
+    "SellCommand#creditarEAvisar": "Venda (/sell)"
+    "SellCommand#venderTudoDoInventario": "Venda (/sell all)"
+    "ShopGUIListener#comprarQuantidade": "Compra (menu)"
+    "ShopGUIListener#venderQuantidade": "Venda (menu)"
+  PixPlugin:
+    "PixCommand#pagar": "Pix (pagar)"
+    "PixCommand#aceitar": "Pix (cobrança paga)"
+  ChequePlugin:
+    "ChequeListener": "Cheque resgatado"
+  VipPlugin:
+    "VipCommand#processarPagamentoRevenda": "Revenda de código VIP"
+  SkillsPlugin:
+    "RewardManager": "Level up de skill"
+  MissoesPlugin:
+    "MissaoManager#pagar": "Recompensa de missão"
+  BountyPlugin:
+    "BountyCommand#colocar": "Recompensa colocada"
+    "BountyManager#pagar": "Recompensa cobrada"
+    "BountyManager#devolver": "Recompensa expirada (devolução)"
+    "BountyCommand#cla": "Contrato contra clã"
+    "BountyManager#pagarAbateCla": "Contrato contra clã cobrado"
+    "BountyManager#devolverContrato": "Contrato contra clã devolvido"
+  ClasPlugin:
+    "ClaCommand#criar": "Criação de clã"
+    "ClaCommand#depositar": "Depósito no banco do clã"
+    "ClaCommand#sacar": "Saque do banco do clã"
+    "ClaCommand#devolverBanco": "Clã desfeito (banco devolvido)"
+  BarracasPlugin:
+    "BarracaCommand#alugar": "Aluguel de barraca"
+    "BarracaCommand#renovar": "Renovação de barraca"
+    "BarracaManager#darLance": "Lance em leilão"
+    "BarracaManager#devolverLance": "Lance devolvido"
+    "LojaListener#comprar": "Compra em barraca (placa [Vender])"
+    "LojaListener#venderPraBarraca": "Venda pra barraca (placa [Comprar])"
+    "BarracaManager#renovarAutomaticamente": "Renovação automática de barraca"
