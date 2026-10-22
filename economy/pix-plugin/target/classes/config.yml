@@ -11,3 +11,11 @@ taxa:
   # de centavos passem sem custo nenhum por causa de arredondamento. 0 desativa esse piso
   # (a taxa mínima nunca é maior que o próprio valor da transação).
   minimo: 0.0
+
+limite:
+  # Máximo que cada jogador pode ENVIAR por dia via Pix (/pix pagar, /pix aceitar e os
+  # botões do /pix qrcode), somando o valor bruto antes da taxa. Zera à meia-noite (horário
+  # do servidor) e sobrevive a reinícios. Serve pra frear fraude/lavagem entre contas
+  # (ex: conta roubada esvaziada de uma vez). 0 desativa. Quem tem a permissão
+  # pix.limite.ignorar (ex: staff) não tem limite.
+  diario: 0

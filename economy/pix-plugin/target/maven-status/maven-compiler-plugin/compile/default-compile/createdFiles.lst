@@ -1,5 +1,7 @@
+com\example\pix\LimiteManager$Gasto.class
 com\example\pix\TransacaoRegistro.class
 com\example\pix\PixCommand.class
 com\example\pix\ChargeManager.class
 com\example\pix\PixCharge.class
 com\example\pix\PixPlugin.class
+com\example\pix\LimiteManager.class

@@ -1,0 +1,12 @@
+com\example\vip\manager\VipManager.class
+com\example\vip\manager\CooldownManager$Perk.class
+com\example\vip\listener\ChatTagListener.class
+com\example\vip\command\VipCommand.class
+com\example\vip\manager\CodeManager.class
+com\example\vip\model\VipTier.class
+com\example\vip\model\VipAtivo.class
+com\example\vip\model\VipCode.class
+com\example\vip\VipPlugin.class
+com\example\vip\listener\ParticleTrailListener.class
+com\example\vip\command\PerkCommand.class
+com\example\vip\manager\CooldownManager.class
