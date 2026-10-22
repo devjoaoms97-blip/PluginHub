@@ -5,20 +5,24 @@ import com.example.missoes.model.TipoMissao;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +39,9 @@ import java.util.UUID;
  *       justamente o que a missão pede.</li>
  *   <li><b>Matar</b>: mob nascido de spawner não conta (configurável), pra não virar farm AFK.</li>
  * </ul>
+ *
+ * A missão de vender é contada pelo EconomyShopPlugin (ele chama o MissoesPlugin); a de dano no
+ * boss é contada aqui, reconhecendo o boss pela chave compartilhada {@code pluginhub:boss_mob}.
  */
 public class ProgressoListener implements Listener {
 
@@ -42,6 +49,9 @@ public class ProgressoListener implements Listener {
 
     private final MissoesPlugin plugin;
     private final NamespacedKey chaveSpawner;
+    private final NamespacedKey chaveBoss = new NamespacedKey("pluginhub", "boss_mob");
+    // dano no boss que ainda não completou 1 ponto inteiro, por jogador (o golpe vem quebrado: 7,5...)
+    private final Map<UUID, Double> sobraDanoBoss = new HashMap<>();
 
     // "mundo:x:y:z" -> true, do mais antigo pro mais novo (o mais antigo sai quando passa do limite)
     private final Map<String, Boolean> blocosColocados = new LinkedHashMap<>(16, 0.75f, false) {
@@ -114,8 +124,31 @@ public class ProgressoListener implements Listener {
                 item.getItemStack().getType().name(), 1);
     }
 
+    /** Mesmo critério do ranking do BossPlugin: só o dano que entrou, limitado à vida que o boss tinha. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void aoDanificarBoss(EntityDamageByEntityEvent evento) {
+        if (!(evento.getEntity() instanceof LivingEntity boss)) return;
+        if (!boss.getPersistentDataContainer().has(chaveBoss, PersistentDataType.BYTE)) return;
+        Player atacante = jogadorPor(evento.getDamager());
+        if (atacante == null) return;
+
+        double dano = Math.min(evento.getFinalDamage(), boss.getHealth());
+        if (dano <= 0) return;
+        double total = sobraDanoBoss.getOrDefault(atacante.getUniqueId(), 0.0) + dano;
+        int inteiro = (int) total;
+        sobraDanoBoss.put(atacante.getUniqueId(), total - inteiro);
+        plugin.getMissaoManager().registrar(atacante, TipoMissao.DANO_BOSS, boss.getType().name(), inteiro);
+    }
+
+    private Player jogadorPor(Entity causador) {
+        if (causador instanceof Player jogador) return jogador;
+        if (causador instanceof Projectile projetil && projetil.getShooter() instanceof Player atirador) return atirador;
+        return null;
+    }
+
     @EventHandler
     public void aoSair(PlayerQuitEvent evento) {
         plugin.getMissaoManager().esquecerAviso(evento.getPlayer().getUniqueId());
+        sobraDanoBoss.remove(evento.getPlayer().getUniqueId());
     }
 }

@@ -10,7 +10,11 @@ public enum TipoMissao {
     /** Matar mobs (os de spawner não contam, por padrão). Alvos: tipos de entidade. */
     MATAR,
     /** Pescar. Alvos: materiais do que veio no anzol. */
-    PESCAR;
+    PESCAR,
+    /** Vender itens pra loja do servidor (EconomyShopPlugin). Alvos: materiais. Conta itens vendidos. */
+    VENDER,
+    /** Causar dano no boss mundial (BossPlugin). Alvos: tipo do mob do boss (ZOMBIE...). Conta pontos de dano. */
+    DANO_BOSS;
 
     public static TipoMissao de(String texto) {
         try {

@@ -17,19 +17,27 @@ bonus-todas:
 anti-farm:
   # Mob nascido de spawner não conta pra missão de matar (evita farm AFK).
   ignorar-mobs-de-spawner: true
+  # Missão de vender: o que o jogador COMPROU da loja no mesmo dia não conta quando ele vende
+  # de volta (sempre ligado; precisa do EconomyShopPlugin atualizado).
+
+gui:
+  # /missoes abre um menu. Com false, mostra no chat (o /missoes lista sempre mostra no chat).
+  ativado: true
 
 # ---------------------------------------------------------------------------------
 # POOL DE MISSÕES
 #   id:         único, sem espaço
-#   tipo:       minerar | colher | matar | pescar
-#   alvos:      lista de materiais (minerar/colher/pescar) ou tipos de mob (matar).
-#               Sem "alvos" = qualquer um conta.
-#   quantidade: quanto precisa
+#   tipo:       minerar | colher | matar | pescar | vender | dano_boss
+#   alvos:      lista de materiais (minerar/colher/pescar/vender) ou tipos de mob (matar,
+#               e dano_boss: o mob do boss, ex. ZOMBIE). Sem "alvos" = qualquer um conta.
+#   quantidade: quanto precisa (vender = itens vendidos pra loja; dano_boss = pontos de dano)
 #   descricao:  o que aparece pro jogador
 #   coins:      recompensa em dinheiro
 #   skill + xp: (opcional) XP de skill do SkillsPlugin
 #
 # "minerar" não conta bloco colocado por jogador; "colher" só conta planta madura.
+# "vender" precisa do EconomyShopPlugin; "dano_boss" precisa do BossPlugin — como o boss só
+# aparece em alguns horários, ela fica melhor no pool semanal.
 # ---------------------------------------------------------------------------------
 pool:
   - id: minerar_pedra
@@ -119,3 +127,56 @@ pool:
     quantidade: 15
     descricao: "Pescar 15 vezes"
     coins: 200
+
+  - id: vender_plantacao
+    tipo: vender
+    alvos: [WHEAT, CARROT, POTATO, BEETROOT, MELON_SLICE, PUMPKIN, SUGAR_CANE]
+    quantidade: 128
+    descricao: "Vender 128 itens de plantação pra loja"
+    coins: 200
+
+# ---------------------------------------------------------------------------------
+# MISSÕES SEMANAIS — mesmo formato do pool diário. Zeram na virada de domingo pra
+# segunda. Maiores, com recompensa melhor. O progresso conta junto com as diárias
+# (o mesmo bloco minerado avança uma diária e uma semanal ao mesmo tempo).
+# ---------------------------------------------------------------------------------
+semanais:
+  ativado: true
+  quantidade: 2
+  bonus-todas:
+    coins: 2000
+    skill: DEFESA
+    xp: 500
+  pool:
+    - id: semanal_diamante
+      tipo: minerar
+      alvos: [DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE]
+      quantidade: 32
+      descricao: "Minerar 32 minérios de diamante"
+      coins: 2500
+
+    - id: semanal_mobs
+      tipo: matar
+      quantidade: 300
+      descricao: "Matar 300 mobs (qualquer tipo)"
+      coins: 2000
+      skill: ESPADAS
+      xp: 800
+
+    - id: semanal_boss
+      tipo: dano_boss
+      quantidade: 500
+      descricao: "Causar 500 de dano no boss mundial"
+      coins: 3000
+
+    - id: semanal_vender
+      tipo: vender
+      quantidade: 2000
+      descricao: "Vender 2000 itens pra loja"
+      coins: 2000
+
+    - id: semanal_pescar
+      tipo: pescar
+      quantidade: 100
+      descricao: "Pescar 100 vezes"
+      coins: 1500

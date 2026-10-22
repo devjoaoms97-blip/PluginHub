@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** As missões do dia de um jogador: id da missão -> progresso, e se o bônus de "todas" já foi pago. */
+/**
+ * As missões de um período (dia ou semana) de um jogador: id da missão -> progresso, e se o
+ * bônus de "todas" já foi pago. {@code dia} é o primeiro dia do período.
+ */
 public class ProgressoJogador {
 
     private final LocalDate dia;
