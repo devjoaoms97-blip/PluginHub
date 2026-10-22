@@ -18,7 +18,7 @@ permissions:
     description: Permite usar o sistema de Pix.
     default: true
   pix.admin:
-    description: Permite recarregar a configuração do Pix (ex: taxa de transação) e zerar limites diários.
+    description: "Permite recarregar a configuração do Pix (ex: taxa de transação) e zerar limites diários."
     default: op
   pix.limite.ignorar:
     description: Não tem limite diário de transferência.
