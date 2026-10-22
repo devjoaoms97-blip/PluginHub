@@ -1,0 +1,43 @@
+# Configuração do BountyPlugin
+
+# Menor valor que dá pra oferecer de uma vez.
+valor-minimo: 100.0
+
+# % descontado na hora de oferecer. Ex: oferecer R$ 1.000 com 10% coloca R$ 900 na recompensa.
+# O valor da taxa some da economia (sink). 0 desativa.
+taxa-percentual: 10.0
+
+# Se ninguém cobrar a recompensa em X dias desde a última contribuição, cada contribuinte
+# recebe a sua parte de volta (já sem a taxa). 0 = nunca expira.
+expira-dias: 7
+
+# Anuncia pro servidor inteiro quando a recompensa de alguém chega nesse valor. 0 desativa.
+anunciar-a-partir-de: 100.0
+
+anti-farm:
+  # Não paga se o matador e o alvo estão conectados do mesmo IP (conta alternativa).
+  mesmo-ip: false
+  # Não paga (nem deixa oferecer) entre colegas do mesmo clã — se o ClasPlugin estiver instalado.
+  mesmo-cla: true
+  # Depois de cobrar um alvo, o mesmo matador só pode cobrar esse alvo de novo depois de X horas.
+  cooldown-horas: 0
+
+# Recompensa contra um clã inteiro (/bounty cla <tag> <valor por abate> <abates>). Precisa do
+# ClasPlugin. Cada membro do clã morto paga um abate do contrato mais antigo; o que sobrar volta
+# pra quem contratou depois de "expira-dias" (contados da criação) ou se o clã for desfeito.
+# A taxa e o anti-farm são os mesmos de cima.
+cla:
+  valor-minimo-por-abate: 100.0
+  abates-maximo: 20
+
+discord:
+  # Webhook do canal do Discord (Editar canal > Integrações > Webhooks > Copiar URL). Vazio desliga.
+  webhook-url: ""
+  # Só anuncia recompensas (colocadas ou cobradas) a partir desse valor.
+  valor-minimo: 10.0
+  # Nome que aparece como autor da mensagem.
+  nome: "Bounty"
+
+integracao:
+  # Registra recompensas oferecidas, cobradas e devolvidas no /pix historico.
+  pix: true
