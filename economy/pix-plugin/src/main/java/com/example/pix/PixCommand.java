@@ -61,6 +61,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             case "cancelar" -> cancelar(jogador, resto);
             case "historico", "extrato" -> historico(jogador, resto);
             case "qrcode" -> qrcode(jogador, resto);
+            case "limite" -> limite(jogador);
             case "admin" -> admin(jogador, resto);
             default -> enviarAjuda(jogador);
         }
@@ -99,12 +100,15 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (!verificarLimite(pagador, valor)) return;
+
         double taxa = plugin.calcularTaxaTransacao(valor);
         double valorLiquido = valor - taxa;
 
         econ.withdrawPlayer(pagador, valor);
         econ.depositPlayer(alvo, valorLiquido);
         plugin.getChargeManager().registrarTransacao(pagador.getUniqueId(), alvo.getUniqueId(), valor, "Pagamento");
+        plugin.getLimiteManager().registrarEnvio(pagador.getUniqueId(), valor);
 
         pagador.sendMessage(cor("§aVocê pagou §f" + formatarValor(valor) + " §apara §f" + alvo.getName()
                 + (motivo != null ? " §7(" + motivo + ")" : "")
@@ -190,6 +194,9 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        // a cobrança continua pendente se bater no limite — dá pra aceitar amanhã, se não expirar antes
+        if (!verificarLimite(jogador, charge.getValor())) return;
+
         OfflinePlayer cobrador = Bukkit.getOfflinePlayer(charge.getCobradorId());
 
         double taxa = plugin.calcularTaxaTransacao(charge.getValor());
@@ -199,6 +206,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         econ.depositPlayer(cobrador, valorLiquido);
         plugin.getChargeManager().removerCobranca(charge.getCobradorId(), charge.getCobradoId());
         plugin.getChargeManager().registrarTransacao(jogador.getUniqueId(), cobrador.getUniqueId(), charge.getValor(), "Cobrança aceita");
+        plugin.getLimiteManager().registrarEnvio(jogador.getUniqueId(), charge.getValor());
 
         jogador.sendMessage(cor("§aVocê pagou a cobrança de §f" + cobrador.getName() + " §a(§f" + formatarValor(charge.getValor()) + "§a)"
                 + (taxa > 0 ? " §7(taxa: " + formatarValor(taxa) + ")" : "")));
@@ -344,7 +352,25 @@ public class PixCommand implements CommandExecutor, TabCompleter {
     }
 
     // ---------------------------------------------------------------------
-    // /pix admin reload
+    // /pix limite
+    // ---------------------------------------------------------------------
+    private void limite(Player jogador) {
+        LimiteManager limites = plugin.getLimiteManager();
+        if (!limites.temLimite(jogador)) {
+            jogador.sendMessage(cor("§aVocê não tem limite diário de transferência."));
+            return;
+        }
+
+        UUID id = jogador.getUniqueId();
+        jogador.sendMessage(cor("§e§lLimite diário do Pix:"));
+        jogador.sendMessage(cor("  §7Limite: §f" + formatarValor(limites.getLimiteDiario())));
+        jogador.sendMessage(cor("  §7Enviado hoje: §f" + formatarValor(limites.getGastoHoje(id))));
+        jogador.sendMessage(cor("  §7Disponível: §a" + formatarValor(limites.getDisponivelHoje(id))));
+        jogador.sendMessage(cor("  §8Zera todo dia à meia-noite."));
+    }
+
+    // ---------------------------------------------------------------------
+    // /pix admin <reload|resetlimite>
     // ---------------------------------------------------------------------
     private void admin(Player jogador, String[] args) {
         if (!jogador.hasPermission("pix.admin")) {
@@ -352,8 +378,23 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (args.length >= 1 && args[0].equalsIgnoreCase("resetlimite")) {
+            if (args.length < 2) {
+                jogador.sendMessage(cor("§cUso: §f/pix admin resetlimite <jogador>"));
+                return;
+            }
+            OfflinePlayer alvo = Bukkit.getOfflinePlayer(args[1]);
+            if (!alvo.hasPlayedBefore() && !alvo.isOnline()) {
+                jogador.sendMessage(cor("§cJogador \"" + args[1] + "\" não encontrado."));
+                return;
+            }
+            plugin.getLimiteManager().resetar(alvo.getUniqueId());
+            jogador.sendMessage(cor("§aLimite diário de §f" + alvo.getName() + " §azerado."));
+            return;
+        }
+
         if (args.length < 1 || !args[0].equalsIgnoreCase("reload")) {
-            jogador.sendMessage(cor("§cUso: §f/pix admin reload"));
+            jogador.sendMessage(cor("§cUso: §f/pix admin <reload|resetlimite <jogador>>"));
             return;
         }
 
@@ -376,9 +417,22 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage(cor("§f/pix pendentes §7- lista cobranças em aberto"));
         jogador.sendMessage(cor("§f/pix historico [qtd] §7- suas últimas transações"));
         jogador.sendMessage(cor("§f/pix qrcode <valor> [motivo] §7- anuncia um pagamento pra qualquer um clicar"));
+        jogador.sendMessage(cor("§f/pix limite §7- quanto você ainda pode enviar hoje"));
         if (jogador.hasPermission("pix.admin")) {
             jogador.sendMessage(cor("§f/pix admin reload §7- (staff) recarrega o config.yml"));
+            jogador.sendMessage(cor("§f/pix admin resetlimite <jogador> §7- (staff) zera o limite diário de alguém"));
         }
+    }
+
+    /** Bloqueia (com mensagem) um envio que passaria do limite diário. Retorna true se pode seguir. */
+    private boolean verificarLimite(Player jogador, double valor) {
+        LimiteManager limites = plugin.getLimiteManager();
+        if (limites.podeEnviar(jogador, valor)) return true;
+
+        jogador.sendMessage(cor("§cEsse envio passa do seu limite diário de §f" + formatarValor(limites.getLimiteDiario())
+                + "§c. Você ainda pode enviar §f" + formatarValor(limites.getDisponivelHoje(jogador.getUniqueId()))
+                + " §choje (zera à meia-noite)."));
+        return false;
     }
 
     // ---------------------------------------------------------------------
@@ -440,7 +494,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         List<String> opcoes = new ArrayList<>();
 
         if (args.length == 1) {
-            opcoes.addAll(Arrays.asList("pagar", "receber", "aceitar", "recusar", "pendentes", "cancelar", "historico", "qrcode"));
+            opcoes.addAll(Arrays.asList("pagar", "receber", "aceitar", "recusar", "pendentes", "cancelar", "historico", "qrcode", "limite"));
             if (sender.hasPermission("pix.admin")) {
                 opcoes.add("admin");
             }
@@ -453,6 +507,11 @@ public class PixCommand implements CommandExecutor, TabCompleter {
                 }
             } else if (sub.equals("admin")) {
                 opcoes.add("reload");
+                opcoes.add("resetlimite");
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("resetlimite")) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                opcoes.add(p.getName());
             }
         }
 

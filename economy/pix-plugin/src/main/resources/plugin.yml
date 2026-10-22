@@ -9,7 +9,7 @@ softdepend: [Vault]
 commands:
   pix:
     description: Sistema de pagamentos entre jogadores.
-    usage: "Uso: /pix <pagar|receber|aceitar|recusar|pendentes|cancelar|historico|qrcode>"
+    usage: "Uso: /pix <pagar|receber|aceitar|recusar|pendentes|cancelar|historico|qrcode|limite>"
     permission: pix.usar
     permission-message: "§cVocê não tem permissão para usar o Pix."
 
@@ -18,5 +18,8 @@ permissions:
     description: Permite usar o sistema de Pix.
     default: true
   pix.admin:
-    description: Permite recarregar a configuração do Pix (ex: taxa de transação).
+    description: Permite recarregar a configuração do Pix (ex: taxa de transação) e zerar limites diários.
+    default: op
+  pix.limite.ignorar:
+    description: Não tem limite diário de transferência.
     default: op

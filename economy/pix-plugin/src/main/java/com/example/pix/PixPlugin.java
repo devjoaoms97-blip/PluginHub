@@ -8,12 +8,14 @@ public class PixPlugin extends JavaPlugin {
 
     private Economy economy = null;
     private ChargeManager chargeManager;
+    private LimiteManager limiteManager;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
         this.chargeManager = new ChargeManager(this);
+        this.limiteManager = new LimiteManager(this);
 
         if (!setupEconomy()) {
             getLogger().warning("Vault (ou um plugin de economia) não foi encontrado!");
@@ -33,6 +35,9 @@ public class PixPlugin extends JavaPlugin {
     public void onDisable() {
         if (chargeManager != null) {
             chargeManager.salvar();
+        }
+        if (limiteManager != null) {
+            limiteManager.salvar();
         }
         getLogger().info("PixPlugin desativado!");
     }
@@ -55,6 +60,10 @@ public class PixPlugin extends JavaPlugin {
 
     public ChargeManager getChargeManager() {
         return chargeManager;
+    }
+
+    public LimiteManager getLimiteManager() {
+        return limiteManager;
     }
 
     /**
