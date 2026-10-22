@@ -96,6 +96,7 @@ public class ShopGUIListener implements Listener {
         plugin.getEconomy().depositPlayer(jogador, totalLiquido);
         plugin.getShopManager().salvar();
         plugin.getPixIntegration().registrarTransacao(jogador, totalLiquido, true, "Venda na loja");
+        plugin.getMissoesIntegration().vendeu(jogador, item.getMaterial(), aVender);
 
         jogador.sendMessage("§aVendeu §f" + aVender + "x " + item.getMaterial().name()
                 + " §apor §f" + formatar(totalLiquido) + " §7(imposto: " + formatar(totalBruto - totalLiquido) + ")");
@@ -131,6 +132,7 @@ public class ShopGUIListener implements Listener {
         sobras.values().forEach(sobra -> jogador.getWorld().dropItemNaturally(jogador.getLocation(), sobra));
 
         plugin.getPixIntegration().registrarTransacao(jogador, custoTotal, false, "Compra na loja");
+        plugin.getMissoesIntegration().comprou(jogador, item.getMaterial(), quantidade);
 
         jogador.sendMessage("§aComprou §f" + quantidade + "x " + item.getMaterial().name()
                 + " §apor §f" + formatar(custoTotal)

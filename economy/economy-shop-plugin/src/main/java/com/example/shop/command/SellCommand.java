@@ -10,8 +10,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class SellCommand implements CommandExecutor, TabCompleter {
 
@@ -67,6 +69,7 @@ public class SellCommand implements CommandExecutor, TabCompleter {
     private void venderTudoDoInventario(Player jogador) {
         double totalBrutoGeral = 0;
         int itensGerais = 0;
+        Map<Material, Integer> vendidos = new EnumMap<>(Material.class);
 
         for (ItemStack stack : jogador.getInventory().getContents()) {
             if (stack == null || stack.getType().isAir()) continue;
@@ -79,6 +82,7 @@ public class SellCommand implements CommandExecutor, TabCompleter {
 
             totalBrutoGeral += total;
             itensGerais += quantidade;
+            vendidos.merge(stack.getType(), quantidade, Integer::sum);
             stack.setAmount(0);
         }
 
@@ -93,6 +97,7 @@ public class SellCommand implements CommandExecutor, TabCompleter {
         plugin.getEconomy().depositPlayer(jogador, totalLiquido);
         plugin.getShopManager().salvar();
         plugin.getPixIntegration().registrarTransacao(jogador, totalLiquido, true, "Venda na loja (lote)");
+        vendidos.forEach((material, quantidade) -> plugin.getMissoesIntegration().vendeu(jogador, material, quantidade));
 
         jogador.sendMessage("§aVocê vendeu §f" + itensGerais + " itens §apor um total de §f" + formatar(totalLiquido)
                 + " §7(imposto: " + formatar(totalBrutoGeral - totalLiquido) + ")");
@@ -114,6 +119,7 @@ public class SellCommand implements CommandExecutor, TabCompleter {
         plugin.getEconomy().depositPlayer(jogador, totalLiquido);
         plugin.getShopManager().salvar();
         plugin.getPixIntegration().registrarTransacao(jogador, totalLiquido, true, "Venda na loja");
+        plugin.getMissoesIntegration().vendeu(jogador, material, quantidade);
 
         jogador.sendMessage("§aVocê vendeu §f" + quantidade + "x " + nomeAmigavel(material)
                 + " §apor §f" + formatar(totalLiquido) + " §7(imposto: " + formatar(totalBruto - totalLiquido) + ")");

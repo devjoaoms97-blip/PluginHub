@@ -91,6 +91,7 @@ public class BuyCommand implements CommandExecutor, TabCompleter {
         sobras.values().forEach(sobra -> jogador.getWorld().dropItemNaturally(jogador.getLocation(), sobra));
 
         plugin.getPixIntegration().registrarTransacao(jogador, custoTotal, false, "Compra na loja");
+        plugin.getMissoesIntegration().comprou(jogador, material, quantidade);
 
         jogador.sendMessage("§aVocê comprou §f" + quantidade + "x " + nomeAmigavel(material)
                 + " §apor §f" + formatar(custoTotal)
