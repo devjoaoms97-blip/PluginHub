@@ -142,16 +142,16 @@ Set-Propriedades $props $valores
 # 5. Nossos plugins
 & (Join-Path $Destino 'scripts\atualizar-plugins.ps1')
 
-# 6. Configs de teste dos plugins (só cria; -SobrescreverConfigs troca os que já existem)
-Get-ChildItem (Join-Path $base 'configs') -Directory | ForEach-Object {
-    $pasta = Join-Path $Destino "plugins\$($_.Name)"
-    New-Item -ItemType Directory -Force -Path $pasta | Out-Null
-    Get-ChildItem $_.FullName -File | ForEach-Object {
-        $alvo = Join-Path $pasta $_.Name
-        if ($SobrescreverConfigs -or -not (Test-Path -LiteralPath $alvo)) {
-            Copy-Item -LiteralPath $_.FullName -Destination $alvo -Force
-            Write-Host "  config: $($_.Directory.Name)\$($_.Name)"
-        }
+# 6. Configs de teste dos plugins, com subpastas (só cria; -SobrescreverConfigs troca os que já existem).
+#    Inclui os grupos de VIP do LuckPerms (configs\LuckPerms\yaml-storage\groups), que dão os perks do /vip.
+$configs = Join-Path $base 'configs'
+Get-ChildItem $configs -File -Recurse | ForEach-Object {
+    $relativo = $_.FullName.Substring($configs.Length + 1)
+    $alvo = Join-Path $Destino "plugins\$relativo"
+    if ($SobrescreverConfigs -or -not (Test-Path -LiteralPath $alvo)) {
+        New-Item -ItemType Directory -Force -Path (Split-Path $alvo) | Out-Null
+        Copy-Item -LiteralPath $_.FullName -Destination $alvo -Force
+        Write-Host "  config: $relativo"
     }
 }
 

@@ -1,0 +1,12 @@
+name: vip_ouro
+permissions:
+- vip.desconto.ouro
+- vip.perk.feed
+- vip.perk.fly
+- vip.perk.heal
+- vip.perk.kit
+- vip.perk.particulas
+- vip.perk.warp
+prefixes:
+- '&6[Ouro] ':
+    priority: 1

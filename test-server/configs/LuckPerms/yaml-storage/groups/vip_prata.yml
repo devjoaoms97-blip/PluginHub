@@ -1,0 +1,11 @@
+name: vip_prata
+permissions:
+- vip.desconto.prata
+- vip.perk.feed
+- vip.perk.fly
+- vip.perk.heal
+- vip.perk.kit
+- vip.perk.particulas
+prefixes:
+- '&f[&bPrata&f] ':
+    priority: 1

@@ -1,0 +1,10 @@
+name: vip_bronze
+permissions:
+- vip.desconto.bronze
+- vip.perk.feed
+- vip.perk.heal
+- vip.perk.kit
+- vip.perk.particulas
+prefixes:
+- '&7[Bronze] ':
+    priority: 1

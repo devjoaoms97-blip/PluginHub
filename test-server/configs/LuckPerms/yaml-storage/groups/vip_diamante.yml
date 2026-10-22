@@ -1,0 +1,12 @@
+name: vip_diamante
+permissions:
+- vip.desconto.diamante
+- vip.perk.feed
+- vip.perk.fly
+- vip.perk.heal
+- vip.perk.kit
+- vip.perk.particulas
+- vip.perk.warp
+prefixes:
+- '&b[Diamante] ':
+    priority: 1
