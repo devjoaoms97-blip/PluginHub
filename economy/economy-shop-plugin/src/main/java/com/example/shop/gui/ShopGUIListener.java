@@ -2,6 +2,7 @@ package com.example.shop.gui;
 
 import com.example.shop.ShopPlugin;
 import com.example.shop.model.ShopItem;
+import com.example.shop.util.RankupIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -90,6 +91,8 @@ public class ShopGUIListener implements Listener {
 
         removerDoInventario(jogador, item.getMaterial(), aVender);
 
+        double bonus = plugin.getRankupIntegration().multiplicador(jogador);
+        totalBruto *= bonus;
         double imposto = plugin.getConfig().getDouble("imposto.percentual-venda", 2.0);
         double totalLiquido = totalBruto * (1 - imposto / 100.0);
 
@@ -99,7 +102,8 @@ public class ShopGUIListener implements Listener {
         plugin.getMissoesIntegration().vendeu(jogador, item.getMaterial(), aVender);
 
         jogador.sendMessage("§aVendeu §f" + aVender + "x " + item.getMaterial().name()
-                + " §apor §f" + formatar(totalLiquido) + " §7(imposto: " + formatar(totalBruto - totalLiquido) + ")");
+                + " §apor §f" + formatar(totalLiquido) + " §7(imposto: " + formatar(totalBruto - totalLiquido) + ")"
+                + RankupIntegration.textoBonus(bonus));
     }
 
     private void venderTudoDoTipo(Player jogador, ShopItem item) {

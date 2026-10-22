@@ -9,6 +9,7 @@ import com.example.shop.manager.PriceHistoryManager;
 import com.example.shop.manager.PriceRegenTask;
 import com.example.shop.manager.ShopManager;
 import com.example.shop.util.MissoesIntegration;
+import com.example.shop.util.RankupIntegration;
 import com.example.shop.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ public class ShopPlugin extends JavaPlugin {
     private PriceHistoryManager priceHistoryManager;
     private PixIntegration pixIntegration;
     private MissoesIntegration missoesIntegration;
+    private RankupIntegration rankupIntegration;
 
     @Override
     public void onEnable() {
@@ -43,6 +45,7 @@ public class ShopPlugin extends JavaPlugin {
         this.priceHistoryManager = new PriceHistoryManager(this);
         this.pixIntegration = new PixIntegration(this);
         this.missoesIntegration = new MissoesIntegration(this);
+        this.rankupIntegration = new RankupIntegration(this);
 
         ShopCommand shopCommand = new ShopCommand(this);
         getCommand("shop").setExecutor(shopCommand);
@@ -150,6 +153,10 @@ public class ShopPlugin extends JavaPlugin {
 
     public MissoesIntegration getMissoesIntegration() {
         return missoesIntegration;
+    }
+
+    public RankupIntegration getRankupIntegration() {
+        return rankupIntegration;
     }
 
     public PixIntegration getPixIntegration() {

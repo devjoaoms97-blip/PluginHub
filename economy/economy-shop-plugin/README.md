@@ -58,6 +58,10 @@ Uma pequena porcentagem de toda venda **desaparece** (não vai pra ninguém, nem
 
 `/shop admin list` agora marca com `[NO PISO]` todo item cujo preço de venda atual já bateu no `minimo` configurado, e mostra um resumo (quantos itens e qual %) no final. Isso é um sinal de que a oferta de venda daquele item está acima do que `passo` + regeneração conseguem absorver — ou seja, o preço está permanentemente "no chão" e o mínimo provavelmente está alto demais (ou o imposto está baixo demais) pra segurar aquele volume. Use `/shop admin list piso` pra ver só os itens nessa situação, sem precisar rolar a lista inteira.
 
+## Bônus do rank (RankupPlugin)
+
+Se o RankupPlugin estiver instalado, toda venda (`/sell`, `/sell all` e o menu) é multiplicada pelo bônus do rank do jogador (`multiplicador-venda` no config do Rankup). Com 1.25, ele recebe 25% a mais. O bônus entra antes do imposto, e a mensagem de venda mostra quanto foi. A integração é por reflexão: sem o RankupPlugin, nada muda.
+
 ## Integração com as missões (MissoesPlugin)
 
 Se o MissoesPlugin estiver instalado, toda venda pra loja (`/sell`, `/sell all` e o menu) conta pra missão de vender. As compras também são avisadas, pra que revender no mesmo dia o que acabou de comprar não conte. A integração é por reflexão, como a do Pix: sem o MissoesPlugin, nada muda.

@@ -2,6 +2,7 @@ package com.example.shop.command;
 
 import com.example.shop.ShopPlugin;
 import com.example.shop.model.ShopItem;
+import com.example.shop.util.RankupIntegration;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -91,6 +92,8 @@ public class SellCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        double bonus = plugin.getRankupIntegration().multiplicador(jogador);
+        totalBrutoGeral *= bonus;
         double imposto = plugin.getConfig().getDouble("imposto.percentual-venda", 2.0);
         double totalLiquido = totalBrutoGeral * (1 - imposto / 100.0);
 
@@ -100,7 +103,7 @@ public class SellCommand implements CommandExecutor, TabCompleter {
         vendidos.forEach((material, quantidade) -> plugin.getMissoesIntegration().vendeu(jogador, material, quantidade));
 
         jogador.sendMessage("§aVocê vendeu §f" + itensGerais + " itens §apor um total de §f" + formatar(totalLiquido)
-                + " §7(imposto: " + formatar(totalBrutoGeral - totalLiquido) + ")");
+                + " §7(imposto: " + formatar(totalBrutoGeral - totalLiquido) + ")" + RankupIntegration.textoBonus(bonus));
     }
 
     /** Vende N unidades de um item, empurrando o preço pra baixo unidade por unidade, e retorna o total bruto. */
@@ -113,6 +116,8 @@ public class SellCommand implements CommandExecutor, TabCompleter {
     }
 
     private void creditarEAvisar(Player jogador, Material material, int quantidade, double totalBruto) {
+        double bonus = plugin.getRankupIntegration().multiplicador(jogador);
+        totalBruto *= bonus;
         double imposto = plugin.getConfig().getDouble("imposto.percentual-venda", 2.0);
         double totalLiquido = totalBruto * (1 - imposto / 100.0);
 
@@ -122,7 +127,8 @@ public class SellCommand implements CommandExecutor, TabCompleter {
         plugin.getMissoesIntegration().vendeu(jogador, material, quantidade);
 
         jogador.sendMessage("§aVocê vendeu §f" + quantidade + "x " + nomeAmigavel(material)
-                + " §apor §f" + formatar(totalLiquido) + " §7(imposto: " + formatar(totalBruto - totalLiquido) + ")");
+                + " §apor §f" + formatar(totalLiquido) + " §7(imposto: " + formatar(totalBruto - totalLiquido) + ")"
+                + RankupIntegration.textoBonus(bonus));
     }
 
     private String nomeAmigavel(Material material) {

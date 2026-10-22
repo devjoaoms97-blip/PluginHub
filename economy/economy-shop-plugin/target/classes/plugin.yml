@@ -4,7 +4,7 @@ main: com.example.shop.ShopPlugin
 api-version: '26.2'
 author: Você
 description: Loja do servidor com preço de venda dinâmico (oferta/demanda), integrada ao Vault.
-softdepend: [Vault]
+softdepend: [Vault, RankupPlugin]
 
 commands:
   shop:

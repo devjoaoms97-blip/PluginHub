@@ -62,3 +62,5 @@ tipos:
     "LojaListener#comprar": "Compra em barraca (placa [Vender])"
     "LojaListener#venderPraBarraca": "Venda pra barraca (placa [Comprar])"
     "BarracaManager#renovarAutomaticamente": "Renovação automática de barraca"
+  RankupPlugin:
+    "RankupCommand#subir": "Rankup"
