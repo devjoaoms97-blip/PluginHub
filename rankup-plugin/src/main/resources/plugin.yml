@@ -1,0 +1,34 @@
+name: RankupPlugin
+version: '1.0.0'
+main: com.example.rankup.RankupPlugin
+api-version: '26.2'
+author: Você
+description: Ranks medievais pagos com coins e minas que se regeneram, liberadas pelo rank.
+softdepend: [Vault, PixPlugin]
+
+commands:
+  rankup:
+    description: Sobe pro próximo rank.
+    usage: "Uso: /rankup [max]"
+    permission: rankup.usar
+    permission-message: "§cVocê não tem permissão para subir de rank."
+  ranks:
+    description: Lista os ranks, com preço e bônus de venda.
+    usage: "Uso: /ranks [jogador]"
+    aliases: [rank]
+    permission: rankup.usar
+    permission-message: "§cVocê não tem permissão para ver os ranks."
+  mina:
+    description: Lista as minas e teleporta pra uma delas.
+    usage: "Uso: /mina [id]"
+    aliases: [minas]
+    permission: rankup.usar
+    permission-message: "§cVocê não tem permissão para usar as minas."
+
+permissions:
+  rankup.usar:
+    description: Permite subir de rank, ver os ranks e ir pras minas.
+    default: true
+  rankup.admin:
+    description: Cria e configura minas, muda o rank de jogadores e ignora a proteção das minas.
+    default: op

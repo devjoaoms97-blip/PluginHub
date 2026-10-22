@@ -1,0 +1,104 @@
+# Configuração do RankupPlugin
+
+# Ranks em ordem, do primeiro (onde todo jogador começa) ao último. O preço é o custo pra
+# SUBIR pra aquele rank (o do primeiro é ignorado). "multiplicador-venda" é o bônus no /sell da
+# loja (EconomyShopPlugin): 1.25 = vende 25% mais caro. Cores com &.
+# Trocar o id de um rank depois de ter jogadores nele faz eles voltarem pro primeiro rank.
+ranks:
+  - id: campones
+    nome: "Camponês"
+    cor: "&7"
+    preco: 0
+    multiplicador-venda: 1.0
+  - id: fazendeiro
+    nome: "Fazendeiro"
+    cor: "&a"
+    preco: 5000
+    multiplicador-venda: 1.05
+  - id: lenhador
+    nome: "Lenhador"
+    cor: "&2"
+    preco: 12500
+    multiplicador-venda: 1.10
+  - id: ferreiro
+    nome: "Ferreiro"
+    cor: "&8"
+    preco: 30000
+    multiplicador-venda: 1.15
+  - id: mercador
+    nome: "Mercador"
+    cor: "&e"
+    preco: 75000
+    multiplicador-venda: 1.20
+  - id: escudeiro
+    nome: "Escudeiro"
+    cor: "&f"
+    preco: 180000
+    multiplicador-venda: 1.25
+  - id: clerigo
+    nome: "Clérigo"
+    cor: "&b"
+    preco: 400000
+    multiplicador-venda: 1.30
+  - id: cavaleiro
+    nome: "Cavaleiro"
+    cor: "&9"
+    preco: 900000
+    multiplicador-venda: 1.40
+  - id: barao
+    nome: "Barão"
+    cor: "&d"
+    preco: 2000000
+    multiplicador-venda: 1.50
+  - id: conde
+    nome: "Conde"
+    cor: "&5"
+    preco: 4500000
+    multiplicador-venda: 1.60
+  - id: duque
+    nome: "Duque"
+    cor: "&6"
+    preco: 10000000
+    multiplicador-venda: 1.75
+  - id: rei
+    nome: "Rei"
+    cor: "&c&l"
+    preco: 25000000
+    multiplicador-venda: 2.0
+
+# Comandos rodados pelo console quando alguém sobe de rank (também no /ranks admin set).
+# %jogador% = nick, %rank% = id do rank novo, %rank_anterior% = id do anterior.
+# Exemplo com LuckPerms (crie os grupos rank_<id> antes):
+#   - "lp user %jogador% parent remove rank_%rank_anterior%"
+#   - "lp user %jogador% parent add rank_%rank%"
+comandos-ao-subir: []
+
+# Anuncia pro servidor inteiro quando alguém sobe de rank.
+anunciar-rankup: true
+
+chat:
+  # Mostra o rank antes do nome no chat. Convive com as tags do clã e do VIP:
+  # [Rank] [CLÃ] [VIP Ouro] Nome: mensagem
+  tag: true
+  formato: "&8[%rank%&8]"
+
+minas:
+  # Valores de toda mina nova (cada uma pode mudar com /mina admin intervalo|percentual).
+  intervalo-minutos-padrao: 15
+  # Reseta quando essa % da mina tiver sido minerada. 0 = só pelo tempo.
+  reset-percentual-padrao: 80
+  # Aviso pra quem está dentro da mina, X segundos antes do reset por tempo.
+  aviso-segundos: [30, 10]
+  # Quantos blocos o reset troca por tick. Menos = reset mais lento, porém mais leve.
+  blocos-por-tick: 20000
+  # Reseta todas as minas quando o servidor liga (a contagem do que foi minerado não é salva).
+  resetar-ao-ligar: true
+
+protecao:
+  # Mundos onde, FORA das minas, ninguém quebra nem coloca blocos (exceto quem tem rankup.admin).
+  # Ex: [world] num mundo de rankup em que só as minas são mineráveis. Vazio = sem proteção.
+  mundos: []
+
+integracao:
+  # Registra o pagamento do rankup no /pix historico.
+  pix: true
