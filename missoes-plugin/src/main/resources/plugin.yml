@@ -1,0 +1,23 @@
+name: MissoesPlugin
+version: '1.0.0'
+main: com.example.missoes.MissoesPlugin
+api-version: '26.2'
+author: Você
+description: Missões diárias sorteadas (minerar, colher, matar, pescar) com recompensa em coins e XP de skill.
+softdepend: [Vault, SkillsPlugin, PixPlugin]
+
+commands:
+  missoes:
+    description: Mostra suas missões de hoje.
+    usage: "Uso: /missoes"
+    aliases: [missao, quests]
+    permission: missoes.usar
+    permission-message: "§cVocê não tem permissão para fazer missões."
+
+permissions:
+  missoes.usar:
+    description: Recebe e faz missões diárias.
+    default: true
+  missoes.admin:
+    description: Recarrega o pool de missões e sorteia de novo as missões de um jogador.
+    default: op

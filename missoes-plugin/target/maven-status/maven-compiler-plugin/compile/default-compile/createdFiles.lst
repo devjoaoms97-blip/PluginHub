@@ -1,0 +1,10 @@
+com\example\missoes\model\TipoMissao.class
+com\example\missoes\listener\ProgressoListener$1.class
+com\example\missoes\model\Missao.class
+com\example\missoes\model\ProgressoJogador.class
+com\example\missoes\MissoesPlugin.class
+com\example\missoes\manager\MissaoManager.class
+com\example\missoes\util\PixIntegration.class
+com\example\missoes\command\MissoesCommand.class
+com\example\missoes\util\SkillsIntegration.class
+com\example\missoes\listener\ProgressoListener.class

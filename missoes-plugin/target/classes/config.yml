@@ -1,0 +1,121 @@
+# Configuração do MissoesPlugin
+#
+# Toda meia-noite (horário do servidor), cada jogador recebe "missoes-por-dia" missões
+# sorteadas do pool abaixo, sem repetir. Completar uma paga na hora; completar todas paga
+# o bônus. A recompensa em coins é dinheiro NOVO entrando na economia — use o
+# /economia (PainelEconomiaPlugin) pra acompanhar quanto as missões estão injetando.
+
+missoes-por-dia: 3
+
+bonus-todas:
+  coins: 300
+  # Opcional: XP de uma skill do SkillsPlugin (nome da skill, ex: DEFESA). Sem o SkillsPlugin,
+  # o XP é ignorado.
+  skill: AGILIDADE
+  xp: 150
+
+anti-farm:
+  # Mob nascido de spawner não conta pra missão de matar (evita farm AFK).
+  ignorar-mobs-de-spawner: true
+
+# ---------------------------------------------------------------------------------
+# POOL DE MISSÕES
+#   id:         único, sem espaço
+#   tipo:       minerar | colher | matar | pescar
+#   alvos:      lista de materiais (minerar/colher/pescar) ou tipos de mob (matar).
+#               Sem "alvos" = qualquer um conta.
+#   quantidade: quanto precisa
+#   descricao:  o que aparece pro jogador
+#   coins:      recompensa em dinheiro
+#   skill + xp: (opcional) XP de skill do SkillsPlugin
+#
+# "minerar" não conta bloco colocado por jogador; "colher" só conta planta madura.
+# ---------------------------------------------------------------------------------
+pool:
+  - id: minerar_pedra
+    tipo: minerar
+    alvos: [STONE, DEEPSLATE, COBBLESTONE, COBBLED_DEEPSLATE]
+    quantidade: 256
+    descricao: "Minerar 256 pedras"
+    coins: 150
+
+  - id: minerar_carvao
+    tipo: minerar
+    alvos: [COAL_ORE, DEEPSLATE_COAL_ORE]
+    quantidade: 32
+    descricao: "Minerar 32 minérios de carvão"
+    coins: 200
+
+  - id: minerar_ferro
+    tipo: minerar
+    alvos: [IRON_ORE, DEEPSLATE_IRON_ORE]
+    quantidade: 24
+    descricao: "Minerar 24 minérios de ferro"
+    coins: 300
+
+  - id: minerar_diamante
+    tipo: minerar
+    alvos: [DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE]
+    quantidade: 5
+    descricao: "Minerar 5 minérios de diamante"
+    coins: 600
+
+  - id: cortar_madeira
+    tipo: minerar
+    alvos: [OAK_LOG, BIRCH_LOG, SPRUCE_LOG, JUNGLE_LOG, ACACIA_LOG, DARK_OAK_LOG, MANGROVE_LOG, CHERRY_LOG, PALE_OAK_LOG]
+    quantidade: 64
+    descricao: "Cortar 64 troncos"
+    coins: 150
+
+  - id: colher_trigo
+    tipo: colher
+    alvos: [WHEAT]
+    quantidade: 64
+    descricao: "Colher 64 trigos maduros"
+    coins: 150
+
+  - id: colher_cenoura_batata
+    tipo: colher
+    alvos: [CARROTS, POTATOES]
+    quantidade: 64
+    descricao: "Colher 64 cenouras ou batatas maduras"
+    coins: 150
+
+  - id: matar_zumbis
+    tipo: matar
+    alvos: [ZOMBIE, HUSK, DROWNED, ZOMBIE_VILLAGER]
+    quantidade: 20
+    descricao: "Matar 20 zumbis"
+    coins: 250
+    skill: ESPADAS
+    xp: 200
+
+  - id: matar_esqueletos
+    tipo: matar
+    alvos: [SKELETON, STRAY, BOGGED]
+    quantidade: 15
+    descricao: "Matar 15 esqueletos"
+    coins: 250
+    skill: ARQUEIRO
+    xp: 200
+
+  - id: matar_creepers
+    tipo: matar
+    alvos: [CREEPER]
+    quantidade: 10
+    descricao: "Matar 10 creepers"
+    coins: 300
+    skill: DEFESA
+    xp: 200
+
+  - id: matar_qualquer
+    tipo: matar
+    quantidade: 50
+    descricao: "Matar 50 mobs (qualquer tipo)"
+    coins: 300
+
+  - id: pescar
+    tipo: pescar
+    quantidade: 15
+    descricao: "Pescar 15 vezes"
+    coins: 200
