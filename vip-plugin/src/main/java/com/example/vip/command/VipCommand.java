@@ -288,8 +288,8 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             player.sendMessage("§cPreço inválido: " + args[1]);
             return;
         }
-        if (preco < 0) {
-            player.sendMessage("§cPreço não pode ser negativo.");
+        if (!Double.isFinite(preco) || preco < 0) { // parseDouble aceita NaN/Infinity, e NaN passa por qualquer comparação com zero
+            player.sendMessage("§cPreço inválido.");
             return;
         }
 

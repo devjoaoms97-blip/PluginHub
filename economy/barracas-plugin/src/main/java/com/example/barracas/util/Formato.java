@@ -36,7 +36,8 @@ public final class Formato {
     /**
      * Lê um preço digitado na placa: "150", "R$ 150", "150,50", "1.500,50". Com vírgula, ela é
      * o separador decimal (formato brasileiro, pontos viram separador de milhar); sem vírgula,
-     * o ponto é decimal. Retorna -1 se não der pra ler.
+     * o ponto é decimal. Retorna -1 se não der pra ler (inclusive NaN/Infinity, que o
+     * parseDouble aceitaria e passariam por qualquer checagem de maior que zero).
      */
     public static double lerPreco(String texto) {
         if (texto == null) return -1;
@@ -45,7 +46,8 @@ public final class Formato {
             limpo = limpo.replace(".", "").replace(",", ".");
         }
         try {
-            return Double.parseDouble(limpo);
+            double valor = Double.parseDouble(limpo);
+            return Double.isFinite(valor) ? valor : -1;
         } catch (NumberFormatException e) {
             return -1;
         }

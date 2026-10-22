@@ -471,7 +471,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             jogador.sendMessage(cor("§cValor inválido. Use um número, ex: 100.50"));
             return null;
         }
-        if (valor <= 0) {
+        if (!Double.isFinite(valor) || valor <= 0) { // parseDouble aceita NaN/Infinity, e NaN passa por qualquer comparação com zero
             jogador.sendMessage(cor("§cO valor deve ser maior que zero."));
             return null;
         }

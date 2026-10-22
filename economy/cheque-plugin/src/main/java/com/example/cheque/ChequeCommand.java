@@ -52,7 +52,7 @@ public class ChequeCommand implements CommandExecutor {
             return true;
         }
 
-        if (valor <= 0) {
+        if (!Double.isFinite(valor) || valor <= 0) { // parseDouble aceita NaN/Infinity, e NaN passa por qualquer comparação com zero
             player.sendMessage(ChatColor.RED + "O valor do cheque deve ser maior que zero.");
             return true;
         }
