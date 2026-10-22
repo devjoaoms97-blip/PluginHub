@@ -1,0 +1,23 @@
+name: BarracasPlugin
+version: '1.0.0'
+main: com.example.barracas.BarracasPlugin
+api-version: '26.2'
+author: Você
+description: Mercado de barracas alugadas no spawn, com lojas por placa em baús e leilão das barracas especiais.
+softdepend: [Vault, PixPlugin]
+
+commands:
+  barraca:
+    description: Aluga e gerencia barracas do mercado.
+    usage: "Uso: /barraca <lista|info|alugar|renovar|lance|sair|retirar>"
+    aliases: [barracas, mercado]
+    permission: barracas.usar
+    permission-message: "§cVocê não tem permissão para usar as barracas."
+
+permissions:
+  barracas.usar:
+    description: Permite alugar barracas, dar lances e comprar nas lojas.
+    default: true
+  barracas.admin:
+    description: Cria/remove barracas, encerra aluguéis e ignora a proteção da área.
+    default: op

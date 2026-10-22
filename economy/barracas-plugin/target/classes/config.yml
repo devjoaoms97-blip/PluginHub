@@ -1,0 +1,56 @@
+# Configuração do BarracasPlugin
+
+aluguel:
+  # Preço do aluguel das barracas normais. Também é o LANCE MÍNIMO do leilão das especiais.
+  # O dinheiro do aluguel vai pro servidor (some da economia) — funciona como sink.
+  preco: 500.0
+  # Quanto tempo vale um aluguel (e cada renovação).
+  duracao-horas: 6
+  # Até quanto tempo de aluguel dá pra acumular renovando antes de vencer (só normais).
+  # Ex: com 6h de duração e 12 aqui, só dá pra renovar quando faltar menos de 6h.
+  renovacao-maxima-horas: 12
+  # Avisa o dono (se estiver online) quando faltar esse tanto pro aluguel vencer. 0 desativa.
+  aviso-minutos-antes: 30
+
+barracas:
+  normal:
+    max-baus: 4
+  especial:
+    max-baus: 8
+
+leilao:
+  # Quanto tempo dura o leilão de uma barraca especial que ficou livre.
+  duracao-minutos: 10
+  # Cada novo lance precisa ser pelo menos esse % acima do maior lance atual.
+  incremento-minimo-percentual: 5
+  # Lance nos últimos X segundos estende o leilão pra X segundos a partir do lance,
+  # pra ninguém ganhar "no último segundo" sem chance de resposta. 0 desativa.
+  anti-snipe-segundos: 30
+
+vendas:
+  # % descontado de cada venda nas barracas (o comprador paga o preço cheio, o dono recebe
+  # o preço menos a taxa). O valor da taxa some da economia. 0 desativa.
+  taxa-percentual: 5.0
+
+retirada:
+  # Por quantos dias a caixa de retirada guarda os itens dos baús depois que o aluguel acaba.
+  dias-guardado: 7
+
+vip-descontos:
+  # Desconto no aluguel (preço de tabela, não no lance de leilão) por permissão — mesmo
+  # formato da EconomyShop. É uma LISTA de propósito (chave com ponto viraria seção aninhada).
+  ativado: true
+  permissoes:
+    - permissao: "vip.desconto.diamante"
+      percentual: 20
+    - permissao: "vip.desconto.ouro"
+      percentual: 15
+    - permissao: "vip.desconto.prata"
+      percentual: 10
+    - permissao: "vip.desconto.bronze"
+      percentual: 5
+
+integracao:
+  # Registra aluguéis, leilões ganhos e compras nas barracas no /pix historico (se o PixPlugin
+  # estiver instalado).
+  pix: true

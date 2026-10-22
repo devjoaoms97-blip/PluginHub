@@ -1,0 +1,13 @@
+com\example\barracas\util\Formato.class
+com\example\barracas\command\BarracaCommand.class
+com\example\barracas\listener\JogadorListener.class
+com\example\barracas\manager\RetiradaManager$Entrada.class
+com\example\barracas\model\BlocoPos.class
+com\example\barracas\listener\ProtecaoListener.class
+com\example\barracas\BarracasPlugin.class
+com\example\barracas\util\PixIntegration.class
+com\example\barracas\manager\RetiradaManager.class
+com\example\barracas\model\Leilao.class
+com\example\barracas\manager\BarracaManager.class
+com\example\barracas\listener\LojaListener.class
+com\example\barracas\model\Barraca.class
