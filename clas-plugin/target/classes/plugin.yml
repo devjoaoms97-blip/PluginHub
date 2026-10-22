@@ -1,0 +1,27 @@
+name: ClasPlugin
+version: '1.0.0'
+main: com.example.clas.ClasPlugin
+api-version: '26.2'
+author: Você
+description: Clãs com tag no chat, cargos, banco compartilhado, fogo amigo desligado e ranking de abates.
+softdepend: [Vault]
+
+commands:
+  cla:
+    description: Cria e gerencia clãs.
+    usage: "Uso: /cla <criar|convidar|aceitar|info|top|banco|...>"
+    aliases: [clan, clas]
+    permission: clas.usar
+    permission-message: "§cVocê não tem permissão para usar clãs."
+  cc:
+    description: Manda uma mensagem só pro seu clã.
+    usage: "Uso: /cc <mensagem>"
+    permission: clas.usar
+
+permissions:
+  clas.usar:
+    description: Cria, entra e participa de clãs.
+    default: true
+  clas.admin:
+    description: Desfaz clãs (devolvendo o banco ao líder) e recarrega a configuração.
+    default: op

@@ -1,0 +1,8 @@
+com\example\clas\listener\ClaListener.class
+com\example\clas\model\Cargo.class
+com\example\clas\model\Cla$Lancamento.class
+com\example\clas\ClasPlugin.class
+com\example\clas\manager\ClaManager.class
+com\example\clas\command\ClaCommand$ChatColorStrip.class
+com\example\clas\model\Cla.class
+com\example\clas\command\ClaCommand.class

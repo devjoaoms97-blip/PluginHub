@@ -1,0 +1,19 @@
+# Configuração do ClasPlugin
+
+criacao:
+  # Quanto custa fundar um clã. O dinheiro vai pro servidor (some da economia). 0 = grátis.
+  custo: 5000.0
+
+# Máximo de membros por clã (contando o líder).
+membros-maximo: 10
+
+# Por quantos minutos um convite vale.
+convite-expira-minutos: 5
+
+banco:
+  # Se true, oficiais também podem sacar do banco do clã (não só o líder).
+  oficial-pode-sacar: false
+
+tag:
+  # Como a tag aparece no chat e nos anúncios. %tag% vira a tag do clã. Códigos de cor com &.
+  formato: "&8[&b%tag%&8]"
