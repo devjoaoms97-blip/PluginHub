@@ -62,6 +62,9 @@ Só os plugins com valores mudados têm config aqui. Os outros usam o padrão do
 | PainelEconomiaPlugin | `alerta.minimo: 100` | Conseguir disparar o alerta |
 | BossPlugin | Vida de 500 (800 no Wither) | Matar rápido |
 | MissoesPlugin | Quantidades em cerca de 1/10 | Completar rápido |
+| EconomyShopPlugin | `itens.yml` com o que sai das minas do rankup (carvão, minérios brutos, troncos, diamante...) | O `/sell` já comprar o minério. Só é copiado se a loja ainda não tiver itens |
+
+As minas não vêm prontas: crie com `/mina admin` (veja o README do `rankup-plugin`).
 
 Os configs são cópias completas. Se um plugin ganhar uma opção nova, ela não aparece aqui até alguém atualizar o arquivo. O plugin usa o valor padrão até lá.
 

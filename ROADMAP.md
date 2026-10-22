@@ -4,6 +4,8 @@ Tudo o que está planejado para os plugins, num só lugar. Os READMEs de cada pl
 
 **Esforço:** 🟢 baixo · 🟡 médio · 🔴 alto
 
+**Direção (2026-10-22): o servidor vai ser rankup.** O jogador minera nas minas, vende na loja e paga pra subir de rank, com ranks medievais (Camponês → Rei). Os itens abaixo são priorizados por quanto ajudam esse loop.
+
 ## Diagnóstico (por que essas features)
 
 1. **A economia tem mais saída que entrada de dinheiro.** O dinheiro sai pela taxa do Pix, pelo imposto da loja e pela taxa da revenda de VIP. Entra só pela venda de itens pra loja e pelo level up de skill. Faltam fontes de renda regulares que não dependam de grind.
@@ -80,7 +82,21 @@ Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), c
 - [x] Banco do clã no `/pix historico` (o Pix ganhou transação com "entidade").
 - [ ] Guerra de clãs: declarar guerra, placar de abates entre os dois e prêmio pro vencedor. 🟡
 
+### Rankup ✅ v1 (`rankup-plugin`)
+12 ranks medievais pagos com coins (`/rankup`, `/rankup max`), com bônus de venda no `/sell` por rank. Minas próprias (`/mina`), com composição por peso, reset por tempo e por % minerada e acesso pelo rank. Tag do rank no chat e proteção opcional do mundo fora das minas.
+
+**Próximos passos**
+- [ ] Prestígio: ao chegar no Rei, voltar pro Camponês com um bônus permanente (venda mais cara, mina exclusiva). 🟡
+- [ ] Rank na tab, junto com o clã e o VIP. 🟢
+- [ ] Encantamentos de picareta comprados com coins ou com uma moeda própria (explosão, mais fortuna, venda automática). 🔴
+- [ ] Venda automática ao minerar como benefício de VIP. 🟢
+- [ ] Menu (GUI) no `/ranks` e no `/mina`. 🟢
+- [ ] Missão de subir de rank e missões por mina. 🟢
+- [ ] Mina privada do clã ou do VIP. 🟡
+- [ ] Holograma ou placa com o tempo até o próximo reset da mina. 🟢
+
 ### Terrenos (claims) 🔴
+No rankup, terreno vira opcional: as minas e o spawn já são protegidos. Faz sentido como "plot" pra construir, comprado com coins.
 - Proteger uma área comprada com coins, com tamanho ligado ao valor pago.
 - Permissões por jogador (construir, abrir baú, usar porta).
 - Aluguel ou imposto recorrente sobre o terreno, que é uma das maiores formas de tirar dinheiro de circulação em servidor de economia.
@@ -158,6 +174,7 @@ Webhook com anúncios do servidor:
 - ~~Bounty e Barracas aparecem no `/pix historico`.~~ ✅ Falta o Duelo.
 - ~~Missões de vender na loja e de dano no boss.~~ ✅
 - ~~Clãs ganham pontos no boss e mostram a tag na tab junto com o VIP.~~ ✅
+- ~~O rank dá bônus no `/sell` da loja.~~ ✅
 - O Discord recebe eventos do Boss, do VIP, do Pix e das Barracas (o Bounty já manda os dele).
 - O aluguel de barraca e de terreno pode ser pago pelo `/pix agendar`.
 
@@ -181,3 +198,6 @@ Webhook com anúncios do servidor:
 - **Bounty**: contrato contra um clã inteiro e anúncio no Discord.
 - **Barracas**: placa `[Comprar]`, placa de entrada ("Aluga-se"), preço por barraca e renovação automática.
 - **Clãs**: tag na tab junto com o VIP, pontos e clã do campeão no boss, fogo amigo com poção e explosão, e banco no `/pix historico`.
+- **Correção**: o `plugin.yml` do Pix tinha um `:` sem aspas, e o Paper recusava carregar o Pix.
+- **Servidor de teste** (`test-server/`): montagem automática, configs de teste e backup automático do mundo.
+- **Rankup** (v1): ranks medievais, minas que se regeneram e bônus de venda na loja.

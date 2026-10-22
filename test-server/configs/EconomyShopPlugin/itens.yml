@@ -1,0 +1,137 @@
+# Itens da loja pras minas do rankup (servidor de teste). O montar.bat só copia se a loja
+# ainda não tiver um itens.yml. Venda = preço de referência; compra = 2x (margem de 50%).
+# passo 0.01 = cada unidade vendida baixa 0,01% o preço (volta 2% por minuto pro de referência).
+itens:
+  COBBLESTONE:
+    categoria: Minérios
+    preco-base: 1.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 0.5
+    passo: 0.01
+  COBBLED_DEEPSLATE:
+    categoria: Minérios
+    preco-base: 1.2
+    margem: 50.0
+    minimo: 0.24
+    maximo: 0.6
+    passo: 0.01
+  COAL:
+    categoria: Minérios
+    preco-base: 4
+    margem: 50.0
+    minimo: 0.8
+    maximo: 2
+    passo: 0.01
+  RAW_COPPER:
+    categoria: Minérios
+    preco-base: 6
+    margem: 50.0
+    minimo: 1.2
+    maximo: 3
+    passo: 0.01
+  OAK_LOG:
+    categoria: Minérios
+    preco-base: 8
+    margem: 50.0
+    minimo: 1.6
+    maximo: 4
+    passo: 0.01
+  SPRUCE_LOG:
+    categoria: Minérios
+    preco-base: 8
+    margem: 50.0
+    minimo: 1.6
+    maximo: 4
+    passo: 0.01
+  RAW_IRON:
+    categoria: Minérios
+    preco-base: 16
+    margem: 50.0
+    minimo: 3.2
+    maximo: 8
+    passo: 0.01
+  RAW_GOLD:
+    categoria: Minérios
+    preco-base: 30
+    margem: 50.0
+    minimo: 6.0
+    maximo: 15
+    passo: 0.01
+  REDSTONE:
+    categoria: Minérios
+    preco-base: 6
+    margem: 50.0
+    minimo: 1.2
+    maximo: 3
+    passo: 0.01
+  LAPIS_LAZULI:
+    categoria: Minérios
+    preco-base: 8
+    margem: 50.0
+    minimo: 1.6
+    maximo: 4
+    passo: 0.01
+  QUARTZ:
+    categoria: Minérios
+    preco-base: 20
+    margem: 50.0
+    minimo: 4.0
+    maximo: 10
+    passo: 0.01
+  AMETHYST_SHARD:
+    categoria: Minérios
+    preco-base: 24
+    margem: 50.0
+    minimo: 4.8
+    maximo: 12
+    passo: 0.01
+  DIAMOND:
+    categoria: Minérios
+    preco-base: 120
+    margem: 50.0
+    minimo: 24.0
+    maximo: 60
+    passo: 0.01
+  EMERALD:
+    categoria: Minérios
+    preco-base: 200
+    margem: 50.0
+    minimo: 40.0
+    maximo: 100
+    passo: 0.01
+  ANCIENT_DEBRIS:
+    categoria: Minérios
+    preco-base: 1000
+    margem: 50.0
+    minimo: 200.0
+    maximo: 500
+    passo: 0.01
+  IRON_BLOCK:
+    categoria: Minérios
+    preco-base: 160
+    margem: 50.0
+    minimo: 32.0
+    maximo: 80
+    passo: 0.01
+  GOLD_BLOCK:
+    categoria: Minérios
+    preco-base: 300
+    margem: 50.0
+    minimo: 60.0
+    maximo: 150
+    passo: 0.01
+  DIAMOND_BLOCK:
+    categoria: Minérios
+    preco-base: 1200
+    margem: 50.0
+    minimo: 240.0
+    maximo: 600
+    passo: 0.01
+  EMERALD_BLOCK:
+    categoria: Minérios
+    preco-base: 2000
+    margem: 50.0
+    minimo: 400.0
+    maximo: 1000
+    passo: 0.01
