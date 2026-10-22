@@ -8,6 +8,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -46,6 +47,11 @@ import java.util.UUID;
  * A placa é encerada pra ninguém editar o texto.
  *
  * Botão direito na placa compra; botão esquerdo só mostra as informações (e o estoque).
+ *
+ * <b>[Comprar]</b> é o contrário: o dono paga quem traz o item. Mesmo formato de placa (o baú
+ * precisa ter uma unidade do item na criação, pra fixar qual é). O visitante clica com o item no
+ * inventário: os itens vão pro baú, e o preço sai da conta do dono (com a mesma taxa de venda,
+ * descontada de quem vendeu). Precisa de espaço no baú e saldo do dono.
  */
 public class LojaListener implements Listener {
 
@@ -57,6 +63,7 @@ public class LojaListener implements Listener {
     private final NamespacedKey chavePreco;
     private final NamespacedKey chaveDono;
     private final NamespacedKey chaveBarraca;
+    private final NamespacedKey chaveModo; // "vender" (padrão, placas antigas não têm) ou "comprar"
 
     public LojaListener(BarracasPlugin plugin) {
         this.plugin = plugin;
@@ -65,6 +72,7 @@ public class LojaListener implements Listener {
         this.chavePreco = new NamespacedKey(plugin, "loja_preco");
         this.chaveDono = new NamespacedKey(plugin, "loja_dono");
         this.chaveBarraca = new NamespacedKey(plugin, "loja_barraca");
+        this.chaveModo = new NamespacedKey(plugin, "loja_modo");
     }
 
     // ---------------------------------------------------------------------
@@ -74,13 +82,15 @@ public class LojaListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void aoEscreverPlaca(SignChangeEvent evento) {
         String primeira = textoPuro(evento.getLine(0));
-        if (!primeira.equalsIgnoreCase("[vender]")) return;
+        boolean compra = primeira.equalsIgnoreCase("[comprar]");
+        if (!compra && !primeira.equalsIgnoreCase("[vender]")) return;
+        String rotulo = compra ? "[Comprar]" : "[Vender]";
 
         Player jogador = evento.getPlayer();
         Block bloco = evento.getBlock();
         Barraca barraca = plugin.getBarracaManager().getBarracaEm(bloco);
         if (barraca == null || !jogador.getUniqueId().equals(barraca.getDono())) {
-            jogador.sendMessage("§cPlacas §f[Vender] §csó funcionam dentro da sua barraca alugada.");
+            jogador.sendMessage("§cPlacas §f" + rotulo + " §csó funcionam dentro da sua barraca alugada.");
             return;
         }
 
@@ -91,7 +101,7 @@ public class LojaListener implements Listener {
             quantidade = -1;
         }
         if (quantidade < 1 || quantidade > QUANTIDADE_MAXIMA) {
-            jogador.sendMessage("§cNa 2ª linha coloque a quantidade por venda (1 a " + QUANTIDADE_MAXIMA + ").");
+            jogador.sendMessage("§cNa 2ª linha coloque a quantidade por " + (compra ? "compra" : "venda") + " (1 a " + QUANTIDADE_MAXIMA + ").");
             return;
         }
 
@@ -113,12 +123,14 @@ public class LojaListener implements Listener {
 
         ItemStack modelo = primeiroItem(container.getInventory());
         if (modelo == null) {
-            jogador.sendMessage("§cColoque o item que quer vender no baú antes de criar a placa.");
+            jogador.sendMessage(compra
+                    ? "§cColoque no baú uma unidade do item que quer comprar antes de criar a placa (é assim que ela sabe qual é)."
+                    : "§cColoque o item que quer vender no baú antes de criar a placa.");
             return;
         }
 
         String nomeItem = Formato.nomeItem(modelo);
-        evento.line(0, legado("§1§l[Vender]"));
+        evento.line(0, legado(compra ? "§5§l[Comprar]" : "§1§l[Vender]"));
         evento.line(1, legado("§0" + quantidade + "x"));
         evento.line(2, legado("§0" + (nomeItem.length() > 15 ? nomeItem.substring(0, 15) : nomeItem)));
         evento.line(3, legado("§2" + Formato.valor(preco)));
@@ -134,11 +146,15 @@ public class LojaListener implements Listener {
             pdc.set(chavePreco, PersistentDataType.DOUBLE, precoFinal);
             pdc.set(chaveDono, PersistentDataType.STRING, jogador.getUniqueId().toString());
             pdc.set(chaveBarraca, PersistentDataType.STRING, barraca.getId());
+            pdc.set(chaveModo, PersistentDataType.STRING, compra ? "comprar" : "vender");
             placa.setWaxed(true);
             placa.update();
         });
 
-        jogador.sendMessage("§aLoja criada: §f" + quantidade + "x " + nomeItem + " §apor §f" + Formato.valor(preco)
+        jogador.sendMessage(compra
+                ? "§aCompra criada: você paga §f" + Formato.valor(preco) + " §apor §f" + quantidade + "x " + nomeItem
+                + "§a. Deixe espaço no baú e saldo na conta — o pagamento sai dela."
+                : "§aLoja criada: §f" + quantidade + "x " + nomeItem + " §apor §f" + Formato.valor(preco)
                 + "§a. Mantenha o baú abastecido com esse mesmo item.");
     }
 
@@ -174,6 +190,19 @@ public class LojaListener implements Listener {
 
         Block bloBau = acharBau(evento.getClickedBlock());
         Inventory estoque = bloBau != null && bloBau.getState() instanceof Container c ? c.getInventory() : null;
+
+        if ("comprar".equals(pdc.get(chaveModo, PersistentDataType.STRING))) {
+            if (evento.getAction() == Action.LEFT_CLICK_BLOCK || ehDono) {
+                int espaco = estoque == null ? 0 : espacoLivre(estoque, modelo) / quantidade;
+                jogador.sendMessage("§eCompra-se: §f" + quantidade + "x " + Formato.nomeItem(modelo) + " §epor §f"
+                        + Formato.valor(preco) + " §7(espaço no baú: " + espaco + " venda(s)) §7— loja de §f"
+                        + barraca.getNomeDono() + (ehDono ? "" : "§7. Botão direito com o item no inventário pra vender."));
+                return;
+            }
+            venderPraBarraca(jogador, barraca, estoque, modelo, quantidade, preco);
+            return;
+        }
+
         int disponivel = estoque == null ? 0 : contar(estoque, modelo);
 
         if (evento.getAction() == Action.LEFT_CLICK_BLOCK || ehDono) {
@@ -234,9 +263,101 @@ public class LojaListener implements Listener {
         }
     }
 
+    /** Placa [Comprar]: o visitante entrega os itens e recebe do dono (menos a taxa). */
+    private void venderPraBarraca(Player vendedor, Barraca barraca, Inventory estoque, ItemStack modelo, int quantidade, double preco) {
+        Economy econ = plugin.getEconomy();
+        if (econ == null) {
+            vendedor.sendMessage("§cO sistema de economia (Vault) não está disponível no servidor.");
+            return;
+        }
+        if (contarNoJogador(vendedor, modelo) < quantidade) {
+            vendedor.sendMessage("§cVocê precisa ter §f" + quantidade + "x " + Formato.nomeItem(modelo)
+                    + " §cno inventário (o mesmo item, sem diferença de encantamento ou nome).");
+            return;
+        }
+        if (estoque == null || espacoLivre(estoque, modelo) < quantidade) {
+            vendedor.sendMessage("§cO baú dessa barraca está cheio — ela não está comprando agora.");
+            return;
+        }
+        UUID dono = barraca.getDono();
+        OfflinePlayer contaDono = Bukkit.getOfflinePlayer(dono);
+        if (!econ.has(contaDono, preco)) {
+            vendedor.sendMessage("§cO dono dessa barraca está sem saldo pra comprar agora.");
+            Player donoOnline = Bukkit.getPlayer(dono);
+            if (donoOnline != null) {
+                donoOnline.sendMessage("§e" + vendedor.getName() + " tentou vender §f" + quantidade + "x " + Formato.nomeItem(modelo)
+                        + " §epra sua barraca, mas você não tem saldo (§f" + Formato.valor(preco) + "§e).");
+            }
+            return;
+        }
+
+        double taxa = preco * plugin.getTaxaVendaPercentual() / 100.0;
+        double liquido = preco - taxa;
+
+        econ.withdrawPlayer(contaDono, preco);
+        econ.depositPlayer(vendedor, liquido);
+
+        removerDoJogador(vendedor, modelo, quantidade);
+        guardar(estoque, modelo, quantidade);
+
+        plugin.getPixIntegration().registrarEntreJogadores(dono, vendedor.getUniqueId(), preco, "Venda pra barraca");
+
+        String descricao = quantidade + "x " + Formato.nomeItem(modelo);
+        vendedor.sendMessage("§aVocê vendeu §f" + descricao + " §apra barraca de §f" + barraca.getNomeDono()
+                + " §apor §f" + Formato.valor(liquido) + (taxa > 0 ? " §7(taxa: " + Formato.valor(taxa) + ")" : "") + "§a.");
+        vendedor.playSound(vendedor.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+
+        Player donoOnline = Bukkit.getPlayer(dono);
+        if (donoOnline != null) {
+            donoOnline.sendMessage("§a" + vendedor.getName() + " vendeu §f" + descricao + " §apra sua barraca. Você pagou §f"
+                    + Formato.valor(preco) + "§a.");
+            if (espacoLivre(estoque, modelo) < quantidade) {
+                donoOnline.sendMessage("§eO baú da sua compra de §f" + Formato.nomeItem(modelo) + " §eencheu.");
+            }
+        }
+    }
+
     // ---------------------------------------------------------------------
     // Auxiliares
     // ---------------------------------------------------------------------
+
+    /** Só a parte de guardar do inventário (sem armadura vestida nem a mão secundária). */
+    private int contarNoJogador(Player jogador, ItemStack modelo) {
+        int total = 0;
+        for (ItemStack item : jogador.getInventory().getStorageContents()) {
+            if (item != null && item.isSimilar(modelo)) total += item.getAmount();
+        }
+        return total;
+    }
+
+    private void removerDoJogador(Player jogador, ItemStack modelo, int quantidade) {
+        ItemStack[] slots = jogador.getInventory().getStorageContents();
+        int faltam = quantidade;
+        for (int i = 0; i < slots.length && faltam > 0; i++) {
+            ItemStack item = slots[i];
+            if (item == null || !item.isSimilar(modelo)) continue;
+            int tirar = Math.min(faltam, item.getAmount());
+            faltam -= tirar;
+            item.setAmount(item.getAmount() - tirar);
+        }
+        jogador.getInventory().setStorageContents(slots);
+    }
+
+    /** Põe {@code quantidade} do item no baú (espaço já conferido; o que não couber cai em cima dele). */
+    private void guardar(Inventory inventario, ItemStack modelo, int quantidade) {
+        int faltam = quantidade;
+        while (faltam > 0) {
+            ItemStack pilha = modelo.clone();
+            int qtd = Math.min(faltam, modelo.getMaxStackSize());
+            pilha.setAmount(qtd);
+            faltam -= qtd;
+            inventario.addItem(pilha).values().forEach(sobra -> {
+                if (inventario.getLocation() != null) {
+                    inventario.getLocation().getWorld().dropItemNaturally(inventario.getLocation().add(0.5, 1, 0.5), sobra);
+                }
+            });
+        }
+    }
 
     /** Baú onde a placa está presa (placa de parede) ou logo abaixo/acima dela. */
     private Block acharBau(Block placa) {

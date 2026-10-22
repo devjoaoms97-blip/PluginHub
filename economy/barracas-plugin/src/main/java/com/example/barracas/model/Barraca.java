@@ -20,6 +20,9 @@ import java.util.UUID;
  * {@code blocosDoDono} guarda onde o inquilino colocou baús e placas — é o que sai da barraca
  * quando o aluguel acaba (o conteúdo dos baús vai pra caixa de retirada), deixando a construção
  * da staff intacta.
+ *
+ * {@code preco} null = usa o preço padrão do config. {@code placa} é a placa de entrada (dono ou
+ * "Aluga-se"), opcional, sempre no mesmo mundo da barraca.
  */
 public class Barraca {
 
@@ -34,6 +37,11 @@ public class Barraca {
     private long alugadaAte;
     private final Set<BlocoPos> blocosDoDono = new HashSet<>();
     private Leilao leilao;
+    private Double preco;
+    private BlocoPos placa;
+    private boolean renovacaoAutomatica;
+    // desconto de VIP do último aluguel/renovação manual: usado na renovação automática com o dono offline
+    private int ultimoDesconto;
 
     // Não persiste: no pior caso, o aviso de vencimento é mandado de novo depois de um restart
     private boolean avisoVencimentoEnviado;
@@ -126,6 +134,38 @@ public class Barraca {
 
     public void setLeilao(Leilao leilao) {
         this.leilao = leilao;
+    }
+
+    public Double getPreco() {
+        return preco;
+    }
+
+    public void setPreco(Double preco) {
+        this.preco = preco;
+    }
+
+    public BlocoPos getPlaca() {
+        return placa;
+    }
+
+    public void setPlaca(BlocoPos placa) {
+        this.placa = placa;
+    }
+
+    public boolean isRenovacaoAutomatica() {
+        return renovacaoAutomatica;
+    }
+
+    public void setRenovacaoAutomatica(boolean renovacaoAutomatica) {
+        this.renovacaoAutomatica = renovacaoAutomatica;
+    }
+
+    public int getUltimoDesconto() {
+        return ultimoDesconto;
+    }
+
+    public void setUltimoDesconto(int ultimoDesconto) {
+        this.ultimoDesconto = ultimoDesconto;
     }
 
     public boolean isAvisoVencimentoEnviado() {

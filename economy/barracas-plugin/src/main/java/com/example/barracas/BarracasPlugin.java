@@ -98,9 +98,14 @@ public class BarracasPlugin extends JavaPlugin {
     // Helpers de config
     // -----------------------------------------------------------------
 
-    /** Preço do aluguel das normais — e lance mínimo do leilão das especiais. */
+    /** Preço padrão do aluguel — vale pras barracas sem preço próprio (/barraca preco). */
     public double getPrecoAluguel() {
         return Math.max(0, getConfig().getDouble("aluguel.preco", 500));
+    }
+
+    /** Preço do aluguel dessa barraca — e, se for especial, o lance mínimo do leilão dela. */
+    public double getPrecoAluguel(Barraca barraca) {
+        return barraca.getPreco() != null ? barraca.getPreco() : getPrecoAluguel();
     }
 
     public long getDuracaoAluguelMs() {

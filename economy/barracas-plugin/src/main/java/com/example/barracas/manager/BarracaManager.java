@@ -17,11 +17,15 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Container;
+import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
+import org.bukkit.block.sign.SignSide;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,14 +43,15 @@ import java.util.logging.Level;
  * das especiais. Tudo salvo em {@code barracas.yml} a cada mudança — inclusive os lances
  * retidos, pra um restart no meio do leilão não sumir com o dinheiro de ninguém.
  *
- * {@link #tick()} roda a cada segundo: vence aluguéis, manda o aviso de vencimento e encerra
- * leilões.
+ * {@link #tick()} roda a cada segundo: renova automaticamente quem pediu, vence aluguéis, manda o
+ * aviso de vencimento, encerra leilões e (a cada 30s) atualiza as placas de entrada.
  */
 public class BarracaManager {
 
     private final BarracasPlugin plugin;
     private final File arquivo;
     private final Map<String, Barraca> barracas = new LinkedHashMap<>();
+    private int segundosDesdePlacas;
 
     public BarracaManager(BarracasPlugin plugin) {
         this.plugin = plugin;
@@ -88,6 +93,15 @@ public class BarracaManager {
     public Barraca getLeilaoLideradoPor(UUID jogador) {
         for (Barraca b : barracas.values()) {
             if (b.emLeilao() && jogador.equals(b.getLeilao().getLicitante())) return b;
+        }
+        return null;
+    }
+
+    /** A barraca cuja placa de entrada é esse bloco, ou null. */
+    public Barraca getBarracaDaPlaca(Block bloco) {
+        BlocoPos pos = BlocoPos.de(bloco);
+        for (Barraca b : barracas.values()) {
+            if (pos.equals(b.getPlaca()) && b.getMundo().equals(bloco.getWorld().getName())) return b;
         }
         return null;
     }
@@ -193,6 +207,7 @@ public class BarracaManager {
         barraca.setDono(null, null);
         barraca.setAlugadaAte(0);
         barraca.setAvisoVencimentoEnviado(false);
+        barraca.setRenovacaoAutomatica(false);
 
         if (dono != null && !itens.isEmpty()) {
             plugin.getRetiradaManager().adicionar(dono, itens);
@@ -225,12 +240,13 @@ public class BarracaManager {
 
         Bukkit.broadcastMessage("§6§l⚖ Leilão! §6A barraca especial §f" + barraca.getId()
                 + " §6está em leilão por §f" + Formato.tempo(duracaoMs) + "§6. Lance mínimo: §f"
-                + Formato.valor(plugin.getPrecoAluguel()) + "§6. Use §f/barraca lance " + barraca.getId() + " <valor>");
+                + Formato.valor(plugin.getPrecoAluguel(barraca)) + "§6. Use §f/barraca lance " + barraca.getId() + " <valor>");
     }
 
-    public double lanceMinimo(Leilao leilao) {
+    public double lanceMinimo(Barraca barraca) {
+        Leilao leilao = barraca.getLeilao();
         if (!leilao.temLance()) {
-            return plugin.getPrecoAluguel();
+            return plugin.getPrecoAluguel(barraca);
         }
         double incremento = Math.max(0, plugin.getConfig().getDouble("leilao.incremento-minimo-percentual", 5));
         return leilao.getLance() * (1 + incremento / 100.0);
@@ -251,7 +267,7 @@ public class BarracaManager {
             return "§cVocê já está com o maior lance no leilão da barraca §f" + outroLeilao.getId() + "§c.";
         }
 
-        double minimo = lanceMinimo(leilao);
+        double minimo = lanceMinimo(barraca);
         if (valor + 0.000001 < minimo) {
             return "§cO lance mínimo agora é §f" + Formato.valor(minimo) + "§c.";
         }
@@ -303,7 +319,7 @@ public class BarracaManager {
         if (!leilao.temLance()) {
             salvar();
             Bukkit.broadcastMessage("§6⚖ §6O leilão da barraca §f" + barraca.getId()
-                    + " §6acabou sem lances. Ela fica livre pra alugar por §f" + Formato.valor(plugin.getPrecoAluguel())
+                    + " §6acabou sem lances. Ela fica livre pra alugar por §f" + Formato.valor(plugin.getPrecoAluguel(barraca))
                     + " §6com §f/barraca alugar " + barraca.getId() + "§6.");
             return;
         }
@@ -326,6 +342,10 @@ public class BarracaManager {
         long avisoMs = Math.max(0, plugin.getConfig().getInt("aluguel.aviso-minutos-antes", 30)) * 60_000L;
 
         for (Barraca barraca : new ArrayList<>(barracas.values())) {
+            if (barraca.getDono() != null && barraca.isRenovacaoAutomatica()
+                    && barraca.getAlugadaAte() - agora <= 60_000) {
+                renovarAutomaticamente(barraca);
+            }
             if (barraca.getDono() != null) {
                 long restante = barraca.getAlugadaAte() - agora;
                 if (restante <= 0) {
@@ -334,16 +354,101 @@ public class BarracaManager {
                     notificar(dono, "§eO aluguel da sua barraca §f" + barraca.getId() + " §eacabou." + avisoRetirada(pilhas));
                 } else if (avisoMs > 0 && restante <= avisoMs && !barraca.isAvisoVencimentoEnviado()) {
                     barraca.setAvisoVencimentoEnviado(true);
+                    String dica;
+                    if (barraca.isEspecial()) {
+                        dica = "§7Barracas especiais não renovam: ela volta a leilão.";
+                    } else if (barraca.isRenovacaoAutomatica()) {
+                        dica = "§7A renovação automática vai cobrar §f" + Formato.valor(precoComDesconto(barraca))
+                                + " §7(deixe o saldo na conta).";
+                    } else {
+                        dica = "§7Use §f/barraca renovar §7pra estender (ou §f/barraca autorenovar§7).";
+                    }
                     notificar(barraca.getDono(), "§eSua barraca §f" + barraca.getId() + " §evence em §f"
-                            + Formato.tempo(restante) + "§e. " + (barraca.isEspecial()
-                            ? "§7Barracas especiais não renovam: ela volta a leilão."
-                            : "§7Use §f/barraca renovar §7pra estender."));
+                            + Formato.tempo(restante) + "§e. " + dica);
                 }
             }
 
             if (barraca.emLeilao() && agora >= barraca.getLeilao().getTerminaEm()) {
                 finalizarLeilao(barraca);
             }
+        }
+
+        if (++segundosDesdePlacas >= 30) {
+            segundosDesdePlacas = 0;
+            barracas.values().forEach(this::atualizarPlaca); // o tempo restante muda sozinho
+        }
+    }
+
+    /** Preço da renovação: o da barraca, com o desconto de VIP do dono (ou o último que ele teve, se offline). */
+    public double precoComDesconto(Barraca barraca) {
+        Player online = Bukkit.getPlayer(barraca.getDono());
+        int desconto = online != null ? plugin.calcularDescontoVip(online) : barraca.getUltimoDesconto();
+        return plugin.getPrecoAluguel(barraca) * (1 - desconto / 100.0);
+    }
+
+    /**
+     * Renovação automática (só normais), feita no último minuto do aluguel. Sem saldo, ela é
+     * desligada e o aluguel vence normalmente — o dono é avisado.
+     */
+    private void renovarAutomaticamente(Barraca barraca) {
+        UUID dono = barraca.getDono();
+        Economy econ = plugin.getEconomy();
+        double preco = precoComDesconto(barraca);
+        OfflinePlayer conta = Bukkit.getOfflinePlayer(dono);
+        if (barraca.isEspecial() || econ == null || !econ.has(conta, preco)) {
+            barraca.setRenovacaoAutomatica(false);
+            salvar();
+            notificar(dono, "§cA renovação automática da barraca §f" + barraca.getId() + " §cnão conseguiu cobrar §f"
+                    + Formato.valor(preco) + "§c (saldo insuficiente) e foi desligada.");
+            return;
+        }
+        econ.withdrawPlayer(conta, preco);
+        long novoFim = Math.max(barraca.getAlugadaAte(), System.currentTimeMillis()) + plugin.getDuracaoAluguelMs();
+        estender(barraca, novoFim);
+        plugin.getPixIntegration().registrarComServidor(dono, preco, false, "Renovação automática de barraca");
+        notificar(dono, "§aBarraca §f" + barraca.getId() + " §arenovada automaticamente por §f" + Formato.valor(preco)
+                + "§a. Vale por mais §f" + Formato.tempo(novoFim - System.currentTimeMillis()) + "§a.");
+    }
+
+    // ---------------------------------------------------------------------
+    // Placa de entrada (dono / "Aluga-se")
+    // ---------------------------------------------------------------------
+
+    /** Reescreve a placa de entrada da barraca, se ela tiver uma e o chunk estiver carregado. */
+    public void atualizarPlaca(Barraca barraca) {
+        BlocoPos pos = barraca.getPlaca();
+        World mundo = Bukkit.getWorld(barraca.getMundo());
+        if (pos == null || mundo == null || !mundo.isChunkLoaded(pos.x() >> 4, pos.z() >> 4)) return;
+        if (!(mundo.getBlockAt(pos.x(), pos.y(), pos.z()).getState() instanceof Sign placa)) return;
+
+        long agora = System.currentTimeMillis();
+        String[] linhas = new String[4];
+        linhas[0] = barraca.isEspecial() ? "§6§l[Barraca ★]" : "§1§l[Barraca]";
+        linhas[1] = "§0" + barraca.getId();
+        if (barraca.getDono() != null) {
+            linhas[2] = "§0" + barraca.getNomeDono();
+            linhas[3] = "§8" + Formato.tempo(barraca.getAlugadaAte() - agora);
+        } else if (barraca.emLeilao()) {
+            Leilao leilao = barraca.getLeilao();
+            linhas[2] = "§6§lEm leilão";
+            linhas[3] = "§0" + Formato.valor(leilao.temLance() ? leilao.getLance() : plugin.getPrecoAluguel(barraca));
+        } else {
+            linhas[2] = "§2§lAluga-se";
+            linhas[3] = "§0" + Formato.valor(plugin.getPrecoAluguel(barraca));
+        }
+
+        SignSide frente = placa.getSide(Side.FRONT);
+        boolean mudou = false;
+        for (int i = 0; i < 4; i++) {
+            String atual = LegacyComponentSerializer.legacySection().serialize(frente.line(i));
+            if (!atual.equals(linhas[i])) {
+                frente.line(i, LegacyComponentSerializer.legacySection().deserialize(linhas[i]));
+                mudou = true;
+            }
+        }
+        if (mudou || !placa.isWaxed()) {
+            placa.setWaxed(true); // ninguém edita o texto clicando
+            placa.update();
         }
     }
 
@@ -386,6 +491,11 @@ public class BarracaManager {
                     barraca.getBlocosDoDono().add(BlocoPos.parse(pos));
                 }
 
+                if (s.contains("preco")) barraca.setPreco(s.getDouble("preco"));
+                if (s.getString("placa") != null) barraca.setPlaca(BlocoPos.parse(s.getString("placa")));
+                barraca.setRenovacaoAutomatica(s.getBoolean("renovacao-automatica"));
+                barraca.setUltimoDesconto(s.getInt("ultimo-desconto"));
+
                 ConfigurationSection l = s.getConfigurationSection("leilao");
                 if (l != null) {
                     String licitante = l.getString("licitante");
@@ -409,6 +519,10 @@ public class BarracaManager {
             yaml.set(base + ".min", b.getMin().toString());
             yaml.set(base + ".max", b.getMax().toString());
             yaml.set(base + ".especial", b.isEspecial());
+            yaml.set(base + ".preco", b.getPreco());
+            yaml.set(base + ".placa", b.getPlaca() == null ? null : b.getPlaca().toString());
+            if (b.isRenovacaoAutomatica()) yaml.set(base + ".renovacao-automatica", true);
+            if (b.getUltimoDesconto() > 0) yaml.set(base + ".ultimo-desconto", b.getUltimoDesconto());
             if (b.getDono() != null) {
                 yaml.set(base + ".dono", b.getDono().toString());
                 yaml.set(base + ".nome-dono", b.getNomeDono());
@@ -432,5 +546,7 @@ public class BarracaManager {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Não foi possível salvar barracas.yml", e);
         }
+        // toda mudança de estado passa por aqui: a placa de entrada acompanha na hora
+        barracas.values().forEach(this::atualizarPlaca);
     }
 }

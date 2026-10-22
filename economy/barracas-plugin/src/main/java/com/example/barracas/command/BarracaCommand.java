@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * /barraca — jogador: alugar, renovar, sair, lance, info, lista, retirar.
- * Staff (barracas.admin): pos1, pos2, criar, remover, liberar, reload.
+ * /barraca — jogador: alugar, renovar, autorenovar, sair, lance, info, lista, retirar.
+ * Staff (barracas.admin): pos1, pos2, criar, remover, liberar, preco, placa, reload.
  */
 public class BarracaCommand implements CommandExecutor, TabCompleter {
 
@@ -53,7 +53,7 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         switch (sub) {
             case "lista" -> lista(sender);
             case "info" -> info(sender, args);
-            case "alugar", "renovar", "sair", "lance", "retirar", "pos1", "pos2", "criar" -> {
+            case "alugar", "renovar", "autorenovar", "sair", "lance", "retirar", "pos1", "pos2", "criar", "placa" -> {
                 if (!(sender instanceof Player jogador)) {
                     sender.sendMessage("§cSó jogadores podem usar esse comando.");
                     return true;
@@ -61,13 +61,16 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
                 switch (sub) {
                     case "alugar" -> alugar(jogador, args);
                     case "renovar" -> renovar(jogador);
+                    case "autorenovar" -> autorenovar(jogador);
                     case "sair" -> sair(jogador, args);
                     case "lance" -> lance(jogador, args);
                     case "retirar" -> retirar(jogador);
                     case "pos1", "pos2" -> marcarPosicao(jogador, sub);
                     case "criar" -> criar(jogador, args);
+                    case "placa" -> placa(jogador, args);
                 }
             }
+            case "preco" -> preco(sender, args);
             case "remover" -> remover(sender, args);
             case "liberar" -> liberar(sender, args);
             case "reload" -> {
@@ -121,7 +124,7 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         }
 
         int desconto = plugin.calcularDescontoVip(jogador);
-        double preco = plugin.getPrecoAluguel() * (1 - desconto / 100.0);
+        double preco = plugin.getPrecoAluguel(barraca) * (1 - desconto / 100.0);
         if (!econ.has(jogador, preco)) {
             jogador.sendMessage("§cSaldo insuficiente. O aluguel custa §f" + Formato.valor(preco)
                     + " §c| Seu saldo: §f" + Formato.valor(econ.getBalance(jogador)));
@@ -129,6 +132,7 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         }
 
         econ.withdrawPlayer(jogador, preco);
+        barraca.setUltimoDesconto(desconto);
         long duracao = plugin.getDuracaoAluguelMs();
         barracas().ocupar(barraca, id, jogador.getName(), System.currentTimeMillis() + duracao);
         plugin.getPixIntegration().registrarComServidor(id, preco, false, "Aluguel de barraca");
@@ -136,7 +140,10 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage("§aVocê alugou a barraca §f" + barraca.getId() + " §apor §f" + Formato.tempo(duracao)
                 + " §a(§f" + Formato.valor(preco) + "§a" + (desconto > 0 ? ", desconto de VIP: " + desconto + "%" : "") + ").");
         jogador.sendMessage("§7Coloque até §f" + plugin.getMaxBaus(barraca) + " baús §7com o item e uma placa em cada: "
-                + "§f[Vender] §7/ §fquantidade §7/ §fpreço§7.");
+                + "§f[Vender] §7(ou §f[Comprar]§7) / §fquantidade §7/ §fpreço§7.");
+        if (!barraca.isEspecial()) {
+            jogador.sendMessage("§7Pra não perder a barraca, ligue a renovação automática: §f/barraca autorenovar§7.");
+        }
     }
 
     private void renovar(Player jogador) {
@@ -163,17 +170,41 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         }
 
         int desconto = plugin.calcularDescontoVip(jogador);
-        double preco = plugin.getPrecoAluguel() * (1 - desconto / 100.0);
+        double preco = plugin.getPrecoAluguel(barraca) * (1 - desconto / 100.0);
         if (!econ.has(jogador, preco)) {
             jogador.sendMessage("§cSaldo insuficiente. A renovação custa §f" + Formato.valor(preco) + "§c.");
             return;
         }
 
         econ.withdrawPlayer(jogador, preco);
+        barraca.setUltimoDesconto(desconto);
         barracas().estender(barraca, novoFim);
         plugin.getPixIntegration().registrarComServidor(jogador.getUniqueId(), preco, false, "Renovação de barraca");
         jogador.sendMessage("§aBarraca §f" + barraca.getId() + " §arenovada por §f" + Formato.valor(preco)
                 + "§a. Agora vale por mais §f" + Formato.tempo(novoFim - agora) + "§a.");
+    }
+
+    private void autorenovar(Player jogador) {
+        Barraca barraca = barracas().getBarracaDe(jogador.getUniqueId());
+        if (barraca == null) {
+            jogador.sendMessage("§cVocê não tem nenhuma barraca alugada.");
+            return;
+        }
+        if (barraca.isEspecial()) {
+            jogador.sendMessage("§cBarracas especiais não renovam: quando o aluguel acabar, ela volta a leilão.");
+            return;
+        }
+        barraca.setRenovacaoAutomatica(!barraca.isRenovacaoAutomatica());
+        barraca.setUltimoDesconto(plugin.calcularDescontoVip(jogador));
+        barracas().salvar();
+        if (barraca.isRenovacaoAutomatica()) {
+            jogador.sendMessage("§aRenovação automática ligada. §7No último minuto do aluguel, §f"
+                    + Formato.valor(barracas().precoComDesconto(barraca)) + " §7sai da sua conta e a barraca ganha mais §f"
+                    + Formato.tempo(plugin.getDuracaoAluguelMs()) + "§7, mesmo com você offline. Sem saldo, ela desliga sozinha.");
+        } else {
+            jogador.sendMessage("§eRenovação automática desligada. §7O aluguel vence em §f"
+                    + Formato.tempo(barraca.getAlugadaAte() - System.currentTimeMillis()) + "§7.");
+        }
     }
 
     private void sair(Player jogador, String[] args) {
@@ -246,7 +277,11 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§e§l--- Barraca " + barraca.getId() + " ---");
         sender.sendMessage("§7Tipo: §f" + (barraca.isEspecial() ? "especial (leilão, não renova)" : "normal")
                 + " §7| Máx. de baús: §f" + plugin.getMaxBaus(barraca));
-        sender.sendMessage("§7Situação: " + situacao(barraca));
+        sender.sendMessage("§7" + (barraca.isEspecial() ? "Lance mínimo" : "Aluguel") + ": §f"
+                + Formato.valor(plugin.getPrecoAluguel(barraca)) + " §7por §f" + Formato.tempo(plugin.getDuracaoAluguelMs())
+                + (barraca.getPreco() == null ? " §8(preço padrão)" : ""));
+        sender.sendMessage("§7Situação: " + situacao(barraca)
+                + (barraca.isRenovacaoAutomatica() ? " §8(renovação automática ligada)" : ""));
         if (sender.hasPermission(BarracasPlugin.PERMISSAO_ADMIN)) {
             sender.sendMessage("§7Área: §f" + barraca.getMundo() + " " + barraca.getMin() + " → " + barraca.getMax());
         }
@@ -261,8 +296,8 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         for (Barraca barraca : barracas().getBarracas().values()) {
             sender.sendMessage("§f" + barraca.getId() + (barraca.isEspecial() ? " §6★" : "") + " §7- " + situacao(barraca));
         }
-        sender.sendMessage("§7Aluguel: §f" + Formato.valor(plugin.getPrecoAluguel()) + " §7por §f"
-                + Formato.tempo(plugin.getDuracaoAluguelMs()) + "§7. §6★ §7= especial, vai a leilão.");
+        sender.sendMessage("§7Aluguel por §f" + Formato.tempo(plugin.getDuracaoAluguelMs())
+                + "§7 (preço de cada uma em §f/barraca info <id>§7). §6★ §7= especial, vai a leilão.");
     }
 
     private String situacao(Barraca barraca) {
@@ -274,10 +309,10 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
             Leilao leilao = barraca.getLeilao();
             return "§6em leilão §7— " + (leilao.temLance()
                     ? "maior lance §f" + Formato.valor(leilao.getLance()) + " §7(" + leilao.getNomeLicitante() + ")"
-                    : "sem lances, mínimo §f" + Formato.valor(plugin.getPrecoAluguel()))
+                    : "sem lances, mínimo §f" + Formato.valor(plugin.getPrecoAluguel(barraca)))
                     + " §7— termina em §f" + Formato.tempo(leilao.getTerminaEm() - agora);
         }
-        return "§alivre §7— §f/barraca alugar " + barraca.getId();
+        return "§alivre §7(§f" + Formato.valor(plugin.getPrecoAluguel(barraca)) + "§7) — §f/barraca alugar " + barraca.getId();
     }
 
     // ---------------------------------------------------------------------
@@ -336,6 +371,72 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
                 + "§a: §f" + min + " → " + max + "§a.");
     }
 
+    /** /barraca preco <id> <valor|padrao> — preço próprio da barraca (e lance mínimo, se especial). */
+    private void preco(CommandSender sender, String[] args) {
+        if (!exigirAdmin(sender)) return;
+        if (args.length < 3) {
+            sender.sendMessage("§cUso: §f/barraca preco <id> <valor|padrao>");
+            return;
+        }
+        Barraca barraca = barracas().get(args[1]);
+        if (barraca == null) {
+            sender.sendMessage("§cBarraca §f" + args[1] + " §cnão existe.");
+            return;
+        }
+        if (args[2].equalsIgnoreCase("padrao") || args[2].equalsIgnoreCase("padrão")) {
+            barraca.setPreco(null);
+        } else {
+            double valor = Formato.lerPreco(args[2]);
+            if (valor <= 0) {
+                sender.sendMessage("§cValor inválido. Use um número maior que zero, ex: §f750§c, ou §fpadrao§c.");
+                return;
+            }
+            barraca.setPreco(valor);
+        }
+        barracas().salvar();
+        sender.sendMessage("§aPreço da barraca §f" + barraca.getId() + "§a: §f" + Formato.valor(plugin.getPrecoAluguel(barraca))
+                + (barraca.getPreco() == null ? " §7(padrão do config)" : "")
+                + (barraca.isEspecial() ? " §7— é o lance mínimo dos próximos leilões." : " §7— vale a partir do próximo aluguel ou renovação."));
+    }
+
+    /** /barraca placa <id> [remover] — a placa pra onde a staff está olhando vira a placa de entrada. */
+    private void placa(Player jogador, String[] args) {
+        if (!exigirAdmin(jogador)) return;
+        if (args.length < 2) {
+            jogador.sendMessage("§cUso: §f/barraca placa <id> §7(olhando pra uma placa) §7| §f/barraca placa <id> remover");
+            return;
+        }
+        Barraca barraca = barracas().get(args[1]);
+        if (barraca == null) {
+            jogador.sendMessage("§cBarraca §f" + args[1] + " §cnão existe.");
+            return;
+        }
+        if (args.length >= 3 && args[2].equalsIgnoreCase("remover")) {
+            barraca.setPlaca(null);
+            barracas().salvar();
+            jogador.sendMessage("§aA barraca §f" + barraca.getId() + " §anão tem mais placa de entrada (a placa continua lá, sem atualizar).");
+            return;
+        }
+        Block alvo = jogador.getTargetBlockExact(6);
+        if (alvo == null || !org.bukkit.Tag.ALL_SIGNS.isTagged(alvo.getType())) {
+            jogador.sendMessage("§cOlhe pra uma placa (até 6 blocos) e rode o comando de novo.");
+            return;
+        }
+        if (!alvo.getWorld().getName().equals(barraca.getMundo())) {
+            jogador.sendMessage("§cA placa precisa estar no mesmo mundo da barraca.");
+            return;
+        }
+        Barraca outra = barracas().getBarracaDaPlaca(alvo);
+        if (outra != null && outra != barraca) {
+            jogador.sendMessage("§cEssa placa já é a placa de entrada da barraca §f" + outra.getId() + "§c.");
+            return;
+        }
+        barraca.setPlaca(BlocoPos.de(alvo));
+        barracas().salvar(); // salvar já escreve a placa
+        jogador.sendMessage("§aPlaca de entrada da barraca §f" + barraca.getId() + " §adefinida. Ela mostra o dono, ou "
+                + "\"Aluga-se\" com o preço quando estiver livre, e se atualiza sozinha.");
+    }
+
     private void remover(CommandSender sender, String[] args) {
         if (!exigirAdmin(sender)) return;
         if (args.length < 2) {
@@ -392,6 +493,7 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/barraca info [id] §7- detalhes de uma barraca");
         sender.sendMessage("§f/barraca alugar <id> §7- aluga uma barraca livre por " + Formato.tempo(plugin.getDuracaoAluguelMs()));
         sender.sendMessage("§f/barraca renovar §7- estende o aluguel (só barracas normais)");
+        sender.sendMessage("§f/barraca autorenovar §7- liga/desliga a renovação automática do aluguel");
         sender.sendMessage("§f/barraca lance <id> <valor> §7- dá um lance no leilão de uma barraca especial");
         sender.sendMessage("§f/barraca sair confirmar §7- devolve sua barraca antes da hora (sem reembolso)");
         sender.sendMessage("§f/barraca retirar §7- pega os itens que estavam nos baús quando o aluguel acabou");
@@ -400,6 +502,8 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§f/barraca criar <id> [especial] §7- (staff) cria a barraca na área marcada");
             sender.sendMessage("§f/barraca remover <id> §7- (staff) apaga a barraca");
             sender.sendMessage("§f/barraca liberar <id> §7- (staff) encerra o aluguel atual");
+            sender.sendMessage("§f/barraca preco <id> <valor|padrao> §7- (staff) preço próprio da barraca");
+            sender.sendMessage("§f/barraca placa <id> [remover] §7- (staff) placa de entrada (olhando pra placa)");
             sender.sendMessage("§f/barraca reload §7- (staff) recarrega o config.yml");
         }
     }
@@ -408,14 +512,14 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> opcoes = new ArrayList<>();
         if (args.length == 1) {
-            opcoes.addAll(List.of("lista", "info", "alugar", "renovar", "lance", "sair", "retirar"));
+            opcoes.addAll(List.of("lista", "info", "alugar", "renovar", "autorenovar", "lance", "sair", "retirar"));
             if (sender.hasPermission(BarracasPlugin.PERMISSAO_ADMIN)) {
-                opcoes.addAll(List.of("pos1", "pos2", "criar", "remover", "liberar", "reload"));
+                opcoes.addAll(List.of("pos1", "pos2", "criar", "remover", "liberar", "preco", "placa", "reload"));
             }
         } else if (args.length == 2) {
             String sub = args[0].toLowerCase(Locale.ROOT);
             switch (sub) {
-                case "info", "remover" -> opcoes.addAll(barracas().getBarracas().keySet());
+                case "info", "remover", "preco", "placa" -> opcoes.addAll(barracas().getBarracas().keySet());
                 case "alugar" -> barracas().getBarracas().values().stream()
                         .filter(b -> b.getDono() == null && !b.emLeilao()).forEach(b -> opcoes.add(b.getId()));
                 case "lance" -> barracas().getBarracas().values().stream()
@@ -428,6 +532,10 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("criar")) {
             opcoes.add("especial");
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("preco")) {
+            opcoes.add("padrao");
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("placa")) {
+            opcoes.add("remover");
         }
 
         String digitado = args[args.length - 1].toLowerCase(Locale.ROOT);
