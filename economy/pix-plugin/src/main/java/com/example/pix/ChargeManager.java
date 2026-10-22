@@ -45,6 +45,12 @@ public class ChargeManager {
      */
     public static final UUID ENTIDADE_LOJA = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
+    /**
+     * UUID "fictício" do outro lado de uma transação com uma entidade que não é jogador nem a
+     * loja (ex: o banco de um clã). O nome que aparece no extrato vai junto no registro.
+     */
+    public static final UUID ENTIDADE_EXTERNA = UUID.fromString("00000000-0000-0000-0000-000000000002");
+
     private final PixPlugin plugin;
     private final File arquivo;
 
@@ -148,6 +154,19 @@ public class ChargeManager {
         salvar();
     }
 
+    /**
+     * Registra uma transação entre um jogador e uma entidade com nome próprio, que não é uma conta
+     * de jogador (ex: o banco do clã, pelo ClasPlugin). No extrato aparece o {@code nomeEntidade}.
+     * Só adiciona a entrada pro jogador.
+     */
+    public void registrarTransacaoComEntidade(UUID jogador, String nomeEntidade, double valor, boolean jogadorRecebeu, String tipo) {
+        long agora = System.currentTimeMillis();
+        UUID de = jogadorRecebeu ? ENTIDADE_EXTERNA : jogador;
+        UUID para = jogadorRecebeu ? jogador : ENTIDADE_EXTERNA;
+        adicionarAoHistorico(jogador, new TransacaoRegistro(de, para, valor, tipo, agora, nomeEntidade));
+        salvar();
+    }
+
     private void adicionarAoHistorico(UUID jogador, TransacaoRegistro registro) {
         Deque<TransacaoRegistro> deque = historico.computeIfAbsent(jogador, k -> new ConcurrentLinkedDeque<>());
         deque.addFirst(registro);
@@ -222,7 +241,8 @@ public class ChargeManager {
                                 UUID.fromString(r.getString("para")),
                                 r.getDouble("valor"),
                                 r.getString("tipo"),
-                                r.getLong("data")));
+                                r.getLong("data"),
+                                r.getString("entidade")));
                         if (deque.size() >= HISTORICO_MAX_POR_JOGADOR) break;
                     }
                     if (!deque.isEmpty()) {
@@ -262,6 +282,9 @@ public class ChargeManager {
                 yaml.set(base + ".valor", r.getValor());
                 yaml.set(base + ".tipo", r.getTipo());
                 yaml.set(base + ".data", r.getData());
+                if (r.getNomeEntidade() != null) {
+                    yaml.set(base + ".entidade", r.getNomeEntidade());
+                }
             }
         }
 

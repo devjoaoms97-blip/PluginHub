@@ -73,6 +73,18 @@ Cobranças pendentes e histórico (`/pix historico`) ficam salvos em `plugins/Pi
 - Uma cobrança que venceu com o servidor desligado é descartada ao carregar, sem notificação.
 - O histórico mantém o mesmo limite de 20 transações por jogador.
 
+## Transações de outros plugins no histórico
+
+Outros plugins do PluginHub registram as próprias transações no `/pix historico`, chamando o `ChargeManager` por reflexão:
+
+| Método | Aparece como | Quem usa |
+|---|---|---|
+| `registrarTransacao(de, para, valor, tipo)` | o nome do outro jogador | Barracas (compras entre jogadores) |
+| `registrarTransacaoComLoja(jogador, valor, recebeu, tipo)` | "Loja do Servidor" | Loja, Barracas, Missões, Bounty, Clãs (criação) |
+| `registrarTransacaoComEntidade(jogador, nome, valor, recebeu, tipo)` | o `nome` passado, ex: "Clã [ABC]" | Clãs (depósito e saque do banco) |
+
+A entidade não é uma conta de verdade: a transação só entra no extrato do jogador. No `dados.yml`, o nome fica no campo `entidade` de cada registro.
+
 ## Ideias para expandir (ainda não implementadas)
 
 - **`/pix chave <apelido>`** — jogador registra um "apelido" (tipo chave Pix) pra receber pagamentos sem precisar do nome exato

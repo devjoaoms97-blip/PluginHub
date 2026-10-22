@@ -9,13 +9,20 @@ public class TransacaoRegistro {
     private final double valor;
     private final String tipo; // ex: "Pagamento", "Cobrança aceita"
     private final long data;
+    // Nome do "outro lado" quando ele não é um jogador (ex: "Clã [ABC]"); null = jogador ou a loja
+    private final String nomeEntidade;
 
     public TransacaoRegistro(UUID de, UUID para, double valor, String tipo, long data) {
+        this(de, para, valor, tipo, data, null);
+    }
+
+    public TransacaoRegistro(UUID de, UUID para, double valor, String tipo, long data, String nomeEntidade) {
         this.de = de;
         this.para = para;
         this.valor = valor;
         this.tipo = tipo;
         this.data = data;
+        this.nomeEntidade = nomeEntidade;
     }
 
     public UUID getDe() {
@@ -36,5 +43,9 @@ public class TransacaoRegistro {
 
     public long getData() {
         return data;
+    }
+
+    public String getNomeEntidade() {
+        return nomeEntidade;
     }
 }

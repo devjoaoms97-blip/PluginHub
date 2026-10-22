@@ -313,9 +313,14 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             String seta = recebeu ? "§a+" : "§c-";
             String prep = recebeu ? "de" : "para";
 
-            String nomeOutro = outroId.equals(ChargeManager.ENTIDADE_LOJA)
-                    ? "Loja do Servidor"
-                    : Bukkit.getOfflinePlayer(outroId).getName();
+            String nomeOutro;
+            if (r.getNomeEntidade() != null) {
+                nomeOutro = r.getNomeEntidade();
+            } else if (outroId.equals(ChargeManager.ENTIDADE_LOJA)) {
+                nomeOutro = "Loja do Servidor";
+            } else {
+                nomeOutro = Bukkit.getOfflinePlayer(outroId).getName();
+            }
 
             jogador.sendMessage(cor("  §7[" + sdf.format(new Date(r.getData())) + "] " + seta
                     + formatarValor(r.getValor()) + " §7" + prep + " §f" + nomeOutro
