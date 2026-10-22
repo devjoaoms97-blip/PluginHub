@@ -34,6 +34,9 @@ O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 **Próximos passos**
 - [x] Separar o fluxo por "tipo" dentro de cada plugin (`/economia tipos <plugin>`). O tipo vem da classe e do método que mexeu no dinheiro, com nomes no config.
 - [x] Alerta pra staff quando a circulação crescer mais que X% num dia (10% e R$ 50.000 por padrão).
+- [x] Medir a economia ao longo do tempo: mediana dos saldos, concentração (10 maiores e Gini), jogadores e horas jogadas por dia e líquido por hora jogada. A loja guarda as vendas por item e por dia, e o Rankup guarda as horas de jogo de cada rankup.
+- [ ] Relatório semanal: o Claude roda `tools/economia/analisar.py` com os dados do servidor, escreve o que está fora da meta e sugere mudanças de config com o diff pronto. Nada é aplicado sem aprovação. Só vale a pena com jogadores de verdade. 🟢
+- [ ] "Banco Central": uma cotação diária do minério (0,8× a 1,2×) ajustada pela inflação dos últimos 7 dias, com teto por dia e trava da staff. **Decisão (2026-10-22): nada automático no começo.** Reavaliar depois de algumas semanas de relatório. 🟡
 
 ### Missões diárias ✅ v1 (`missoes-plugin`)
 3 missões sorteadas por dia e 2 por semana (minerar, colher, matar, pescar, vender na loja, dano no boss), com recompensa em coins e XP de skill e bônus por completar todas. Menu no `/missoes`. Contra farm: bloco colocado pelo jogador, mob de spawner e revenda do que foi comprado na loja no mesmo dia não contam.
@@ -94,6 +97,9 @@ Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), c
 - [ ] Missão de subir de rank e missões por mina. 🟢
 - [ ] Mina privada do clã ou do VIP. 🟡
 - [ ] Holograma ou placa com o tempo até o próximo reset da mina. 🟢
+- [ ] Decidir o que fazer com a Fortuna nas minas. Com Fortuna III, a simulação dá Rei em cerca de 115 h em vez de 150 h. Opções: bloquear Fortuna nas minas, dar Fortuna como upgrade pago (um ralo de dinheiro) ou subir os preços dos ranks. 🟢
+
+**Balanceamento (2026-10-22).** Meta: um jogador ativo chega ao Rei em **150 h**. A simulação (`tools/economia/simular.py`) mostrou que a sugestão inicial de minas não progredia: a de ferro rendia menos que a de cobre, a de redstone menos que a de ouro, e as de ametista e do Nether davam itens que a loja não comprava. As minas foram recalibradas pra cada uma render cerca de 1,6× a anterior, a loja do servidor de teste ganhou `NETHERRACK`, `GOLD_NUGGET` e `AMETHYST_BLOCK`, e os preços dos ranks caíram (Rei: de R$ 25 mi pra R$ 21 mi; Fazendeiro: de R$ 5.000 pra R$ 2.300), com cada rank levando cerca de 1,5× o tempo do anterior.
 
 ### Terrenos (claims) 🔴
 No rankup, terreno vira opcional: as minas e o spawn já são protegidos. Faz sentido como "plot" pra construir, comprado com coins.
@@ -201,3 +207,5 @@ Webhook com anúncios do servidor:
 - **Correção**: o `plugin.yml` do Pix tinha um `:` sem aspas, e o Paper recusava carregar o Pix.
 - **Servidor de teste** (`test-server/`): montagem automática, configs de teste e backup automático do mundo.
 - **Rankup** (v1): ranks medievais, minas que se regeneram e bônus de venda na loja.
+- **Balanceamento do rankup**: simulação da progressão, minas e preços calibrados pra 150 h até o Rei, e medição da economia (painel, loja e rankups) com um script de análise.
+- **Correção**: o Rankup não estava no `loadbefore` do painel e podia pegar a economia antes dele, ficando fora do fluxo por plugin.

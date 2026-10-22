@@ -6,22 +6,34 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
  * Quanto dinheiro entrou (depósitos) e saiu (saques) da economia por dia, separado pelo
- * plugin que movimentou (e, dentro dele, por tipo), mais uma "foto" diária do total em circulação.
+ * plugin que movimentou (e, dentro dele, por tipo), mais uma "foto" diária do total em circulação,
+ * de como ele está distribuído e de quantos jogadores jogaram e por quantas horas.
  *
  * Grava em {@code historico.yml} de tempos em tempos (não a cada transação — o Pix e a loja
  * movimentam muito) e no desligamento. Guarda só os últimos {@code historico.dias-guardados}.
  */
 public class FluxoManager {
+
+    /** Como o dinheiro está dividido entre as contas com saldo. top10 = fração (0-1) com as 10 maiores. */
+    public record Distribuicao(int contas, double mediana, double top10, double gini) {
+    }
+
+    /** Jogadores diferentes que entraram no dia e horas jogadas somando todos. */
+    public record Atividade(int jogadores, double horas) {
+    }
 
     /** [0] = entrou (soma dos depósitos), [1] = saiu (soma dos saques, positiva). */
     public static final int ENTROU = 0;
@@ -33,6 +45,11 @@ public class FluxoManager {
     private final TreeMap<LocalDate, Map<String, Map<String, double[]>>> tiposPorDia = new TreeMap<>();
     private final TreeMap<LocalDate, Double> circulacaoPorDia = new TreeMap<>();
     private final Set<LocalDate> diasAlertados = new HashSet<>();
+    private final TreeMap<LocalDate, Distribuicao> distribuicaoPorDia = new TreeMap<>();
+    private final TreeMap<LocalDate, Atividade> atividadePorDia = new TreeMap<>();
+    /** Quem jogou hoje. Só o de hoje fica guardado por jogador; dos dias anteriores, só a contagem. */
+    private final Set<UUID> jogaramHoje = new HashSet<>();
+    private LocalDate diaDosJogadores = LocalDate.now();
     private boolean sujo;
 
     public FluxoManager(PainelEconomiaPlugin plugin) {
@@ -99,6 +116,32 @@ public class FluxoManager {
         return circulacaoPorDia.get(dia);
     }
 
+    public synchronized void registrarDistribuicao(LocalDate dia, Distribuicao distribuicao) {
+        distribuicaoPorDia.put(dia, distribuicao);
+        sujo = true;
+    }
+
+    public synchronized Distribuicao getDistribuicao(LocalDate dia) {
+        return distribuicaoPorDia.get(dia);
+    }
+
+    /** Conta os jogadores (se ainda não jogaram hoje) e soma {@code minutosCada} de jogo pra cada um. */
+    public synchronized void registrarAtividade(Collection<UUID> jogadores, double minutosCada) {
+        LocalDate hoje = LocalDate.now();
+        if (!hoje.equals(diaDosJogadores)) {
+            jogaramHoje.clear();
+            diaDosJogadores = hoje;
+        }
+        jogaramHoje.addAll(jogadores);
+        Atividade antes = atividadePorDia.getOrDefault(hoje, new Atividade(0, 0));
+        atividadePorDia.put(hoje, new Atividade(jogaramHoje.size(), antes.horas() + jogadores.size() * minutosCada / 60));
+        sujo = true;
+    }
+
+    public synchronized Atividade getAtividade(LocalDate dia) {
+        return atividadePorDia.get(dia);
+    }
+
     /** Marca o dia como já alertado; retorna false se já estava (o alerta sai uma vez por dia). */
     public synchronized boolean marcarAlerta(LocalDate dia) {
         boolean novo = diasAlertados.add(dia);
@@ -125,6 +168,23 @@ public class FluxoManager {
                 }
                 if (secao.getBoolean("alertado")) {
                     diasAlertados.add(dia);
+                }
+                if (secao.contains("distribuicao")) {
+                    distribuicaoPorDia.put(dia, new Distribuicao(secao.getInt("distribuicao.contas"),
+                            secao.getDouble("distribuicao.mediana"), secao.getDouble("distribuicao.top10"),
+                            secao.getDouble("distribuicao.gini")));
+                }
+                if (secao.contains("atividade")) {
+                    atividadePorDia.put(dia, new Atividade(secao.getInt("atividade.jogadores"), secao.getDouble("atividade.horas")));
+                    if (dia.equals(diaDosJogadores)) {
+                        for (String uuid : secao.getStringList("atividade.uuids")) {
+                            try {
+                                jogaramHoje.add(UUID.fromString(uuid));
+                            } catch (IllegalArgumentException ignorado) {
+                                // uuid corrompido: o jogador só volta a contar se entrar de novo
+                            }
+                        }
+                    }
                 }
                 ConfigurationSection origens = secao.getConfigurationSection("origens");
                 if (origens == null) continue;
@@ -158,6 +218,8 @@ public class FluxoManager {
         tiposPorDia.headMap(limite).clear();
         circulacaoPorDia.headMap(limite).clear();
         diasAlertados.removeIf(dia -> dia.isBefore(limite));
+        distribuicaoPorDia.headMap(limite).clear();
+        atividadePorDia.headMap(limite).clear();
 
         YamlConfiguration yaml = new YamlConfiguration();
         for (Map.Entry<LocalDate, Double> entrada : circulacaoPorDia.entrySet()) {
@@ -181,6 +243,23 @@ public class FluxoManager {
         }
         for (LocalDate dia : diasAlertados) {
             yaml.set("dias." + dia + ".alertado", true);
+        }
+        for (Map.Entry<LocalDate, Distribuicao> entrada : distribuicaoPorDia.entrySet()) {
+            String base = "dias." + entrada.getKey() + ".distribuicao";
+            Distribuicao d = entrada.getValue();
+            yaml.set(base + ".contas", d.contas());
+            yaml.set(base + ".mediana", d.mediana());
+            yaml.set(base + ".top10", d.top10());
+            yaml.set(base + ".gini", d.gini());
+        }
+        for (Map.Entry<LocalDate, Atividade> entrada : atividadePorDia.entrySet()) {
+            String base = "dias." + entrada.getKey() + ".atividade";
+            yaml.set(base + ".jogadores", entrada.getValue().jogadores());
+            yaml.set(base + ".horas", Math.round(entrada.getValue().horas() * 100) / 100.0);
+        }
+        if (atividadePorDia.containsKey(diaDosJogadores)) {
+            List<String> uuids = jogaramHoje.stream().map(UUID::toString).toList();
+            yaml.set("dias." + diaDosJogadores + ".atividade.uuids", uuids);
         }
         try {
             yaml.save(arquivo);

@@ -65,22 +65,24 @@ No reset, quem está dentro (ou em cima) vai pro ponto de teleporte da mina, e n
 5. `/mina admin resetar carvao` pra preencher.
 6. Cadastre na loja os itens que saem da mina (`/shop admin add`), senão o `/sell` não compra.
 
-**Sugestão de minas por rank:**
+**Minas por rank.** As composições com peso estão em [`tools/economia/minas-planejadas.yml`](../tools/economia/minas-planejadas.yml). Elas foram calibradas pra cada mina render cerca de 1,6× a anterior, então cada rank novo vale a pena:
 
-| Rank | Mina | Blocos |
+| Rank | Mina | Blocos (peso) |
 |---|---|---|
-| Camponês | Pedreira | pedra, carvão |
-| Fazendeiro | Cobre | pedra, carvão, cobre |
-| Lenhador | Bosque | troncos de carvalho e de pinheiro |
-| Ferreiro | Ferro | pedra, ferro, carvão |
-| Mercador | Ouro | pedra, ouro, ferro |
-| Escudeiro | Redstone | deepslate, redstone, lápis |
-| Clérigo | Ametista | ametista, lápis |
-| Cavaleiro | Diamante | deepslate, diamante |
-| Barão | Esmeralda | deepslate, esmeralda, diamante |
-| Conde | Nether | netherrack, quartzo, ouro do Nether |
-| Duque | Blocos | bloco de ferro, bloco de ouro |
-| Rei | Tesouro | bloco de diamante, bloco de esmeralda, detrito ancestral |
+| Camponês | Pedreira | stone 80, coal_ore 20 |
+| Fazendeiro | Cobre | stone 77, coal_ore 17, copper_ore 6 |
+| Lenhador | Bosque | oak_log 50, spruce_log 50 |
+| Ferreiro | Ferro | stone 55, iron_ore 30, coal_ore 15 |
+| Mercador | Ouro | stone 57, gold_ore 18, iron_ore 25 |
+| Escudeiro | Redstone | deepslate 10, deepslate_redstone_ore 30, deepslate_lapis_ore 60 |
+| Clérigo | Ametista | amethyst_block 60, deepslate_lapis_ore 40 |
+| Cavaleiro | Diamante | deepslate 55, deepslate_diamond_ore 45 |
+| Barão | Esmeralda | deepslate 50, deepslate_emerald_ore 25, deepslate_diamond_ore 25 |
+| Conde | Nether | netherrack 35, nether_quartz_ore 35, nether_gold_ore 20, ancient_debris 10 |
+| Duque | Blocos | iron_block 50, gold_block 50 |
+| Rei | Tesouro | iron_block 75, diamond_block 15, emerald_block 5, ancient_debris 5 |
+
+Tudo o que essas minas dropam precisa estar na loja, inclusive `NETHERRACK`, `GOLD_NUGGET` e `AMETHYST_BLOCK`. O `itens.yml` do servidor de teste já tem tudo.
 
 ## Configuração
 
@@ -94,7 +96,7 @@ ranks:
   - id: fazendeiro
     nome: "Fazendeiro"
     cor: "&a"
-    preco: 5000
+    preco: 2300
     multiplicador-venda: 1.05
   # ... até o Rei
 
@@ -119,7 +121,11 @@ integracao:
   pix: true
 ```
 
-Os preços são um ponto de partida. Calibre olhando o `/economia` depois de alguns dias: quanto dinheiro entra por hora com o `/sell` e quanto sai com o rankup.
+## Balanceamento
+
+Os preços dos ranks foram calibrados pra um jogador ativo chegar ao **Rei em cerca de 150 h** de jogo. A conta usa as minas acima, os preços da loja e uma velocidade de mineração estimada. O script que faz a conta está em `tools/economia/` (veja o README de lá). Rode de novo sempre que mudar um preço de rank, uma mina ou um preço da loja.
+
+Com jogadores de verdade, o `rankups.csv` mostra quanto tempo cada rank está levando de fato, e o `/economia` mostra o dinheiro novo por hora jogada.
 
 ## Integrações
 
@@ -135,6 +141,7 @@ A API pra outros plugins, por reflexão: `multiplicadorVenda(UUID)`, `rankDe(UUI
 
 - `plugins/RankupPlugin/jogadores.yml`: o rank de cada jogador, gravado a cada mudança.
 - `plugins/RankupPlugin/minas.yml`: as minas, gravado a cada mudança.
+- `plugins/RankupPlugin/rankups.csv`: uma linha por rankup pago, com data, jogador, de qual rank pra qual, preço e as **horas de jogo** do jogador naquele momento. É o que mostra quanto tempo cada rank leva de verdade, pra calibrar os preços (veja `tools/economia`). O `/ranks admin set` não entra.
 
 ## Requisitos
 

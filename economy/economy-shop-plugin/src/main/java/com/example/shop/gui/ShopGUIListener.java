@@ -88,6 +88,7 @@ public class ShopGUIListener implements Listener {
         for (int i = 0; i < aVender; i++) {
             totalBruto += item.venderUnidade();
         }
+        plugin.getVendasDiariasManager().registrar(item.getMaterial(), aVender, totalBruto);
 
         removerDoInventario(jogador, item.getMaterial(), aVender);
 

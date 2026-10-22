@@ -64,6 +64,11 @@ public class EconomiaCommand implements CommandExecutor, TabCompleter {
                 + (ontem != null ? " §7(" + variacao(circ.total() - ontem) + " §7desde ontem)" : ""));
         sender.sendMessage("§7Contas com saldo: §f" + circ.contasComSaldo()
                 + " §7| Média: §f" + valor(circ.contasComSaldo() > 0 ? circ.total() / circ.contasComSaldo() : 0));
+        FluxoManager.Distribuicao dist = plugin.getFluxoManager().getDistribuicao(hoje);
+        if (dist != null && dist.contas() > 0) {
+            sender.sendMessage("§7Mediana: §f" + valor(dist.mediana())
+                    + String.format(Locale.ROOT, " §7| 10 maiores: §f%.0f%% §7do total | Gini: §f%.2f", dist.top10() * 100, dist.gini()));
+        }
 
         if (!plugin.estaInterceptando()) {
             sender.sendMessage("§cFluxo por origem indisponível (o painel não conseguiu se colocar na frente da economia — veja o console).");
@@ -74,6 +79,12 @@ public class EconomiaCommand implements CommandExecutor, TabCompleter {
         double[] total = plugin.totalDoDia(hoje);
         sender.sendMessage("§e§lHoje: §a+" + valor(total[FluxoManager.ENTROU]) + " §c-" + valor(total[FluxoManager.SAIU])
                 + " §7= " + variacao(total[FluxoManager.ENTROU] - total[FluxoManager.SAIU]));
+        FluxoManager.Atividade atividade = plugin.getFluxoManager().getAtividade(hoje);
+        if (atividade != null && atividade.horas() >= 1) {
+            double porHora = (total[FluxoManager.ENTROU] - total[FluxoManager.SAIU]) / atividade.horas();
+            sender.sendMessage(String.format(Locale.ROOT, "§7  %d jogadores, %.1f h jogadas §8| ", atividade.jogadores(), atividade.horas())
+                    + "§7líquido por hora jogada: " + variacao(porHora));
+        }
         if (origens.isEmpty()) {
             sender.sendMessage("§7  Nenhuma movimentação registrada hoje.");
             return;
@@ -98,10 +109,12 @@ public class EconomiaCommand implements CommandExecutor, TabCompleter {
             LocalDate dia = hoje.minusDays(i);
             double[] total = plugin.totalDoDia(dia);
             Double circulacao = plugin.getFluxoManager().getCirculacao(dia);
+            FluxoManager.Atividade atividade = plugin.getFluxoManager().getAtividade(dia);
             sender.sendMessage("§f" + FORMATO_DIA.format(dia) + "§7: §a+" + valor(total[FluxoManager.ENTROU])
                     + " §c-" + valor(total[FluxoManager.SAIU]) + " §7= "
                     + variacao(total[FluxoManager.ENTROU] - total[FluxoManager.SAIU])
-                    + (circulacao != null ? " §8| circulação " + valor(circulacao) : ""));
+                    + (circulacao != null ? " §8| circulação " + valor(circulacao) : "")
+                    + (atividade != null ? String.format(Locale.ROOT, " §8| %d jog., %.1f h", atividade.jogadores(), atividade.horas()) : ""));
         }
     }
 

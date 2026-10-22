@@ -2,6 +2,7 @@ com\example\rankup\model\BlocoPos.class
 com\example\rankup\util\Formato.class
 com\example\rankup\manager\MinaManager$1.class
 com\example\rankup\manager\RankManager.class
+com\example\rankup\manager\RegistroRankups.class
 com\example\rankup\model\Mina.class
 com\example\rankup\RankupPlugin.class
 com\example\rankup\command\RanksCommand.class

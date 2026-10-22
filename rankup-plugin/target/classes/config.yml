@@ -4,6 +4,9 @@
 # SUBIR pra aquele rank (o do primeiro é ignorado). "multiplicador-venda" é o bônus no /sell da
 # loja (EconomyShopPlugin): 1.25 = vende 25% mais caro. Cores com &.
 # Trocar o id de um rank depois de ter jogadores nele faz eles voltarem pro primeiro rank.
+# Os preços foram calibrados pra um jogador ativo chegar ao Rei em cerca de 150 h de jogo, com
+# as minas de tools/economia/minas-planejadas.yml. Mudou preço, mina ou loja? Rode a
+# simulação de novo: python tools/economia/simular.py --meta-horas 150
 ranks:
   - id: campones
     nome: "Camponês"
@@ -13,57 +16,57 @@ ranks:
   - id: fazendeiro
     nome: "Fazendeiro"
     cor: "&a"
-    preco: 5000
+    preco: 2300
     multiplicador-venda: 1.05
   - id: lenhador
     nome: "Lenhador"
     cor: "&2"
-    preco: 12500
+    preco: 6600
     multiplicador-venda: 1.10
   - id: ferreiro
     nome: "Ferreiro"
     cor: "&8"
-    preco: 30000
+    preco: 16000
     multiplicador-venda: 1.15
   - id: mercador
     nome: "Mercador"
     cor: "&e"
-    preco: 75000
+    preco: 33000
     multiplicador-venda: 1.20
   - id: escudeiro
     nome: "Escudeiro"
     cor: "&f"
-    preco: 180000
+    preco: 92000
     multiplicador-venda: 1.25
   - id: clerigo
     nome: "Clérigo"
     cor: "&b"
-    preco: 400000
+    preco: 200000
     multiplicador-venda: 1.30
   - id: cavaleiro
     nome: "Cavaleiro"
     cor: "&9"
-    preco: 900000
+    preco: 470000
     multiplicador-venda: 1.40
   - id: barao
     nome: "Barão"
     cor: "&d"
-    preco: 2000000
+    preco: 1300000
     multiplicador-venda: 1.50
   - id: conde
     nome: "Conde"
     cor: "&5"
-    preco: 4500000
+    preco: 3500000
     multiplicador-venda: 1.60
   - id: duque
     nome: "Duque"
     cor: "&6"
-    preco: 10000000
+    preco: 8200000
     multiplicador-venda: 1.75
   - id: rei
     nome: "Rei"
     cor: "&c&l"
-    preco: 25000000
+    preco: 21000000
     multiplicador-venda: 2.0
 
 # Comandos rodados pelo console quando alguém sobe de rank (também no /ranks admin set).

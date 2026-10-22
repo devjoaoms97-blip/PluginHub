@@ -1,7 +1,10 @@
 com\example\painel\EconomiaInterceptada$Origem.class
 com\example\painel\EconomiaInterceptada.class
+com\example\painel\FluxoManager$Atividade.class
 com\example\painel\PainelEconomiaPlugin$Fortuna.class
+com\example\painel\FluxoManager$Distribuicao.class
 com\example\painel\FluxoManager.class
+com\example\painel\PainelEconomiaPlugin$1.class
 com\example\painel\PainelEconomiaPlugin.class
 com\example\painel\EconomiaCommand.class
 com\example\painel\PainelEconomiaPlugin$Circulacao.class

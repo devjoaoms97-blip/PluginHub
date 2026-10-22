@@ -18,6 +18,7 @@ loadbefore:
   - MissoesPlugin
   - BountyPlugin
   - ClasPlugin
+  - RankupPlugin
 
 commands:
   economia:

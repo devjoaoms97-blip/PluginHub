@@ -7,6 +7,7 @@ import com.example.rankup.listener.ChatListener;
 import com.example.rankup.listener.MinaListener;
 import com.example.rankup.manager.MinaManager;
 import com.example.rankup.manager.RankManager;
+import com.example.rankup.manager.RegistroRankups;
 import com.example.rankup.model.Rank;
 import com.example.rankup.util.Formato;
 import com.example.rankup.util.PixIntegration;
@@ -25,6 +26,7 @@ public class RankupPlugin extends JavaPlugin {
     private RankManager rankManager;
     private MinaManager minaManager;
     private PixIntegration pixIntegration;
+    private RegistroRankups registroRankups;
 
     @Override
     public void onEnable() {
@@ -40,6 +42,7 @@ public class RankupPlugin extends JavaPlugin {
         this.rankManager = new RankManager(this);
         this.minaManager = new MinaManager(this);
         this.pixIntegration = new PixIntegration(this);
+        this.registroRankups = new RegistroRankups(this);
 
         RankupCommand rankup = new RankupCommand(this);
         getCommand("rankup").setExecutor(rankup);
@@ -136,5 +139,9 @@ public class RankupPlugin extends JavaPlugin {
 
     public PixIntegration getPixIntegration() {
         return pixIntegration;
+    }
+
+    public RegistroRankups getRegistroRankups() {
+        return registroRankups;
     }
 }

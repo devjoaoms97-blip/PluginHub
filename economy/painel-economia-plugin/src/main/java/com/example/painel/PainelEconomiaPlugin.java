@@ -5,6 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Painel da economia pra staff: dinheiro em circulação, quanto entrou e saiu por dia (separado
@@ -56,10 +60,22 @@ public class PainelEconomiaPlugin extends JavaPlugin {
         getCommand("economia").setExecutor(comando);
         getCommand("economia").setTabCompleter(comando);
 
-        // Grava o fluxo a cada 5 min, tira a "foto" diária da circulação quando o dia virar e
-        // confere se o dia já passou do limite do alerta
+        // Quem entra já conta como ativo no dia, mesmo que saia antes da próxima contagem
+        getServer().getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void aoEntrar(PlayerJoinEvent evento) {
+                fluxoManager.registrarAtividade(List.of(evento.getPlayer().getUniqueId()), 0);
+            }
+        }, this);
+
+        // Grava o fluxo a cada 5 min, soma 5 min de jogo pra quem está online, tira a "foto"
+        // diária da circulação quando o dia virar e confere se o dia já passou do limite do alerta
         long cincoMin = 20L * 60 * 5;
         getServer().getScheduler().runTaskTimer(this, () -> {
+            List<UUID> online = getServer().getOnlinePlayers().stream().map(Player::getUniqueId).toList();
+            if (!online.isEmpty()) {
+                fluxoManager.registrarAtividade(online, 5);
+            }
             if (real != null && fluxoManager.getCirculacao(LocalDate.now()) == null) {
                 calcularCirculacao(true);
             }
@@ -113,7 +129,8 @@ public class PainelEconomiaPlugin extends JavaPlugin {
     /**
      * Soma o saldo de todo jogador que já entrou no servidor. Usa cache de alguns minutos:
      * com muitos jogadores, consultar o saldo de cada conta offline pode ser lento (o EssentialsX
-     * lê o arquivo de cada um). {@code forcar} ignora o cache. Também grava a foto do dia.
+     * lê o arquivo de cada um). {@code forcar} ignora o cache. Também grava a foto do dia: o
+     * total e a distribuição (mediana, fatia das 10 maiores e Gini, só das contas com saldo).
      */
     public Circulacao calcularCirculacao(boolean forcar) {
         long cacheMs = Math.max(0, getConfig().getInt("circulacao.cache-minutos", 5)) * 60_000L;
@@ -133,12 +150,32 @@ public class PainelEconomiaPlugin extends JavaPlugin {
             fortunas.add(new Fortuna(jogador.getName() != null ? jogador.getName() : jogador.getUniqueId().toString(), saldo));
         }
         fortunas.sort(Comparator.comparingDouble(Fortuna::saldo).reversed());
+        fluxoManager.registrarDistribuicao(LocalDate.now(), distribuicao(fortunas, total));
         int topGuardado = Math.max(1, getConfig().getInt("circulacao.top-maximo", 20));
         List<Fortuna> ranking = new ArrayList<>(fortunas.subList(0, Math.min(topGuardado, fortunas.size())));
 
         cacheCirculacao = new Circulacao(total, contas, ranking, System.currentTimeMillis());
         fluxoManager.registrarCirculacao(LocalDate.now(), total);
         return cacheCirculacao;
+    }
+
+    /** {@code fortunas} em ordem decrescente de saldo. */
+    private static FluxoManager.Distribuicao distribuicao(List<Fortuna> fortunas, double total) {
+        int n = fortunas.size();
+        if (n == 0 || total <= 0) return new FluxoManager.Distribuicao(0, 0, 0, 0);
+        double mediana = n % 2 == 1 ? fortunas.get(n / 2).saldo()
+                : (fortunas.get(n / 2 - 1).saldo() + fortunas.get(n / 2).saldo()) / 2;
+        double top10 = 0;
+        for (int i = 0; i < Math.min(10, n); i++) {
+            top10 += fortunas.get(i).saldo();
+        }
+        // Gini com os saldos em ordem crescente (i de 1 a n): 2 * soma(i * x_i) / (n * total) - (n + 1) / n
+        double ponderada = 0;
+        for (int i = 0; i < n; i++) {
+            ponderada += (i + 1) * fortunas.get(n - 1 - i).saldo();
+        }
+        double gini = 2 * ponderada / (n * total) - (n + 1.0) / n;
+        return new FluxoManager.Distribuicao(n, mediana, top10 / total, gini);
     }
 
     /**

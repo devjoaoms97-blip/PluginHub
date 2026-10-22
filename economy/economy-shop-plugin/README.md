@@ -41,6 +41,8 @@ Como não dá pra desenhar um gráfico "de verdade" numa interface de Minecraft,
 /shop historico pedra
 ```
 
+**Vendas por dia.** Além do gráfico, a loja guarda em `vendas-diarias.yml` quanto de cada item foi vendido por dia, o valor pago e o preço médio. O valor é o do preço dinâmico, antes do bônus do rank e do imposto. Ficam os últimos 90 dias (`estatisticas.dias-guardados`). Não tem comando: é o dado bruto pra análise da economia (veja `tools/economia`).
+
 ### 2. Categorias na GUI
 Cada item agora tem uma categoria (texto livre, definida por você no `/shop admin additem`). A GUI ganhou uma tela inicial listando as categorias como "pastas" — clicar numa abre a lista paginada só daquele grupo.
 

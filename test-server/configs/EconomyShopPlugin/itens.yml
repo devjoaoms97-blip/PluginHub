@@ -9,6 +9,13 @@ itens:
     minimo: 0.2
     maximo: 0.5
     passo: 0.01
+  NETHERRACK:
+    categoria: Minérios
+    preco-base: 0.6
+    margem: 50.0
+    minimo: 0.12
+    maximo: 0.3
+    passo: 0.01
   COBBLED_DEEPSLATE:
     categoria: Minérios
     preco-base: 1.2
@@ -32,17 +39,17 @@ itens:
     passo: 0.01
   OAK_LOG:
     categoria: Minérios
-    preco-base: 8
+    preco-base: 5
     margem: 50.0
-    minimo: 1.6
-    maximo: 4
+    minimo: 1.0
+    maximo: 2.5
     passo: 0.01
   SPRUCE_LOG:
     categoria: Minérios
-    preco-base: 8
+    preco-base: 5
     margem: 50.0
-    minimo: 1.6
-    maximo: 4
+    minimo: 1.0
+    maximo: 2.5
     passo: 0.01
   RAW_IRON:
     categoria: Minérios
@@ -72,6 +79,13 @@ itens:
     minimo: 1.6
     maximo: 4
     passo: 0.01
+  GOLD_NUGGET:
+    categoria: Minérios
+    preco-base: 3
+    margem: 50.0
+    minimo: 0.6
+    maximo: 1.5
+    passo: 0.01
   QUARTZ:
     categoria: Minérios
     preco-base: 20
@@ -85,6 +99,13 @@ itens:
     margem: 50.0
     minimo: 4.8
     maximo: 12
+    passo: 0.01
+  AMETHYST_BLOCK:
+    categoria: Minérios
+    preco-base: 30
+    margem: 50.0
+    minimo: 6.0
+    maximo: 15
     passo: 0.01
   DIAMOND:
     categoria: Minérios

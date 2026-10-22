@@ -19,6 +19,11 @@ historico:
   # A cada quantos minutos tira uma "foto" do preço de venda de cada item, pro gráfico de /shop historico
   intervalo-minutos: 15
 
+estatisticas:
+  # Quantos dias de vendas por item (quantidade e preço médio) ficam em vendas-diarias.yml,
+  # pra análise da economia.
+  dias-guardados: 90
+
 integracao:
   # Se true e o PixPlugin estiver instalado, toda compra/venda também aparece no /pix historico do jogador
   pix: true

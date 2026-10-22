@@ -8,6 +8,7 @@ import com.example.shop.gui.ShopGUIListener;
 import com.example.shop.manager.PriceHistoryManager;
 import com.example.shop.manager.PriceRegenTask;
 import com.example.shop.manager.ShopManager;
+import com.example.shop.manager.VendasDiariasManager;
 import com.example.shop.util.MissoesIntegration;
 import com.example.shop.util.RankupIntegration;
 import com.example.shop.util.PixIntegration;
@@ -25,6 +26,7 @@ public class ShopPlugin extends JavaPlugin {
     private ShopManager shopManager;
     private ShopGUI shopGUI;
     private PriceHistoryManager priceHistoryManager;
+    private VendasDiariasManager vendasDiariasManager;
     private PixIntegration pixIntegration;
     private MissoesIntegration missoesIntegration;
     private RankupIntegration rankupIntegration;
@@ -43,6 +45,7 @@ public class ShopPlugin extends JavaPlugin {
         this.shopManager = new ShopManager(this);
         this.shopGUI = new ShopGUI(this);
         this.priceHistoryManager = new PriceHistoryManager(this);
+        this.vendasDiariasManager = new VendasDiariasManager(this);
         this.pixIntegration = new PixIntegration(this);
         this.missoesIntegration = new MissoesIntegration(this);
         this.rankupIntegration = new RankupIntegration(this);
@@ -70,6 +73,9 @@ public class ShopPlugin extends JavaPlugin {
         getServer().getScheduler().runTaskTimer(this, priceHistoryManager::registrarSnapshotDeTodos,
                 intervaloHistoricoTicks, intervaloHistoricoTicks);
 
+        long cincoMin = 20L * 60 * 5;
+        getServer().getScheduler().runTaskTimer(this, vendasDiariasManager::salvarSeMudou, cincoMin, cincoMin);
+
         getLogger().info("EconomyShopPlugin ativado!");
     }
 
@@ -80,6 +86,10 @@ public class ShopPlugin extends JavaPlugin {
         // gravaríamos o estado antigo em memória por cima do arquivo novo, revertendo
         // edições externas. A persistência continua garantida pelo PriceRegenTask
         // (salva a cada 60s quando o preço mexe) e pelos saves de venda/compra.
+        // vendas-diarias.yml é só estatística (não é editado à mão), então esse pode.
+        if (vendasDiariasManager != null) {
+            vendasDiariasManager.salvar();
+        }
         getLogger().info("EconomyShopPlugin desativado!");
     }
 
@@ -149,6 +159,10 @@ public class ShopPlugin extends JavaPlugin {
 
     public PriceHistoryManager getPriceHistoryManager() {
         return priceHistoryManager;
+    }
+
+    public VendasDiariasManager getVendasDiariasManager() {
+        return vendasDiariasManager;
     }
 
     public MissoesIntegration getMissoesIntegration() {

@@ -112,6 +112,7 @@ public class SellCommand implements CommandExecutor, TabCompleter {
         for (int i = 0; i < quantidade; i++) {
             total += item.venderUnidade();
         }
+        plugin.getVendasDiariasManager().registrar(item.getMaterial(), quantidade, total);
         return total;
     }
 

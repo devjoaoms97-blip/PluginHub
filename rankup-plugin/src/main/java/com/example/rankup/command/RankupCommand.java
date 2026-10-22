@@ -89,6 +89,7 @@ public class RankupCommand implements CommandExecutor, TabCompleter {
         Economy economia = plugin.getEconomy();
         if (!economia.withdrawPlayer(jogador, proximo.preco()).transactionSuccess()) return false;
         plugin.aplicarRank(jogador, atual, proximo);
+        plugin.getRegistroRankups().registrar(jogador, atual, proximo);
         plugin.getPixIntegration().registrarComServidor(jogador.getUniqueId(), proximo.preco(), false,
                 "Rankup: " + proximo.nome());
         return true;
