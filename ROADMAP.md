@@ -14,11 +14,11 @@ Tudo o que está planejado para os plugins, num só lugar. Os READMEs de cada pl
 
 | # | Item | Esforço | Motivo |
 |---|---|---|---|
-| 1 | Painel da economia | 🟢 | Dá os números pra calibrar taxas, limites e recompensas de tudo o que vem depois |
-| 2 | Missões diárias | 🟡 | Coloca dinheiro novo na economia e dá algo pra fazer todo dia |
-| 3 | Recompensa por cabeça (Bounty) | 🟢 | Dá objetivo pro PvP usando o que já existe |
+| 1 | ~~Painel da economia~~ ✅ v1 | 🟢 | Dá os números pra calibrar taxas, limites e recompensas de tudo o que vem depois |
+| 2 | ~~Missões diárias~~ ✅ v1 | 🟡 | Coloca dinheiro novo na economia e dá algo pra fazer todo dia |
+| 3 | ~~Recompensa por cabeça (Bounty)~~ ✅ v1 | 🟢 | Dá objetivo pro PvP usando o que já existe |
 | 4 | ~~Mercado de Barracas~~ ✅ v1 | 🟡/🔴 | Comércio entre jogadores com aluguel, que também tira dinheiro de circulação |
-| 5 | Clãs ou Terrenos | 🔴 | Projetos grandes. Escolher conforme o perfil do servidor |
+| 5 | ~~Clãs~~ ✅ v1 · Terrenos | 🔴 | Clãs foi escolhido primeiro. Terrenos continua pendente |
 
 O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 
@@ -26,25 +26,27 @@ O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 
 ## 🆕 Plugins novos
 
-### Painel da economia 🟢
-Comando de staff (`/eco stats`) pra acompanhar a saúde da economia.
-- Total em circulação (soma dos saldos no Vault).
-- Entrada e saída por dia, separadas por origem: loja, Pix, revenda de VIP, missões etc.
-- Maiores fortunas (top N saldos).
-- Histórico diário salvo em disco, pra comparar semanas.
+### Painel da economia ✅ v1 (`economy/painel-economia-plugin`)
+`/economia` (staff) mostra circulação, entrada/saída por dia separada por plugin e maiores fortunas. O painel se coloca na frente da economia do Vault e descobre o plugin de origem pelo stack de execução, então nenhum plugin precisou ser alterado. O comando é `/economia` porque `/eco` já é do EssentialsX.
 
-### Missões diárias 🟡
-Três missões sorteadas por dia pra cada jogador, com recompensa em coins e XP de skill.
-- Tipos: minerar X blocos, matar Y mobs, vender Z itens na loja, pescar, causar dano no boss etc.
-- Pool de missões e recompensas configurável. Reinicia à meia-noite.
-- Integra com o SkillsPlugin (XP de skill como recompensa) e com a Loja (missão de venda).
+**Próximos passos**
+- [ ] Separar o fluxo por "tipo" dentro de cada plugin (por exemplo, na Loja: compra vs. venda). 🟡
+- [ ] Alerta pra staff quando a circulação crescer mais que X% num dia. 🟢
 
-### Recompensa por cabeça (Bounty) 🟢
-`/bounty <jogador> <valor>`: o valor sai da conta de quem oferece e fica retido até alguém matar o alvo. Quem mata leva.
-- Recompensas pelo mesmo alvo se somam. `/bounty lista` mostra as maiores.
-- Taxa configurável (tira dinheiro de circulação) e valor mínimo.
-- Proteção contra farm: matar a própria conta alternativa ou um aliado combinado. Por exemplo, cooldown por par de jogadores ou não pagar se os dois tiverem o mesmo IP.
-- Aparece no `/pix historico`, do mesmo jeito que a loja já aparece.
+### Missões diárias ✅ v1 (`missoes-plugin`)
+3 missões sorteadas por dia (minerar, colher, matar, pescar), com recompensa em coins e XP de skill e bônus por completar todas. Contra farm: bloco colocado pelo jogador e mob de spawner não contam.
+
+**Próximos passos**
+- [ ] Missão de vender na loja e de causar dano no boss (precisa de integração com esses plugins). 🟡
+- [ ] Menu visual (GUI) no `/missoes`. 🟢
+- [ ] Missões semanais, maiores e com recompensa melhor. 🟡
+
+### Recompensa por cabeça (Bounty) ✅ v1 (`bounty-plugin`)
+`/bounty colocar <jogador> <valor>`: o valor fica retido (com taxa de 10%), recompensas se somam e quem matar leva. Expira em 7 dias, devolvendo aos contribuintes. Contra farm: mesmo IP, mesmo clã e cooldown por matador.
+
+**Próximos passos**
+- [ ] Recompensa contra um clã inteiro. 🟡
+- [ ] Aparecer no Discord quando uma recompensa grande for colocada ou cobrada. 🟢
 
 ### Duelo com aposta 🟡
 `/duelo <jogador> <valor>`: os dois apostam, o valor fica retido e a luta é numa arena 1v1. O vencedor leva tudo, menos uma taxa.
@@ -67,12 +69,14 @@ Comércio entre jogadores em barracas alugadas no spawn, com lojas por placa em 
 - [ ] Preço de aluguel por barraca, em vez de um preço único. 🟢
 - [ ] Aluguel pago automaticamente pelo `/pix agendar`, quando ele existir. 🟡
 
-### Clãs 🔴
-- Clã com nome, tag no chat e na tab, cargos (líder, oficial, membro) e convites.
-- Banco do clã integrado ao Pix (depósito, saque com permissão por cargo e extrato).
-- Fogo amigo desligado entre membros.
-- Ranking de clãs (somando kills, boss derrotado e saldo).
-- Integra com o Boss (clã do campeão) e com o Bounty (recompensa contra o clã inteiro).
+### Clãs ✅ v1 (`clas-plugin`)
+Tag no chat (convive com a do VIP), cargos (líder, oficial, membro), convites com botão, banco compartilhado com extrato, fogo amigo desligado, chat do clã (`/cc`) e ranking de abates.
+
+**Próximos passos**
+- [ ] Tag na tab list, junto com a do VIP (precisa de integração entre os dois plugins). 🟡
+- [ ] Integração com o Boss: clã do campeão e pontos no ranking. 🟡
+- [ ] Fogo amigo também pra poção arremessada e explosão. 🟢
+- [ ] Banco do clã no `/pix historico` (precisa de um tipo de entidade "clã" no Pix). 🟡
 
 ### Terrenos (claims) 🔴
 - Proteger uma área comprada com coins, com tamanho ligado ao valor pago.
@@ -163,3 +167,8 @@ Webhook com anúncios do servidor:
 - **VIP**: cooldowns de heal/feed/kit salvos em disco.
 - **VIP**: prazo opcional pra resgatar códigos.
 - **Barracas**: mercado de barracas alugadas, com lojas por placa e leilão das especiais (v1).
+- **Painel da economia** (v1): `/economia`, com circulação e fluxo por plugin.
+- **Missões diárias** (v1): 3 missões por dia, com coins e XP de skill.
+- **Bounty** (v1): recompensa pela cabeça de jogadores.
+- **Clãs** (v1): tag, cargos, banco, fogo amigo e ranking.
+- **Correção**: Pix, Cheque, venda de VIP e Barracas recusavam valores negativos, mas aceitavam `NaN` e `Infinity` digitados. Agora recusam também.
