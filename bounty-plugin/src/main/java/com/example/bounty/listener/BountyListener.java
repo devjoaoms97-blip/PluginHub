@@ -1,6 +1,7 @@
 package com.example.bounty.listener;
 
 import com.example.bounty.BountyPlugin;
+import com.example.bounty.model.ContratoCla;
 import com.example.bounty.model.Recompensa;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -15,8 +16,9 @@ import java.net.InetSocketAddress;
 import java.util.UUID;
 
 /**
- * Paga a recompensa quando o alvo morre pra outro jogador. Morte sem matador (queda, lava,
- * mob) não paga — a recompensa continua valendo.
+ * Paga a recompensa quando o alvo morre pra outro jogador, e um abate do contrato mais antigo
+ * contra o clã dele (se houver). Morte sem matador (queda, lava, mob) não paga — a recompensa
+ * continua valendo.
  *
  * Anti-farm (a recompensa NÃO é paga, e continua valendo):
  * <ul>
@@ -39,10 +41,16 @@ public class BountyListener implements Listener {
         Player matador = alvo.getKiller();
         if (matador == null || matador.equals(alvo)) return;
 
+        cobrarRecompensa(matador, alvo);
+        cobrarContratoCla(matador, alvo);
+    }
+
+    private void cobrarRecompensa(Player matador, Player alvo) {
         Recompensa recompensa = plugin.getBountyManager().get(alvo.getUniqueId());
         if (recompensa == null) return;
 
-        String bloqueio = motivoBloqueio(matador, alvo);
+        String bloqueio = motivoBloqueio(matador, alvo,
+                plugin.getBountyManager().cooldownRestante(matador.getUniqueId(), alvo.getUniqueId()));
         if (bloqueio != null) {
             matador.sendMessage("§cA recompensa pela cabeça de §f" + alvo.getName() + " §cnão foi paga: " + bloqueio + "§c.");
             return;
@@ -55,9 +63,38 @@ public class BountyListener implements Listener {
         Bukkit.broadcastMessage("§4§l☠ §c" + matador.getName() + " §ccobrou a recompensa de §f"
                 + BountyPlugin.formatarValor(total) + " §cpela cabeça de §f" + alvo.getName() + "§c!");
         matador.playSound(matador.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 0.8f);
+        plugin.getDiscord().anunciar(":moneybag: **" + matador.getName() + "** cobrou **" + BountyPlugin.formatarValor(total)
+                + "** pela cabeça de **" + alvo.getName() + "**!", total);
     }
 
-    private String motivoBloqueio(Player matador, Player alvo) {
+    private void cobrarContratoCla(Player matador, Player alvo) {
+        String tag = plugin.getClasIntegration().tagDoCla(alvo.getUniqueId());
+        if (tag == null || plugin.getBountyManager().contratosContra(tag).isEmpty()) return;
+        // colega do mesmo clã nunca cobra (mesmo com anti-farm.mesmo-cla desligado): seria só matar o amigo e dividir
+        if (tag.equals(plugin.getClasIntegration().tagDoCla(matador.getUniqueId()))) return;
+
+        String bloqueio = motivoBloqueio(matador, alvo,
+                plugin.getBountyManager().cooldownRestanteCla(matador.getUniqueId(), alvo.getUniqueId()));
+        if (bloqueio != null) {
+            matador.sendMessage("§cO contrato contra o clã §f" + tag + " §cnão pagou esse abate: " + bloqueio + "§c.");
+            return;
+        }
+
+        ContratoCla contrato = plugin.getBountyManager().pagarAbateCla(matador, alvo.getUniqueId(), tag);
+        if (contrato == null) return;
+        double valor = contrato.getValorPorAbate();
+        plugin.getPixIntegration().registrarComServidor(matador.getUniqueId(), valor, true, "Bounty no clã " + tag);
+
+        matador.sendMessage("§4☠ §cVocê recebeu §f" + BountyPlugin.formatarValor(valor) + " §cpelo contrato contra o clã §f"
+                + tag + "§c. §7(" + plugin.getBountyManager().contratosContra(tag).stream()
+                .mapToInt(ContratoCla::getAbatesRestantes).sum() + " abate(s) restante(s) contra eles)");
+        matador.playSound(matador.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 0.8f);
+        alvo.sendMessage("§cSeu clã está sendo caçado: §f" + matador.getName() + " §ccobrou um abate do contrato contra o §f" + tag + "§c.");
+        plugin.getDiscord().anunciar(":crossed_swords: **" + matador.getName() + "** cobrou **" + BountyPlugin.formatarValor(valor)
+                + "** por matar **" + alvo.getName() + "** do clã **" + tag + "**.", valor);
+    }
+
+    private String motivoBloqueio(Player matador, Player alvo, long cooldownRestante) {
         if (plugin.getConfig().getBoolean("anti-farm.mesmo-ip", true) && mesmoIp(matador, alvo)) {
             return "vocês estão conectados do mesmo IP";
         }
@@ -65,9 +102,8 @@ public class BountyListener implements Listener {
                 && plugin.getClasIntegration().mesmoCla(matador.getUniqueId(), alvo.getUniqueId())) {
             return "vocês são do mesmo clã";
         }
-        long restante = plugin.getBountyManager().cooldownRestante(matador.getUniqueId(), alvo.getUniqueId());
-        if (restante > 0) {
-            return "você já cobrou esse jogador há pouco tempo (libera em " + BountyPlugin.formatarTempo(restante) + ")";
+        if (cooldownRestante > 0) {
+            return "você já cobrou esse jogador há pouco tempo (libera em " + BountyPlugin.formatarTempo(cooldownRestante) + ")";
         }
         return null;
     }

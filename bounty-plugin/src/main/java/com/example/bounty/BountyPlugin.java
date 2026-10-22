@@ -4,6 +4,7 @@ import com.example.bounty.command.BountyCommand;
 import com.example.bounty.listener.BountyListener;
 import com.example.bounty.manager.BountyManager;
 import com.example.bounty.util.ClasIntegration;
+import com.example.bounty.util.DiscordWebhook;
 import com.example.bounty.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -17,6 +18,7 @@ public class BountyPlugin extends JavaPlugin {
     private BountyManager bountyManager;
     private PixIntegration pixIntegration;
     private ClasIntegration clasIntegration;
+    private DiscordWebhook discord;
 
     @Override
     public void onEnable() {
@@ -31,6 +33,7 @@ public class BountyPlugin extends JavaPlugin {
 
         this.pixIntegration = new PixIntegration(this);
         this.clasIntegration = new ClasIntegration(this);
+        this.discord = new DiscordWebhook(this);
         this.bountyManager = new BountyManager(this);
 
         BountyCommand comando = new BountyCommand(this);
@@ -79,6 +82,14 @@ public class BountyPlugin extends JavaPlugin {
 
     public ClasIntegration getClasIntegration() {
         return clasIntegration;
+    }
+
+    public DiscordWebhook getDiscord() {
+        return discord;
+    }
+
+    public double getTaxaPercentual() {
+        return Math.max(0, Math.min(100, getConfig().getDouble("taxa-percentual", 10)));
     }
 
     public static String formatarValor(double valor) {

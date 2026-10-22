@@ -1,7 +1,9 @@
+com\example\bounty\util\DiscordWebhook.class
 com\example\bounty\BountyPlugin.class
 com\example\bounty\manager\BountyManager.class
 com\example\bounty\util\PixIntegration.class
 com\example\bounty\util\ClasIntegration.class
 com\example\bounty\command\BountyCommand.class
+com\example\bounty\model\ContratoCla.class
 com\example\bounty\listener\BountyListener.class
 com\example\bounty\model\Recompensa.class

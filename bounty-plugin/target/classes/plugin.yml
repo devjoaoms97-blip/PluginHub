@@ -3,13 +3,13 @@ version: '1.0.0'
 main: com.example.bounty.BountyPlugin
 api-version: '26.2'
 author: Você
-description: Recompensa pela cabeça de jogadores — o valor fica retido e quem matar o alvo leva.
+description: Recompensa pela cabeça de jogadores (ou de um clã inteiro) — o valor fica retido e quem matar o alvo leva.
 softdepend: [Vault, PixPlugin, ClasPlugin]
 
 commands:
   bounty:
     description: Oferece e consulta recompensas pela cabeça de jogadores.
-    usage: "Uso: /bounty <colocar|lista|ver>"
+    usage: "Uso: /bounty <colocar|cla|lista|ver>"
     aliases: [recompensa, cabeca]
     permission: bounty.usar
     permission-message: "§cVocê não tem permissão para usar recompensas."

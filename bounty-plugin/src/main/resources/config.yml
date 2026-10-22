@@ -22,6 +22,22 @@ anti-farm:
   # Depois de cobrar um alvo, o mesmo matador só pode cobrar esse alvo de novo depois de X horas.
   cooldown-horas: 6
 
+# Recompensa contra um clã inteiro (/bounty cla <tag> <valor por abate> <abates>). Precisa do
+# ClasPlugin. Cada membro do clã morto paga um abate do contrato mais antigo; o que sobrar volta
+# pra quem contratou depois de "expira-dias" (contados da criação) ou se o clã for desfeito.
+# A taxa e o anti-farm são os mesmos de cima.
+cla:
+  valor-minimo-por-abate: 100.0
+  abates-maximo: 20
+
+discord:
+  # Webhook do canal do Discord (Editar canal > Integrações > Webhooks > Copiar URL). Vazio desliga.
+  webhook-url: ""
+  # Só anuncia recompensas (colocadas ou cobradas) a partir desse valor.
+  valor-minimo: 1000.0
+  # Nome que aparece como autor da mensagem.
+  nome: "Bounty"
+
 integracao:
   # Registra recompensas oferecidas, cobradas e devolvidas no /pix historico.
   pix: true
