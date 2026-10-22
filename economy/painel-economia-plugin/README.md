@@ -1,0 +1,75 @@
+# PainelEconomiaPlugin
+
+Painel da economia pra staff: quanto dinheiro existe no servidor, quanto **entrou e saiu por dia** (separado pelo plugin que movimentou) e quem tem as maiores fortunas. É o que dá números pra calibrar taxas, preços e recompensas: imposto da loja, taxa do Pix, aluguel das barracas, recompensa das missões.
+
+## Comandos
+
+Todos exigem `painel.economia` (padrão: op). Aliases: `/ecostats`, `/painel`.
+
+| Comando | O que mostra |
+|---|---|
+| `/economia` | Total em circulação (e a variação desde ontem), contas com saldo, média por conta, e o fluxo de hoje por origem |
+| `/economia dias [n]` | Entrou, saiu e líquido de cada um dos últimos `n` dias (padrão 7, máximo 30), com a circulação daquele dia |
+| `/economia top [n]` | Maiores saldos e quanto cada um representa do total |
+| `/economia recalcular` | Recalcula a circulação agora, ignorando o cache |
+
+O comando é `/economia`, e não `/eco`, porque `/eco` já é um comando do EssentialsX.
+
+Exemplo do resumo:
+```
+--- Economia ---
+Em circulação: R$ 1.250.000,00 (+R$ 17.855,00 desde ontem)
+Contas com saldo: 312 | Média: R$ 4.006,41
+Hoje: +R$ 52.355,00 -R$ 34.500,00 = +R$ 17.855,00
+  EconomyShopPlugin: +R$ 40.000,00 -R$ 25.000,00 = +R$ 15.000,00
+  SkillsPlugin: +R$ 6.000,00 -R$ 0,00 = +R$ 6.000,00
+  BarracasPlugin: +R$ 1.900,00 -R$ 5.000,00 = -R$ 3.100,00
+  PixPlugin: +R$ 4.455,00 -R$ 4.500,00 = -R$ 45,00
+```
+O Pix sai negativo porque o líquido dele é a taxa: quem recebe ganha o valor menos a taxa, e quem paga perde o valor cheio.
+
+## Como funciona
+
+**Fluxo por origem.** O painel se coloca na frente da economia do Vault (EssentialsX, por exemplo) como um intermediário. Ele repassa tudo pra economia real e anota cada depósito e cada saque que deu certo, junto com o plugin que fez a chamada. Esse plugin é descoberto pelo stack de execução. **Nenhum outro plugin precisou ser alterado.**
+
+- Uma **entrada** é dinheiro depositado na conta de alguém. Uma **saída** é dinheiro tirado.
+- Uma transferência entre jogadores (Pix, compra na barraca) aparece nas duas colunas. O **líquido** mostra o efeito real: no Pix, o líquido é só a taxa (negativo).
+- Um líquido positivo é dinheiro novo entrando na economia (venda pra loja, level up de skill, missão). Um líquido negativo é dinheiro saindo de circulação (imposto, taxa, aluguel, compra da loja).
+
+**Circulação.** É a soma do saldo de todo jogador que já entrou no servidor. Fica em cache por 5 min (configurável), porque com muitas contas pode ser lento. Uma "foto" do total é guardada por dia, pra comparar.
+
+Os dados ficam em `plugins/PainelEconomiaPlugin/historico.yml`, com os últimos 90 dias (configurável). O fluxo é gravado a cada 5 min e quando o servidor desliga.
+
+## Requisitos e ordem de carregamento
+
+- Paper 26.2 (Java 25)
+- **Vault** + um plugin de economia
+
+Pra um plugin aparecer no fluxo por origem, ele precisa pegar a economia **depois** que o painel se colocou na frente dela. Por isso o `plugin.yml` tem um `loadbefore` com os plugins do PluginHub: Pix, Loja, Cheque, VIP, Barracas, Skills, Boss, Missões, Bounty e Clãs. **Um plugin novo que mexe com dinheiro precisa entrar nessa lista.**
+
+Um plugin de fora da lista, ou um comando que não passa pelo Vault (como o `/pay` e o `/eco give` do EssentialsX), não aparece no fluxo. Mesmo assim, o efeito dele entra no total em circulação.
+
+## Configuração
+
+```yaml
+circulacao:
+  cache-minutos: 5
+  top-maximo: 20
+historico:
+  dias-guardados: 90
+```
+
+## Como compilar
+
+```bash
+cd economy/painel-economia-plugin
+mvn clean package
+```
+
+O `.jar` sai em `target/PainelEconomiaPlugin.jar`.
+
+## ⚠️ Simplificações técnicas
+
+1. **Se a economia já estiver registrada no Vault com prioridade máxima**, o painel não consegue se colocar na frente dela. Ele avisa no console e mostra só a circulação.
+2. **O fluxo é gravado a cada 5 min.** Se o servidor cair (não desligar normalmente), perde-se no máximo esses 5 min de registro. O dinheiro dos jogadores não é afetado, só a estatística.
+3. **A origem é o primeiro plugin no stack de execução.** Se um plugin chamar outro que mexe no dinheiro, a movimentação conta pro plugin que fez a chamada de fato.

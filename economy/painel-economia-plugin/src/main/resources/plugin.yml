@@ -1,0 +1,33 @@
+name: PainelEconomiaPlugin
+version: '1.0.0'
+main: com.example.painel.PainelEconomiaPlugin
+api-version: '26.2'
+author: Você
+description: Painel da economia pra staff — circulação, entrada/saída de dinheiro por plugin e maiores fortunas.
+depend: [Vault]
+# Liga ANTES dos plugins que usam economia, pra eles pegarem o intermediário do painel e as
+# movimentações deles aparecerem separadas por origem. Plugin novo que mexe com dinheiro: adicione aqui.
+loadbefore:
+  - PixPlugin
+  - EconomyShopPlugin
+  - ChequePlugin
+  - VipPlugin
+  - BarracasPlugin
+  - SkillsPlugin
+  - BossPlugin
+  - MissoesPlugin
+  - BountyPlugin
+  - ClasPlugin
+
+commands:
+  economia:
+    description: Painel da economia (staff).
+    usage: "Uso: /economia [resumo|dias [n]|top [n]|recalcular]"
+    aliases: [ecostats, painel]
+    permission: painel.economia
+    permission-message: "§cVocê não tem permissão para ver o painel da economia."
+
+permissions:
+  painel.economia:
+    description: Permite ver o painel da economia.
+    default: op

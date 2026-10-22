@@ -1,0 +1,13 @@
+# Configuração do PainelEconomiaPlugin
+
+circulacao:
+  # O total em circulação soma o saldo de todo jogador que já entrou no servidor. Com muitos
+  # jogadores isso pode ser lento (o EssentialsX lê o arquivo de cada conta), então o
+  # resultado fica em cache por esse tempo. /economia recalcular ignora o cache.
+  cache-minutos: 5
+  # Quantos jogadores o /economia top consegue mostrar.
+  top-maximo: 20
+
+historico:
+  # Quantos dias de entrada/saída e de "foto" da circulação ficam guardados em historico.yml.
+  dias-guardados: 90
