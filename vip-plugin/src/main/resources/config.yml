@@ -78,6 +78,13 @@ warp-vip:
 # A cada quantos minutos o plugin varre os VIPs ativos e remove quem já expirou.
 verificacao-expiracao-minutos: 5
 
+codigos:
+  # Prazo padrão (em dias) pra um código gerado com /vip gerarcodigo ser resgatado. Passou
+  # disso sem ninguém resgatar, o código some (mesmo se estiver à venda). 0 = não expira.
+  # Dá pra sobrescrever por código: /vip gerarcodigo <tier> <dias> [usos] [validade-dias].
+  # Códigos gerados antes dessa opção existir continuam sem prazo.
+  validade-padrao-dias: 0
+
 revenda:
   # Permite jogadores revenderem, por coins, um código de VIP que eles ainda não resgataram
   # (ex: recebido da staff numa compra no Discord) — nunca um VIP já ativo (/vip vender).

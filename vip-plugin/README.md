@@ -23,7 +23,7 @@ Todos os comandos, de jogador e de staff, entram por `/vip <ação>` — não te
 | `/vip remove <jogador>` | staff | Remove o VIP na hora |
 | `/vip check <jogador>` | staff | Vê o VIP de outro jogador |
 | `/vip list` | staff | Lista todos os VIPs ativos |
-| `/vip gerarcodigo <tier> <dias> [usos]` | staff | Gera um código pra lojinha entregar ao comprador |
+| `/vip gerarcodigo <tier> <dias> [usos] [validade-dias]` | staff | Gera um código pra lojinha entregar ao comprador (validade opcional, veja abaixo) |
 | `/vip codigos` | staff | Lista códigos ativos ainda não resgatados |
 | `/vip revogarcodigo <codigo>` | staff | Invalida um código antes de ser usado |
 | `/vip reload` | staff | Recarrega o `config.yml` |
@@ -77,7 +77,22 @@ Se um dia vocês quiserem os dois lados conversando sem depender de RCON (ex: o 
 - 8 caracteres (`VIP-XXXXXXXX`), sem `0/O/1/I/L` pra evitar erro de leitura/digitação ao repassar pro comprador.
 - Por padrão cada código vale **1 uso**; `/vip gerarcodigo ouro 30 5` gera um código reutilizável 5 vezes (ex: promoção "5 primeiros a resgatar ganham Ouro").
 - `/vip resgatar` aceita o código com ou sem o prefixo `VIP-`.
-- Códigos ficam salvos em `codigos.yml` (sobrevivem a reinício do servidor) até serem totalmente usados ou revogados com `/vip revogarcodigo`.
+- Códigos ficam salvos em `codigos.yml` (sobrevivem a reinício do servidor) até serem totalmente usados, revogados com `/vip revogarcodigo` ou **vencerem o prazo de resgate**.
+
+### Validade do código (prazo pra resgatar)
+Um código pode ter prazo pra ser resgatado. Se ninguém resgatar até lá, ele some, **mesmo que esteja à venda**:
+
+```yaml
+codigos:
+  validade-padrao-dias: 0   # 0 = não expira (padrão)
+```
+
+- `/vip gerarcodigo ouro 30` usa o prazo padrão do `config.yml`.
+- `/vip gerarcodigo ouro 30 1 7` dá 7 dias pra resgatar (o 5º argumento vale mais que o padrão). Com `0` nesse argumento, o código não expira.
+- O prazo é só pra **resgatar**. Depois de resgatado, o VIP dura os `<dias>` normais.
+- `/vip codigos` e a mensagem do `gerarcodigo` mostram até quando cada código vale.
+- Códigos gerados antes dessa opção existir continuam **sem prazo**, então nenhum código já vendido vence de surpresa.
+- Quando um código à venda vence, ele sai da revenda sem avisar o vendedor.
 
 ## Revenda entre jogadores: código de VIP por coins
 
@@ -202,7 +217,7 @@ O `.jar` sai em `target/VipPlugin.jar`.
 2. **`/vip warp` é um único ponto fixo pra todos os tiers** — não tem um warp por tier.
 3. **Cooldowns de heal/feed/kit ficam salvos em `cooldowns.yml`**, então reiniciar o servidor não dá um uso grátis pra ninguém. Registros que já passaram do maior cooldown configurado são descartados ao salvar, pro arquivo não crescer pra sempre.
 4. **`/vip kit` sempre entrega o kit inteiro do tier atual** — não acumula nem soma kits de tiers anteriores.
-5. **Códigos não expiram sozinhos** — só somem quando totalmente usados (`usos-restantes` chega a 0) ou revogados manualmente com `/vip revogarcodigo`. Se quiser um prazo de validade pro código em si (ex: "expira em 7 dias se não for resgatado"), é rápido de adicionar.
+5. **A validade do código vem desligada** (`codigos.validade-padrao-dias: 0`). Por padrão, um código só some quando é totalmente usado ou revogado. Ligue no `config.yml` se quiser um prazo pra resgatar (veja "Validade do código").
 6. **A integração com o site é via RCON, ainda não construída** — quando o site existir de verdade, ele precisa só rodar `vip gerarcodigo <tier> <dias>` via RCON depois de confirmar o pagamento. Nenhuma mudança no plugin é necessária pra isso funcionar; se quiser, mais pra frente, uma API HTTP própria em vez de RCON, é um projeto à parte.
 7. **Um jogador só pode ter um código à venda por vez** — checado explicitamente (`buscarCodigoDeVenda`), não uma consequência de outra coisa. Se quiser permitir múltiplas vendas simultâneas, é só tirar essa checagem.
 8. **Não tem preço mínimo/máximo pra `/vip vender`** — um jogador pode colocar por 1 coin ou 1 milhão, a critério dele. Se quiser limites (ex: não deixar vender por menos que X% do preço de tabela do tier), dá pra adicionar uma checagem usando `desconto-loja-percentual` ou um novo campo de "preço sugerido" por tier.

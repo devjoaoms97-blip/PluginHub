@@ -362,7 +362,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             return;
         }
         if (args.length < 3) {
-            sender.sendMessage("§cUso: §f/vip gerarcodigo <tier> <dias> [usos]");
+            sender.sendMessage("§cUso: §f/vip gerarcodigo <tier> <dias> [usos] [validade-dias]");
             return;
         }
 
@@ -386,13 +386,35 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             usos = usosLidos;
         }
 
+        // Prazo pra resgatar: argumento explícito (0 = não expira) ou o padrão do config.yml
+        int validadeDias = Math.max(0, plugin.getConfig().getInt("codigos.validade-padrao-dias", 0));
+        if (args.length >= 5) {
+            try {
+                validadeDias = Integer.parseInt(args[4]);
+            } catch (NumberFormatException e) {
+                validadeDias = -1;
+            }
+            if (validadeDias < 0) {
+                sender.sendMessage("§cValidade inválida. Use um número de dias (0 = não expira).");
+                return;
+            }
+        }
+
         String criadoPor = sender instanceof Player p ? p.getName() : "console";
-        VipCode code = plugin.getCodeManager().gerar(tier, dias, usos, criadoPor);
+        VipCode code = plugin.getCodeManager().gerar(tier, dias, usos, criadoPor, validadeDias);
 
         sender.sendMessage("§aCódigo gerado: §f§lVIP-" + code.getCodigo());
         sender.sendMessage("§7" + plugin.getNomeExibicao(tier) + " §7por §f" + dias + " dias"
                 + (usos > 1 ? " §7(" + usos + " usos)" : "")
                 + " §7— peça pro jogador rodar §f/vip resgatar VIP-" + code.getCodigo());
+        sender.sendMessage("§7Validade pra resgatar: §f" + descreverValidade(code));
+    }
+
+    private String descreverValidade(VipCode code) {
+        if (code.getExpiraEm() <= 0) {
+            return "não expira";
+        }
+        return "até " + FORMATO_DATA.format(Instant.ofEpochMilli(code.getExpiraEm()).atZone(ZoneId.systemDefault()));
     }
 
     private void tratarCodigos(CommandSender sender) {
@@ -400,6 +422,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§cVocê não tem permissão.");
             return;
         }
+        plugin.getCodeManager().limparExpirados();
         var codigos = plugin.getCodeManager().getTodos();
         if (codigos.isEmpty()) {
             sender.sendMessage("§7Nenhum código ativo no momento.");
@@ -411,7 +434,8 @@ public class VipCommand implements CommandExecutor, TabCompleter {
                     ? "§7venda de §f" + code.getCriadoPor() + " §7por §f" + formatarCoins(code.getPreco())
                     : "§7gerado por §f" + code.getCriadoPor();
             sender.sendMessage("§fVIP-" + code.getCodigo() + " §7- " + plugin.getNomeExibicao(code.getTier())
-                    + " §7por §f" + code.getDias() + "d §7(" + origem + "§7, " + code.getUsosRestantes() + " usos restantes)");
+                    + " §7por §f" + code.getDias() + "d §7(" + origem + "§7, " + code.getUsosRestantes() + " usos restantes, "
+                    + descreverValidade(code) + ")");
         }
     }
 
@@ -526,7 +550,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§f/vip remove <jogador> §7- remove o VIP");
             sender.sendMessage("§f/vip check <jogador> §7- vê o VIP de outro jogador");
             sender.sendMessage("§f/vip list §7- lista todos os VIPs ativos");
-            sender.sendMessage("§f/vip gerarcodigo <tier> <dias> [usos] §7- gera um código pra lojinha entregar");
+            sender.sendMessage("§f/vip gerarcodigo <tier> <dias> [usos] [validade-dias] §7- gera um código pra lojinha entregar");
             sender.sendMessage("§f/vip codigos §7- lista códigos ativos ainda não resgatados");
             sender.sendMessage("§f/vip revogarcodigo <codigo> §7- invalida um código antes de ser usado");
             sender.sendMessage("§f/vip reload §7- recarrega o config.yml");
@@ -570,6 +594,9 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 4 && sub.equals("gerarcodigo")) {
             return List.of("1", "5", "10");
+        }
+        if (args.length == 5 && sub.equals("gerarcodigo")) {
+            return List.of("0", "7", "30", "90");
         }
         if (args.length == 2 && sub.equals("revogarcodigo") && sender.hasPermission("vip.admin")) {
             return new ArrayList<>(plugin.getCodeManager().getTodos().keySet());

@@ -26,9 +26,10 @@ public class VipCode {
     private final String criadoPor;
     private final double preco;
     private final UUID vendedorId;
+    private final long expiraEm; // 0 = não expira
 
     public VipCode(String codigo, VipTier tier, int dias, int usosRestantes, long criadoEm, String criadoPor,
-                   double preco, UUID vendedorId) {
+                   double preco, UUID vendedorId, long expiraEm) {
         this.codigo = codigo;
         this.tier = tier;
         this.dias = dias;
@@ -37,6 +38,7 @@ public class VipCode {
         this.criadoPor = criadoPor;
         this.preco = preco;
         this.vendedorId = vendedorId;
+        this.expiraEm = expiraEm;
     }
 
     public String getCodigo() {
@@ -70,6 +72,15 @@ public class VipCode {
     /** Nulo pra códigos gerados pela staff ({@code /vip gerarcodigo}) — só existe em revenda entre jogadores. */
     public UUID getVendedorId() {
         return vendedorId;
+    }
+
+    /** Quando o código deixa de valer se ninguém resgatar (epoch ms), ou 0 se não expira. */
+    public long getExpiraEm() {
+        return expiraEm;
+    }
+
+    public boolean expirado(long agora) {
+        return expiraEm > 0 && agora >= expiraEm;
     }
 
     public void consumirUso() {

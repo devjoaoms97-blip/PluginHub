@@ -52,7 +52,10 @@ public class VipPlugin extends JavaPlugin {
 
         int intervaloMin = getConfig().getInt("verificacao-expiracao-minutos", 5);
         long periodoTicks = 20L * 60 * Math.max(1, intervaloMin);
-        Bukkit.getScheduler().runTaskTimer(this, () -> vipManager.verificarExpirados(), periodoTicks, periodoTicks);
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            vipManager.verificarExpirados();
+            codeManager.limparExpirados();
+        }, periodoTicks, periodoTicks);
 
         getLogger().info("VipPlugin ativado!");
     }

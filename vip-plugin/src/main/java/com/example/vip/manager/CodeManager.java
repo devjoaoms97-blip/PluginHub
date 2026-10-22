@@ -29,6 +29,10 @@ import java.util.logging.Level;
  * {@link #buscar} (consulta) e {@link #consumir} (efetiva o uso) são separados de propósito:
  * quem chama precisa poder conferir se um pagamento é possível ANTES de gastar o código —
  * senão um jogador sem coins suficientes perderia o código à toa numa tentativa frustrada.
+ *
+ * Validade: um código pode ter prazo pra ser resgatado ({@code expiraEm}); passou do prazo
+ * sem ser resgatado, ele some (inclusive se estiver à venda). Códigos antigos, de antes
+ * dessa opção existir, não têm prazo — nenhum código já vendido vence de surpresa.
  */
 public class CodeManager {
 
@@ -47,18 +51,24 @@ public class CodeManager {
         carregar();
     }
 
-    /** Código grátis gerado pela staff (compra confirmada fora do jogo). */
-    public VipCode gerar(VipTier tier, int dias, int usos, String criadoPor) {
-        return criarESalvar(tier, dias, usos, criadoPor, 0.0, null);
+    /**
+     * Código grátis gerado pela staff (compra confirmada fora do jogo). {@code validadeDias}
+     * é o prazo pra ser resgatado — 0 = não expira.
+     */
+    public VipCode gerar(VipTier tier, int dias, int usos, String criadoPor, int validadeDias) {
+        long expiraEm = validadeDias > 0 ? System.currentTimeMillis() + validadeDias * 86_400_000L : 0;
+        return criarESalvar(tier, dias, usos, criadoPor, 0.0, null, expiraEm);
     }
 
-    private VipCode criarESalvar(VipTier tier, int dias, int usos, String criadoPor, double preco, UUID vendedorId) {
+    private VipCode criarESalvar(VipTier tier, int dias, int usos, String criadoPor, double preco, UUID vendedorId,
+                                 long expiraEm) {
         String codigo;
         do {
             codigo = sortearCodigo();
         } while (codigos.containsKey(codigo));
 
-        VipCode novo = new VipCode(codigo, tier, dias, usos, System.currentTimeMillis(), criadoPor, preco, vendedorId);
+        VipCode novo = new VipCode(codigo, tier, dias, usos, System.currentTimeMillis(), criadoPor, preco, vendedorId,
+                expiraEm);
         codigos.put(codigo, novo);
         salvar();
         return novo;
@@ -71,6 +81,7 @@ public class CodeManager {
      * (inválido ou já usado) ou já estiver à venda por outra pessoa.
      */
     public VipCode colocarAVenda(String codigoDigitado, double preco, UUID vendedorId) {
+        limparExpirados();
         String chave = normalizar(codigoDigitado);
         VipCode atual = codigos.get(chave);
         if (atual == null || atual.getVendedorId() != null) {
@@ -78,7 +89,7 @@ public class CodeManager {
         }
 
         VipCode atualizado = new VipCode(atual.getCodigo(), atual.getTier(), atual.getDias(), atual.getUsosRestantes(),
-                atual.getCriadoEm(), atual.getCriadoPor(), preco, vendedorId);
+                atual.getCriadoEm(), atual.getCriadoPor(), preco, vendedorId, atual.getExpiraEm());
         codigos.put(chave, atualizado);
         salvar();
         return atualizado;
@@ -90,7 +101,23 @@ public class CodeManager {
      * chamar {@link #consumir}.
      */
     public VipCode buscar(String codigoDigitado) {
+        limparExpirados();
         return codigos.get(normalizar(codigoDigitado));
+    }
+
+    /**
+     * Remove os códigos que passaram do prazo sem ser resgatados. Chamado antes de qualquer
+     * consulta e também pela tarefa periódica do plugin. Retorna quantos removeu.
+     */
+    public int limparExpirados() {
+        long agora = System.currentTimeMillis();
+        int antes = codigos.size();
+        codigos.values().removeIf(code -> code.expirado(agora));
+        int removidos = antes - codigos.size();
+        if (removidos > 0) {
+            salvar();
+        }
+        return removidos;
     }
 
     /** Consome um uso do código já encontrado via {@link #buscar}, removendo se esgotar. */
@@ -126,7 +153,7 @@ public class CodeManager {
 
         VipCode atual = codigos.get(chave);
         VipCode revertido = new VipCode(atual.getCodigo(), atual.getTier(), atual.getDias(), atual.getUsosRestantes(),
-                atual.getCriadoEm(), atual.getCriadoPor(), 0.0, null);
+                atual.getCriadoEm(), atual.getCriadoPor(), 0.0, null, atual.getExpiraEm());
         codigos.put(chave, revertido);
         salvar();
         return revertido;
@@ -134,6 +161,7 @@ public class CodeManager {
 
     /** Código (chave no mapa) da venda em aberto de {@code vendedorId}, ou {@code null}. */
     public String buscarCodigoDeVenda(UUID vendedorId) {
+        limparExpirados();
         for (VipCode code : codigos.values()) {
             if (vendedorId.equals(code.getVendedorId())) {
                 return code.getCodigo();
@@ -190,6 +218,7 @@ public class CodeManager {
             long criadoEm = secao.getLong(codigo + ".criado-em");
             String criadoPor = secao.getString(codigo + ".criado-por", "desconhecido");
             double preco = secao.getDouble(codigo + ".preco", 0.0);
+            long expiraEm = secao.getLong(codigo + ".expira-em", 0); // ausente = código antigo, sem prazo
 
             UUID vendedorId = null;
             String vendedorTexto = secao.getString(codigo + ".vendedor-id");
@@ -201,7 +230,7 @@ public class CodeManager {
                 }
             }
 
-            codigos.put(codigo, new VipCode(codigo, tier, dias, usos, criadoEm, criadoPor, preco, vendedorId));
+            codigos.put(codigo, new VipCode(codigo, tier, dias, usos, criadoEm, criadoPor, preco, vendedorId, expiraEm));
         }
     }
 
@@ -218,6 +247,9 @@ public class CodeManager {
             yaml.set(base + ".preco", code.getPreco());
             if (code.getVendedorId() != null) {
                 yaml.set(base + ".vendedor-id", code.getVendedorId().toString());
+            }
+            if (code.getExpiraEm() > 0) {
+                yaml.set(base + ".expira-em", code.getExpiraEm());
             }
         }
         try {
