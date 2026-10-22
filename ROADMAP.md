@@ -30,23 +30,24 @@ O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 `/economia` (staff) mostra circulação, entrada/saída por dia separada por plugin e maiores fortunas. O painel se coloca na frente da economia do Vault e descobre o plugin de origem pelo stack de execução, então nenhum plugin precisou ser alterado. O comando é `/economia` porque `/eco` já é do EssentialsX.
 
 **Próximos passos**
-- [ ] Separar o fluxo por "tipo" dentro de cada plugin (por exemplo, na Loja: compra vs. venda). 🟡
-- [ ] Alerta pra staff quando a circulação crescer mais que X% num dia. 🟢
+- [x] Separar o fluxo por "tipo" dentro de cada plugin (`/economia tipos <plugin>`). O tipo vem da classe e do método que mexeu no dinheiro, com nomes no config.
+- [x] Alerta pra staff quando a circulação crescer mais que X% num dia (10% e R$ 50.000 por padrão).
 
 ### Missões diárias ✅ v1 (`missoes-plugin`)
-3 missões sorteadas por dia (minerar, colher, matar, pescar), com recompensa em coins e XP de skill e bônus por completar todas. Contra farm: bloco colocado pelo jogador e mob de spawner não contam.
+3 missões sorteadas por dia e 2 por semana (minerar, colher, matar, pescar, vender na loja, dano no boss), com recompensa em coins e XP de skill e bônus por completar todas. Menu no `/missoes`. Contra farm: bloco colocado pelo jogador, mob de spawner e revenda do que foi comprado na loja no mesmo dia não contam.
 
 **Próximos passos**
-- [ ] Missão de vender na loja e de causar dano no boss (precisa de integração com esses plugins). 🟡
-- [ ] Menu visual (GUI) no `/missoes`. 🟢
-- [ ] Missões semanais, maiores e com recompensa melhor. 🟡
+- [x] Missão de vender na loja e de causar dano no boss.
+- [x] Menu visual (GUI) no `/missoes`.
+- [x] Missões semanais, maiores e com recompensa melhor.
+- [ ] Missão de vender nas barracas (entre jogadores). 🟢
 
 ### Recompensa por cabeça (Bounty) ✅ v1 (`bounty-plugin`)
-`/bounty colocar <jogador> <valor>`: o valor fica retido (com taxa de 10%), recompensas se somam e quem matar leva. Expira em 7 dias, devolvendo aos contribuintes. Contra farm: mesmo IP, mesmo clã e cooldown por matador.
+`/bounty colocar <jogador> <valor>`: o valor fica retido (com taxa de 10%), recompensas se somam e quem matar leva. Expira em 7 dias, devolvendo aos contribuintes. Contra farm: mesmo IP, mesmo clã e cooldown por matador. `/bounty cla <tag> <valor por abate> <abates>` caça um clã inteiro. Anúncios grandes vão pro Discord por webhook.
 
 **Próximos passos**
-- [ ] Recompensa contra um clã inteiro. 🟡
-- [ ] Aparecer no Discord quando uma recompensa grande for colocada ou cobrada. 🟢
+- [x] Recompensa contra um clã inteiro (contrato por abate).
+- [x] Aparecer no Discord quando uma recompensa grande for colocada ou cobrada (webhook no próprio plugin; migrar pra Ponte com o Discord quando ela existir).
 
 ### Duelo com aposta 🟡
 `/duelo <jogador> <valor>`: os dois apostam, o valor fica retido e a luta é numa arena 1v1. O vencedor leva tudo, menos uma taxa.
@@ -64,19 +65,20 @@ Comércio entre jogadores em barracas alugadas no spawn, com lojas por placa em 
 - A caixa de retirada guarda os itens por **7 dias**.
 
 **Próximos passos**
-- [ ] Placa `[Comprar]`: o dono paga quem traz o item. 🟡
-- [ ] Placa ou holograma na entrada, com o nome do dono ou "Aluga-se" quando estiver livre. 🟢
-- [ ] Preço de aluguel por barraca, em vez de um preço único. 🟢
-- [ ] Aluguel pago automaticamente pelo `/pix agendar`, quando ele existir. 🟡
+- [x] Placa `[Comprar]`: o dono paga quem traz o item.
+- [x] Placa na entrada, com o nome do dono ou "Aluga-se" quando estiver livre (`/barraca placa <id>`).
+- [x] Preço de aluguel por barraca (`/barraca preco <id> <valor>`).
+- [x] Aluguel pago automaticamente: `/barraca autorenovar`, do próprio plugin. Migrar pro `/pix agendar` quando ele existir. 🟢
 
 ### Clãs ✅ v1 (`clas-plugin`)
-Tag no chat (convive com a do VIP), cargos (líder, oficial, membro), convites com botão, banco compartilhado com extrato, fogo amigo desligado, chat do clã (`/cc`) e ranking de abates.
+Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), convites com botão, banco compartilhado com extrato (também no `/pix historico`), fogo amigo desligado (inclusive poção e explosão), chat do clã (`/cc`) e ranking por pontos (abates + boss).
 
 **Próximos passos**
-- [ ] Tag na tab list, junto com a do VIP (precisa de integração entre os dois plugins). 🟡
-- [ ] Integração com o Boss: clã do campeão e pontos no ranking. 🟡
-- [ ] Fogo amigo também pra poção arremessada e explosão. 🟢
-- [ ] Banco do clã no `/pix historico` (precisa de um tipo de entidade "clã" no Pix). 🟡
+- [x] Tag na tab list, junto com a do VIP.
+- [x] Integração com o Boss: clã do campeão e pontos no ranking.
+- [x] Fogo amigo também pra poção arremessada e explosão (TNT e cristal do End).
+- [x] Banco do clã no `/pix historico` (o Pix ganhou transação com "entidade").
+- [ ] Guerra de clãs: declarar guerra, placar de abates entre os dois e prêmio pro vencedor. 🟡
 
 ### Terrenos (claims) 🔴
 - Proteger uma área comprada com coins, com tamanho ligado ao valor pago.
@@ -152,9 +154,11 @@ Webhook com anúncios do servidor:
 
 ## 🔗 Integrações entre plugins
 - O Boss paga em coins o ranking de dano.
-- Missões dão XP de skill.
-- Bounty, Duelo e Barracas aparecem no `/pix historico`.
-- O Discord recebe eventos do Boss, do VIP, do Pix e das Barracas.
+- ~~Missões dão XP de skill.~~ ✅
+- ~~Bounty e Barracas aparecem no `/pix historico`.~~ ✅ Falta o Duelo.
+- ~~Missões de vender na loja e de dano no boss.~~ ✅
+- ~~Clãs ganham pontos no boss e mostram a tag na tab junto com o VIP.~~ ✅
+- O Discord recebe eventos do Boss, do VIP, do Pix e das Barracas (o Bounty já manda os dele).
 - O aluguel de barraca e de terreno pode ser pago pelo `/pix agendar`.
 
 ---
@@ -172,3 +176,8 @@ Webhook com anúncios do servidor:
 - **Bounty** (v1): recompensa pela cabeça de jogadores.
 - **Clãs** (v1): tag, cargos, banco, fogo amigo e ranking.
 - **Correção**: Pix, Cheque, venda de VIP e Barracas recusavam valores negativos, mas aceitavam `NaN` e `Infinity` digitados. Agora recusam também.
+- **Painel**: fluxo por tipo (`/economia tipos`) e alerta de crescimento da circulação.
+- **Missões**: missões de vender na loja e de dano no boss, menu visual e missões semanais.
+- **Bounty**: contrato contra um clã inteiro e anúncio no Discord.
+- **Barracas**: placa `[Comprar]`, placa de entrada ("Aluga-se"), preço por barraca e renovação automática.
+- **Clãs**: tag na tab junto com o VIP, pontos e clã do campeão no boss, fogo amigo com poção e explosão, e banco no `/pix historico`.
