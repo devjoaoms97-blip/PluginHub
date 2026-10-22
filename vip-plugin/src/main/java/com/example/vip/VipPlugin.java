@@ -4,6 +4,7 @@ import com.example.vip.command.VipCommand;
 import com.example.vip.listener.ChatTagListener;
 import com.example.vip.listener.ParticleTrailListener;
 import com.example.vip.manager.CodeManager;
+import com.example.vip.manager.CooldownManager;
 import com.example.vip.manager.VipManager;
 import com.example.vip.model.VipTier;
 import net.milkbowl.vault.economy.Economy;
@@ -20,6 +21,7 @@ public class VipPlugin extends JavaPlugin {
 
     private VipManager vipManager;
     private CodeManager codeManager;
+    private CooldownManager cooldownManager;
     private ChatTagListener chatTagListener;
     private ParticleTrailListener particleTrailListener;
     private Economy economy;
@@ -37,6 +39,7 @@ public class VipPlugin extends JavaPlugin {
 
         this.vipManager = new VipManager(this);
         this.codeManager = new CodeManager(this);
+        this.cooldownManager = new CooldownManager(this);
 
         VipCommand vipCommand = new VipCommand(this);
         getCommand("vip").setExecutor(vipCommand);
@@ -84,6 +87,10 @@ public class VipPlugin extends JavaPlugin {
 
     public CodeManager getCodeManager() {
         return codeManager;
+    }
+
+    public CooldownManager getCooldownManager() {
+        return cooldownManager;
     }
 
     public ParticleTrailListener getParticleTrailListener() {

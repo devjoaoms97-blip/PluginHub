@@ -200,7 +200,7 @@ O `.jar` sai em `target/VipPlugin.jar`.
 
 1. **A tag de chat/tablist é implementada aqui, não pelo LuckPerms** — o LuckPerms guarda `meta setprefix` pra você usar com outros plugins (placeholders, scoreboard, etc.), mas o VipPlugin não lê esse prefixo; ele usa o próprio campo `nome-exibicao` do `config.yml`. Isso evita uma dependência a mais (não precisa de PlaceholderAPI), mas significa que você define a tag em dois lugares. Se preferir unificar lendo o prefixo do LuckPerms direto, é só pedir.
 2. **`/vip warp` é um único ponto fixo pra todos os tiers** — não tem um warp por tier.
-3. **Cooldowns de heal/feed/kit ficam em memória**, não persistem se o servidor reiniciar (o jogador ganha um "uso grátis" depois de um restart).
+3. **Cooldowns de heal/feed/kit ficam salvos em `cooldowns.yml`**, então reiniciar o servidor não dá um uso grátis pra ninguém. Registros que já passaram do maior cooldown configurado são descartados ao salvar, pro arquivo não crescer pra sempre.
 4. **`/vip kit` sempre entrega o kit inteiro do tier atual** — não acumula nem soma kits de tiers anteriores.
 5. **Códigos não expiram sozinhos** — só somem quando totalmente usados (`usos-restantes` chega a 0) ou revogados manualmente com `/vip revogarcodigo`. Se quiser um prazo de validade pro código em si (ex: "expira em 7 dias se não for resgatado"), é rápido de adicionar.
 6. **A integração com o site é via RCON, ainda não construída** — quando o site existir de verdade, ele precisa só rodar `vip gerarcodigo <tier> <dias>` via RCON depois de confirmar o pagamento. Nenhuma mudança no plugin é necessária pra isso funcionar; se quiser, mais pra frente, uma API HTTP própria em vez de RCON, é um projeto à parte.

@@ -1,6 +1,8 @@
 package com.example.vip.command;
 
 import com.example.vip.VipPlugin;
+import com.example.vip.manager.CooldownManager;
+import com.example.vip.manager.CooldownManager.Perk;
 import com.example.vip.model.VipTier;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,11 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Lógica dos perks de VIP (fly, heal, feed, kit, particula, warp). Não é mais um
@@ -27,9 +27,6 @@ import java.util.UUID;
 public class PerkCommand {
 
     private final VipPlugin plugin;
-    private final Map<UUID, Long> cooldownHeal = new HashMap<>();
-    private final Map<UUID, Long> cooldownFeed = new HashMap<>();
-    private final Map<UUID, Long> cooldownKit = new HashMap<>();
 
     public PerkCommand(VipPlugin plugin) {
         this.plugin = plugin;
@@ -83,7 +80,7 @@ public class PerkCommand {
         if (!perkPermitido(player, "heal", "vip.perk.heal")) {
             return;
         }
-        if (!passouCooldown(cooldownHeal, player, plugin.getCooldownHealMinutos(tier))) {
+        if (!passouCooldown(Perk.HEAL, player, plugin.getCooldownHealMinutos(tier))) {
             return;
         }
 
@@ -99,7 +96,7 @@ public class PerkCommand {
         if (!perkPermitido(player, "feed", "vip.perk.feed")) {
             return;
         }
-        if (!passouCooldown(cooldownFeed, player, plugin.getCooldownFeedMinutos(tier))) {
+        if (!passouCooldown(Perk.FEED, player, plugin.getCooldownFeedMinutos(tier))) {
             return;
         }
 
@@ -112,7 +109,7 @@ public class PerkCommand {
         if (!perkPermitido(player, "kit", "vip.perk.kit")) {
             return;
         }
-        if (!passouCooldown(cooldownKit, player, plugin.getCooldownKitHoras(tier) * 60)) {
+        if (!passouCooldown(Perk.KIT, player, plugin.getCooldownKitHoras(tier) * 60)) {
             return;
         }
 
@@ -206,22 +203,31 @@ public class PerkCommand {
         return true;
     }
 
-    /** {@code minutos <= 0} significa "sem cooldown". Já avisa o jogador quando ainda está em espera. */
-    private boolean passouCooldown(Map<UUID, Long> mapa, Player player, int minutos) {
+    /**
+     * {@code minutos <= 0} significa "sem cooldown". Já avisa o jogador quando ainda está em espera.
+     * O último uso fica no {@link CooldownManager} (salvo em disco), então sobrevive a reinícios.
+     */
+    private boolean passouCooldown(Perk perk, Player player, int minutos) {
         if (minutos <= 0) {
             return true;
         }
-        long agora = System.currentTimeMillis();
-        Long ultimoUso = mapa.get(player.getUniqueId());
-        long minimoMs = minutos * 60L * 1000;
-
-        if (ultimoUso != null && (agora - ultimoUso) < minimoMs) {
-            long restanteSeg = (minimoMs - (agora - ultimoUso)) / 1000;
-            player.sendMessage("§cAinda em cooldown. Tente de novo em §f" + restanteSeg + "s§c.");
+        long restanteMs = plugin.getCooldownManager().restanteMs(perk, player.getUniqueId(), minutos);
+        if (restanteMs > 0) {
+            player.sendMessage("§cAinda em cooldown. Tente de novo em §f" + formatarTempo(restanteMs / 1000) + "§c.");
             return false;
         }
 
-        mapa.put(player.getUniqueId(), agora);
+        plugin.getCooldownManager().registrarUso(perk, player.getUniqueId());
         return true;
+    }
+
+    /** "45s", "12min 3s", "5h 20min" — cooldown de kit em horas ficava ilegível só em segundos. */
+    private String formatarTempo(long segundos) {
+        long horas = segundos / 3600;
+        long minutos = (segundos % 3600) / 60;
+        long seg = segundos % 60;
+        if (horas > 0) return horas + "h " + minutos + "min";
+        if (minutos > 0) return minutos + "min " + seg + "s";
+        return seg + "s";
     }
 }
