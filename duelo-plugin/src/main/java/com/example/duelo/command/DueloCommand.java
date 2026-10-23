@@ -26,7 +26,7 @@ import java.util.UUID;
  */
 public class DueloCommand implements CommandExecutor, TabCompleter {
 
-    private static final List<String> SUBS = List.of("aceitar", "recusar", "stats", "top");
+    private static final List<String> SUBS = List.of("aceitar", "recusar", "stats", "top", "assistir", "sair");
     private static final List<String> SUBS_ARENA = List.of("criar", "pos1", "pos2", "remover", "lista");
 
     private final DueloPlugin plugin;
@@ -62,6 +62,8 @@ public class DueloCommand implements CommandExecutor, TabCompleter {
             case "recusar" -> recusar(jogador);
             case "stats" -> stats(jogador, args);
             case "top" -> top(jogador);
+            case "assistir" -> assistir(jogador, args);
+            case "sair" -> sair(jogador);
             default -> desafiar(jogador, args);
         }
         return true;
@@ -72,6 +74,7 @@ public class DueloCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage("§f/duelo <jogador> [valor] §7- desafia, apostando o valor (sem valor: amistoso)");
         jogador.sendMessage("§f/duelo aceitar §7| §f/duelo recusar §7- responde ao desafio");
         jogador.sendMessage("§f/duelo stats [jogador] §7| §f/duelo top §7- vitórias e derrotas");
+        jogador.sendMessage("§f/duelo assistir <jogador> §7| §f/duelo sair §7- assiste um duelo em andamento");
         jogador.sendMessage("§7Cada um luta com o próprio equipamento, e §cquem morre perde os itens§7. O vencedor leva o pote"
                 + " menos " + Formato.numero(plugin.getConfig().getDouble("duelo.taxa-percentual", 5)) + "%.");
     }
@@ -185,6 +188,40 @@ public class DueloCommand implements CommandExecutor, TabCompleter {
     }
 
     // ---------------------------------------------------------------------
+    // Espectador
+    // ---------------------------------------------------------------------
+    private void assistir(Player jogador, String[] args) {
+        Player alvo = args.length >= 2 ? Bukkit.getPlayerExact(args[1]) : null;
+        Duelo duelo = alvo == null ? null : duelos().getDuelo(alvo.getUniqueId());
+        if (duelo == null || duelo.getFase() == Duelo.Fase.FIM) {
+            jogador.sendMessage("§cUso: §f/duelo assistir <jogador que está duelando agora>");
+            return;
+        }
+        if (duelo.participa(jogador.getUniqueId()) || duelos().emDuelo(jogador.getUniqueId())) {
+            jogador.sendMessage("§cVocê está num duelo.");
+            return;
+        }
+        if (duelos().assistindo(jogador.getUniqueId())) {
+            jogador.sendMessage("§cVocê já está assistindo um duelo. §f/duelo sair §cprimeiro.");
+            return;
+        }
+        if (plugin.naArena(jogador)) {
+            jogador.sendMessage("§cVocê está num evento no mundo das arenas.");
+            return;
+        }
+        duelos().assistir(jogador, duelo);
+    }
+
+    private void sair(Player jogador) {
+        if (!duelos().assistindo(jogador.getUniqueId())) {
+            jogador.sendMessage("§cVocê não está assistindo um duelo.");
+            return;
+        }
+        duelos().pararDeAssistir(jogador);
+        jogador.sendMessage("§7Você parou de assistir.");
+    }
+
+    // ---------------------------------------------------------------------
     // Ranking
     // ---------------------------------------------------------------------
     private void stats(Player jogador, String[] args) {
@@ -282,7 +319,7 @@ public class DueloCommand implements CommandExecutor, TabCompleter {
             opcoes.addAll(SUBS_ARENA);
         } else if (args.length == 3 && args[0].equalsIgnoreCase("arena") && admin) {
             opcoes.addAll(duelos().getArenas().keySet());
-        } else if (args.length == 2 && (args[0].equalsIgnoreCase("stats") || args[0].equalsIgnoreCase("cancelar"))) {
+        } else if (args.length == 2 && (args[0].equalsIgnoreCase("stats") || args[0].equalsIgnoreCase("cancelar") || args[0].equalsIgnoreCase("assistir"))) {
             Bukkit.getOnlinePlayers().forEach(p -> opcoes.add(p.getName()));
         }
         String prefixo = args[args.length - 1].toLowerCase(Locale.ROOT);

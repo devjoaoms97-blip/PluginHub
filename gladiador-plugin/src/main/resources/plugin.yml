@@ -4,7 +4,7 @@ main: com.example.gladiador.GladiadorPlugin
 api-version: '26.2'
 author: Você
 description: Evento Gladiador de PvP, individual ou por clã, com inscrição, prêmio, perda de itens e ranking.
-softdepend: [Vault, PixPlugin, ClasPlugin]
+softdepend: [Vault, PixPlugin, ClasPlugin, DiscordPlugin]
 
 commands:
   gladiador:

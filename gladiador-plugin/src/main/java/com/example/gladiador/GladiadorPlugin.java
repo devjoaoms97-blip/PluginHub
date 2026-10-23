@@ -3,8 +3,10 @@ package com.example.gladiador;
 import com.example.gladiador.command.GladiadorCommand;
 import com.example.gladiador.listener.GladiadorListener;
 import com.example.gladiador.manager.AgendaManager;
+import com.example.gladiador.manager.Destaques;
 import com.example.gladiador.manager.EventoManager;
 import com.example.gladiador.util.ClasIntegration;
+import com.example.gladiador.util.DiscordIntegration;
 import com.example.gladiador.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
@@ -18,12 +20,15 @@ public class GladiadorPlugin extends JavaPlugin {
     private Economy economy;
     private EventoManager eventoManager;
     private AgendaManager agendaManager;
+    private Destaques destaques;
     private PixIntegration pixIntegration;
     private ClasIntegration clasIntegration;
+    private DiscordIntegration discord;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        this.discord = new DiscordIntegration(this);
         if (!setupEconomy()) {
             getLogger().warning("Vault (ou um plugin de economia) não foi encontrado! O Gladiador não vai abrir até o Vault ser instalado.");
         }
@@ -31,11 +36,13 @@ public class GladiadorPlugin extends JavaPlugin {
         this.clasIntegration = new ClasIntegration(this);
         this.eventoManager = new EventoManager(this);
         this.agendaManager = new AgendaManager(this);
+        this.destaques = new Destaques(this);
 
         GladiadorCommand comando = new GladiadorCommand(this);
         getCommand("gladiador").setExecutor(comando);
         getCommand("gladiador").setTabCompleter(comando);
         getServer().getPluginManager().registerEvents(new GladiadorListener(this), this);
+        getServer().getPluginManager().registerEvents(destaques, this);
         getServer().getScheduler().runTaskTimer(this, () -> {
             eventoManager.tick();
             agendaManager.tick();
@@ -67,6 +74,10 @@ public class GladiadorPlugin extends JavaPlugin {
         return eventoManager;
     }
 
+    public Destaques getDestaques() {
+        return destaques;
+    }
+
     public AgendaManager getAgendaManager() {
         return agendaManager;
     }
@@ -90,5 +101,9 @@ public class GladiadorPlugin extends JavaPlugin {
     /** Está no mundo das arenas (num duelo ou noutro evento). */
     public boolean naArena(Player jogador) {
         return jogador.getWorld().getName().equalsIgnoreCase(getConfig().getString("mundo-arenas", "arenas"));
+    }
+
+    public DiscordIntegration getDiscord() {
+        return discord;
     }
 }

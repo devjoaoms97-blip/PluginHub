@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -56,6 +57,30 @@ public class GladiadorListener implements Listener {
         if (!valendo || mesmoCla) evento.setCancelled(true);
     }
 
+    /**
+     * Destaque Top Damage: soma a vida que o golpe tirou de verdade (no máximo a que a vítima
+     * tinha, pra golpe em quem já está morrendo não inflar o número).
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void contarDano(EntityDamageByEntityEvent evento) {
+        if (evento().getFase() != Evento.Fase.LUTA || !(evento.getEntity() instanceof Player vitima)) return;
+        Player atacante = evento.getDamager() instanceof Player p ? p
+                : evento.getDamager() instanceof Projectile proj && proj.getShooter() instanceof Player p ? p : null;
+        Participante pAtacante = atacante == null ? null : participante(atacante);
+        if (pAtacante == null || participante(vitima) == null || atacante == vitima) return;
+        pAtacante.somarDano(Math.min(evento.getFinalDamage(), vitima.getHealth() + vitima.getAbsorptionAmount()));
+    }
+
+    /** Destaque Fujão: blocos andados (na horizontal) durante a luta, por quem ainda está de pé. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void contarDistancia(PlayerMoveEvent evento) {
+        Participante p = participante(evento.getPlayer());
+        if (p == null || !p.isVivo() || evento().getFase() != Evento.Fase.LUTA) return;
+        double dx = evento.getTo().getX() - evento.getFrom().getX(), dz = evento.getTo().getZ() - evento.getFrom().getZ();
+        double blocos = Math.sqrt(dx * dx + dz * dz);
+        if (blocos < 10) p.somarDistancia(blocos); // um salto grande é teleporte/correção do servidor, não corrida
+    }
+
     /** Fora da luta (preparação e fim), participante não toma dano nenhum. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoTomarDano(EntityDamageEvent evento) {
@@ -87,6 +112,8 @@ public class GladiadorListener implements Listener {
         Player morto = evento.getPlayer();
         if (participante(morto) != null) {
             Player matador = morto.getKiller();
+            Participante pMatador = matador == null || matador == morto ? null : participante(matador);
+            if (pMatador != null) pMatador.somarAbate();
             plugin.getEventoManager().eliminar(morto, matador != null ? "foi eliminado por " + matador.getName() : "foi eliminado");
         }
     }

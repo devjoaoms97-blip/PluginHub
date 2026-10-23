@@ -9,7 +9,7 @@ softdepend: [Vault, PixPlugin]
 commands:
   duelo:
     description: Desafia alguém pro X1.
-    usage: "Uso: /duelo <jogador> [valor] | /duelo <aceitar|recusar|stats|top>"
+    usage: "Uso: /duelo <jogador> [valor] | /duelo <aceitar|recusar|stats|top|assistir|sair>"
     aliases: [x1, duel]
     permission: duelo.usar
     permission-message: "§cVocê não tem permissão para duelar."

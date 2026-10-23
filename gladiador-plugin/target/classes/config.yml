@@ -33,6 +33,34 @@ luta:
   # Tempo que os vencedores ficam na arena pra pegar os itens dos outros.
   tempo-pra-pegar-itens-segundos: 30
 
+borda:
+  # Borda que fecha durante a luta, pra ela não se arrastar. Cada participante vê a parede, e
+  # quem fica fora toma dano. Começa do tamanho da arena.
+  ativado: true
+  comeca-depois-segundos: 300
+  fecha-em-segundos: 300
+  # Lado da borda quando termina de fechar, em blocos.
+  tamanho-final: 8
+  # Dano de quem fica fora (2 = 1 coração), a cada segundo. Cresce enquanto o jogador continua
+  # fora, pra regeneração alta não segurar, e volta ao começo quando ele entra de novo. Sai
+  # direto da vida: armadura e Proteção não reduzem.
+  dano-inicial: 2
+  aumento-por-segundo: 1
+  # Teto do dano por segundo (0 = sem teto).
+  dano-maximo: 20
+
+destaques:
+  # No fim da luta, os três destaques são anunciados e ganham a tag no chat até o próximo
+  # Gladiador: quem mais matou, quem mais andou na arena e quem mais tirou vida dos outros.
+  ativado: true
+  tags:
+    # quem mais matou
+    ceifador: "&c[Ceifador]"
+    # quem mais andou na arena
+    fujao: "&b[Fujão]"
+    # quem mais tirou vida dos outros
+    topdamage: "&6[Top Damage]"
+
 # Abre sozinho nesses horários: "DIA HH:mm individual" ou "DIA HH:mm cla" (DIA: SEGUNDA a
 # DOMINGO). Lista vazia desativa.
 agenda: []

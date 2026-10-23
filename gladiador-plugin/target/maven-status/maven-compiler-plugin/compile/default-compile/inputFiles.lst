@@ -2,9 +2,12 @@ C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\m
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\GladiadorPlugin.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\listener\GladiadorListener.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\manager\AgendaManager.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\manager\Borda.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\manager\Destaques.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\manager\EventoManager.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\model\Arena.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\model\Evento.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\util\ClasIntegration.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\util\DiscordIntegration.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\util\Formato.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\gladiador-plugin\src\main\java\com\example\gladiador\util\PixIntegration.java

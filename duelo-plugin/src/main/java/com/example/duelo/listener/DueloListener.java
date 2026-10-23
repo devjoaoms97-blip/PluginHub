@@ -23,7 +23,8 @@ import java.util.Locale;
 /**
  * Regras durante o duelo: ninguém de fora bate nos lutadores (nem eles em outros), ninguém se
  * mexe nem toma dano na contagem, comando e teleporte ficam bloqueados (só o /duelo), desconectar
- * conta como morte e quem morre renasce onde estava antes.
+ * conta como morte e quem morre renasce onde estava antes. Quem assiste também fica sem comandos
+ * e teleportes e não se afasta da arena.
  */
 public class DueloListener implements Listener {
 
@@ -71,7 +72,8 @@ public class DueloListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoUsarComando(PlayerCommandPreprocessEvent evento) {
-        if (duelo(evento.getPlayer()) == null || plugin.isAdmin(evento.getPlayer())) return;
+        boolean preso = duelo(evento.getPlayer()) != null || plugin.getDueloManager().assistindo(evento.getPlayer().getUniqueId());
+        if (!preso || plugin.isAdmin(evento.getPlayer())) return;
         String comando = evento.getMessage().substring(1).split(" ")[0].toLowerCase(Locale.ROOT);
         if (List.of("duelo", "x1", "duel").contains(comando)) return;
         evento.setCancelled(true);
@@ -81,8 +83,17 @@ public class DueloListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoTeleportar(PlayerTeleportEvent evento) {
         Player p = evento.getPlayer();
-        if (duelo(p) == null || plugin.getDueloManager().teleporteLiberado(p.getUniqueId())) return;
+        boolean preso = duelo(p) != null || plugin.getDueloManager().assistindo(p.getUniqueId());
+        if (!preso || plugin.getDueloManager().teleporteLiberado(p.getUniqueId())) return;
         evento.setCancelled(true);
+    }
+
+    /** O espectador não sai de perto da arena. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void aoEspectadorMexer(PlayerMoveEvent evento) {
+        if (plugin.getDueloManager().longeDaArena(evento.getPlayer(), evento.getTo())) {
+            evento.setTo(evento.getFrom());
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -100,6 +111,7 @@ public class DueloListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void aoSair(PlayerQuitEvent evento) {
         Player p = evento.getPlayer();
+        plugin.getDueloManager().pararDeAssistir(p);
         Duelo d = duelo(p);
         if (d != null && d.getFase() != Duelo.Fase.FIM) p.setHealth(0);
     }

@@ -27,6 +27,10 @@ duelo:
   # Tempo que o vencedor fica na arena pra pegar os itens de quem perdeu.
   tempo-pra-pegar-itens-segundos: 20
 
+espectador:
+  # /duelo assistir: até quantos blocos do centro da arena o espectador pode ir.
+  raio: 25
+
 anuncio:
   # Duelos com aposta a partir desse valor são anunciados pra todo o servidor.
   aposta-minima: 10000.0

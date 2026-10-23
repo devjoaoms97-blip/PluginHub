@@ -1,5 +1,5 @@
 // Gladiador: modo individual (inscrição paga, preparação sem dano, desconexão elimina, último de
-// pé leva o pote) e modo por clã (sem dano entre o mesmo clã, prêmio dividido entre quem lutou
+// pé leva o pote, destaques com tag no chat) e modo por clã (sem dano entre o mesmo clã, prêmio dividido entre quem lutou
 // pelo clã vencedor). Precisa da arena (node montar-arenas.js). Uso: node teste-gladiador.js
 const t = require('./lib')
 
@@ -43,6 +43,13 @@ t.rodar(async () => {
   t.verificar(await t.lutar(g1, g2), `${g1.username} eliminou ${g2.username}`)
   msgs = await t.capturar(g1, () => t.lutar(g1, g3), 2000)
   t.verificar(msgs.some(m => m.includes('venceu')), 'o último de pé venceu', msgs.find(m => m.includes('venceu')))
+  // destaques: o mesmo bot eliminou os outros dois, então é o Ceifador (2 abates)
+  const destaques = msgs.join('\n')
+  t.verificar(destaques.includes('Destaques do Gladiador'), 'anúncio dos destaques')
+  t.verificar(new RegExp(`\\[Ceifador\\] ${g1.username} \\(2 abate`).test(destaques), `${g1.username} é o Ceifador, com 2 abates`,
+    msgs.find(m => m.includes('[Ceifador]')))
+  t.verificar(destaques.includes('[Fujão]') && destaques.includes('[Top Damage]'), 'e tem Fujão e Top Damage',
+    [msgs.find(m => m.includes('[Fujão]')), msgs.find(m => m.includes('[Top Damage]'))].join(' / '))
   t.verificar(recebeu(await saldo(g1.username), 9000, 14000), 'e levou o pote', `${await saldo(g1.username)}`)
   t.verificar(await saldo(g2.username) === 9000, 'quem perdeu, perdeu a inscrição')
   await t.espera(3000)
@@ -52,6 +59,13 @@ t.rodar(async () => {
   t.verificar(!naArena(g1), 'o vencedor voltou')
   msgs = await t.capturar(g1, () => g1.chat('/gladiador top'))
   t.verificar(msgs.some(m => m.includes(g1.username)), 'ranking')
+  t.verificar(msgs.some(m => m.includes('[Ceifador]') && m.includes(g1.username)), 'o /gladiador top mostra quem tem cada tag')
+  // o bot recebe só o corpo das mensagens de chat: o formato com a tag sai no log do servidor
+  g1.chat('oi do ceifador')
+  await t.espera(1500)
+  const LOG = `${process.env.MC_TESTE || 'C:/mc-teste'}/ultimo-boot.txt`
+  const linha = require('fs').readFileSync(LOG, 'latin1').split('\n').reverse().find(l => l.includes('oi do ceifador')) || ''
+  t.verificar(linha.includes('[Ceifador]'), 'a tag aparece no chat', linha.replace(/\x1b\[[0-9;]*m/g, '').slice(-70))
   for (const b of [g1, g2, g3]) b.quit()
   await t.espera(1000)
 

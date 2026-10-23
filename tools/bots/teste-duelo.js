@@ -1,4 +1,4 @@
-// X1: desafio com aposta, aceite, contagem sem dano, proteção contra quem é de fora, morte com
+// X1: desafio com aposta, aceite, espectador, contagem sem dano, proteção contra quem é de fora, morte com
 // perda de itens e prêmio menos a taxa, volta pra onde estava, ranking, recusa e cancelamento pela
 // staff com devolução. Precisa das arenas (node montar-arenas.js). Uso: node teste-duelo.js
 const t = require('./lib')
@@ -15,6 +15,7 @@ t.rodar(async () => {
   const a = await t.criarBot(nomeA)
   const b = await t.criarBot(nomeB)
   const fora = await t.criarBot('BotStaff')
+  await t.console('mvtp BotStaff world') // o montar-arenas.js deixa ele no mundo das arenas
   for (const n of [nomeA, nomeB]) {
     await t.console(`gamemode survival ${n}`)
     await t.console(`minecraft:clear ${n}`)
@@ -71,10 +72,23 @@ t.rodar(async () => {
   await t.capturar(b, () => a.chat(`/duelo ${nomeB} 500`))
   await t.capturar(b, () => b.chat('/duelo aceitar'), 2000)
   const [sa, sb] = [await saldo(nomeA), await saldo(nomeB)]
+
+  console.log('\n== Espectador ==')
+  const antesDeAssistir = fora.entity.position.clone()
+  await t.capturar(fora, () => fora.chat(`/duelo assistir ${nomeA}`), 1500)
+  // o Mineflayer não atualiza o próprio modo de jogo nessa versão: pergunta ao servidor (3 = espectador)
+  const modo = async () => (await t.console(`data get entity BotStaff playerGameType`)).match(/: (\d+)/)?.[1]
+  t.verificar(await modo() === '3', 'quem assiste fica no modo espectador')
+  t.verificar(!foraDaArena(fora), 'em cima da arena', `${fora.entity.position}`)
+  msgs = await t.capturar(fora, () => fora.chat('/spawn'))
+  t.verificar(msgs.some(m => m.includes('só o /duelo')), 'sem outros comandos enquanto assiste')
+
   await t.console(`duelo cancelar ${nomeA}`)
   await t.espera(1500)
   t.verificar(await saldo(nomeA) === sa + 500 && await saldo(nomeB) === sb + 500, 'cancelado pela staff, as apostas voltaram')
   t.verificar(foraDaArena(a) && foraDaArena(b), 'e os dois saíram da arena')
+  t.verificar(await modo() === '0' && fora.entity.position.distanceTo(antesDeAssistir) < 2,
+    'o espectador voltou pra onde estava, no modo de antes (sobrevivência)', `${fora.entity.position}`)
 
   await t.terminar(a, b, fora)
 })

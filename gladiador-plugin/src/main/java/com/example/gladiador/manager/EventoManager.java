@@ -32,7 +32,8 @@ import java.util.logging.Level;
  * <p>
  * O pote é a soma das inscrições mais o prêmio do servidor. No modo individual vai todo pro
  * vencedor; no modo por clã é dividido igualmente entre quem lutou pelo clã vencedor (vivo ou
- * não). Se o tempo acabar com mais de um lado vivo, os sobreviventes dividem o pote.
+ * não). Se o tempo acabar com mais de um lado vivo, os sobreviventes dividem o pote. Uma borda
+ * que fecha com o tempo (Borda) empurra todo mundo pro centro, pra luta não se arrastar.
  */
 public class EventoManager {
 
@@ -40,6 +41,7 @@ public class EventoManager {
     private final File arquivoArena;
     private final File arquivoEstatisticas;
     private final Arena arena = new Arena();
+    private final Borda borda;
     private Evento evento;
     /** Quem morreu no evento renasce aqui (onde estava antes de entrar). */
     private final Map<UUID, Location> renascer = new HashMap<>();
@@ -53,6 +55,7 @@ public class EventoManager {
         this.plugin = plugin;
         this.arquivoArena = new File(plugin.getDataFolder(), "arena.yml");
         this.arquivoEstatisticas = new File(plugin.getDataFolder(), "estatisticas.yml");
+        this.borda = new Borda(plugin);
         carregar();
     }
 
@@ -113,9 +116,11 @@ public class EventoManager {
         long duracao = Math.max(10, plugin.getConfig().getInt("inscricao.duracao-segundos", 300)) * 1000L;
         evento = new Evento(modo, inscricao, System.currentTimeMillis() + duracao);
         avisosDados.clear();
-        anunciar("§6§l⚔ GLADIADOR " + (modo == Evento.Modo.CLA ? "POR CLÃ" : "INDIVIDUAL") + " ⚔ §einscrições abertas por §f"
+        String abertura = "§6§l⚔ GLADIADOR " + (modo == Evento.Modo.CLA ? "POR CLÃ" : "INDIVIDUAL") + " ⚔ §einscrições abertas por §f"
                 + Formato.tempo(duracao) + "§e! Inscrição: §f" + (inscricao > 0 ? Formato.valor(inscricao) : "grátis")
-                + "§e. Prêmio: §f" + Formato.valor(premioServidor()) + " §emais as inscrições. §cQuem morre perde os itens. §eEntre com §f/gladiador entrar§e.");
+                + "§e. Prêmio: §f" + Formato.valor(premioServidor()) + " §emais as inscrições. §cQuem morre perde os itens. §eEntre com §f/gladiador entrar§e.";
+        anunciar(abertura);
+        plugin.getDiscord().enviar("gladiador", abertura);
     }
 
     /** Já conferido: inscrições abertas, não inscrito, saldo e clã (modo por clã). */
@@ -192,6 +197,7 @@ public class EventoManager {
                 Player p = Bukkit.getPlayer(id);
                 if (p != null) p.sendActionBar(LegacyComponentSerializer.legacySection().deserialize("§c§lLUTEM!"));
             }
+            borda.comecar(arena, jogadoresVivos());
             verificarVencedor();
         }, preparacao * 20L);
     }
@@ -236,6 +242,7 @@ public class EventoManager {
         Participante p = emCombate(jogador.getUniqueId());
         if (p == null || !p.isVivo()) return;
         p.setVivo(false);
+        borda.tirar(jogador);
         renascer.put(jogador.getUniqueId(), p.getRetorno());
         long vivos = evento.getParticipantes().values().stream().filter(Participante::isVivo).count();
         anunciar("§6[Gladiador] §f" + p.getNome() + " §7" + motivo + ". §eRestam §f" + vivos + "§e.");
@@ -261,6 +268,10 @@ public class EventoManager {
         }
     }
 
+    private List<Player> jogadoresVivos() {
+        return vivos().stream().map(Bukkit::getPlayer).filter(p -> p != null && !p.isDead()).toList();
+    }
+
     private List<UUID> vivos() {
         return evento.getParticipantes().entrySet().stream().filter(e -> e.getValue().isVivo()).map(Map.Entry::getKey).toList();
     }
@@ -269,6 +280,7 @@ public class EventoManager {
     private void finalizar(List<UUID> ganhadores, String cla) {
         Evento esse = evento;
         esse.setFase(Evento.Fase.FIM);
+        jogadoresVivos().forEach(borda::tirar);
         if (ganhadores.isEmpty()) {
             esse.getParticipantes().keySet().forEach(id -> devolverInscricao(id, esse.getInscricao()));
             anunciar("§6§l⚔ GLADIADOR ⚔ §7Ninguém sobrou de pé. As inscrições foram devolvidas.");
@@ -285,9 +297,16 @@ public class EventoManager {
             String quem = cla != null ? "O clã §f[" + cla + "]"
                     : ganhadores.size() == 1 ? "§f" + esse.getParticipantes().get(ganhadores.get(0)).getNome()
                     : "§f" + String.join(", ", ganhadores.stream().map(id -> esse.getParticipantes().get(id).getNome()).toList());
-            anunciar("§6§l⚔ GLADIADOR ⚔ " + quem + " §6§lvenceu" + (ganhadores.size() > 1 && cla == null ? " (tempo esgotado)" : "")
+            String resultado = "§6§l⚔ GLADIADOR ⚔ " + quem + " §6§lvenceu" + (ganhadores.size() > 1 && cla == null ? " (tempo esgotado)" : "")
                     + "§6§l! §ePrêmio: §f" + Formato.valor(pote)
-                    + (ganhadores.size() > 1 ? " §7(" + Formato.valor(parte) + " pra cada um)" : "") + "§e.");
+                    + (ganhadores.size() > 1 ? " §7(" + Formato.valor(parte) + " pra cada um)" : "") + "§e.";
+            anunciar(resultado);
+            plugin.getDiscord().enviar("gladiador", resultado);
+        }
+        String destaques = plugin.getDestaques().premiar(esse);
+        if (!destaques.isEmpty()) {
+            anunciar(destaques);
+            plugin.getDiscord().enviar("gladiador", destaques);
         }
 
         // quem ficou de pé tem um tempo pra pegar os itens dos outros
@@ -309,6 +328,7 @@ public class EventoManager {
     private void encerrar(Evento esse) {
         for (Map.Entry<UUID, Participante> e : esse.getParticipantes().entrySet()) {
             Player p = Bukkit.getPlayer(e.getKey());
+            if (p != null) borda.tirar(p);
             // cancelado nas inscrições, ninguém foi pra arena: não mexe em ninguém
             boolean naArena = p != null && arena.getPos1() != null && p.getWorld().equals(arena.getPos1().getWorld());
             if (naArena && e.getValue().isVivo() && !p.isDead()) teleportar(p, e.getValue().getRetorno());
@@ -349,6 +369,7 @@ public class EventoManager {
                 p.setHealth(0); // sair da arena elimina, e os itens caem como numa morte
             }
         }
+        if (evento.getFase() == Evento.Fase.LUTA) borda.tick(arena, jogadoresVivos(), agora - evento.getInicioLuta());
         long maximo = Math.max(1, plugin.getConfig().getInt("luta.tempo-maximo-minutos", 20)) * 60_000L;
         if (evento != null && evento.getFase() == Evento.Fase.LUTA && agora - evento.getInicioLuta() > maximo) {
             finalizar(vivos(), null);

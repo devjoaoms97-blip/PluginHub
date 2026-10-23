@@ -7,6 +7,7 @@ import com.example.duelo.model.Duelo;
 import com.example.duelo.util.Formato;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
@@ -35,7 +36,8 @@ import java.util.logging.Level;
  * parados durante a contagem. Quem morre perde os itens (o mundo das arenas não guarda
  * inventário) e renasce onde estava antes do duelo. O vencedor leva o pote menos a taxa, tem
  * alguns segundos pra pegar os itens do outro e volta. Desconectar conta como morte. Passado o
- * tempo máximo, é empate: as apostas voltam e os dois saem.
+ * tempo máximo, é empate: as apostas voltam e os dois saem. Quem assiste fica no modo espectador
+ * em volta da arena e volta pra onde estava quando o duelo acaba.
  */
 public class DueloManager {
 
@@ -51,6 +53,11 @@ public class DueloManager {
     /** Pode ser teleportado agora (pelo próprio plugin), mesmo em duelo. */
     private final Set<UUID> teleporteLiberado = new HashSet<>();
     private final Map<UUID, int[]> estatisticas = new HashMap<>(); // {vitórias, derrotas}
+    /** Quem está assistindo um duelo: o duelo, pra onde volta e o modo de jogo de antes. */
+    private final Map<UUID, Espectador> espectadores = new HashMap<>();
+
+    private record Espectador(Duelo duelo, Location retorno, GameMode modoAntes) {
+    }
     private final Map<UUID, String> nomes = new HashMap<>();
 
     public DueloManager(DueloPlugin plugin) {
@@ -106,6 +113,50 @@ public class DueloManager {
 
     public boolean teleporteLiberado(UUID jogador) {
         return teleporteLiberado.contains(jogador);
+    }
+
+    public boolean assistindo(UUID jogador) {
+        return espectadores.containsKey(jogador);
+    }
+
+    /** Centro da arena (entre os dois pontos de partida), um pouco acima. */
+    public Location centroDaArena(Duelo duelo) {
+        Location a = duelo.getArena().getPos1(), b = duelo.getArena().getPos2();
+        Location centro = a.clone().add(b).multiply(0.5).add(0, 4, 0);
+        centro.setWorld(a.getWorld());
+        return centro;
+    }
+
+    /** Leva o jogador pra assistir o duelo, no modo espectador. */
+    public void assistir(Player jogador, Duelo duelo) {
+        espectadores.put(jogador.getUniqueId(), new Espectador(duelo, jogador.getLocation(), jogador.getGameMode()));
+        Location centro = centroDaArena(duelo);
+        centro.setPitch(60);
+        teleportar(jogador, centro);
+        jogador.setGameMode(GameMode.SPECTATOR);
+        // o Multiverse aplica o modo de jogo do mundo um pouco depois da troca de mundo: reaplica
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (assistindo(jogador.getUniqueId()) && jogador.isOnline()) jogador.setGameMode(GameMode.SPECTATOR);
+        }, 5L);
+        jogador.sendMessage("§eAssistindo §f" + duelo.nome(duelo.getDesafiante()) + " §7vs §f" + duelo.nome(duelo.getDesafiado())
+                + "§e. Pra sair: §f/duelo sair§e.");
+    }
+
+    /** Volta o espectador pra onde estava, no modo de jogo de antes. */
+    public void pararDeAssistir(Player jogador) {
+        Espectador e = espectadores.remove(jogador.getUniqueId());
+        if (e == null) return;
+        jogador.setGameMode(e.modoAntes());
+        teleportar(jogador, e.retorno());
+    }
+
+    /** Raio em volta do centro da arena que o espectador pode percorrer. */
+    public boolean longeDaArena(Player jogador, Location onde) {
+        Espectador e = espectadores.get(jogador.getUniqueId());
+        if (e == null) return false;
+        Location centro = centroDaArena(e.duelo());
+        double raio = Math.max(5, plugin.getConfig().getDouble("espectador.raio", 25));
+        return !onde.getWorld().equals(centro.getWorld()) || onde.distanceSquared(centro) > raio * raio;
     }
 
     public Location tirarRenascer(UUID jogador) {
@@ -284,6 +335,13 @@ public class DueloManager {
         }
         duelo.getArena().setOcupada(false);
         duelos.remove(duelo);
+        for (Map.Entry<UUID, Espectador> e : new ArrayList<>(espectadores.entrySet())) {
+            Player p = Bukkit.getPlayer(e.getKey());
+            if (e.getValue().duelo() == duelo && p != null) {
+                pararDeAssistir(p);
+                p.sendMessage("§7O duelo acabou.");
+            }
+        }
     }
 
     /** A cada segundo: convites vencidos e tempo máximo de luta. */
@@ -299,6 +357,10 @@ public class DueloManager {
     /** Desligando o servidor: empata tudo (devolve as apostas). */
     public void encerrarTodos() {
         for (Duelo d : new ArrayList<>(duelos)) empatar(d, "servidor reiniciando");
+        for (UUID id : new ArrayList<>(espectadores.keySet())) {
+            Player p = Bukkit.getPlayer(id);
+            if (p != null) pararDeAssistir(p);
+        }
     }
 
     private void contar(UUID jogador, String nome, int indice) {

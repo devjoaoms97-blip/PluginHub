@@ -12,11 +12,18 @@ Evento de PvP na arena. A staff, ou a agenda, abre as inscrições. Quando elas 
    - Só os participantes se machucam entre si. No modo por clã, membros do mesmo clã nunca se ferem.
    - Os comandos (fora o `/gladiador`) e os teleportes ficam bloqueados.
    - Morrer, desconectar ou sair da área da arena elimina. Os itens caem na arena, e o eliminado renasce onde estava antes de se inscrever.
+   - **Borda que fecha.** Depois de 5 minutos de luta, uma borda começa a fechar do tamanho da arena até 8 blocos, em 5 minutos. Cada participante vê a parede, e quem fica fora toma dano a cada segundo: 1 coração no primeiro, e 0,5 coração a mais a cada segundo seguido lá fora (2, 3, 4... de dano, até 20), para nem a regeneração alta segurar. Voltar pra dentro zera a contagem. O dano sai direto da vida (primeiro dos corações de absorção), e armadura e Proteção não reduzem. Como o mundo das arenas é dividido com o X1 e o boss, a borda é só dos participantes, e não do mundo.
 6. **Fim.**
    - O pote é a soma das inscrições mais o prêmio do servidor (R$ 10.000).
    - No individual, vai todo para o vencedor. No modo por clã, é dividido igualmente entre todos que lutaram pelo clã vencedor, vivos ou não.
    - Depois de 20 minutos de luta, quem estiver de pé divide o pote.
    - Os vencedores têm 30 s para pegar os itens e depois voltam.
+   - **Destaques.** Também saem no chat e no Discord os três destaques da luta, que ganham uma tag no chat até o próximo Gladiador:
+     - ☠ **[Ceifador]**: quem mais matou;
+     - ⚡ **[Fujão]**: quem mais andou na arena, a pé, correndo ou pulando;
+     - ✸ **[Top Damage]**: quem mais tirou vida dos outros participantes. Conta só a vida tirada de verdade: um golpe de 20 em quem tinha 3 de vida vale 3.
+
+     No empate, fica quem se inscreveu primeiro. As tags vão antes de tudo no chat, e quem tem mais de uma mostra todas. O `/gladiador top` mostra quem tem cada uma.
 7. **Cancelamento** pela staff, ou no desligamento do servidor: as inscrições voltam e quem estava na arena sai.
 
 ## Comandos
@@ -51,6 +58,10 @@ Staff (`gladiador.admin`):
 | `luta.preparacao-segundos` | 15 | Tempo sem dano no começo |
 | `luta.tempo-maximo-minutos` | 20 | Depois disso, quem está de pé divide o pote |
 | `luta.tempo-pra-pegar-itens-segundos` | 30 | Tempo dos vencedores na arena depois da luta |
+| `borda.comeca-depois-segundos` / `borda.fecha-em-segundos` | 300 / 300 | Quando a borda começa a fechar e quanto tempo leva |
+| `borda.tamanho-final` | 8 | Lado final da borda, em blocos |
+| `borda.dano-inicial` / `borda.aumento-por-segundo` / `borda.dano-maximo` | 2 / 1 / 20 | Dano no 1º segundo fora (2 = 1 coração), quanto cresce por segundo seguido fora e o teto (0 = sem teto) |
+| `destaques.ativado` / `destaques.tags.*` | true / `[Ceifador]`, `[Fujão]`, `[Top Damage]` | Destaques no fim da luta e o texto de cada tag (com cores `&`) |
 | `agenda` | vazia | Horários automáticos: `"SABADO 20:00 cla"`, `"DOMINGO 18:00 individual"` |
 
 ## Integrações
@@ -59,7 +70,8 @@ Staff (`gladiador.admin`):
 - **ClasPlugin:** o modo por clã usa a tag do clã de cada jogador (`tagDoCla`). Sem o ClasPlugin, o modo por clã não abre.
 - **PixPlugin:** inscrição, devolução e prêmio aparecem no `/pix historico`.
 - **Painel da economia:** `/economia tipos GladiadorPlugin`.
+- **DiscordPlugin:** a abertura e o resultado vão para a categoria `gladiador`.
 
 ## Dados
 
-`arena.yml` guarda a área e os pontos de entrada, e `estatisticas.yml`, as vitórias por jogador e por clã. O evento em andamento fica só na memória: ao desligar, ele é cancelado e as inscrições voltam.
+`arena.yml` guarda a área e os pontos de entrada, `estatisticas.yml` guarda as vitórias por jogador e por clã, e `destaques.yml`, quem tem cada tag. O evento em andamento fica só na memória: ao desligar, ele é cancelado e as inscrições voltam.

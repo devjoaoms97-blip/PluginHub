@@ -25,6 +25,8 @@ As arenas ficam no mundo `arenas`, que não guarda o inventário ao morrer (`kee
 | `/duelo aceitar` / `/duelo recusar` | Responde ao desafio |
 | `/duelo stats [jogador]` | Vitórias e derrotas |
 | `/duelo top` | Os 10 com mais vitórias |
+| `/duelo assistir <jogador>` | Assiste o duelo desse jogador, no modo espectador, de cima da arena |
+| `/duelo sair` | Para de assistir e volta para onde estava |
 
 Staff (`duelo.admin`):
 
@@ -37,6 +39,8 @@ Staff (`duelo.admin`):
 | `/duelo cancelar <jogador>` | Cancela o duelo do jogador e devolve as apostas |
 
 Com mais de uma arena, acontece mais de um duelo ao mesmo tempo. Cada arena recebe um duelo por vez.
+
+**Espectadores.** Quem assiste fica no modo espectador, a até 25 blocos do centro da arena (`espectador.raio`), sem outros comandos nem teleportes. Quando o duelo acaba, todo mundo que estava assistindo volta para onde estava, no modo de jogo de antes. Sair do servidor também tira do modo espectador.
 
 ## Config
 

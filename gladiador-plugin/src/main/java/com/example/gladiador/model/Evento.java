@@ -19,6 +19,9 @@ public class Evento {
         private final String cla;
         private final Location retorno;
         private boolean vivo = true;
+        private int abates;
+        private double distancia;
+        private double dano;
 
         public Participante(String nome, String cla, Location retorno) {
             this.nome = nome;
@@ -44,6 +47,31 @@ public class Evento {
 
         public void setVivo(boolean vivo) {
             this.vivo = vivo;
+        }
+
+        /** Destaques: abates, blocos andados e vida tirada de outros participantes durante a luta. */
+        public int getAbates() {
+            return abates;
+        }
+
+        public void somarAbate() {
+            abates++;
+        }
+
+        public double getDistancia() {
+            return distancia;
+        }
+
+        public void somarDistancia(double blocos) {
+            distancia += blocos;
+        }
+
+        public double getDano() {
+            return dano;
+        }
+
+        public void somarDano(double valor) {
+            dano += valor;
         }
     }
 

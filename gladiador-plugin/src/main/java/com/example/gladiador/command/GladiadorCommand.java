@@ -133,6 +133,8 @@ public class GladiadorCommand implements CommandExecutor, TabCompleter {
         for (int i = 0; i < jogadores.size(); i++) {
             sender.sendMessage("§e" + (i + 1) + ". §f" + eventos().nomeDe(jogadores.get(i).getKey()) + " §7- §a" + jogadores.get(i).getValue() + " vitória(s)");
         }
+        sender.sendMessage("§6Destaques do último Gladiador:");
+        plugin.getDestaques().resumo().forEach(l -> sender.sendMessage("  " + l));
         List<Map.Entry<String, Integer>> clas = eventos().rankingClas(5);
         if (!clas.isEmpty()) {
             sender.sendMessage("§6Clãs:");
