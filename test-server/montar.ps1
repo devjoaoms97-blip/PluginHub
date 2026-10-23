@@ -31,7 +31,22 @@ $downloads = @(
        sha256 = 'bda4685105977fca2e209820a9f0ad24275bd103390a03236f38e59bfdac58e6' },
     @{ arquivo = 'plugins\LuckPerms-Bukkit-5.5.71.jar'; remover = 'LuckPerms-Bukkit-*.jar'
        url = 'https://cdn.modrinth.com/data/Vebnzrzj/versions/b0mk8uS6/LuckPerms-Bukkit-5.5.71.jar'
-       sha256 = '49cecb66fa1fd22a133039a490e9c1e5095a238e7cd66eb9d2a16fe6c897550d' }
+       sha256 = '49cecb66fa1fd22a133039a490e9c1e5095a238e7cd66eb9d2a16fe6c897550d' },
+    # vários mundos (spawn, arenas, terrenos, recursos): crie com configurar-mundos.bat
+    @{ arquivo = 'plugins\multiverse-core-5.8.1.jar'; remover = 'multiverse-core-*.jar'
+       url = 'https://hangarcdn.papermc.io/plugins/Multiverse/Multiverse-Core/versions/5.8.1/PAPER/multiverse-core-5.8.1.jar'
+       sha256 = 'bc3f34e2d747fdf024f44868747bb016b08fa11d98ccb4ffcac958f083151a83' },
+    # colar schematics (o mapa do spawn) e montar estruturas
+    @{ arquivo = 'plugins\worldedit-bukkit-7.4.6.jar'; remover = 'worldedit-bukkit-*.jar'
+       url = 'https://hangarcdn.papermc.io/plugins/EngineHub/WorldEdit/versions/7.4.6/PAPER/worldedit-bukkit-7.4.6.jar'
+       sha256 = 'e0ce67d870ad1fef8a40dd9d7926360caf3bb44722438545d6b20b55f82a0c91' },
+    # os bots de tools/bots (Mineflayer) entram por uma versão anterior do protocolo
+    @{ arquivo = 'plugins\ViaVersion-5.12.1.jar'; remover = 'ViaVersion-*.jar'
+       url = 'https://hangarcdn.papermc.io/plugins/ViaVersion/ViaVersion/versions/5.12.1/PAPER/ViaVersion-5.12.1.jar'
+       sha256 = 'bab94b846e1d2bf516c070562d0271b32382afd41870bf0d3a7993b73a36f791' },
+    @{ arquivo = 'plugins\ViaBackwards-5.12.1.jar'; remover = 'ViaBackwards-*.jar'
+       url = 'https://hangarcdn.papermc.io/plugins/ViaVersion/ViaBackwards/versions/5.12.1/PAPER/ViaBackwards-5.12.1.jar'
+       sha256 = '4b9dd5cb7662f532b44627f8491255bf96f586cbd00280d1480442590ad4450d' }
 )
 
 function Get-Sha256([string]$caminho) {
@@ -170,6 +185,7 @@ if (-not (Test-Path -LiteralPath $lp)) {
 Write-Host ''
 Write-Host 'Pronto!' -ForegroundColor Green
 Write-Host "  Ligar:             $Destino\iniciar.bat"
+Write-Host "  Mundos do rankup:  $Destino\configurar-mundos.bat (com o servidor ligado, uma vez)"
 Write-Host "  Backup manual:     $Destino\backup.bat"
 Write-Host "  Restaurar backup:  $Destino\restaurar.bat"
 Write-Host "  Backup automático: $Destino\agendar-backup.bat"

@@ -1,0 +1,23 @@
+name: RecursosPlugin
+version: '1.0.0'
+main: com.example.recursos.RecursosPlugin
+api-version: '26.2'
+author: Você
+description: Mundo de recursos com teleporte aleatório seguro, borda e reset automático periódico.
+depend: [Multiverse-Core]
+
+commands:
+  recursos:
+    description: Vai pro mundo de recursos (ponto aleatório seguro).
+    usage: "Uso: /recursos [info]"
+    aliases: [rtp, recurso]
+    permission: recursos.usar
+    permission-message: "§cVocê não tem permissão."
+
+permissions:
+  recursos.usar:
+    description: Usa o /recursos.
+    default: true
+  recursos.admin:
+    description: Reseta o mundo de recursos, cancela o reset marcado e ignora o cooldown do /recursos.
+    default: op

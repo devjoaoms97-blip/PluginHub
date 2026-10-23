@@ -1,0 +1,35 @@
+# Configuração do RecursosPlugin
+#
+# Mundo de recursos: minérios, árvores, mobs, pesca e PvP. Ele é resetado de tempos em tempos,
+# pra não crescer sem fim nem virar um queijo suíço. No reset, tudo o que estiver lá some.
+
+# Nome do mundo (criado com o Multiverse: mv create recursos normal).
+mundo: recursos
+
+reset:
+  # Reset automático. Desligado, só a staff reseta (/recursos admin resetar).
+  ativado: true
+  # De quantos em quantos dias, contando do último reset.
+  a-cada-dias: 30
+  # Horário do reset no dia em que vence (de preferência quando tem pouca gente).
+  hora: "05:00"
+  # Avisos no chat antes do reset, em minutos.
+  avisos-minutos: [60, 30, 10, 5, 1]
+
+saida:
+  # Pra onde vão os jogadores que estão no mundo de recursos na hora do reset. Vazio = o
+  # mundo principal do servidor. Quando o mapa novo estiver pronto, ponha "spawn".
+  mundo: ""
+
+borda:
+  # Lado da borda do mundo, em blocos (6000 = de -3000 a 3000). 0 = sem borda.
+  tamanho: 6000
+  centro-x: 0
+  centro-z: 0
+
+teleporte:
+  # /recursos leva a um ponto aleatório até essa distância do centro (e dentro da borda).
+  raio: 2500
+  # Pontos testados antes de desistir (água, lava e afins são pulados).
+  tentativas: 20
+  cooldown-segundos: 30
