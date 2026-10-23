@@ -8,6 +8,7 @@ com\example\barracas\BarracasPlugin.class
 com\example\barracas\util\PixIntegration.class
 com\example\barracas\manager\RetiradaManager.class
 com\example\barracas\model\Leilao.class
+com\example\barracas\util\DiscordIntegration.class
 com\example\barracas\manager\BarracaManager.class
 com\example\barracas\listener\LojaListener.class
 com\example\barracas\model\Barraca.class

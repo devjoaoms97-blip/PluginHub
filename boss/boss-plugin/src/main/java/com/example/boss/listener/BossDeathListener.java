@@ -39,6 +39,7 @@ public class BossDeathListener implements Listener {
         }
 
         Player matador = event.getEntity().getKiller();
+        StringBuilder discord = new StringBuilder(); // o mesmo anúncio, numa mensagem só pro Discord
 
         if (matador != null) {
             ItemStack premio = plugin.getLootManager().sortearItemCampeao();
@@ -54,17 +55,20 @@ public class BossDeathListener implements Listener {
                             "&6★ &e%jogador% &6derrotou o chefe e agora é o novo campeão! ★")
                             .replace("%jogador%", matador.getName()));
             Bukkit.broadcastMessage(mensagem);
+            discord.append(mensagem);
         } else {
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7O chefe foi derrotado."));
+            discord.append("O chefe foi derrotado.");
         }
 
-        anunciarRankingDano();
+        anunciarRankingDano(discord);
+        plugin.getDiscord().enviar("boss", discord.toString());
 
         plugin.getBossManager().finalizar(true);
     }
 
     /** Top N de quem mais causou dano, com o % da vida máxima do boss que cada um tirou. */
-    private void anunciarRankingDano() {
+    private void anunciarRankingDano(StringBuilder discord) {
         if (!plugin.getConfig().getBoolean("ranking-dano.ativado", true)) return;
 
         List<Map.Entry<UUID, Double>> ranking = plugin.getBossManager().getRankingDano();
@@ -75,6 +79,7 @@ public class BossDeathListener implements Listener {
         String[] cores = {"§6", "§f", "§c"};
 
         Bukkit.broadcastMessage("§e§l⚔ Ranking de dano no boss:");
+        discord.append("\nRanking de dano:");
         for (int i = 0; i < Math.min(top, ranking.size()); i++) {
             Map.Entry<UUID, Double> entrada = ranking.get(i);
             OfflinePlayer jogador = Bukkit.getOfflinePlayer(entrada.getKey());
@@ -82,8 +87,10 @@ public class BossDeathListener implements Listener {
             String percentual = vidaMaxima > 0
                     ? String.format(Locale.ROOT, " §7(%.1f%%)", entrada.getValue() / vidaMaxima * 100)
                     : "";
-            Bukkit.broadcastMessage("  " + cor + (i + 1) + "º §f" + jogador.getName()
-                    + " §7- " + String.format(Locale.ROOT, "%.0f", entrada.getValue()) + " de dano" + percentual);
+            String linha = "  " + cor + (i + 1) + "º §f" + jogador.getName()
+                    + " §7- " + String.format(Locale.ROOT, "%.0f", entrada.getValue()) + " de dano" + percentual;
+            Bukkit.broadcastMessage(linha);
+            discord.append("\n").append(linha);
         }
     }
 }

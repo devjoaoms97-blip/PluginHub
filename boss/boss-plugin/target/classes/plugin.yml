@@ -4,7 +4,7 @@ main: com.example.boss.BossPlugin
 api-version: '26.2'
 author: Você
 description: Boss mundial agendado, com fases por vida/tempo, loot configurável e tag de campeão via LuckPerms.
-softdepend: [LuckPerms]
+softdepend: [LuckPerms, DiscordPlugin]
 
 commands:
   boss:

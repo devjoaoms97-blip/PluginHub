@@ -100,6 +100,7 @@ Com `/barraca autorenovar`, o aluguel se renova sozinho no último minuto, mesmo
 - Quem vence fica com a barraca por 6h. O valor do lance vai pro servidor, ou seja, some da economia.
 - Se ninguém der lance, a barraca fica livre pra alugar pelo preço mínimo, por ordem de chegada, até a próxima vez que ficar livre.
 - Lances e leilões são salvos em disco. Reiniciar o servidor no meio de um leilão não perde dinheiro de ninguém.
+- Com o DiscordPlugin, a abertura e o resultado do leilão vão para a categoria `leiloes`.
 
 ## Regras de uma barraca por jogador
 

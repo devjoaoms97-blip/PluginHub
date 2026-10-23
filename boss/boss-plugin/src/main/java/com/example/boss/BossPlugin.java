@@ -9,6 +9,7 @@ import com.example.boss.manager.BossManager;
 import com.example.boss.manager.ChampionManager;
 import com.example.boss.manager.LootManager;
 import com.example.boss.manager.ScheduleManager;
+import com.example.boss.util.DiscordIntegration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -22,10 +23,12 @@ public class BossPlugin extends JavaPlugin {
     private ChampionManager championManager;
     private BossManager bossManager;
     private ScheduleManager scheduleManager;
+    private DiscordIntegration discord;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        this.discord = new DiscordIntegration(this);
 
         this.arenaManager = new ArenaManager(this);
         this.lootManager = new LootManager(this);
@@ -92,5 +95,9 @@ public class BossPlugin extends JavaPlugin {
 
     public ScheduleManager getScheduleManager() {
         return scheduleManager;
+    }
+
+    public DiscordIntegration getDiscord() {
+        return discord;
     }
 }

@@ -7,6 +7,7 @@ import com.example.barracas.listener.ProtecaoListener;
 import com.example.barracas.manager.BarracaManager;
 import com.example.barracas.manager.RetiradaManager;
 import com.example.barracas.model.Barraca;
+import com.example.barracas.util.DiscordIntegration;
 import com.example.barracas.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
@@ -25,10 +26,12 @@ public class BarracasPlugin extends JavaPlugin {
     private RetiradaManager retiradaManager;
     private BarracaManager barracaManager;
     private PixIntegration pixIntegration;
+    private DiscordIntegration discord;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        this.discord = new DiscordIntegration(this);
 
         if (!setupEconomy()) {
             getLogger().warning("Vault (ou um plugin de economia) não foi encontrado!");
@@ -159,5 +162,9 @@ public class BarracasPlugin extends JavaPlugin {
             }
         }
         return Math.min(100, maiorDesconto);
+    }
+
+    public DiscordIntegration getDiscord() {
+        return discord;
     }
 }

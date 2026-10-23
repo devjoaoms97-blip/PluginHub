@@ -14,6 +14,7 @@ Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases din
 8. **Tag de campeão via LuckPerms**
 9. **Contagem regressiva** no chat antes do spawn agendado (padrão: 10, 5 e 1 min antes)
 10. **Ranking de dano**: quando o boss morre, o chat mostra o top 3 de quem mais bateu nele
+11. **Discord**: com o DiscordPlugin, o aparecimento e a morte (campeão e ranking de dano) vão para a categoria `boss`
 
 ## Requisitos
 

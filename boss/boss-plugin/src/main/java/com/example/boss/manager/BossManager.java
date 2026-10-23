@@ -286,6 +286,7 @@ public class BossManager {
         String mensagem = ChatColor.translateAlternateColorCodes('&',
                 plugin.getConfig().getString("mensagem-spawn", "&4&l⚠ Um chefe apareceu! Corram para enfrentá-lo!"));
         Bukkit.broadcastMessage(mensagem);
+        plugin.getDiscord().enviar("boss", mensagem);
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 1f);
         }

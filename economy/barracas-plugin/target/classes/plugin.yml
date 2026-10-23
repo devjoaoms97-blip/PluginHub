@@ -4,7 +4,7 @@ main: com.example.barracas.BarracasPlugin
 api-version: '26.2'
 author: Você
 description: Mercado de barracas alugadas no spawn, com lojas por placa em baús e leilão das barracas especiais.
-softdepend: [Vault, PixPlugin]
+softdepend: [Vault, PixPlugin, DiscordPlugin]
 
 commands:
   barraca:

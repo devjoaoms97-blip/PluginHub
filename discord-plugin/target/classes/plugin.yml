@@ -1,0 +1,18 @@
+name: DiscordPlugin
+version: '1.0.0'
+main: com.example.discord.DiscordPlugin
+api-version: '26.2'
+author: Você
+description: Ponte com o Discord - os outros plugins anunciam boss, Gladiador e leilões por webhook.
+
+commands:
+  discord:
+    description: Testa e recarrega a ponte com o Discord (staff).
+    usage: "Uso: /discord teste [categoria] | /discord reload"
+    permission: discord.admin
+    permission-message: "§cVocê não tem permissão."
+
+permissions:
+  discord.admin:
+    description: Testa e recarrega a ponte com o Discord.
+    default: op

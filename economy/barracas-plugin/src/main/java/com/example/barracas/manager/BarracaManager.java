@@ -238,7 +238,7 @@ public class BarracaManager {
         barraca.setLeilao(new Leilao(System.currentTimeMillis() + duracaoMs));
         salvar();
 
-        Bukkit.broadcastMessage("§6§l⚖ Leilão! §6A barraca especial §f" + barraca.getId()
+        anunciarLeilao("§6§l⚖ Leilão! §6A barraca especial §f" + barraca.getId()
                 + " §6está em leilão por §f" + Formato.tempo(duracaoMs) + "§6. Lance mínimo: §f"
                 + Formato.valor(plugin.getPrecoAluguel(barraca)) + "§6. Use §f/barraca lance " + barraca.getId() + " <valor>");
     }
@@ -318,7 +318,7 @@ public class BarracaManager {
 
         if (!leilao.temLance()) {
             salvar();
-            Bukkit.broadcastMessage("§6⚖ §6O leilão da barraca §f" + barraca.getId()
+            anunciarLeilao("§6⚖ §6O leilão da barraca §f" + barraca.getId()
                     + " §6acabou sem lances. Ela fica livre pra alugar por §f" + Formato.valor(plugin.getPrecoAluguel(barraca))
                     + " §6com §f/barraca alugar " + barraca.getId() + "§6.");
             return;
@@ -328,7 +328,7 @@ public class BarracaManager {
         ocupar(barraca, leilao.getLicitante(), leilao.getNomeLicitante(), System.currentTimeMillis() + plugin.getDuracaoAluguelMs());
         plugin.getPixIntegration().registrarComServidor(leilao.getLicitante(), leilao.getLance(), false, "Leilão de barraca");
 
-        Bukkit.broadcastMessage("§6⚖ §f" + leilao.getNomeLicitante() + " §6venceu o leilão da barraca §f"
+        anunciarLeilao("§6⚖ §f" + leilao.getNomeLicitante() + " §6venceu o leilão da barraca §f"
                 + barraca.getId() + " §6por §f" + Formato.valor(leilao.getLance()) + "§6!");
         notificar(leilao.getLicitante(), "§aA barraca §f" + barraca.getId() + " §aé sua por §f"
                 + Formato.tempo(plugin.getDuracaoAluguelMs()) + "§a. Coloque baús e placas §f[Vender] §apra montar a loja.");
@@ -548,5 +548,11 @@ public class BarracaManager {
         }
         // toda mudança de estado passa por aqui: a placa de entrada acompanha na hora
         barracas.values().forEach(this::atualizarPlaca);
+    }
+
+    /** Anuncia no chat e no Discord (categoria "leiloes"). */
+    private void anunciarLeilao(String mensagem) {
+        Bukkit.broadcastMessage(mensagem);
+        plugin.getDiscord().enviar("leiloes", mensagem);
     }
 }

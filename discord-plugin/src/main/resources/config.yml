@@ -1,0 +1,27 @@
+# Configuração do DiscordPlugin (ponte com o Discord)
+#
+# Os outros plugins mandam os anúncios pra cá, e cada categoria vai pro seu webhook ou pro
+# webhook padrão. Pra pegar a URL: no Discord, Editar canal > Integrações > Webhooks > Novo
+# webhook > Copiar URL do webhook. Vazio desliga.
+
+# Webhook padrão: usado pelas categorias sem webhook próprio.
+webhook-url: ""
+# Nome que aparece como autor das mensagens (cada categoria pode ter o seu "nome").
+nome: "Servidor"
+
+categorias:
+  # Boss apareceu, foi derrotado (com o campeão e o ranking de dano).
+  boss:
+    ativado: true
+    webhook-url: ""
+    nome: "Boss"
+  # Gladiador aberto e vencedor.
+  gladiador:
+    ativado: true
+    webhook-url: ""
+    nome: "Gladiador"
+  # Leilões de imóvel (terrenos) e de barraca especial: abertos e arrematados.
+  leiloes:
+    ativado: true
+    webhook-url: ""
+    nome: "Leilões"
