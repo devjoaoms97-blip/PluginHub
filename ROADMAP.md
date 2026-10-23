@@ -80,7 +80,7 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 
 **Próximos passos**
 - [ ] Espectadores (`/duelo assistir`). 🟢
-- [ ] Os abates em duelo não contarem para o placar de abates do clã nem para o Bounty, para ninguém combinar duelo com um amigo para farmar. 🟢
+- [x] Os abates no mundo das arenas (duelo e Gladiador) não contam para o placar de abates do clã nem para o Bounty, para ninguém combinar luta com um amigo para farmar.
 
 ### Mercado de Barracas ✅ v1 (`economy/barracas-plugin`)
 Comércio entre jogadores em barracas alugadas no spawn, com lojas por placa em baús. A v1 está implementada (veja o README do plugin), com estas decisões:

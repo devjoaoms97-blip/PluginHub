@@ -35,7 +35,7 @@ Permissões: `clas.usar` (padrão: todos) e `clas.admin` (padrão: op).
 - **Tag na tab**: a tab list também mostra `[TAG] [VIP Ouro] Nome`. Ela é atualizada na hora quando alguém entra ou sai do clã. Formato em `tag.formato-tab`; pra desligar, use `tag.na-tab: false`.
 - **Fogo amigo desligado**: membro do mesmo clã não machuca o outro com golpe direto, projétil, poção de dano, TNT acesa por ele ou cristal do End em que ele bateu. Poção arremessada ou persistente com efeito ruim (veneno, lentidão, fraqueza...) não pega no colega, e as boas (cura, força) continuam pegando. O líder pode ligar o fogo amigo.
 - **Boss mundial**: o clã de quem dá o último golpe no boss vira o **clã do campeão** (★ no `/cla top` e no `/cla info`) e ganha 10 pontos. Os outros clãs cujos membros, somados, tiraram pelo menos 10% da vida do boss ganham 3 pontos. O boss é reconhecido sozinho, sem configurar nada no BossPlugin.
-- **Abates e mortes**: matar um jogador de fora do clã soma um abate pro seu clã e uma morte pro clã da vítima. Não conta entre colegas nem entre contas do mesmo IP.
+- **Abates e mortes**: matar um jogador de fora do clã soma um abate pro seu clã e uma morte pro clã da vítima. Não conta entre colegas, entre contas do mesmo IP nem no mundo das arenas (duelo X1 e Gladiador, onde dá pra combinar a luta), configurado em `placar.mundos-ignorados`.
 - **Banco**: qualquer membro deposita, e só o líder saca (ou também os oficiais, se configurado). O extrato guarda as últimas 30 movimentações, e todo membro online é avisado de cada uma. Depósitos e saques também aparecem no `/pix historico` de quem fez, como "Clã [TAG]".
 - **Nome e chat do clã** não aceitam códigos de cor digitados por jogador.
 

@@ -49,7 +49,8 @@ Pra pegar a URL, abra o canal no Discord e vá em Editar canal > Integrações >
 A recompensa **não é paga**, e continua valendo, quando:
 - o matador e o alvo estão conectados do **mesmo IP** (conta alternativa);
 - o matador e o alvo são do **mesmo clã** (com o ClasPlugin instalado). Também não dá pra colocar recompensa em colega de clã;
-- o mesmo matador **já cobrou esse alvo** nas últimas 6h.
+- o mesmo matador **já cobrou esse alvo** nas últimas 6h;
+- o abate foi **no mundo das arenas** (duelo X1 e Gladiador), onde dá pra combinar a luta com um amigo. Os mundos ficam em `anti-farm.mundos-ignorados`.
 
 A taxa de 10% também desestimula o "coloca recompensa no amigo e divide": o grupo sempre perde a taxa.
 
@@ -64,6 +65,7 @@ anti-farm:
   mesmo-ip: true
   mesmo-cla: true
   cooldown-horas: 6
+  mundos-ignorados: [arenas]
 cla:
   valor-minimo-por-abate: 100.0
   abates-maximo: 20

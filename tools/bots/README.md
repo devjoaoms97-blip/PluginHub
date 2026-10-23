@@ -29,6 +29,7 @@ node teste-terrenos.js      # terrenos e leilão de imóvel (precisa do mundo te
 node montar-arenas.js       # monta arenas simples de X1 e do Gladiador no mundo arenas
 node teste-duelo.js         # X1 com aposta (precisa das arenas)
 node teste-gladiador.js     # Gladiador individual e por clã (precisa das arenas)
+node teste-farm-arenas.js   # abate nas arenas não paga Bounty nem conta no placar do clã
 ```
 Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`node teste-coleta.js cobre`). O bot precisa ter o rank da mina; um jogador novo só minera nas minas do primeiro rank.
 
@@ -37,6 +38,7 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-coleta.js` | O minerado vai pro inventário, sem itens nem orbes no chão. Com o inventário cheio, só a sobra cai, com o aviso "Inventário cheio" |
 | `teste-duelo.js` | Desafio e aceite com apostas retidas, contagem sem dano, ninguém de fora bate, comandos bloqueados, morte com perda de itens e prêmio menos a taxa, volta para onde estava, ranking, recusa e cancelamento com devolução |
 | `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução |
+| `teste-farm-arenas.js` | Num duelo entre clãs diferentes, com recompensa na cabeça de quem perde: o Bounty não paga (e a recompensa continua), e o placar de abates do clã não muda |
 | `teste-terrenos.js` | Compra, borda da grade, proteção (vizinho, rua, amigo), imposto, confisco por imposto atrasado, leilão de imóvel (dívida do dono antigo, lance superado e devolvido, vencedor leva o que tem dentro) e leilão sem lances |
 | `teste-vip.js` | Pix com 80% de desconto na taxa, missão diária extra, bônus de ativação sem o dinheiro por nível das skills, kit mensal encantado e com cooldown, venda automática e `/autovenda` |
 

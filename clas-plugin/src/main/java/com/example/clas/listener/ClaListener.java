@@ -133,12 +133,20 @@ public class ClaListener implements Listener {
         return null;
     }
 
-    /** Abate conta pro clã do matador (e morte pro clã da vítima) — nunca entre colegas nem entre contas do mesmo IP. */
+    /**
+     * Abate conta pro clã do matador (e morte pro clã da vítima) — nunca entre colegas, entre contas
+     * do mesmo IP nem nos mundos de {@code placar.mundos-ignorados} (as arenas, onde dá pra combinar a luta).
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void aoMorrer(PlayerDeathEvent evento) {
         Player vitima = evento.getEntity();
         Player matador = vitima.getKiller();
         if (matador == null || matador.equals(vitima)) return;
+        String mundo = vitima.getWorld().getName();
+        // config.yml antigo (sem a chave) cai no padrão; lista vazia explícita desativa
+        List<String> ignorados = plugin.getConfig().contains("placar.mundos-ignorados")
+                ? plugin.getConfig().getStringList("placar.mundos-ignorados") : List.of("arenas");
+        if (ignorados.stream().anyMatch(mundo::equalsIgnoreCase)) return;
         if (plugin.getClaManager().mesmoCla(matador.getUniqueId(), vitima.getUniqueId())) return;
         if (mesmoIp(matador, vitima)) return;
 

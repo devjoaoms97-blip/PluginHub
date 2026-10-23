@@ -23,6 +23,12 @@ tag:
   formato-tab: "&8[&b%tag%&8]"
 
 # Integração com o BossPlugin (reconhece o boss sozinho, não precisa configurar nada lá).
+
+placar:
+  # Mundos em que abate não conta pro placar de abates e mortes do clã. No duelo (X1) e no
+  # Gladiador dá pra combinar a luta com um amigo de outro clã.
+  mundos-ignorados: [arenas]
+
 boss:
   ativado: true
   # Pontos no ranking pro clã de quem dá o último golpe (o "clã do campeão").

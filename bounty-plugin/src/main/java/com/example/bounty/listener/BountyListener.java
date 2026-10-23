@@ -13,6 +13,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -95,6 +96,9 @@ public class BountyListener implements Listener {
     }
 
     private String motivoBloqueio(Player matador, Player alvo, long cooldownRestante) {
+        if (mundoIgnorado(alvo)) {
+            return "abates em duelo e em evento de arena não contam";
+        }
         if (plugin.getConfig().getBoolean("anti-farm.mesmo-ip", true) && mesmoIp(matador, alvo)) {
             return "vocês estão conectados do mesmo IP";
         }
@@ -106,6 +110,15 @@ public class BountyListener implements Listener {
             return "você já cobrou esse jogador há pouco tempo (libera em " + BountyPlugin.formatarTempo(cooldownRestante) + ")";
         }
         return null;
+    }
+
+    /** Mundo em {@code anti-farm.mundos-ignorados} (as arenas de X1 e do Gladiador): lá dá pra combinar a luta. */
+    private boolean mundoIgnorado(Player alvo) {
+        String mundo = alvo.getWorld().getName();
+        // config.yml antigo (sem a chave) cai no padrão; lista vazia explícita desativa
+        List<String> ignorados = plugin.getConfig().contains("anti-farm.mundos-ignorados")
+                ? plugin.getConfig().getStringList("anti-farm.mundos-ignorados") : List.of("arenas");
+        return ignorados.stream().anyMatch(mundo::equalsIgnoreCase);
     }
 
     private boolean mesmoIp(Player a, Player b) {

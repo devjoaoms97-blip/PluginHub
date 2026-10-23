@@ -21,6 +21,9 @@ anti-farm:
   mesmo-cla: true
   # Depois de cobrar um alvo, o mesmo matador só pode cobrar esse alvo de novo depois de X horas.
   cooldown-horas: 0
+  # Mundos em que abate não paga recompensa nem contrato de clã. No duelo (X1) e no Gladiador
+  # dá pra combinar a luta com um amigo pra cobrar a cabeça dele.
+  mundos-ignorados: [arenas]
 
 # Recompensa contra um clã inteiro (/bounty cla <tag> <valor por abate> <abates>). Precisa do
 # ClasPlugin. Cada membro do clã morto paga um abate do contrato mais antigo; o que sobrar volta
