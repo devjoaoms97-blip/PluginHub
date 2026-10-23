@@ -75,4 +75,5 @@ Os configs são cópias completas. Se um plugin ganhar uma opção nova, ela nã
 
 - **EssentialsX 2.22.0** avisa "unsupported server version" no 26.2 (oficialmente vai até o 26.1.2), mas a economia funciona.
 - **O backup automático só roda com você logado no Windows** (tarefa do Agendador sem administrador).
+- **O console não tem autocompletar com Tab.** O `iniciar` liga o servidor sem o JLine (`-Dterminal.jline=false`), porque no Windows ele às vezes travava o `stop`: o mundo era salvo, mas o Java não fechava, e o backup não rodava. Os comandos digitados e as cores continuam funcionando.
 - **O RCON escuta só em `127.0.0.1`**, igual ao servidor. Não abra a porta 25575 pra fora.

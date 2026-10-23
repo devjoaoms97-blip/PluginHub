@@ -8,7 +8,11 @@ if (Test-ServidorLigado) {
 }
 
 Set-Location -LiteralPath $Servidor
-& $Config.java "-Xms2G" "-Xmx$($Config.memoria)" '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar paper.jar --nogui
+# Sem o JLine no console: no Windows, ele às vezes trava o stop (o gancho de desligamento dele
+# espera a thread de log, presa escrevendo no console). O console continua aceitando comandos,
+# só perde o autocompletar com Tab; terminal.ansi mantém as cores.
+& $Config.java "-Xms2G" "-Xmx$($Config.memoria)" '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' `
+    '-Dterminal.jline=false' '-Dterminal.ansi=true' -jar paper.jar --nogui
 $codigo = $LASTEXITCODE
 
 Write-Host ''
