@@ -30,12 +30,16 @@ node montar-arenas.js       # monta arenas simples de X1 e do Gladiador no mundo
 node teste-duelo.js         # X1 com aposta (precisa das arenas)
 node teste-gladiador.js     # Gladiador individual e por clã (precisa das arenas)
 node teste-farm-arenas.js   # abate nas arenas não paga Bounty nem conta no placar do clã
+node teste-combate.js       # combate 1.8: sem recarga, tempo por mão, bloqueio com a espada e duas mãos
+node teste-skills-maos.js   # o golpe da segunda mão treina a skill da arma dela
 ```
 Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`node teste-coleta.js cobre`). O bot precisa ter o rank da mina; um jogador novo só minera nas minas do primeiro rank.
 
 | Script | O que confere |
 |---|---|
 | `teste-coleta.js` | O minerado vai pro inventário, sem itens nem orbes no chão. Com o inventário cheio, só a sobra cai, com o aviso "Inventário cheio" |
+| `teste-combate.js` | Velocidade de ataque, dois golpes seguidos com o dano inteiro, tempo entre golpes (no padrão o 2º golpe em 0,15 s não conta; com 0 conta), bloqueio com a espada tirando metade do dano, sem bloqueio da espada com escudo na outra mão golpe com a espada da segunda mão, espada e machado alternados contando os dois golpes em 0,15 s, a mesma mão não, e soco com a segunda mão vazia |
+| `teste-skills-maos.js` | Machado na mão esquerda treina a skill Machado, soco na esquerda treina o Porradeiro, e a espada da direita (que não bateu) não treina |
 | `teste-duelo.js` | Desafio e aceite com apostas retidas, contagem sem dano, ninguém de fora bate, comandos bloqueados, morte com perda de itens e prêmio menos a taxa, volta para onde estava, ranking, recusa e cancelamento com devolução |
 | `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução |
 | `teste-farm-arenas.js` | Num duelo entre clãs diferentes, com recompensa na cabeça de quem perde: o Bounty não paga (e a recompensa continua), e o placar de abates do clã não muda |

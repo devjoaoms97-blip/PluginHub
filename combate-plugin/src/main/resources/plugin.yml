@@ -1,0 +1,18 @@
+name: CombatePlugin
+version: '1.0.0'
+main: com.example.combate.CombatePlugin
+api-version: '26.2'
+author: Você
+description: Combate no estilo da 1.8 - sem recarga de ataque, bloqueio com a espada e golpe com a segunda mão.
+
+commands:
+  combate:
+    description: Ajusta o combate (staff).
+    usage: "Uso: /combate intervalo [ticks] | /combate reload"
+    permission: combate.admin
+    permission-message: "§cVocê não tem permissão."
+
+permissions:
+  combate.admin:
+    description: Ajusta o tempo entre golpes e recarrega o config do combate.
+    default: op

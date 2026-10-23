@@ -1,0 +1,38 @@
+# Configuração do CombatePlugin (combate no estilo da 1.8)
+#
+# Só o que foi escolhido muda. Ataque em área, repulsão, regeneração, maçãs, ender pearl,
+# escudo e machado continuam como no jogo atual. Vale no servidor todo.
+
+sem-recarga:
+  # Sem a barra de recarga do ataque: todo golpe sai com o dano inteiro, por mais rápido que se
+  # clique. O limite é o tempo entre golpes (invulnerabilidade, abaixo).
+  ativado: true
+
+invulnerabilidade:
+  # Tempo mínimo entre dois golpes cheios de jogador no mesmo alvo, em ticks (20 = 1 s). Ajusta o
+  # dano por segundo: 10 é o padrão do jogo (e da 1.8), 5 dobra o ritmo e 0 faz todo clique contar.
+  # Só vale pra golpe corpo a corpo de jogador; lava, fogo, cacto e explosão seguem o jogo.
+  # Dá pra mudar com o servidor ligado: /combate intervalo <ticks>
+  ticks-entre-golpes: 10
+  # Cada mão com o próprio tempo: quem alterna as duas mãos bate duas vezes mais. Desligado,
+  # as duas mãos dividem o mesmo tempo.
+  separar-maos: true
+
+bloqueio-espada:
+  # Segurar o botão direito com a espada levanta a espada e reduz o dano, como na 1.8. Só
+  # vale sem escudo na segunda mão (com escudo, quem bloqueia é o escudo).
+  ativado: true
+  # Quanto do dano o bloqueio tira (a 1.8 tirava metade).
+  reducao-percentual: 50
+  # De que ângulo os golpes são bloqueados, à frente do jogador. 180 = de qualquer lado, como
+  # na 1.8. O escudo usa 90 (só pela frente).
+  angulo: 180
+
+duas-maos:
+  # O botão direito num inimigo bate com o que está na segunda mão (cada mão pode ter uma arma
+  # diferente). Mirando em outro lugar, a espada da mão principal bloqueia.
+  ativado: true
+  # Fim do nome dos itens que contam como arma curta.
+  armas: [_SWORD, _AXE]
+  # Com a segunda mão vazia, o botão direito no inimigo é um soco.
+  soco: true

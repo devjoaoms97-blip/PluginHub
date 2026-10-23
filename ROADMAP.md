@@ -149,6 +149,14 @@ Evento de PvP na arena do mundo `arenas`, aberto pela staff ou pela agenda: insc
 - [ ] Borda que fecha com o tempo, para a luta não se arrastar. 🟡
 - [ ] Prêmio do modo por clã direto no banco do clã, como opção. 🟢
 
+### Combate 1.8 ✅ v1 (`combate-plugin`)
+Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo entre golpes configurável e separado por mão** (`/combate intervalo`, de 0 ao padrão de 0,5 s ou mais; alternar as duas mãos bate duas vezes mais), **bloqueio com a espada** (só sem escudo na segunda mão) e **duas mãos** (o botão direito bate com a espada, o machado ou o soco da segunda mão, cada um com a sua skill). Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado continuam como no jogo atual.
+
+**Próximos passos**
+- [ ] Testar jogando e decidir o que fazer com a maça, a lança e o machado do kit mensal do VIP, que ficam fortes sem recarga. 🟢
+- [ ] Conferir no jogo a animação da espada bloqueando. 🟢
+- [ ] Calibrar o tempo entre golpes jogando (o dano por segundo muda com ele). 🟢
+
 ### Ponte com o Discord 🟢
 Webhook com anúncios do servidor:
 - Spawn e ranking do boss.
