@@ -1,0 +1,19 @@
+# Configuração do DiariaPlugin (recompensa diária de login)
+#
+# /diaria uma vez por dia, numa sequência que cresce até o último dia. Perder um dia volta pro
+# dia 1; depois do último, recomeça. É dinheiro novo na economia (painel: "Recompensa diária").
+
+dias:
+  # % do preço do PRÓXIMO rank do jogador (RankupPlugin) em cada dia da sequência. Assim a
+  # recompensa pesa parecido em qualquer fase. Com o padrão, a semana inteira dá 7% de um rank,
+  # perto de 2 a 3 horas de mineração. O tamanho da lista é o tamanho da sequência.
+  percentual-do-proximo-rank: [0.5, 0.5, 0.75, 0.75, 1.0, 1.0, 2.5]
+  # Valor mínimo de cada dia (o último dia vale pelo menos o mínimo vezes o multiplicador).
+  minimo: 200.0
+  minimo-multiplicador-ultimo-dia: 3
+  # Valor de cada dia se o RankupPlugin não estiver instalado.
+  sem-rankup: 1000.0
+
+integracao:
+  # Registra a recompensa no /pix historico (precisa do PixPlugin).
+  pix: true

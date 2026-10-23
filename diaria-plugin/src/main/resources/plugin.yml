@@ -1,0 +1,24 @@
+name: DiariaPlugin
+version: '1.0.0'
+main: com.example.diaria.DiariaPlugin
+api-version: '26.2'
+author: Você
+description: Recompensa diária de login em sequência de 7 dias, proporcional ao próximo rank.
+depend: [Vault]
+softdepend: [RankupPlugin, PixPlugin]
+
+commands:
+  diaria:
+    description: Resgata a recompensa diária.
+    usage: "Uso: /diaria"
+    aliases: [daily, recompensa]
+    permission: diaria.usar
+    permission-message: "§cVocê não tem permissão."
+
+permissions:
+  diaria.usar:
+    description: Resgata a recompensa diária.
+    default: true
+  diaria.admin:
+    description: Volta a data do último resgate de alguém (pra testar a sequência).
+    default: op

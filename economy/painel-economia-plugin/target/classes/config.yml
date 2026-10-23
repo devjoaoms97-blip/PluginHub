@@ -35,6 +35,7 @@ tipos:
   PixPlugin:
     "PixCommand#pagar": "Pix (pagar)"
     "PixCommand#aceitar": "Pix (cobrança paga)"
+    "AgendamentoManager#executar": "Pix agendado"
   ChequePlugin:
     "ChequeListener": "Cheque resgatado"
   VipPlugin:
@@ -80,3 +81,5 @@ tipos:
     "EventoManager#cobrarInscricao": "Inscrição no Gladiador"
     "EventoManager#devolverInscricao": "Inscrição no Gladiador devolvida"
     "EventoManager#pagarPremio": "Prêmio do Gladiador"
+  DiariaPlugin:
+    "DiariaPlugin#resgatar": "Recompensa diária"

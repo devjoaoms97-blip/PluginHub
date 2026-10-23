@@ -22,6 +22,7 @@ loadbefore:
   - TerrenosPlugin
   - DueloPlugin
   - GladiadorPlugin
+  - DiariaPlugin
 
 commands:
   economia:
