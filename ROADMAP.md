@@ -32,11 +32,12 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 |---|---|---|
 | `spawn` (vazio) | Spawn, warps, placas do rankup e do ranking, área VIP, mercado das Barracas, loja e as 12 minas | Não |
 | `terrenos` (grade) | Terrenos comprados com coins, com imposto semanal. Servem também para fazendas | Não |
-| `recursos` (normal) | Mobs naturais, pesca, árvores e PvP do Bounty e dos clãs. Resetado de tempos em tempos | Sim |
+| `recursos` (normal) | Mobs naturais, pesca, árvores e PvP do Bounty e dos clãs. Resetado a cada 30 dias pelo `recursos-plugin`, com borda de 6.000 blocos e `/recursos` para um ponto aleatório seguro | Sim |
 | `arenas` (vazio) | Arena do boss, arenas de X1 e arena do Gladiador. Só se entra por comando ou warp, com volta ao spawn no fim | Sim |
 
 - **Visual do spawn:** primeiro, tentar um mapa pronto de spawn medieval (mundo pronto ou `.schem` da 1.13 ou mais nova, com licença para servidor público). Se não ficar bom, plano B: montar a parte funcional (plataformas, caminhos, minas, mercado) e decorar depois.
 - **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (imposto, Pix e painel).
+- **Servidor de teste:** o `montar.bat` baixa o Multiverse e o WorldEdit, e o `configurar-mundos.bat` cria os 4 mundos.
 - **Mundo de recursos:** as missões de matar mobs, pescar, colher e cortar árvores precisam dele, porque mob de spawner não conta e o rankup protege o mundo fora das minas.
 - **Arenas:** o boss já tem o `/boss setlocal`. O X1 é o Duelo com aposta (`duelo-plugin`), e o Gladiador, o `gladiador-plugin`. No servidor de teste, `tools/bots/montar-arenas.js` monta arenas simples de pedra, até o mapa chegar.
 - **Itens nas arenas de PvP (X1 e Gladiador):** cada um luta com o próprio equipamento, e **quem morre perde os itens**.
@@ -79,7 +80,7 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 - Ranking de vitórias e derrotas (`/duelo top`).
 
 **Próximos passos**
-- [ ] Espectadores (`/duelo assistir`). 🟢
+- [x] Espectadores (`/duelo assistir`).
 - [x] Os abates no mundo das arenas (duelo e Gladiador) não contam para o placar de abates do clã nem para o Bounty, para ninguém combinar luta com um amigo para farmar.
 
 ### Mercado de Barracas ✅ v1 (`economy/barracas-plugin`)
@@ -111,15 +112,16 @@ Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), c
 12 ranks medievais pagos com coins (`/rankup`, `/rankup max`), com bônus de venda no `/sell` por rank. Minas próprias (`/mina`), com composição por peso, reset por tempo e por % minerada e acesso pelo rank. Tag do rank no chat e proteção opcional do mundo fora das minas.
 
 **Próximos passos**
-- [ ] Prestígio: ao chegar no Rei, voltar pro Camponês com um bônus permanente (venda mais cara, mina exclusiva). 🟡
-- [ ] Rank na tab, junto com o clã e o VIP. 🟢
+- [x] Prestígio: no Rei, `/prestigio` volta pro Camponês com +10% de venda por nível (até 10) e a marca ✦ no chat e na tab.
+- [ ] Mina exclusiva de prestígio. 🟡
+- [x] Rank na tab, junto com o clã e o VIP.
 - [ ] Encantamentos de picareta comprados com coins ou com uma moeda própria (explosão, mais fortuna, venda automática). 🔴
 - [x] Coleta direta nas minas pra todos: drops e XP vão pro jogador, sem itens no chão.
 - [x] Venda automática ao minerar como benefício de VIP (`/autovenda`, Prata pra cima).
-- [ ] Menu (GUI) no `/ranks` e no `/mina`. 🟢
+- [x] Menu (GUI) no `/ranks` e no `/mina`.
 - [ ] Missão de subir de rank e missões por mina. 🟢
 - [ ] Mina privada do clã ou do VIP. 🟡
-- [ ] Holograma ou placa com o tempo até o próximo reset da mina. 🟢
+- [x] Holograma com o tempo até o próximo reset da mina.
 - [x] Fortuna nas minas: **vale** (decisão de 2026-10-22). A meta de 150 h é pra quem não é VIP e tem Fortuna III, da mesa de encantamento. Os VIPs Ouro e Diamante ganham Fortuna IV e V no kit mensal (`/vip kitmensal`) e chegam em cerca de 112 h e 107 h.
 
 **Balanceamento (2026-10-22).** Meta: um jogador ativo chega ao Rei em **150 h**. A simulação (`tools/economia/simular.py`) mostrou que a sugestão inicial de minas não progredia: a de ferro rendia menos que a de cobre, a de redstone menos que a de ouro, e as de ametista e do Nether davam itens que a loja não comprava. As minas foram recalibradas pra cada uma render cerca de 1,6× a anterior, a loja do servidor de teste ganhou `NETHERRACK`, `GOLD_NUGGET` e `AMETHYST_BLOCK`, e os preços dos ranks foram recalculados (Fazendeiro: de R$ 5.000 pra R$ 3.400; Rei: de R$ 25 mi pra R$ 32 mi), com cada rank levando cerca de 1,5× o tempo do anterior. Tudo isso com Fortuna III como referência.
@@ -131,9 +133,9 @@ Terrenos de 32x32 num mundo em grade gerado pelo plugin, comprados por R$ 50.000
 - Com 7 dias de atraso, o terreno passa para o servidor e vai a **leilão de imóvel** com tudo o que tem dentro. O lance vencedor some da economia. O dono antigo só dá lance depois de pagar a dívida.
 
 **Próximos passos**
-- [ ] Placa ou holograma na entrada do terreno, com o dono ou "À venda". 🟢
+- [x] Placa na entrada do terreno, com o dono, "À venda" ou o leilão.
 - [ ] Juntar terrenos vizinhos do mesmo dono. 🟡
-- [ ] Permissões separadas para os amigos (só abrir baú, só construir). 🟢
+- [x] Permissões separadas para os amigos (construir, baús, usar).
 - [ ] Missão de pagar o imposto ou de construir no terreno. 🟢
 
 ### Gladiador ✅ v1 (`gladiador-plugin`)
@@ -145,8 +147,9 @@ Evento de PvP na arena do mundo `arenas`, aberto pela staff ou pela agenda: insc
 - Ranking de vitórias de jogadores e de clãs.
 
 **Próximos passos**
-- [ ] Anúncio no Discord, quando a ponte existir. 🟢
-- [ ] Borda que fecha com o tempo, para a luta não se arrastar. 🟡
+- [x] Anúncio no Discord (abertura e resultado).
+- [x] Borda que fecha com o tempo, para a luta não se arrastar. O dano fora dela cresce a cada segundo (2, 3, 4... até 20) e ignora a armadura.
+- [x] Destaques com tag no chat até o próximo Gladiador: [Ceifador] (mais abates), [Fujão] (mais blocos andados) e [Top Damage] (mais dano).
 - [ ] Prêmio do modo por clã direto no banco do clã, como opção. 🟢
 
 ### Combate 1.8 ✅ v1 (`combate-plugin`)
@@ -157,16 +160,18 @@ Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo en
 - [ ] Conferir no jogo a animação da espada bloqueando. 🟢
 - [ ] Calibrar o tempo entre golpes jogando (o dano por segundo muda com ele). 🟢
 
-### Ponte com o Discord 🟢
-Webhook com anúncios do servidor:
-- Spawn e ranking do boss.
+### Ponte com o Discord ✅ v1 (`discord-plugin`)
+Os outros plugins mandam os anúncios para o DiscordPlugin, e cada categoria vai para o seu webhook ou para o padrão. Já ligados: Boss (aparecimento e morte com o ranking), Gladiador (abertura e resultado) e leilões (terrenos e barracas especiais). O Bounty continua com o webhook próprio.
+
+**Ainda não ligados**
 - VIP resgatado e código colocado à venda.
 - Transação suspeita no Pix (ver alerta em Pix, mais abaixo).
 - Barraca alugada ou liberada.
 
-### Recompensa diária de login 🟢
-- Sequência de dias seguidos com recompensa crescente (por exemplo, dia 7 vale mais).
-- Faltou um dia, a sequência zera (ou diminui, configurável).
+### Recompensa diária de login ✅ v1 (`diaria-plugin`)
+`/diaria` numa sequência de 7 dias, com uma % do preço do próximo rank (0,5% a 2,5%, mínimo de R$ 200): a semana toda dá 7% de um rank. Perder um dia volta pro 1.
+
+- [ ] Bônus de VIP na recompensa diária. 🟢
 
 ---
 
@@ -197,7 +202,7 @@ Webhook com anúncios do servidor:
 ### 💸 PixPlugin
 - [ ] **Alerta de transação suspeita**: um envio grande perto do limite, ou uma conta nova recebendo de várias contas, gera aviso pra staff. Aproveita o `LimiteManager`. 🟡
 - [ ] **`/pix chave <apelido>`**: um apelido para receber pagamentos. 🟢
-- [ ] **`/pix agendar`**: pagamentos recorrentes. Combina com Terrenos e com o aluguel das barracas. 🟡
+- [x] **`/pix agendar`**: pagamentos recorrentes entre jogadores. (O imposto do terreno e o aluguel das barracas já se pagam sozinhos.)
 - [ ] **Som e título na tela** ao receber um pagamento ou uma cobrança. 🟢
 - [ ] **`/pix admin log <jogador>`**: a staff investiga as transações de alguém. 🟢
 - [ ] **Taxa no histórico**: o extrato passa a mostrar o valor líquido e a taxa de cada transação. 🟢
@@ -233,8 +238,8 @@ Webhook com anúncios do servidor:
 - ~~Missões de vender na loja e de dano no boss.~~ ✅
 - ~~Clãs ganham pontos no boss e mostram a tag na tab junto com o VIP.~~ ✅
 - ~~O rank dá bônus no `/sell` da loja.~~ ✅
-- O Discord recebe eventos do Boss, do VIP, do Pix e das Barracas (o Bounty já manda os dele).
-- O aluguel de barraca e de terreno pode ser pago pelo `/pix agendar`.
+- ~~O Discord recebe eventos do Boss, do Gladiador e dos leilões (terrenos e barracas).~~ ✅ Faltam o VIP e o Pix.
+- ~~O aluguel de barraca e o imposto do terreno se pagam sozinhos.~~ ✅ (pagamento automático de cada plugin; o `/pix agendar` é pra pagamentos entre jogadores)
 
 ---
 
@@ -262,3 +267,10 @@ Webhook com anúncios do servidor:
 - **Balanceamento do rankup**: simulação da progressão, minas e preços calibrados pra 150 h até o Rei, e medição da economia (painel, loja e rankups) com um script de análise.
 - **VIP**: kit mensal com equipamento completo encantado acima do máximo, bônus de ativação (dinheiro e XP), XP a mais nas skills, desconto no Pix, missão extra e venda automática. O rankup foi recalibrado com Fortuna III como referência.
 - **Correção**: o Rankup não estava no `loadbefore` do painel e podia pegar a economia antes dele, ficando fora do fluxo por plugin.
+- **Mundo de recursos** (`recursos-plugin`): `/recursos` pra um ponto aleatório seguro, borda de 6.000 blocos e reset a cada 30 dias.
+- **Servidor de teste**: o `montar.bat` baixa o Multiverse, o WorldEdit, o ViaVersion e o ViaBackwards, e o `configurar-mundos.bat` cria os 4 mundos do rankup.
+- **Terrenos**: placa na entrada e permissões separadas pros amigos.
+- **Duelo**: espectadores. **Gladiador**: borda que fecha.
+- **Rankup**: prestígio, rank na tab, menus do `/ranks` e do `/mina` e holograma das minas.
+- **Pix**: `/pix agendar`.
+- **Ponte com o Discord** (`discord-plugin`) e **recompensa diária** (`diaria-plugin`).

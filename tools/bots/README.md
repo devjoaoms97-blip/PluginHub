@@ -32,6 +32,12 @@ node teste-gladiador.js     # Gladiador individual e por clã (precisa das arena
 node teste-farm-arenas.js   # abate nas arenas não paga Bounty nem conta no placar do clã
 node teste-combate.js       # combate 1.8: sem recarga, tempo por mão, bloqueio com a espada e duas mãos
 node teste-skills-maos.js   # o golpe da segunda mão treina a skill da arma dela
+node teste-recursos.js      # mundo de recursos: /recursos, borda e reset (uns 2 minutos)
+node teste-rankup-extras.js # menus do /ranks e do /mina, holograma, rank na tab e prestígio
+node teste-pix-agendado.js  # Pix agendado: primeiro pagamento, vencimento, falta de saldo e cancelar
+node teste-discord.js       # ponte com o Discord (um servidor HTTP local faz o papel do Discord)
+node teste-diaria.js        # recompensa diária e a sequência de dias
+node teste-gladiador-borda.js # borda do Gladiador fechando (muda o config por alguns segundos)
 ```
 Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`node teste-coleta.js cobre`). O bot precisa ter o rank da mina; um jogador novo só minera nas minas do primeiro rank.
 
@@ -39,11 +45,17 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 |---|---|
 | `teste-coleta.js` | O minerado vai pro inventário, sem itens nem orbes no chão. Com o inventário cheio, só a sobra cai, com o aviso "Inventário cheio" |
 | `teste-combate.js` | Velocidade de ataque, dois golpes seguidos com o dano inteiro, tempo entre golpes (no padrão o 2º golpe em 0,15 s não conta; com 0 conta), bloqueio com a espada tirando metade do dano, sem bloqueio da espada com escudo na outra mão golpe com a espada da segunda mão, espada e machado alternados contando os dois golpes em 0,15 s, a mesma mão não, e soco com a segunda mão vazia |
+| `teste-rankup-extras.js` | Menu do `/ranks` (subir clicando), menu do `/mina` (ir clicando), holograma em cima da mina, rank na tab, prestígio só no último rank, volta pro primeiro com ✦ na tab e no chat |
+| `teste-pix-agendado.js` | Primeiro pagamento na hora com a taxa, quem recebe vê o agendamento, o próximo sai sozinho com quem recebe offline, sem saldo avisa e tenta de novo, cancelar tira da lista |
+| `teste-discord.js` | Teste por categoria com o nome certo e sem menções, abertura do Gladiador sem cores e leilão de terreno na categoria leilões |
+| `teste-diaria.js` | Aviso ao entrar, dia 1 com o mínimo, sem repetir no mesmo dia, sequência avançando no dia seguinte e voltando pro 1 depois de perder um dia, e o painel |
+| `teste-gladiador-borda.js` | Aviso da borda fechando, dano em quem ficou fora e o fim da luta pela borda |
+| `teste-recursos.js` | `/recursos` em chão firme dentro do raio, borda, espera entre usos, reset marcado com aviso no chat, quem estava lá tirado antes, bloco do mundo antigo sumindo, e quem saiu do servidor lá dentro voltando num lugar seguro do mundo novo |
 | `teste-skills-maos.js` | Machado na mão esquerda treina a skill Machado, soco na esquerda treina o Porradeiro, e a espada da direita (que não bateu) não treina |
-| `teste-duelo.js` | Desafio e aceite com apostas retidas, contagem sem dano, ninguém de fora bate, comandos bloqueados, morte com perda de itens e prêmio menos a taxa, volta para onde estava, ranking, recusa e cancelamento com devolução |
+| `teste-duelo.js` | Desafio e aceite com apostas retidas, espectador (modo espectador, sem comandos, volta no fim), contagem sem dano, ninguém de fora bate, comandos bloqueados, morte com perda de itens e prêmio menos a taxa, volta para onde estava, ranking, recusa e cancelamento com devolução |
 | `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução |
 | `teste-farm-arenas.js` | Num duelo entre clãs diferentes, com recompensa na cabeça de quem perde: o Bounty não paga (e a recompensa continua), e o placar de abates do clã não muda |
-| `teste-terrenos.js` | Compra, borda da grade, proteção (vizinho, rua, amigo), imposto, confisco por imposto atrasado, leilão de imóvel (dívida do dono antigo, lance superado e devolvido, vencedor leva o que tem dentro) e leilão sem lances |
+| `teste-terrenos.js` | Compra, borda da grade, placa da entrada (à venda, dono, leilão), amigo só com baús, proteção (vizinho, rua, amigo), imposto, confisco por imposto atrasado, leilão de imóvel (dívida do dono antigo, lance superado e devolvido, vencedor leva o que tem dentro) e leilão sem lances |
 | `teste-vip.js` | Pix com 80% de desconto na taxa, missão diária extra, bônus de ativação sem o dinheiro por nível das skills, kit mensal encantado e com cooldown, venda automática e `/autovenda` |
 
 O `teste-vip.js` e o `teste-terrenos.js` usam jogadores novos a cada execução (`Vip`, `Ter` ou `Viz` + um código): o kit mensal e o bônus de ativação só valem uma vez por jogador, e cada um só compra um terreno. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.
