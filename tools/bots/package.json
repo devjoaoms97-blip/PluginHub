@@ -1,0 +1,15 @@
+{
+  "name": "pluginhub-bots",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bots (Mineflayer) que entram no servidor de teste e testam os plugins de dentro do jogo",
+  "scripts": {
+    "ping": "node ping.js",
+    "coleta": "node teste-coleta.js",
+    "vip": "node teste-vip.js"
+  },
+  "dependencies": {
+    "mineflayer": "^4.39.0",
+    "rcon-client": "^4.2.5"
+  }
+}

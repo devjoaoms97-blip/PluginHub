@@ -67,6 +67,8 @@ Só os plugins com valores mudados têm config aqui. Subpastas são copiadas tam
 
 As minas não vêm prontas: crie com `/mina admin`, usando as composições de `tools/economia/minas-planejadas.yml` (veja o README do `rankup-plugin`). Pra ver um resumo da economia do servidor de teste, rode `python tools/economia/analisar.py`.
 
+Pra testar os plugins de dentro do jogo sem entrar você mesmo, use os bots de `tools/bots`. Eles precisam do ViaVersion e do ViaBackwards no servidor; veja o README de lá.
+
 Os configs são cópias completas. Se um plugin ganhar uma opção nova, ela não aparece aqui até alguém atualizar o arquivo. O plugin usa o valor padrão até lá.
 
 ## Limitações
