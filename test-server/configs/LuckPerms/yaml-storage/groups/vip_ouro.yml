@@ -9,6 +9,7 @@ permissions:
 - vip.perk.kit
 - vip.perk.particulas
 - vip.perk.warp
+- vip.terrenos.ouro
 - vip.xp.ouro
 prefixes:
 - '&6[Ouro] ':

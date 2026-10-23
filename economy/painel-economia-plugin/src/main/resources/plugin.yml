@@ -19,6 +19,7 @@ loadbefore:
   - BountyPlugin
   - ClasPlugin
   - RankupPlugin
+  - TerrenosPlugin
 
 commands:
   economia:

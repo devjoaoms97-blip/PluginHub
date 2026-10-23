@@ -25,15 +25,17 @@ Depois, em outro terminal:
 node ping.js                # o bot entra e fala no chat: confere a conexão
 node teste-coleta.js        # coleta direta na mina, sem VIP, e inventário cheio
 node teste-vip.js           # benefícios do VIP Diamante
+node teste-terrenos.js      # terrenos e leilão de imóvel (precisa do mundo terrenos)
 ```
 Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`node teste-coleta.js cobre`). O bot precisa ter o rank da mina; um jogador novo só minera nas minas do primeiro rank.
 
 | Script | O que confere |
 |---|---|
 | `teste-coleta.js` | O minerado vai pro inventário, sem itens nem orbes no chão. Com o inventário cheio, só a sobra cai, com o aviso "Inventário cheio" |
+| `teste-terrenos.js` | Compra, borda da grade, proteção (vizinho, rua, amigo), imposto, confisco por imposto atrasado, leilão de imóvel (dívida do dono antigo, lance superado e devolvido, vencedor leva o que tem dentro) e leilão sem lances |
 | `teste-vip.js` | Pix com 80% de desconto na taxa, missão diária extra, bônus de ativação sem o dinheiro por nível das skills, kit mensal encantado e com cooldown, venda automática e `/autovenda` |
 
-O `teste-vip.js` usa um jogador novo a cada execução (`Vip` + um código), porque o kit mensal e o bônus de ativação só valem uma vez por jogador. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.
+O `teste-vip.js` e o `teste-terrenos.js` usam jogadores novos a cada execução (`Vip`, `Ter` ou `Viz` + um código): o kit mensal e o bônus de ativação só valem uma vez por jogador, e cada um só compra um terreno. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.
 
 ## Escrevendo testes
 

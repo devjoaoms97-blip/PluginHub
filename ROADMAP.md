@@ -20,7 +20,7 @@ Tudo o que está planejado para os plugins, num só lugar. Os READMEs de cada pl
 | 2 | ~~Missões diárias~~ ✅ v1 | 🟡 | Coloca dinheiro novo na economia e dá algo pra fazer todo dia |
 | 3 | ~~Recompensa por cabeça (Bounty)~~ ✅ v1 | 🟢 | Dá objetivo pro PvP usando o que já existe |
 | 4 | ~~Mercado de Barracas~~ ✅ v1 | 🟡/🔴 | Comércio entre jogadores com aluguel, que também tira dinheiro de circulação |
-| 5 | ~~Clãs~~ ✅ v1 · Terrenos | 🔴 | Clãs foi escolhido primeiro. Terrenos continua pendente |
+| 5 | ~~Clãs~~ ✅ v1 · ~~Terrenos~~ ✅ v1 | 🔴 | Clãs veio primeiro, depois os Terrenos |
 
 O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 
@@ -31,12 +31,12 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 | Mundo | O que tem | PvP |
 |---|---|---|
 | `spawn` (vazio) | Spawn, warps, placas do rankup e do ranking, área VIP, mercado das Barracas, loja e as 12 minas | Não |
-| `terrenos` (grade) | Terrenos comprados com coins, com aluguel. Servem também para fazendas | Não |
+| `terrenos` (grade) | Terrenos comprados com coins, com imposto semanal. Servem também para fazendas | Não |
 | `recursos` (normal) | Mobs naturais, pesca, árvores e PvP do Bounty e dos clãs. Resetado de tempos em tempos | Sim |
 | `arenas` (vazio) | Arena do boss, arenas de X1 e arena do Gladiador. Só se entra por comando ou warp, com volta ao spawn no fim | Sim |
 
 - **Visual do spawn:** primeiro, tentar um mapa pronto de spawn medieval (mundo pronto ou `.schem` da 1.13 ou mais nova, com licença para servidor público). Se não ficar bom, plano B: montar a parte funcional (plataformas, caminhos, minas, mercado) e decorar depois.
-- **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (aluguel, Pix e painel).
+- **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (imposto, Pix e painel).
 - **Mundo de recursos:** as missões de matar mobs, pescar, colher e cortar árvores precisam dele, porque mob de spawner não conta e o rankup protege o mundo fora das minas.
 - **Arenas:** o boss já tem o `/boss setlocal`. O X1 é o Duelo com aposta. O Gladiador é um plugin novo.
 - **Itens nas arenas de PvP (X1 e Gladiador):** cada um luta com o próprio equipamento, e **quem morre perde os itens**.
@@ -120,12 +120,17 @@ Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), c
 
 **Balanceamento (2026-10-22).** Meta: um jogador ativo chega ao Rei em **150 h**. A simulação (`tools/economia/simular.py`) mostrou que a sugestão inicial de minas não progredia: a de ferro rendia menos que a de cobre, a de redstone menos que a de ouro, e as de ametista e do Nether davam itens que a loja não comprava. As minas foram recalibradas pra cada uma render cerca de 1,6× a anterior, a loja do servidor de teste ganhou `NETHERRACK`, `GOLD_NUGGET` e `AMETHYST_BLOCK`, e os preços dos ranks foram recalculados (Fazendeiro: de R$ 5.000 pra R$ 3.400; Rei: de R$ 25 mi pra R$ 32 mi), com cada rank levando cerca de 1,5× o tempo do anterior. Tudo isso com Fortuna III como referência.
 
-### Terrenos (claims) 🔴
-No rankup, terreno vira opcional: as minas e o spawn já são protegidos. Faz sentido como "plot" pra construir, comprado com coins.
-- Proteger uma área comprada com coins, com tamanho ligado ao valor pago.
-- Permissões por jogador (construir, abrir baú, usar porta).
-- Aluguel ou imposto recorrente sobre o terreno, que é uma das maiores formas de tirar dinheiro de circulação em servidor de economia.
-- Destrava o `/pix agendar` (pagar aluguel de terreno automaticamente).
+### Terrenos ✅ v1 (`terrenos-plugin`)
+Terrenos de 32x32 num mundo em grade gerado pelo plugin, comprados por R$ 50.000. Decisões de 2026-10-23:
+- 1 terreno por jogador; VIP Prata e Ouro, 2; Diamante, 3.
+- Compra com preço fixo e **imposto semanal**, em vez de aluguel: 3% do preço do rank atual do dono, no mínimo R$ 1.000, com pagamento automático.
+- Com 7 dias de atraso, o terreno passa para o servidor e vai a **leilão de imóvel** com tudo o que tem dentro. O lance vencedor some da economia. O dono antigo só dá lance depois de pagar a dívida.
+
+**Próximos passos**
+- [ ] Placa ou holograma na entrada do terreno, com o dono ou "À venda". 🟢
+- [ ] Juntar terrenos vizinhos do mesmo dono. 🟡
+- [ ] Permissões separadas para os amigos (só abrir baú, só construir). 🟢
+- [ ] Missão de pagar o imposto ou de construir no terreno. 🟢
 
 ### Gladiador 🟡
 Evento de PvP na arena do mundo `arenas`, aberto pela staff ou por agenda: inscrição com contagem regressiva, todos entram na arena e vence o último em pé.

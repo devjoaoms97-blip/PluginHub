@@ -1,0 +1,25 @@
+name: TerrenosPlugin
+version: '1.0.0'
+main: com.example.terrenos.TerrenosPlugin
+api-version: '26.2'
+author: Você
+description: Terrenos em grade comprados com coins, com imposto semanal e leilão de imóvel de quem não paga.
+softdepend: [Vault, PixPlugin, RankupPlugin]
+# Liga antes do Multiverse, que pede o gerador do mundo de terrenos ao carregar os mundos.
+loadbefore: [Multiverse-Core]
+
+commands:
+  terreno:
+    description: Compra e gerencia terrenos.
+    usage: "Uso: /terreno <auto|comprar|home|info|lista|imposto|autopagar|amigo|abandonar|leiloes|lance|divida|ir>"
+    aliases: [terrenos, plot]
+    permission: terrenos.usar
+    permission-message: "§cVocê não tem permissão para usar os terrenos."
+
+permissions:
+  terrenos.usar:
+    description: Permite comprar terrenos, pagar imposto e dar lance em leilão de imóvel.
+    default: true
+  terrenos.admin:
+    description: Define dono, leiloa, encerra leilão, vence imposto, limpa terrenos e constrói na rua e em qualquer terreno.
+    default: op

@@ -7,6 +7,7 @@ permissions:
 - vip.perk.heal
 - vip.perk.kit
 - vip.perk.particulas
+- vip.terrenos.prata
 - vip.xp.prata
 prefixes:
 - '&f[&bPrata&f] ':

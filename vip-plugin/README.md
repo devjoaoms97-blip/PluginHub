@@ -144,6 +144,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_prata permission set vip.desconto.prata true
 /lp group vip_prata permission set vip.xp.prata true
 /lp group vip_prata permission set vip.perk.autovenda true
+/lp group vip_prata permission set vip.terrenos.prata true
 
 /lp creategroup vip_ouro
 /lp group vip_ouro meta setprefix "&6[Ouro] "
@@ -157,6 +158,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_ouro permission set vip.xp.ouro true
 /lp group vip_ouro permission set vip.perk.autovenda true
 /lp group vip_ouro permission set vip.missao.extra true
+/lp group vip_ouro permission set vip.terrenos.ouro true
 
 /lp creategroup vip_diamante
 /lp group vip_diamante meta setprefix "&b[Diamante] "
@@ -170,6 +172,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_diamante permission set vip.xp.diamante true
 /lp group vip_diamante permission set vip.perk.autovenda true
 /lp group vip_diamante permission set vip.missao.extra true
+/lp group vip_diamante permission set vip.terrenos.diamante true
 ```
 
 Essa distribuição de perks por tier é só sugestão — dá pra dar `/vip fly` já no Bronze, por exemplo, é só adicionar a permissão no grupo. Essa mudança não precisa de reload nem de reiniciar nada, é instantânea via LuckPerms.
@@ -199,8 +202,9 @@ Vá até o local desejado e anote as coordenadas (`F3`), depois edite `warp-vip.
 | Desconto na loja e no aluguel de barraca | 5% | 10% | 15% | 20% |
 | Venda automática ao minerar (`/autovenda`) | — | ✔ | ✔ | ✔ |
 | Missão diária extra | — | — | ✔ | ✔ |
+| Terrenos (`/terreno`) | 1 | 2 | 2 | 3 |
 
-Os benefícios que moram em outros plugins (XP, Pix, missões, venda automática, descontos) funcionam por permissão, dada pelos grupos do LuckPerms (veja "Setup"). Cada plugin tem a sua lista de permissões no próprio `config.yml`.
+Os benefícios que moram em outros plugins (XP, Pix, missões, venda automática, terrenos, descontos) funcionam por permissão, dada pelos grupos do LuckPerms (veja "Setup"). Cada plugin tem a sua lista de permissões no próprio `config.yml`.
 
 ### Kit mensal
 

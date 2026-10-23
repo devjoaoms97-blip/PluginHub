@@ -9,6 +9,7 @@ permissions:
 - vip.perk.kit
 - vip.perk.particulas
 - vip.perk.warp
+- vip.terrenos.diamante
 - vip.xp.diamante
 prefixes:
 - '&b[Diamante] ':

@@ -1,0 +1,72 @@
+# Configuração do TerrenosPlugin
+#
+# Terrenos comprados com coins num mundo próprio, em grade. Cada terreno paga um imposto
+# semanal; quem deixa atrasar demais perde o terreno, que vai a LEILÃO DE IMÓVEL com tudo o que
+# tem dentro. O dinheiro da compra, do imposto e do lance vencedor vai pro servidor (some da
+# economia): é uma das maiores saídas de dinheiro do servidor.
+
+# Mundo dos terrenos. Crie com o Multiverse usando o gerador deste plugin:
+#   mv create terrenos normal --generator TerrenosPlugin
+mundo: terrenos
+
+grade:
+  # Lado de cada terreno, em blocos.
+  tamanho: 32
+  # Largura da rua entre dois terrenos (a primeira e a última faixa levam a borda de laje).
+  rua: 5
+  # Altura (y) do chão.
+  altura-chao: 64
+  # Até quantos terrenos a partir do centro, em cada direção (50 = 101 x 101 terrenos).
+  raio-maximo: 50
+  # Mudar os blocos ou as medidas depois de o mundo existir não muda o que já foi gerado.
+  blocos:
+    chao: GRASS_BLOCK
+    terra: DIRT
+    calcamento: STONE_BRICKS
+    borda: STONE_BRICK_SLAB
+
+compra:
+  # Preço fixo de um terreno à venda. A primeira semana de imposto vem incluída.
+  preco: 50000.0
+
+limite:
+  # Quantos terrenos cada jogador pode ter (contando leilões em que está ganhando).
+  padrao: 1
+  # Mais terrenos por permissão (vale o maior). Os grupos de VIP do LuckPerms dão essas
+  # permissões. É uma LISTA de propósito: chave com ponto viraria seção aninhada.
+  permissoes:
+    - permissao: "vip.terrenos.prata"
+      quantidade: 2
+    - permissao: "vip.terrenos.ouro"
+      quantidade: 2
+    - permissao: "vip.terrenos.diamante"
+      quantidade: 3
+
+imposto:
+  # Cada terreno paga, por período, essa % do preço do rank ATUAL do dono no RankupPlugin. Como
+  # a renda cresce com o rank, o imposto pesa parecido em qualquer fase (uns 15 a 20 minutos de
+  # jogo por semana).
+  percentual-do-rank: 3.0
+  # Valor mínimo por período (o primeiro rank custa 0).
+  minimo: 1000.0
+  # Valor usado se o RankupPlugin não estiver instalado.
+  sem-rankup: 5000.0
+  periodo-dias: 7
+  # Depois do vencimento, quantos dias o dono tem pra pagar antes de o terreno ir a leilão.
+  tolerancia-dias: 7
+  # Até quantos períodos dá pra pagar adiantado.
+  semanas-adiantadas-maximo: 4
+  # De quantas em quantas horas o dono online é lembrado do imposto atrasado.
+  aviso-horas: 1
+
+leilao:
+  duracao-horas: 48
+  lance-minimo: 50000.0
+  # Cada novo lance precisa ser pelo menos esse % acima do maior lance atual.
+  incremento-minimo-percentual: 5
+  # Lance nos últimos X minutos estende o leilão pra X minutos a partir do lance. 0 desativa.
+  anti-snipe-minutos: 5
+
+integracao:
+  # Registra compra, imposto e leilão no /pix historico (precisa do PixPlugin).
+  pix: true

@@ -130,6 +130,14 @@ public class RankupPlugin extends JavaPlugin {
         return proximo != null ? proximo.preco() : atual.preco();
     }
 
+    /**
+     * Preço do rank em que o jogador está (o que ele pagou pra chegar nele). Usado pelo
+     * TerrenosPlugin: o imposto semanal do terreno é uma % desse preço. No primeiro rank é 0.
+     */
+    public double precoRankAtual(UUID jogador) {
+        return rankManager.getRankDe(jogador).preco();
+    }
+
     /** Id do rank do jogador (ex: "fazendeiro"). */
     public String rankDe(UUID jogador) {
         return rankManager.getRankDe(jogador).id();

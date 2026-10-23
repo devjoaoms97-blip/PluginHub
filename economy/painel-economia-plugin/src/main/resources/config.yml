@@ -66,3 +66,9 @@ tipos:
     "BarracaManager#renovarAutomaticamente": "Renovação automática de barraca"
   RankupPlugin:
     "RankupCommand#subir": "Rankup"
+  TerrenosPlugin:
+    "TerrenoManager#comprar": "Compra de terreno"
+    "TerrenoManager#pagarImposto": "Imposto de terreno"
+    "TerrenoManager#darLance": "Lance em leilão de imóvel"
+    "TerrenoManager#devolverLance": "Lance de imóvel devolvido"
+    "TerrenoManager#pagarDivida": "Dívida de imposto de terreno"
