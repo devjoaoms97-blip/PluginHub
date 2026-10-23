@@ -204,6 +204,8 @@ Vá até o local desejado e anote as coordenadas (`F3`), depois edite `warp-vip.
 | Missão diária extra | — | — | ✔ | ✔ |
 | Terrenos (`/terreno`) | 1 | 2 | 2 | 3 |
 
+Na tab, o nome fica com o rank (RankupPlugin), a tag do clã (ClasPlugin) e a tag do VIP, nessa ordem.
+
 Os benefícios que moram em outros plugins (XP, Pix, missões, venda automática, terrenos, descontos) funcionam por permissão, dada pelos grupos do LuckPerms (veja "Setup"). Cada plugin tem a sua lista de permissões no próprio `config.yml`.
 
 ### Kit mensal

@@ -14,16 +14,22 @@ commands:
     permission-message: "§cVocê não tem permissão para subir de rank."
   ranks:
     description: Lista os ranks, com preço e bônus de venda.
-    usage: "Uso: /ranks [jogador]"
+    usage: "Uso: /ranks [lista|jogador]"
     aliases: [rank]
     permission: rankup.usar
     permission-message: "§cVocê não tem permissão para ver os ranks."
   mina:
     description: Lista as minas e teleporta pra uma delas.
-    usage: "Uso: /mina [id]"
+    usage: "Uso: /mina [lista|id]"
     aliases: [minas]
     permission: rankup.usar
     permission-message: "§cVocê não tem permissão para usar as minas."
+  prestigio:
+    description: No último rank, volta pro primeiro com bônus de venda permanente.
+    usage: "Uso: /prestigio [confirmar]"
+    aliases: [prestige]
+    permission: rankup.usar
+    permission-message: "§cVocê não tem permissão."
   autovenda:
     description: Liga ou desliga a venda automática do que você minera (VIP).
     usage: "Uso: /autovenda"

@@ -84,6 +84,22 @@ chat:
   # [Rank] [CLÃ] [VIP Ouro] Nome: mensagem
   tag: true
   formato: "&8[%rank%&8]"
+  # O mesmo rank antes do nome na tab (com o VipPlugin: rank, clã e VIP, nessa ordem).
+  na-tab: true
+
+prestigio:
+  # No último rank, /prestigio volta o jogador pro primeiro e dá um nível de prestígio. O
+  # dinheiro fica com ele.
+  ativado: true
+  maximo: 10
+  # Bônus de venda na loja por nível de prestígio (soma com o bônus do rank).
+  bonus-venda-percentual: 10
+  # Marca antes do rank no chat e na tab. %nivel% vira o nível.
+  formato: "&d✦%nivel% "
+
+menus:
+  # /ranks e /mina sem argumento abrem um menu. /ranks lista e /mina lista mostram no chat.
+  ativado: true
 
 minas:
   # Valores de toda mina nova (cada uma pode mudar com /mina admin intervalo|percentual).
@@ -96,6 +112,11 @@ minas:
   blocos-por-tick: 20000
   # Reseta todas as minas quando o servidor liga (a contagem do que foi minerado não é salva).
   resetar-ao-ligar: true
+  # Holograma em cima do ponto de teleporte de cada mina, com o tempo até o reset.
+  holograma:
+    ativado: true
+    # Altura acima do ponto de teleporte, em blocos.
+    altura: 2.5
 
 protecao:
   # Mundos onde, FORA das minas, ninguém quebra nem coloca blocos (exceto quem tem rankup.admin).

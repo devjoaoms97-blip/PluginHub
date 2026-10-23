@@ -2,12 +2,16 @@ package com.example.rankup;
 
 import com.example.rankup.command.AutoVendaCommand;
 import com.example.rankup.command.MinaCommand;
+import com.example.rankup.command.PrestigioCommand;
 import com.example.rankup.command.RanksCommand;
 import com.example.rankup.command.RankupCommand;
+import com.example.rankup.gui.Hologramas;
+import com.example.rankup.gui.Menus;
 import com.example.rankup.listener.ColetaMinaListener;
 import com.example.rankup.listener.ChatListener;
 import com.example.rankup.listener.MinaListener;
 import com.example.rankup.manager.MinaManager;
+import com.example.rankup.manager.PrestigioManager;
 import com.example.rankup.manager.RankManager;
 import com.example.rankup.manager.RegistroRankups;
 import com.example.rankup.model.Rank;
@@ -16,6 +20,8 @@ import com.example.rankup.util.LojaIntegration;
 import com.example.rankup.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,6 +37,10 @@ public class RankupPlugin extends JavaPlugin {
     private PixIntegration pixIntegration;
     private RegistroRankups registroRankups;
     private LojaIntegration lojaIntegration;
+    private PrestigioManager prestigioManager;
+    private Menus menus;
+    private Hologramas hologramas;
+    private boolean avisouFalhaTab;
 
     @Override
     public void onEnable() {
@@ -48,6 +58,9 @@ public class RankupPlugin extends JavaPlugin {
         this.pixIntegration = new PixIntegration(this);
         this.registroRankups = new RegistroRankups(this);
         this.lojaIntegration = new LojaIntegration(this);
+        this.prestigioManager = new PrestigioManager(this);
+        this.menus = new Menus(this);
+        this.hologramas = new Hologramas(this);
 
         RankupCommand rankup = new RankupCommand(this);
         getCommand("rankup").setExecutor(rankup);
@@ -58,6 +71,10 @@ public class RankupPlugin extends JavaPlugin {
         MinaCommand mina = new MinaCommand(this);
         getCommand("mina").setExecutor(mina);
         getCommand("mina").setTabCompleter(mina);
+        PrestigioCommand prestigio = new PrestigioCommand(this);
+        getCommand("prestigio").setExecutor(prestigio);
+        getCommand("prestigio").setTabCompleter(prestigio);
+        getServer().getPluginManager().registerEvents(menus, this);
 
         getServer().getPluginManager().registerEvents(new MinaListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
@@ -65,7 +82,10 @@ public class RankupPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(coleta, this);
         getCommand("autovenda").setExecutor(new AutoVendaCommand(coleta));
 
-        getServer().getScheduler().runTaskTimer(this, minaManager::tick, 20L, 20L);
+        getServer().getScheduler().runTaskTimer(this, () -> {
+            minaManager.tick();
+            hologramas.tick();
+        }, 20L, 20L);
         if (getConfig().getBoolean("minas.resetar-ao-ligar", true)) {
             // 1 tick depois: os mundos já estão carregados
             getServer().getScheduler().runTask(this, () -> minaManager.getMinas().forEach(m -> minaManager.resetar(m, "servidor ligou")));
@@ -77,6 +97,7 @@ public class RankupPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (hologramas != null) hologramas.removerTodos();
         if (rankManager != null) {
             rankManager.salvar();
         }
@@ -109,6 +130,28 @@ public class RankupPlugin extends JavaPlugin {
                     .replace("%rank_anterior%", anterior.id());
             getServer().dispatchCommand(getServer().getConsoleSender(), pronto.startsWith("/") ? pronto.substring(1) : pronto);
         }
+        if (jogador.getPlayer() != null) atualizarTab(jogador.getPlayer());
+    }
+
+    /**
+     * Refaz o nome na tab com o rank novo. Com o VipPlugin, quem monta o nome é ele (rank + clã + VIP,
+     * chamando o {@link #prefixoTab}); sem ele, o próprio rankup põe o rank.
+     */
+    public void atualizarTab(Player jogador) {
+        if (!getConfig().getBoolean("chat.na-tab", true)) return;
+        Plugin vip = getServer().getPluginManager().getPlugin("VipPlugin");
+        if (vip != null && vip.isEnabled()) {
+            try {
+                vip.getClass().getMethod("refrescarTagJogador", Player.class).invoke(vip, jogador);
+                return;
+            } catch (ReflectiveOperationException e) {
+                if (!avisouFalhaTab) {
+                    getLogger().warning("Não foi possível pedir ao VipPlugin pra atualizar a tab (versão incompatível?): " + e.getMessage());
+                    avisouFalhaTab = true;
+                }
+            }
+        }
+        jogador.setPlayerListName(prefixoTab(jogador.getUniqueId()) + "§f" + jogador.getName());
     }
 
     // ---------------------------------------------------------------------
@@ -117,7 +160,17 @@ public class RankupPlugin extends JavaPlugin {
 
     /** Bônus de venda do rank do jogador: 1.25 = vende 25% mais caro. Usado pelo EconomyShopPlugin no /sell. */
     public double multiplicadorVenda(UUID jogador) {
-        return rankManager.getRankDe(jogador).multiplicadorVenda();
+        return rankManager.getRankDe(jogador).multiplicadorVenda() * prestigioManager.multiplicador(jogador);
+    }
+
+    /** API pública (VipPlugin, por reflexão): o rank pra tab, com espaço no fim, ou "" se desligado. */
+    public String prefixoTab(UUID jogador) {
+        return getConfig().getBoolean("chat.na-tab", true) ? tagDoRank(jogador) + " " : "";
+    }
+
+    /** Nível de prestígio do jogador (0 = nenhum). */
+    public int prestigioDe(UUID jogador) {
+        return prestigioManager.nivel(jogador);
     }
 
     /**
@@ -145,8 +198,10 @@ public class RankupPlugin extends JavaPlugin {
 
     /** Tag do rank como aparece no chat, ex: "§8[§aFazendeiro§8]". */
     public String tagDoRank(UUID jogador) {
+        int nivel = prestigioManager.nivel(jogador);
+        String prestigio = nivel > 0 ? Formato.cores(getConfig().getString("prestigio.formato", "&d✦%nivel% ")).replace("%nivel%", String.valueOf(nivel)) : "";
         return Formato.cores(getConfig().getString("chat.formato", "&8[%rank%&8]"))
-                .replace("%rank%", rankManager.getRankDe(jogador).nomeColorido());
+                .replace("%rank%", prestigio + rankManager.getRankDe(jogador).nomeColorido());
     }
 
     // ---------------------------------------------------------------------
@@ -169,6 +224,14 @@ public class RankupPlugin extends JavaPlugin {
 
     public LojaIntegration getLojaIntegration() {
         return lojaIntegration;
+    }
+
+    public PrestigioManager getPrestigioManager() {
+        return prestigioManager;
+    }
+
+    public Menus getMenus() {
+        return menus;
     }
 
     public RegistroRankups getRegistroRankups() {

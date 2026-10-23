@@ -34,7 +34,11 @@ public class RanksCommand implements CommandExecutor, TabCompleter {
             admin(sender, args);
             return true;
         }
-        if (args.length > 0) {
+        if (args.length == 0 && sender instanceof Player p && plugin.getMenus().ativados()) {
+            plugin.getMenus().abrirRanks(p);
+            return true;
+        }
+        if (args.length > 0 && !args[0].equalsIgnoreCase("lista")) {
             verJogador(sender, args[0]);
             return true;
         }

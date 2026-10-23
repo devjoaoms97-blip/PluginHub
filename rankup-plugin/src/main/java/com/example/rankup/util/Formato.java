@@ -13,6 +13,11 @@ public final class Formato {
         return String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", valor);
     }
 
+    /** "3", "2,5": sem casas decimais quando é inteiro. */
+    public static String numero(double valor) {
+        return valor == Math.rint(valor) ? String.valueOf((long) valor) : String.format(Locale.forLanguageTag("pt-BR"), "%.1f", valor);
+    }
+
     /** "45s", "12min 3s", "5h 20min". */
     public static String tempo(long ms) {
         long segundos = Math.max(0, ms / 1000);

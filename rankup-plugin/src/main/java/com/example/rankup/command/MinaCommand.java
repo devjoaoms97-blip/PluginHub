@@ -48,7 +48,9 @@ public class MinaCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0) {
+        if (args.length == 0 && sender instanceof Player p && plugin.getMenus().ativados()) {
+            plugin.getMenus().abrirMinas(p);
+        } else if (args.length == 0 || args[0].equalsIgnoreCase("lista")) {
             listar(sender);
         } else if (args[0].equalsIgnoreCase("admin")) {
             admin(sender, args);

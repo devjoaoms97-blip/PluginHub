@@ -10,11 +10,12 @@ Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro �
 |---|---|---|
 | `/rankup` | todos | Paga e sobe pro próximo rank |
 | `/rankup max` | todos | Sobe quantos ranks o saldo pagar |
-| `/ranks` | todos | Lista os ranks: preço, bônus de venda e minas de cada um. Mostra onde você está (➤) |
+| `/ranks` | todos | Abre o menu dos ranks: preço, bônus de venda, minas, o seu rank e o próximo (clicar nele faz o `/rankup`). `/ranks lista` mostra no chat |
 | `/ranks <jogador>` | todos | Rank de outro jogador |
-| `/mina` | todos | Lista as minas (✔ = você tem acesso) |
+| `/mina` | todos | Abre o menu das minas: rank, blocos, tempo até o reset e quanto já foi minerado (clicar teleporta). `/mina lista` mostra no chat |
 | `/mina <id>` | todos | Teleporta pra mina, se você tiver o rank |
 | `/autovenda` | VIP (`vip.perk.autovenda`) | Liga ou desliga a venda automática do que você minera |
+| `/prestigio [confirmar]` | todos | No último rank, volta pro primeiro com um nível de prestígio |
 | `/ranks admin set <jogador> <rank>` | staff | Muda o rank de alguém (roda os `comandos-ao-subir`) |
 | `/ranks admin reload` | staff | Recarrega o config (ranks e preços) |
 | `/mina admin pos1` / `pos2` | staff | Marca os cantos da mina (o bloco pra onde você olha) |
@@ -55,6 +56,12 @@ No reset, quem está dentro (ou em cima) vai pro ponto de teleporte da mina, e n
 **Venda automática (VIP).** Quem tem `vip.perk.autovenda` (VIP Prata, Ouro e Diamante) vende na hora tudo o que minera dentro de uma mina, e o dinheiro aparece na barra acima do inventário. Vale o mesmo que o `/sell`, com o preço dinâmico, o bônus do rank e o imposto. O que a loja não compra vai pro inventário. O `/autovenda` desliga e liga; a escolha fica gravada no jogador. No painel, aparece como "Venda automática (VIP)".
 
 **Chat.** O rank aparece antes do nome e convive com as tags do clã e do VIP: `[Fazendeiro] [ABC] [VIP Ouro] Nome: mensagem`.
+
+**Prestígio.** No último rank (Rei), o `/prestigio confirmar` volta o jogador pro primeiro rank e dá um nível de prestígio, até 10. Cada nível soma **+10% de venda na loja** pra sempre, multiplicando o bônus do rank, e aparece como **✦N** antes do rank no chat e na tab. O dinheiro fica com o jogador. Os níveis ficam em `prestigio.yml`.
+
+**Rank na tab.** O rank aparece antes do nome na tab. Com o VipPlugin, a ordem é rank, clã e VIP, como no chat. O VIP monta o nome, e o rankup pede pra refazer quando o rank muda.
+
+**Holograma das minas.** Em cima do ponto de teleporte de cada mina, um texto mostra o nome, o rank, o tempo até o reset e quanto já foi minerado, atualizado a cada segundo. Ele não fica salvo no mundo: some ao desligar e volta sozinho.
 
 ## Montando as minas (passo a passo)
 
