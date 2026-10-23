@@ -15,8 +15,11 @@ Sistema de pagamentos entre jogadores, com pagamento direto e cobranças aceitá
 | `/pix historico [quantidade]` | Mostra suas últimas transações (padrão: 10, máx: 20) |
 | `/pix qrcode <valor> [motivo]` | Anuncia publicamente um pagamento — qualquer um pode clicar para te pagar |
 | `/pix limite` | Mostra seu limite diário, quanto já enviou hoje e quanto ainda pode enviar |
+| `/pix agendar <jogador> <valor> <dias> [motivo]` | Paga agora e repete a cada N dias, sozinho (até 5 agendamentos por jogador, de 1 a 30 dias) |
+| `/pix agendamentos [cancelar <nº>]` | Seus Pix agendados, pagando ou recebendo. Os dois lados podem cancelar |
 | `/pix admin reload` | (staff) Recarrega o `config.yml` (ex: depois de mudar a taxa ou o limite) |
 | `/pix admin resetlimite <jogador>` | (staff) Zera o que um jogador já enviou hoje |
+| `/pix admin vencer <nº>` | (staff) Faz um Pix agendado vencer agora (para testar) |
 
 ## Taxa de transação (sinkhole)
 
@@ -89,9 +92,16 @@ Outros plugins do PluginHub registram as próprias transações no `/pix histori
 
 A entidade não é uma conta de verdade: a transação só entra no extrato do jogador. No `dados.yml`, o nome fica no campo `entidade` de cada registro.
 
+## Pix agendado
+
+O primeiro pagamento sai na hora, com as mesmas regras do `/pix pagar`: saldo, limite diário e taxa. Os próximos saem sozinhos no vencimento, conferido a cada 20 s, mesmo com os dois offline. Com quem paga offline, não dá para ver as permissões, então a taxa sai sem o desconto de VIP.
+
+Sem saldo ou sem limite, o pagamento não sai, quem paga é avisado e o plugin tenta de novo em 1 h. Depois de 3 falhas seguidas (`agendamento.falhas-maximas`), o agendamento é cancelado e os dois são avisados. Os agendamentos ficam em `agendamentos.yml`.
+
+O imposto do terreno e o aluguel das barracas já têm o próprio pagamento automático (`/terreno autopagar` e `/barraca autorenovar`). O Pix agendado é para pagamentos combinados entre jogadores.
+
 ## Ideias para expandir (ainda não implementadas)
 
 - **`/pix chave <apelido>`** — jogador registra um "apelido" (tipo chave Pix) pra receber pagamentos sem precisar do nome exato
-- **`/pix agendar <jogador> <valor> <intervalo>`** — pagamentos recorrentes automáticos (ex: aluguel de terreno toda semana)
 - **Notificação por som/título** — tocar um som e mostrar um título na tela quando alguém recebe um pagamento ou cobrança
 - **Log administrativo** — comando `/pix admin log <jogador>` pra staff investigar transações suspeitas

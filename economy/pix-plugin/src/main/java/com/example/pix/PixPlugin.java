@@ -13,6 +13,7 @@ public class PixPlugin extends JavaPlugin {
     private Economy economy = null;
     private ChargeManager chargeManager;
     private LimiteManager limiteManager;
+    private AgendamentoManager agendamentoManager;
 
     @Override
     public void onEnable() {
@@ -20,6 +21,9 @@ public class PixPlugin extends JavaPlugin {
 
         this.chargeManager = new ChargeManager(this);
         this.limiteManager = new LimiteManager(this);
+        this.agendamentoManager = new AgendamentoManager(this);
+        // Pix agendado: confere os vencimentos a cada 20 s
+        getServer().getScheduler().runTaskTimer(this, agendamentoManager::tick, 400L, 400L);
 
         if (!setupEconomy()) {
             getLogger().warning("Vault (ou um plugin de economia) não foi encontrado!");
@@ -43,6 +47,9 @@ public class PixPlugin extends JavaPlugin {
         if (limiteManager != null) {
             limiteManager.salvar();
         }
+        if (agendamentoManager != null) {
+            agendamentoManager.salvar();
+        }
         getLogger().info("PixPlugin desativado!");
     }
 
@@ -64,6 +71,10 @@ public class PixPlugin extends JavaPlugin {
 
     public ChargeManager getChargeManager() {
         return chargeManager;
+    }
+
+    public AgendamentoManager getAgendamentoManager() {
+        return agendamentoManager;
     }
 
     public LimiteManager getLimiteManager() {

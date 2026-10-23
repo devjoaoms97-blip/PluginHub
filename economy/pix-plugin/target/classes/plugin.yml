@@ -9,7 +9,7 @@ softdepend: [Vault]
 commands:
   pix:
     description: Sistema de pagamentos entre jogadores.
-    usage: "Uso: /pix <pagar|receber|aceitar|recusar|pendentes|cancelar|historico|qrcode|limite>"
+    usage: "Uso: /pix <pagar|receber|aceitar|recusar|pendentes|cancelar|historico|qrcode|limite|agendar|agendamentos>"
     permission: pix.usar
     permission-message: "§cVocê não tem permissão para usar o Pix."
 

@@ -34,3 +34,11 @@ limite:
   # (ex: conta roubada esvaziada de uma vez). 0 desativa. Quem tem a permissão
   # pix.limite.ignorar (ex: staff) não tem limite.
   diario: 0
+
+agendamento:
+  # /pix agendar <jogador> <valor> <dias>: o primeiro pagamento sai na hora, os próximos a cada
+  # N dias, sozinhos, com as mesmas regras do /pix pagar (saldo, limite diário e taxa).
+  maximo-por-jogador: 5
+  dias-maximo: 30
+  # Sem saldo ou sem limite, tenta de novo a cada hora; depois de tantas falhas seguidas, cancela.
+  falhas-maximas: 3

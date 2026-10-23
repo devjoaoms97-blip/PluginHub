@@ -62,6 +62,8 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             case "historico", "extrato" -> historico(jogador, resto);
             case "qrcode" -> qrcode(jogador, resto);
             case "limite" -> limite(jogador);
+            case "agendar" -> agendar(jogador, resto);
+            case "agendamentos", "agendados" -> agendamentos(jogador, resto);
             case "admin" -> admin(jogador, resto);
             default -> enviarAjuda(jogador);
         }
@@ -398,8 +400,19 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (args.length >= 2 && args[0].equalsIgnoreCase("vencer")) {
+            AgendamentoManager.Agendamento a = numero(args[1]) == null ? null : plugin.getAgendamentoManager().get(numero(args[1]));
+            if (a == null) {
+                jogador.sendMessage(cor("§cAgendamento não encontrado."));
+                return;
+            }
+            plugin.getAgendamentoManager().vencerAgora(a);
+            jogador.sendMessage(cor("§aO Pix agendado #" + a.getId() + " vence agora (sai na próxima verificação, em até 20 s)."));
+            return;
+        }
+
         if (args.length < 1 || !args[0].equalsIgnoreCase("reload")) {
-            jogador.sendMessage(cor("§cUso: §f/pix admin <reload|resetlimite <jogador>>"));
+            jogador.sendMessage(cor("§cUso: §f/pix admin <reload|resetlimite <jogador>|vencer <nº>>"));
             return;
         }
 
@@ -423,9 +436,98 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage(cor("§f/pix historico [qtd] §7- suas últimas transações"));
         jogador.sendMessage(cor("§f/pix qrcode <valor> [motivo] §7- anuncia um pagamento pra qualquer um clicar"));
         jogador.sendMessage(cor("§f/pix limite §7- quanto você ainda pode enviar hoje"));
+        jogador.sendMessage(cor("§f/pix agendar <jogador> <valor> <dias> [motivo] §7- paga agora e repete a cada N dias"));
+        jogador.sendMessage(cor("§f/pix agendamentos [cancelar <nº>] §7- seus Pix agendados"));
         if (jogador.hasPermission("pix.admin")) {
             jogador.sendMessage(cor("§f/pix admin reload §7- (staff) recarrega o config.yml"));
             jogador.sendMessage(cor("§f/pix admin resetlimite <jogador> §7- (staff) zera o limite diário de alguém"));
+            jogador.sendMessage(cor("§f/pix admin vencer <nº> §7- (staff) faz um Pix agendado vencer agora"));
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // /pix agendar <jogador> <valor> <dias> [motivo] e /pix agendamentos
+    // ---------------------------------------------------------------------
+    private void agendar(Player pagador, String[] args) {
+        if (args.length < 3) {
+            pagador.sendMessage(cor("§cUso: §f/pix agendar <jogador> <valor> <dias> [motivo] §7(paga agora e repete a cada N dias)"));
+            return;
+        }
+        OfflinePlayer alvo = Bukkit.getOfflinePlayer(args[0]);
+        if (!alvo.hasPlayedBefore() && !alvo.isOnline()) {
+            pagador.sendMessage(cor("§cJogador \"" + args[0] + "\" não encontrado."));
+            return;
+        }
+        if (alvo.getUniqueId().equals(pagador.getUniqueId())) {
+            pagador.sendMessage(cor("§cVocê não pode agendar um Pix pra si mesmo."));
+            return;
+        }
+        Double valor = parseValor(pagador, args[1]);
+        if (valor == null) return;
+        Integer dias = numero(args[2]);
+        int maxDias = Math.max(1, plugin.getConfig().getInt("agendamento.dias-maximo", 30));
+        if (dias == null || dias < 1 || dias > maxDias) {
+            pagador.sendMessage(cor("§cO intervalo precisa ser de 1 a " + maxDias + " dias."));
+            return;
+        }
+        AgendamentoManager agenda = plugin.getAgendamentoManager();
+        if (agenda.quantosPaga(pagador.getUniqueId()) >= agenda.maximoPorJogador()) {
+            pagador.sendMessage(cor("§cVocê já tem " + agenda.maximoPorJogador() + " Pix agendados, o máximo. Cancele um com §f/pix agendamentos cancelar <nº>§c."));
+            return;
+        }
+        if (!plugin.getEconomy().has(pagador, valor)) {
+            pagador.sendMessage(cor("§cO primeiro pagamento sai agora, e você não tem §f" + formatarValor(valor) + "§c."));
+            return;
+        }
+        if (!verificarLimite(pagador, valor)) return;
+        String motivo = args.length > 3 ? String.join(" ", Arrays.copyOfRange(args, 3, args.length)) : null;
+        AgendamentoManager.Agendamento a = agenda.criar(pagador, alvo, valor, dias, motivo);
+        pagador.sendMessage(cor("§aPix agendado §f#" + a.getId() + "§a: §f" + formatarValor(valor) + " §apara §f" + alvo.getName()
+                + " §aa cada §f" + dias + " dia(s)§a. Cancele com §f/pix agendamentos cancelar " + a.getId() + "§a."));
+    }
+
+    private void agendamentos(Player jogador, String[] args) {
+        AgendamentoManager agenda = plugin.getAgendamentoManager();
+        if (args.length >= 2 && args[0].equalsIgnoreCase("cancelar")) {
+            Integer id = numero(args[1]);
+            AgendamentoManager.Agendamento a = id == null ? null : agenda.get(id);
+            boolean meu = a != null && (a.getPagador().equals(jogador.getUniqueId()) || a.getRecebedor().equals(jogador.getUniqueId()));
+            if (!meu) {
+                jogador.sendMessage(cor("§cVocê não tem um Pix agendado com esse número."));
+                return;
+            }
+            agenda.cancelar(a);
+            jogador.sendMessage(cor("§7Pix agendado §f#" + a.getId() + " §7cancelado."));
+            UUID outro = a.getPagador().equals(jogador.getUniqueId()) ? a.getRecebedor() : a.getPagador();
+            Player outroOnline = Bukkit.getPlayer(outro);
+            if (outroOnline != null) {
+                outroOnline.sendMessage(cor("§7" + jogador.getName() + " cancelou o Pix agendado §f#" + a.getId() + "§7."));
+            }
+            return;
+        }
+        List<AgendamentoManager.Agendamento> lista = agenda.doJogador(jogador.getUniqueId());
+        jogador.sendMessage(cor("§e§l--- Pix agendados ---"));
+        if (lista.isEmpty()) {
+            jogador.sendMessage(cor("§7Nenhum. Crie com §f/pix agendar <jogador> <valor> <dias> [motivo]§7."));
+            return;
+        }
+        long agora = System.currentTimeMillis();
+        for (AgendamentoManager.Agendamento a : lista) {
+            boolean paga = a.getPagador().equals(jogador.getUniqueId());
+            long horas = Math.max(0, (a.getProximo() - agora) / 3_600_000L);
+            jogador.sendMessage(cor("§f#" + a.getId() + " " + (paga ? "§c→ §f" + a.getNomeRecebedor() : "§a← §f" + a.getNomePagador())
+                    + " §7" + formatarValor(a.getValor()) + " a cada " + a.getDias() + " dia(s)"
+                    + (a.getMotivo() != null ? " (" + a.getMotivo() + ")" : "")
+                    + " · próximo em " + (horas >= 24 ? horas / 24 + "d " + horas % 24 + "h" : horas + "h")));
+        }
+        jogador.sendMessage(cor("§7Cancele com §f/pix agendamentos cancelar <nº>§7."));
+    }
+
+    private static Integer numero(String texto) {
+        try {
+            return Integer.parseInt(texto.replace("#", ""));
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
@@ -499,13 +601,16 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         List<String> opcoes = new ArrayList<>();
 
         if (args.length == 1) {
-            opcoes.addAll(Arrays.asList("pagar", "receber", "aceitar", "recusar", "pendentes", "cancelar", "historico", "qrcode", "limite"));
+            opcoes.addAll(Arrays.asList("pagar", "receber", "aceitar", "recusar", "pendentes", "cancelar", "historico", "qrcode", "limite",
+                    "agendar", "agendamentos"));
             if (sender.hasPermission("pix.admin")) {
                 opcoes.add("admin");
             }
         } else if (args.length == 2) {
             String sub = args[0].toLowerCase(Locale.ROOT);
-            if (sub.equals("pagar") || sub.equals("receber") || sub.equals("cobrar")
+            if (sub.equals("agendamentos")) {
+                opcoes.add("cancelar");
+            } else if (sub.equals("pagar") || sub.equals("agendar") || sub.equals("receber") || sub.equals("cobrar")
                     || sub.equals("aceitar") || sub.equals("recusar") || sub.equals("cancelar")) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     opcoes.add(p.getName());
