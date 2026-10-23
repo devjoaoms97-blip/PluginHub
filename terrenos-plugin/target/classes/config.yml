@@ -25,6 +25,11 @@ grade:
     calcamento: STONE_BRICKS
     borda: STONE_BRICK_SLAB
 
+placas:
+  # Placa na entrada de cada terreno (na rua, no meio do lado norte) com "À venda", o dono ou
+  # o leilão. Clicar nela mostra o /terreno info.
+  ativado: true
+
 compra:
   # Preço fixo de um terreno à venda. A primeira semana de imposto vem incluída.
   preco: 50000.0

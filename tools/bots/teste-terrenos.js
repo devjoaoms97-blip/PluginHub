@@ -1,4 +1,4 @@
-// Terrenos: compra, borda da grade, proteção, amigo, imposto, confisco por imposto atrasado,
+// Terrenos: compra, borda da grade, placa da entrada, proteção, amigo (só com baús e com tudo), imposto, confisco por imposto atrasado,
 // leilão de imóvel (dono antigo pagando a dívida, lance superado e devolvido) e leilão sem lances.
 // Usa dois jogadores novos a cada execução. Uso: node teste-terrenos.js
 const t = require('./lib')
@@ -9,6 +9,11 @@ const CELULA = 37 // tamanho 32 + rua 5, como no config padrão
 const dinheiro = r => Number((r.match(/\$([\d,.]+)/) || [, 'NaN'])[1].replace(/,/g, ''))
 const blocoE = async (x, y, z, bloco) =>
   (await t.console(`execute in minecraft:${MUNDO} if block ${x} ${y} ${z} minecraft:${bloco}`)).includes('passed')
+// linhas 2 e 3 da placa (a resposta do console corta textos longos)
+const placa = async (x, z) => {
+  const linha = async i => await t.console(`execute in minecraft:${MUNDO} run data get block ${x} 66 ${z} front_text.messages[${i}]`)
+  return (await linha(1)) + ' ' + (await linha(2))
+}
 const tpPara = (nome, x, y, z) => t.console(`execute in minecraft:${MUNDO} run minecraft:tp ${nome} ${x} ${y} ${z}`)
 
 /** Coloca pedregulho em cima do chão em (x, z), olhando de perto (terra viraria grama sozinha). */
@@ -44,6 +49,9 @@ t.rodar(async () => {
   const minX = gx * CELULA, minZ = gz * CELULA
   t.verificar(await blocoE(minX - 1, 65, minZ + 5, 'stone_brick_slab'), 'borda de laje em volta do terreno')
   t.verificar(await blocoE(minX - 3, 64, minZ + 5, 'stone_bricks'), 'rua de pedra entre os terrenos')
+  // placa na entrada: no meio do lado norte, em cima da laje
+  const [sx, sz] = [minX + 16, minZ - 1]
+  t.verificar((await placa(sx, sz)).includes('VENDA'), 'placa "À venda" na entrada', await placa(sx, sz))
 
   await tpPara(nomeA, minX + 16.5, 65, minZ + 16.5)
   await t.espera(1500)
@@ -52,6 +60,7 @@ t.rodar(async () => {
   t.verificar(dinheiro(await t.console(`balance ${nomeA}`)) === 150000, 'pagou R$ 50.000')
   msgs = await t.capturar(a, () => a.chat('/terreno comprar'))
   t.verificar(msgs.some(m => m.includes('é de')), 'não compra o mesmo terreno de novo')
+  t.verificar((await placa(sx, sz)).includes(nomeA), 'a placa mostra o dono', await placa(sx, sz))
 
   console.log('\n== Proteção e amigo ==')
   const [px, pz] = [minX + 18, minZ + 16]
@@ -69,8 +78,24 @@ t.rodar(async () => {
   await tentarQuebrar(b, minX - 3, 64, minZ + 16)
   t.verificar(await blocoE(minX - 3, 64, minZ + 16, 'stone_bricks'), 'ninguém quebra a rua')
 
+  console.log('\n== Amigo só com baús ==')
+  const [cx, cz] = [minX + 22, minZ + 16]
+  await t.console(`execute in minecraft:${MUNDO} run setblock ${cx} 65 ${cz} minecraft:chest`)
+  msgs = await t.capturar(a, () => a.chat(`/terreno amigo add ${nomeB} baus`))
+  t.verificar(msgs.some(m => m.includes('agora pode baus')), 'amigo só com baús', msgs[0])
+  await tpPara(nomeB, minX + 20.5, 65, minZ + 16.5)
+  await t.espera(1500)
+  const abriu = await new Promise(ok => {
+    const fim = setTimeout(() => ok(false), 3000)
+    b.once('windowOpen', w => { clearTimeout(fim); b.closeWindow(w); ok(true) })
+    b.activateBlock(b.blockAt(new (require('vec3').Vec3)(cx, 65, cz))).catch(() => {})
+  })
+  t.verificar(abriu, 'com "baús", abre o baú')
+  await tentarQuebrar(b, px, 65, pz)
+  t.verificar(await blocoE(px, 65, pz, 'cobblestone'), 'com "baús", não quebra bloco')
+
   msgs = await t.capturar(a, () => a.chat(`/terreno amigo add ${nomeB}`))
-  t.verificar(msgs.some(m => m.includes('agora pode construir')), 'adicionou o amigo')
+  t.verificar(msgs.some(m => m.includes('agora pode tudo')), 'amigo com tudo')
   await tpPara(nomeB, minX + 20.5, 65, minZ + 16.5)
   await t.espera(1500)
   await tentarQuebrar(b, px, 65, pz)
@@ -91,6 +116,7 @@ t.rodar(async () => {
   const inicio = b.mensagens.length
   for (let s = 0; s < 40 && !b.mensagens.slice(inicio).some(m => m.includes('vai a leilão')); s++) await t.espera(1000)
   t.verificar(b.mensagens.slice(inicio).some(m => m.includes('vai a leilão')), 'sem saldo, o terreno foi a leilão (anúncio no chat)')
+  t.verificar((await placa(sx, sz)).includes('LEIL'), 'a placa mostra o leilão', await placa(sx, sz))
   t.verificar(a.mensagens.slice(-10).some(m => m.includes('foi confiscado')), 'o dono foi avisado')
 
   console.log('\n== Leilão de imóvel ==')
@@ -126,6 +152,7 @@ t.rodar(async () => {
   t.verificar(await blocoE(px, 65, pz, 'air') && await blocoE(px, 64, pz, 'grass_block'), 'sem lances, o terreno foi limpo')
   msgs = await t.capturar(b, () => b.chat(`/terreno info ${id}`))
   t.verificar(msgs.some(m => m.includes('À venda')), 'e voltou à venda')
+  t.verificar((await placa(sx, sz)).includes('VENDA'), 'e a placa voltou para "À venda"')
 
   await t.terminar(a, b)
 })

@@ -3,6 +3,7 @@ package com.example.terrenos.command;
 import com.example.terrenos.TerrenosPlugin;
 import com.example.terrenos.manager.TerrenoManager;
 import com.example.terrenos.model.Leilao;
+import com.example.terrenos.model.Permissao;
 import com.example.terrenos.model.Terreno;
 import com.example.terrenos.model.TerrenoId;
 import com.example.terrenos.util.Formato;
@@ -17,8 +18,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -84,7 +87,8 @@ public class TerrenoCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage("§f/terreno lista §7- seus terrenos e o imposto de cada um");
         jogador.sendMessage("§f/terreno imposto [pagar] §7- vê ou paga uma semana de imposto");
         jogador.sendMessage("§f/terreno autopagar §7- liga ou desliga o pagamento automático");
-        jogador.sendMessage("§f/terreno amigo <add|remover> <jogador> §7- quem pode construir no terreno em que você está");
+        jogador.sendMessage("§f/terreno amigo add <jogador> [construir] [baus] [usar] §7- o que um amigo pode fazer no terreno em que você está");
+        jogador.sendMessage("§f/terreno amigo remover <jogador> §7- tira o amigo");
         jogador.sendMessage("§f/terreno abandonar §7- devolve o terreno (sem reembolso, e ele é limpo)");
         jogador.sendMessage("§f/terreno leiloes §7- leilões de imóvel abertos");
         jogador.sendMessage("§f/terreno lance <x;z> <valor> §7- dá um lance num leilão");
@@ -212,7 +216,7 @@ public class TerrenoCommand implements CommandExecutor, TabCompleter {
             return;
         }
         jogador.sendMessage("§7Dono: §f" + t.getNomeDono());
-        if (t.podeMexer(jogador.getUniqueId()) || plugin.isAdmin(jogador)) {
+        if (t.ehDonoOuAmigo(jogador.getUniqueId()) || plugin.isAdmin(jogador)) {
             jogador.sendMessage("§7Imposto: §f" + Formato.valor(terrenos().valorImposto(t.getDono())) + " §7por semana, "
                     + (terrenos().atrasado(t, agora) ? "§cATRASADO §7(vai a leilão em §f"
                     + Formato.tempo(t.getImpostoPagoAte() + terrenos().toleranciaMs() - agora) + "§7)"
@@ -302,7 +306,7 @@ public class TerrenoCommand implements CommandExecutor, TabCompleter {
         if (t == null) return;
         if (args.length < 3) {
             jogador.sendMessage("§7Amigos do terreno §f" + t.getId() + "§7: §f" + (t.getAmigos().isEmpty() ? "nenhum" : String.join(", ", nomes(t))));
-            jogador.sendMessage("§7Use §f/terreno amigo add <jogador> §7ou §f/terreno amigo remover <jogador>§7.");
+            jogador.sendMessage("§7Use §f/terreno amigo add <jogador> [construir] [baus] [usar] §7(sem nada: tudo) ou §f/terreno amigo remover <jogador>§7.");
             return;
         }
         OfflinePlayer alvo = Bukkit.getOfflinePlayer(args[2]);
@@ -316,9 +320,19 @@ public class TerrenoCommand implements CommandExecutor, TabCompleter {
                 jogador.sendMessage("§cO terreno já é seu.");
                 return;
             }
-            t.getAmigos().add(alvo.getUniqueId());
-            jogador.sendMessage("§a" + alvo.getName() + " agora pode construir e usar tudo no terreno §f" + t.getId() + "§a.");
-        } else if (t.getAmigos().remove(alvo.getUniqueId())) {
+            Set<Permissao> perms = EnumSet.noneOf(Permissao.class);
+            for (int i = 3; i < args.length; i++) {
+                Permissao p = Permissao.ler(args[i]);
+                if (p == null) {
+                    jogador.sendMessage("§cPermissão desconhecida: §f" + args[i] + "§c. Use §fconstruir§c, §fbaus §ce §fusar§c.");
+                    return;
+                }
+                perms.add(p);
+            }
+            if (perms.isEmpty()) perms = Terreno.todas();
+            t.getAmigos().put(alvo.getUniqueId(), perms);
+            jogador.sendMessage("§a" + alvo.getName() + " agora pode §f" + descrever(perms) + " §ano terreno §f" + t.getId() + "§a.");
+        } else if (t.getAmigos().remove(alvo.getUniqueId()) != null) {
             jogador.sendMessage("§7" + alvo.getName() + " não é mais amigo do terreno §f" + t.getId() + "§7.");
         } else {
             jogador.sendMessage("§c" + alvo.getName() + " não era amigo desse terreno.");
@@ -327,13 +341,19 @@ public class TerrenoCommand implements CommandExecutor, TabCompleter {
         terrenos().salvar();
     }
 
+    /** "Fulano (construir, baus)" pra cada amigo. */
     private List<String> nomes(Terreno t) {
         List<String> nomes = new ArrayList<>();
-        for (UUID amigo : t.getAmigos()) {
+        t.getAmigos().forEach((amigo, perms) -> {
             String nome = Bukkit.getOfflinePlayer(amigo).getName();
-            nomes.add(nome != null ? nome : amigo.toString().substring(0, 8));
-        }
+            nomes.add((nome != null ? nome : amigo.toString().substring(0, 8)) + " §7(" + descrever(perms) + ")§f");
+        });
         return nomes;
+    }
+
+    private static String descrever(Set<Permissao> perms) {
+        if (perms.containsAll(Terreno.todas())) return "tudo";
+        return perms.isEmpty() ? "nada" : String.join(", ", perms.stream().map(Permissao::nome).toList());
     }
 
     private void abandonar(Player jogador, String[] args) {
@@ -538,6 +558,8 @@ public class TerrenoCommand implements CommandExecutor, TabCompleter {
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("amigo")) {
             Bukkit.getOnlinePlayers().forEach(p -> opcoes.add(p.getName()));
+        } else if (args.length >= 4 && args[0].equalsIgnoreCase("amigo") && args[1].equalsIgnoreCase("add")) {
+            for (Permissao p : Permissao.values()) opcoes.add(p.nome());
         }
         String prefixo = args[args.length - 1].toLowerCase(Locale.ROOT);
         return opcoes.stream().filter(o -> o.toLowerCase(Locale.ROOT).startsWith(prefixo)).toList();

@@ -1,6 +1,8 @@
 package com.example.terrenos.model;
 
-import java.util.LinkedHashSet;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -13,7 +15,8 @@ public class Terreno {
     private final TerrenoId id;
     private UUID dono;               // null = em leilão
     private String nomeDono;
-    private final Set<UUID> amigos = new LinkedHashSet<>();
+    /** Amigos e o que cada um pode fazer. */
+    private final Map<UUID, Set<Permissao>> amigos = new LinkedHashMap<>();
     private long impostoPagoAte;
     private boolean autoPagar = true;
     private long compradoEm;
@@ -45,13 +48,24 @@ public class Terreno {
         return dono != null;
     }
 
-    public Set<UUID> getAmigos() {
+    public Map<UUID, Set<Permissao>> getAmigos() {
         return amigos;
     }
 
-    /** Dono ou amigo: pode construir e usar tudo dentro. */
-    public boolean podeMexer(UUID jogador) {
-        return jogador.equals(dono) || amigos.contains(jogador);
+    /** O dono pode tudo; o amigo, o que tiver recebido. */
+    public boolean pode(UUID jogador, Permissao permissao) {
+        if (jogador.equals(dono)) return true;
+        Set<Permissao> dele = amigos.get(jogador);
+        return dele != null && dele.contains(permissao);
+    }
+
+    /** Dono ou amigo com qualquer permissão (vê o imposto e os amigos no /terreno info). */
+    public boolean ehDonoOuAmigo(UUID jogador) {
+        return jogador.equals(dono) || amigos.containsKey(jogador);
+    }
+
+    public static Set<Permissao> todas() {
+        return EnumSet.allOf(Permissao.class);
     }
 
     public long getImpostoPagoAte() {

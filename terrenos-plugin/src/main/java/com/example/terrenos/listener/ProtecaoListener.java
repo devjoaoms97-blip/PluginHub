@@ -1,13 +1,16 @@
 package com.example.terrenos.listener;
 
 import com.example.terrenos.TerrenosPlugin;
+import com.example.terrenos.model.Permissao;
 import com.example.terrenos.model.Terreno;
 import com.example.terrenos.model.TerrenoId;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Cancellable;
@@ -33,14 +36,16 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.StructureGrowEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Proteção do mundo de terrenos. Só o dono e os amigos mexem num terreno (construir, quebrar,
- * abrir baú, usar porta, bater em animal, tirar item de moldura...). A rua e os terrenos sem dono
+ * Proteção do mundo de terrenos. Só o dono e os amigos mexem num terreno, e cada amigo só no que
+ * recebeu: construir (blocos, baldes, animais, molduras), baús (recipientes) ou usar (portas,
+ * botões, alavancas, camas, montar e negociar). A rua e os terrenos sem dono
  * ou em leilão são só da staff ({@code terrenos.admin}). Também barra o que atravessa a divisa:
  * água e lava escorrendo, pistão, árvore crescendo, fogo e explosão.
  */
@@ -56,11 +61,19 @@ public class ProtecaoListener implements Listener {
         return local != null && local.getWorld() != null && local.getWorld().equals(plugin.getMundo());
     }
 
-    /** Pode construir e usar nessa posição. Fora do mundo de terrenos, sempre pode (não é com a gente). */
-    private boolean pode(Player jogador, Location local) {
+    /** Pode fazer isso nessa posição. Fora do mundo de terrenos, sempre pode (não é com a gente). */
+    private boolean pode(Player jogador, Location local, Permissao permissao) {
         if (!noMundo(local) || plugin.isAdmin(jogador)) return true;
         Terreno t = plugin.getTerrenoManager().getEm(local);
-        return t != null && t.temDono() && t.podeMexer(jogador.getUniqueId());
+        return t != null && t.temDono() && t.pode(jogador.getUniqueId(), permissao);
+    }
+
+    /** Que permissão o clique nesse bloco pede: recipiente = baús; porta, botão e afins = usar; resto = construir. */
+    private static Permissao permissaoDoBloco(Block bloco, Action acao) {
+        if (acao == Action.PHYSICAL) return bloco.getType() == Material.FARMLAND ? Permissao.CONSTRUIR : Permissao.USAR;
+        if (bloco.getState() instanceof InventoryHolder) return Permissao.BAUS;
+        if (bloco.getType().isInteractable()) return Permissao.USAR;
+        return Permissao.CONSTRUIR; // usar item no bloco (isqueiro, farinha de osso, ovo de mob...)
     }
 
     private void negar(Player jogador, Location local, Cancellable evento) {
@@ -81,22 +94,22 @@ public class ProtecaoListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoQuebrar(BlockBreakEvent evento) {
-        if (!pode(evento.getPlayer(), evento.getBlock().getLocation())) negar(evento.getPlayer(), evento.getBlock().getLocation(), evento);
+        if (!pode(evento.getPlayer(), evento.getBlock().getLocation(), Permissao.CONSTRUIR)) negar(evento.getPlayer(), evento.getBlock().getLocation(), evento);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoColocar(BlockPlaceEvent evento) {
-        if (!pode(evento.getPlayer(), evento.getBlock().getLocation())) negar(evento.getPlayer(), evento.getBlock().getLocation(), evento);
+        if (!pode(evento.getPlayer(), evento.getBlock().getLocation(), Permissao.CONSTRUIR)) negar(evento.getPlayer(), evento.getBlock().getLocation(), evento);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoEsvaziarBalde(PlayerBucketEmptyEvent evento) {
-        if (!pode(evento.getPlayer(), evento.getBlock().getLocation())) negar(evento.getPlayer(), evento.getBlock().getLocation(), evento);
+        if (!pode(evento.getPlayer(), evento.getBlock().getLocation(), Permissao.CONSTRUIR)) negar(evento.getPlayer(), evento.getBlock().getLocation(), evento);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoEncherBalde(PlayerBucketFillEvent evento) {
-        if (!pode(evento.getPlayer(), evento.getBlock().getLocation())) negar(evento.getPlayer(), evento.getBlock().getLocation(), evento);
+        if (!pode(evento.getPlayer(), evento.getBlock().getLocation(), Permissao.CONSTRUIR)) negar(evento.getPlayer(), evento.getBlock().getLocation(), evento);
     }
 
     /**
@@ -108,7 +121,7 @@ public class ProtecaoListener implements Listener {
     public void aoInteragir(PlayerInteractEvent evento) {
         Block bloco = evento.getClickedBlock();
         if (bloco == null || (evento.getAction() != Action.RIGHT_CLICK_BLOCK && evento.getAction() != Action.PHYSICAL)) return;
-        if (pode(evento.getPlayer(), bloco.getLocation())) return;
+        if (pode(evento.getPlayer(), bloco.getLocation(), permissaoDoBloco(bloco, evento.getAction()))) return;
 
         evento.setUseInteractedBlock(Event.Result.DENY);
         ItemStack item = evento.getItem();
@@ -125,13 +138,15 @@ public class ProtecaoListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoInteragirComEntidade(PlayerInteractEntityEvent evento) {
         Location local = evento.getRightClicked().getLocation();
-        if (!(evento.getRightClicked() instanceof Player) && !pode(evento.getPlayer(), local)) negar(evento.getPlayer(), local, evento);
+        // moldura é decoração (construir); montar, negociar e afins são "usar"
+        Permissao permissao = evento.getRightClicked() instanceof ItemFrame ? Permissao.CONSTRUIR : Permissao.USAR;
+        if (!(evento.getRightClicked() instanceof Player) && !pode(evento.getPlayer(), local, permissao)) negar(evento.getPlayer(), local, evento);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoMexerNoSuporte(PlayerArmorStandManipulateEvent evento) {
         Location local = evento.getRightClicked().getLocation();
-        if (!pode(evento.getPlayer(), local)) negar(evento.getPlayer(), local, evento);
+        if (!pode(evento.getPlayer(), local, Permissao.CONSTRUIR)) negar(evento.getPlayer(), local, evento);
     }
 
     /** Bater em animal, suporte de armadura, moldura... (direto ou com flecha). PvP é do mundo. */
@@ -139,7 +154,7 @@ public class ProtecaoListener implements Listener {
     public void aoBaterEmEntidade(EntityDamageByEntityEvent evento) {
         if (evento.getEntity() instanceof Player) return;
         Player jogador = quemFoi(evento.getDamager());
-        if (jogador != null && !pode(jogador, evento.getEntity().getLocation())) {
+        if (jogador != null && !pode(jogador, evento.getEntity().getLocation(), Permissao.CONSTRUIR)) {
             negar(jogador, evento.getEntity().getLocation(), evento);
         }
     }
@@ -149,7 +164,7 @@ public class ProtecaoListener implements Listener {
         Player jogador = quemFoi(evento.getRemover());
         Location local = evento.getEntity().getLocation();
         if (jogador != null) {
-            if (!pode(jogador, local)) negar(jogador, local, evento);
+            if (!pode(jogador, local, Permissao.CONSTRUIR)) negar(jogador, local, evento);
         } else if (noMundo(local)) {
             evento.setCancelled(true); // explosão, mob...
         }
@@ -158,7 +173,7 @@ public class ProtecaoListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoPendurar(HangingPlaceEvent evento) {
         Location local = evento.getEntity().getLocation();
-        if (evento.getPlayer() != null && !pode(evento.getPlayer(), local)) negar(evento.getPlayer(), local, evento);
+        if (evento.getPlayer() != null && !pode(evento.getPlayer(), local, Permissao.CONSTRUIR)) negar(evento.getPlayer(), local, evento);
     }
 
     private Player quemFoi(Entity entidade) {

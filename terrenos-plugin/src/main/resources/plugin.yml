@@ -4,7 +4,7 @@ main: com.example.terrenos.TerrenosPlugin
 api-version: '26.2'
 author: Você
 description: Terrenos em grade comprados com coins, com imposto semanal e leilão de imóvel de quem não paga.
-softdepend: [Vault, PixPlugin, RankupPlugin]
+softdepend: [Vault, PixPlugin, RankupPlugin, DiscordPlugin]
 # Liga antes do Multiverse, que pede o gerador do mundo de terrenos ao carregar os mundos.
 loadbefore: [Multiverse-Core]
 

@@ -2,6 +2,7 @@ package com.example.terrenos.manager;
 
 import com.example.terrenos.TerrenosPlugin;
 import com.example.terrenos.model.Leilao;
+import com.example.terrenos.model.Permissao;
 import com.example.terrenos.model.Terreno;
 import com.example.terrenos.model.TerrenoId;
 import com.example.terrenos.util.Formato;
@@ -18,10 +19,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -184,6 +187,7 @@ public class TerrenoManager {
         Terreno t = novoDono(id, jogador.getUniqueId(), jogador.getName(), preco);
         plugin.getPixIntegration().registrarComServidor(jogador.getUniqueId(), preco, false, "Compra do terreno " + id);
         salvar();
+        plugin.getPlacas().atualizar(id);
         return t;
     }
 
@@ -203,6 +207,7 @@ public class TerrenoManager {
         terrenos.remove(t.getId());
         plugin.getLimpador().limpar(t.getId());
         salvar();
+        plugin.getPlacas().atualizar(t.getId());
     }
 
     // ---------------------------------------------------------------------
@@ -227,8 +232,9 @@ public class TerrenoManager {
         t.setDono(null, null);
         t.getAmigos().clear();
         salvar();
+        plugin.getPlacas().atualizar(t.getId());
 
-        anunciar("§6§l[Leilão de imóvel] §eO terreno §f" + t.getId() + " §ede §f" + t.getLeilao().getNomeDonoAnterior()
+        anunciarLeilao("§6§l[Leilão de imóvel] §eO terreno §f" + t.getId() + " §ede §f" + t.getLeilao().getNomeDonoAnterior()
                 + " §evai a leilão com tudo o que tem dentro, por §f" + Formato.tempo(duracao)
                 + "§e. Lance mínimo: §f" + Formato.valor(lanceMinimo()) + "§e. Veja com §f/terreno ir " + t.getId()
                 + "§e e dê lance com §f/terreno lance " + t.getId() + " <valor>§e.");
@@ -256,6 +262,7 @@ public class TerrenoManager {
         long agora = System.currentTimeMillis();
         if (antiSnipe > 0 && leilao.getTerminaEm() - agora < antiSnipe) leilao.setTerminaEm(agora + antiSnipe);
         salvar();
+        plugin.getPlacas().atualizar(t.getId());
 
         anunciar("§6[Leilão de imóvel] §f" + jogador.getName()
                 + " §edeu §f" + Formato.valor(valor) + " §eno terreno §f" + t.getId() + "§e. Termina em §f"
@@ -287,7 +294,8 @@ public class TerrenoManager {
             terrenos.remove(t.getId());
             plugin.getLimpador().limpar(t.getId());
             salvar();
-            anunciar("§6[Leilão de imóvel] §7O terreno §f" + t.getId()
+            plugin.getPlacas().atualizar(t.getId());
+            anunciarLeilao("§6[Leilão de imóvel] §7O terreno §f" + t.getId()
                     + " §7não recebeu lances. Foi limpo e voltou à venda.");
             return;
         }
@@ -296,7 +304,8 @@ public class TerrenoManager {
         plugin.getPixIntegration().registrarComServidor(leilao.getLicitante(), leilao.getLance(), false,
                 "Leilão do terreno " + t.getId());
         salvar();
-        anunciar("§6§l[Leilão de imóvel] §f" + leilao.getNomeLicitante()
+        plugin.getPlacas().atualizar(t.getId());
+        anunciarLeilao("§6§l[Leilão de imóvel] §f" + leilao.getNomeLicitante()
                 + " §earrematou o terreno §f" + novo.getId() + " §epor §f" + Formato.valor(leilao.getLance()) + "§e!");
         Player vencedor = Bukkit.getPlayer(leilao.getLicitante());
         if (vencedor != null) {
@@ -352,6 +361,12 @@ public class TerrenoManager {
         Bukkit.broadcast(LegacyComponentSerializer.legacySection().deserialize(mensagem));
     }
 
+    /** Anuncia no chat e no Discord (categoria "leiloes"). */
+    private void anunciarLeilao(String mensagem) {
+        anunciar(mensagem);
+        plugin.getDiscord().enviar("leiloes", mensagem);
+    }
+
     // ---------------------------------------------------------------------
     // Persistência (terrenos.yml)
     // ---------------------------------------------------------------------
@@ -370,7 +385,19 @@ public class TerrenoManager {
             try {
                 Terreno t = new Terreno(id);
                 if (s.isString("dono")) t.setDono(UUID.fromString(s.getString("dono")), s.getString("nome-dono"));
-                for (String amigo : s.getStringList("amigos")) t.getAmigos().add(UUID.fromString(amigo));
+                if (s.isList("amigos")) {
+                    // formato antigo (só a lista): amigo podia tudo
+                    for (String amigo : s.getStringList("amigos")) t.getAmigos().put(UUID.fromString(amigo), Terreno.todas());
+                } else if (s.isConfigurationSection("amigos")) {
+                    for (String amigo : s.getConfigurationSection("amigos").getKeys(false)) {
+                        Set<Permissao> perms = EnumSet.noneOf(Permissao.class);
+                        for (String nome : s.getStringList("amigos." + amigo)) {
+                            Permissao p = Permissao.ler(nome);
+                            if (p != null) perms.add(p);
+                        }
+                        t.getAmigos().put(UUID.fromString(amigo), perms);
+                    }
+                }
                 t.setImpostoPagoAte(s.getLong("imposto-pago-ate"));
                 t.setAutoPagar(s.getBoolean("auto-pagar", true));
                 t.setCompradoEm(s.getLong("comprado-em"));
@@ -400,7 +427,8 @@ public class TerrenoManager {
             if (t.temDono()) {
                 yaml.set(base + "dono", t.getDono().toString());
                 yaml.set(base + "nome-dono", t.getNomeDono());
-                yaml.set(base + "amigos", t.getAmigos().stream().map(UUID::toString).toList());
+                t.getAmigos().forEach((amigo, perms) ->
+                        yaml.set(base + "amigos." + amigo, perms.stream().map(Permissao::nome).toList()));
                 yaml.set(base + "imposto-pago-ate", t.getImpostoPagoAte());
                 yaml.set(base + "auto-pagar", t.isAutoPagar());
                 yaml.set(base + "comprado-em", t.getCompradoEm());
@@ -433,6 +461,7 @@ public class TerrenoManager {
         if (atual != null && atual.emLeilao() && atual.getLeilao().temLance()) devolverLance(atual.getLeilao());
         Terreno t = novoDono(id, jogador.getUniqueId(), jogador.getName(), 0);
         salvar();
+        plugin.getPlacas().atualizar(id);
         return t;
     }
 
@@ -441,5 +470,6 @@ public class TerrenoManager {
         Terreno atual = terrenos.remove(id);
         if (atual != null && atual.emLeilao() && atual.getLeilao().temLance()) devolverLance(atual.getLeilao());
         salvar();
+        plugin.getPlacas().atualizar(id);
     }
 }

@@ -4,9 +4,11 @@ import com.example.terrenos.command.TerrenoCommand;
 import com.example.terrenos.listener.JogadorListener;
 import com.example.terrenos.listener.ProtecaoListener;
 import com.example.terrenos.manager.Limpador;
+import com.example.terrenos.manager.Placas;
 import com.example.terrenos.manager.TerrenoManager;
 import com.example.terrenos.mundo.GeradorTerrenos;
 import com.example.terrenos.mundo.Grade;
+import com.example.terrenos.util.DiscordIntegration;
 import com.example.terrenos.util.PixIntegration;
 import com.example.terrenos.util.RankupIntegration;
 import net.milkbowl.vault.economy.Economy;
@@ -30,12 +32,15 @@ public class TerrenosPlugin extends JavaPlugin {
     private Grade grade;
     private TerrenoManager terrenoManager;
     private Limpador limpador;
+    private Placas placas;
     private PixIntegration pixIntegration;
     private RankupIntegration rankupIntegration;
+    private DiscordIntegration discord;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        this.discord = new DiscordIntegration(this);
         carregarGrade();
 
         if (!setupEconomy()) {
@@ -44,6 +49,7 @@ public class TerrenosPlugin extends JavaPlugin {
         }
 
         this.limpador = new Limpador(this);
+        this.placas = new Placas(this);
         this.terrenoManager = new TerrenoManager(this);
         this.pixIntegration = new PixIntegration(this);
         this.rankupIntegration = new RankupIntegration(this);
@@ -54,6 +60,7 @@ public class TerrenosPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new ProtecaoListener(this), this);
         getServer().getPluginManager().registerEvents(new JogadorListener(this), this);
+        getServer().getPluginManager().registerEvents(placas, this);
 
         getServer().getScheduler().runTaskTimer(this, terrenoManager::tick, 20L, 20L);
         getServer().getScheduler().runTaskTimer(this, limpador::tick, 1L, 1L);
@@ -123,6 +130,10 @@ public class TerrenosPlugin extends JavaPlugin {
         return limpador;
     }
 
+    public Placas getPlacas() {
+        return placas;
+    }
+
     public PixIntegration getPixIntegration() {
         return pixIntegration;
     }
@@ -158,5 +169,9 @@ public class TerrenosPlugin extends JavaPlugin {
             }
         }
         return limite;
+    }
+
+    public DiscordIntegration getDiscord() {
+        return discord;
     }
 }

@@ -17,12 +17,18 @@ Terrenos de 32x32 comprados com coins, num mundo próprio em grade. Cada terreno
   - O **dono antigo** só dá lance depois de pagar a dívida de imposto (`/terreno divida pagar <x;z>`). A dívida é a semana que venceu mais uma por semana inteira de atraso, então normalmente 2 semanas.
   - O lance vencedor some da economia. O dono antigo não recebe nada.
   - **Sem lances**, o terreno é limpo e volta à venda.
-- **Amigos.** O dono libera outros jogadores para construir e usar tudo no terreno.
+- **Amigos.** O dono libera outros jogadores, cada um com o que pode fazer:
+  - **construir:** quebrar e colocar blocos, baldes, bater em animais, molduras e suportes de armadura;
+  - **baus:** baús, barris, fornalhas, funis e outros recipientes;
+  - **usar:** portas, alçapões, portões, botões, alavancas, placas de pressão, camas, e montar ou negociar com mobs.
+
+  `/terreno amigo add <jogador>` dá tudo; `/terreno amigo add <jogador> baus usar`, só essas.
+- **Placa na entrada.** Na rua, em cima da borda, no meio do lado norte de cada terreno, de frente para quem chega pelo `/terreno home` ou pelo `/terreno ir`. Mostra "À venda" com o preço, o dono ou o leilão com o lance atual. É reescrita quando o terreno muda de situação e quando o chunk carrega. Clicar nela mostra o `/terreno info`.
 - **Abandono.** `/terreno abandonar confirmar` devolve o terreno sem reembolso, e tudo o que tem dentro é apagado.
 
 ## Proteção
 
-No mundo de terrenos, só o dono e os amigos mexem num terreno: construir, quebrar, abrir baú, usar porta e botão, bater em animal, mexer em moldura e em suporte de armadura. A rua, os terrenos à venda e os que estão em leilão são só da staff. Quem pode visitar um terreno é qualquer um, com `/terreno ir <x;z>`.
+No mundo de terrenos, só o dono e os amigos mexem num terreno, e cada amigo só no que recebeu (construir, baús ou usar). A rua, os terrenos à venda e os que estão em leilão são só da staff. Quem pode visitar um terreno é qualquer um, com `/terreno ir <x;z>`.
 
 O plugin também barra o que atravessa a divisa: água e lava escorrendo, pistão, árvore crescendo, fogo se espalhando e explosão. Uma explosão só quebra blocos do terreno em que aconteceu.
 
@@ -37,7 +43,8 @@ O plugin também barra o que atravessa a divisa: água e lava escorrendo, pistã
 | `/terreno lista` | Seus terrenos e até quando o imposto está pago |
 | `/terreno imposto [pagar]` | Mostra o imposto, ou paga uma semana de todos os seus terrenos |
 | `/terreno autopagar` | Liga ou desliga o pagamento automático |
-| `/terreno amigo <add\|remover> <jogador>` | Amigos do terreno em que você está |
+| `/terreno amigo add <jogador> [construir] [baus] [usar]` | Amigo no terreno em que você está, com essas permissões (sem nenhuma: todas) |
+| `/terreno amigo remover <jogador>` | Tira o amigo |
 | `/terreno abandonar confirmar` | Devolve o terreno em que você está |
 | `/terreno leiloes` | Leilões de imóvel abertos |
 | `/terreno lance <x;z> <valor>` | Dá um lance |
@@ -81,6 +88,7 @@ As medidas e os blocos da grade ficam em `grade` no `config.yml`. Mudar depois d
 - **RankupPlugin:** o imposto é uma % do preço do rank atual (`precoRankAtual`). Sem ele, o imposto é fixo (`imposto.sem-rankup`).
 - **PixPlugin:** compra, imposto, dívida e leilão aparecem no `/pix historico` como pagamento à "Loja do Servidor".
 - **Painel da economia:** cada fluxo aparece separado em `/economia tipos TerrenosPlugin`.
+- **DiscordPlugin:** os leilões de imóvel (abertos, arrematados e sem lances) vão para a categoria `leiloes`.
 
 ## Dados
 
