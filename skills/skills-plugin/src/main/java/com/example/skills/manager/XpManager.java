@@ -6,6 +6,9 @@ import com.example.skills.skill.PlayerSkillData;
 import com.example.skills.skill.Skill;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.Map;
+
 public class XpManager {
 
     private final SkillsPlugin plugin;
@@ -26,12 +29,27 @@ public class XpManager {
 
     public void adicionarXp(Player jogador, Skill skill, double quantidade) {
         if (quantidade <= 0) return;
+        adicionar(jogador, skill, quantidade * (1 + bonusVipPercentual(jogador) / 100.0), true);
+    }
 
+    /**
+     * XP de bônus (o da ativação do VIP, chamado por reflexão): sobe os níveis normalmente, mas
+     * sem o dinheiro por nível nem a mensagem de cada um, e sem o bônus de XP do VIP por cima.
+     * Sem isso, um bônus grande dado a um jogador novo pagaria dezenas de níveis baratos em
+     * todas as skills de uma vez. Retorna quantos níveis subiu, pra quem chamou resumir.
+     */
+    public int adicionarXpBonus(Player jogador, Skill skill, double quantidade) {
+        if (quantidade <= 0) return 0;
+        return adicionar(jogador, skill, quantidade, false);
+    }
+
+    private int adicionar(Player jogador, Skill skill, double quantidade, boolean recompensar) {
         PlayerSkillData dados = dataManager.get(jogador.getUniqueId());
         int nivelAtual = dados.getNivel(skill);
 
+        int nivelInicial = nivelAtual;
         if (nivelAtual >= formula.getNivelMaximo()) {
-            return; // já no nível máximo, não acumula mais XP
+            return 0; // já no nível máximo, não acumula mais XP
         }
 
         double xpAtual = dados.getXp(skill) + quantidade;
@@ -44,7 +62,7 @@ public class XpManager {
             xpAtual -= xpNecessario;
             nivelAtual++;
             dados.setNivel(skill, nivelAtual);
-            rewardManager.aoSubirDeNivel(jogador, skill, nivelAtual);
+            if (recompensar) rewardManager.aoSubirDeNivel(jogador, skill, nivelAtual);
         }
 
         if (nivelAtual >= formula.getNivelMaximo()) {
@@ -52,6 +70,26 @@ public class XpManager {
         }
 
         dados.setXp(skill, xpAtual);
+        return nivelAtual - nivelInicial;
+    }
+
+    /**
+     * Maior bônus de XP (%) que o jogador tem por permissão, em {@code vip-bonus-xp.permissoes}.
+     * É uma LISTA de {permissao, percentual}, igual ao desconto de VIP da loja: chave com ponto
+     * viraria seção aninhada num mapa.
+     */
+    private double bonusVipPercentual(Player jogador) {
+        if (!plugin.getConfig().getBoolean("vip-bonus-xp.ativado", true)) return 0;
+        List<?> permissoes = plugin.getConfig().getList("vip-bonus-xp.permissoes");
+        if (permissoes == null) return 0;
+        double maior = 0;
+        for (Object item : permissoes) {
+            if (item instanceof Map<?, ?> mapa && mapa.get("permissao") instanceof String permissao
+                    && mapa.get("percentual") instanceof Number percentual && jogador.hasPermission(permissao)) {
+                maior = Math.max(maior, percentual.doubleValue());
+            }
+        }
+        return maior;
     }
 
     public LevelFormula getFormula() {

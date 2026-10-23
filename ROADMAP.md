@@ -92,14 +92,15 @@ Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), c
 - [ ] Prestígio: ao chegar no Rei, voltar pro Camponês com um bônus permanente (venda mais cara, mina exclusiva). 🟡
 - [ ] Rank na tab, junto com o clã e o VIP. 🟢
 - [ ] Encantamentos de picareta comprados com coins ou com uma moeda própria (explosão, mais fortuna, venda automática). 🔴
-- [ ] Venda automática ao minerar como benefício de VIP. 🟢
+- [x] Coleta direta nas minas pra todos: drops e XP vão pro jogador, sem itens no chão.
+- [x] Venda automática ao minerar como benefício de VIP (`/autovenda`, Prata pra cima).
 - [ ] Menu (GUI) no `/ranks` e no `/mina`. 🟢
 - [ ] Missão de subir de rank e missões por mina. 🟢
 - [ ] Mina privada do clã ou do VIP. 🟡
 - [ ] Holograma ou placa com o tempo até o próximo reset da mina. 🟢
-- [ ] Decidir o que fazer com a Fortuna nas minas. Com Fortuna III, a simulação dá Rei em cerca de 115 h em vez de 150 h. Opções: bloquear Fortuna nas minas, dar Fortuna como upgrade pago (um ralo de dinheiro) ou subir os preços dos ranks. 🟢
+- [x] Fortuna nas minas: **vale** (decisão de 2026-10-22). A meta de 150 h é pra quem não é VIP e tem Fortuna III, da mesa de encantamento. Os VIPs Ouro e Diamante ganham Fortuna IV e V no kit mensal (`/vip kitmensal`) e chegam em cerca de 112 h e 107 h.
 
-**Balanceamento (2026-10-22).** Meta: um jogador ativo chega ao Rei em **150 h**. A simulação (`tools/economia/simular.py`) mostrou que a sugestão inicial de minas não progredia: a de ferro rendia menos que a de cobre, a de redstone menos que a de ouro, e as de ametista e do Nether davam itens que a loja não comprava. As minas foram recalibradas pra cada uma render cerca de 1,6× a anterior, a loja do servidor de teste ganhou `NETHERRACK`, `GOLD_NUGGET` e `AMETHYST_BLOCK`, e os preços dos ranks caíram (Rei: de R$ 25 mi pra R$ 21 mi; Fazendeiro: de R$ 5.000 pra R$ 2.300), com cada rank levando cerca de 1,5× o tempo do anterior.
+**Balanceamento (2026-10-22).** Meta: um jogador ativo chega ao Rei em **150 h**. A simulação (`tools/economia/simular.py`) mostrou que a sugestão inicial de minas não progredia: a de ferro rendia menos que a de cobre, a de redstone menos que a de ouro, e as de ametista e do Nether davam itens que a loja não comprava. As minas foram recalibradas pra cada uma render cerca de 1,6× a anterior, a loja do servidor de teste ganhou `NETHERRACK`, `GOLD_NUGGET` e `AMETHYST_BLOCK`, e os preços dos ranks foram recalculados (Fazendeiro: de R$ 5.000 pra R$ 3.400; Rei: de R$ 25 mi pra R$ 32 mi), com cada rank levando cerca de 1,5× o tempo do anterior. Tudo isso com Fortuna III como referência.
 
 ### Terrenos (claims) 🔴
 No rankup, terreno vira opcional: as minas e o spawn já são protegidos. Faz sentido como "plot" pra construir, comprado com coins.
@@ -165,6 +166,9 @@ Webhook com anúncios do servidor:
 - [ ] **Um warp diferente para cada tier.** 🟢
 - [ ] **Ler a tag do prefixo do LuckPerms**, pra configurar num lugar só. 🟡
 - [ ] **Avisar o vendedor** quando o código à venda dele vence. 🟢
+- [x] **Kit mensal** (`/vip kitmensal`): armadura, armas e ferramentas, de diamante no Bronze e de netherite nos outros, com encantamentos acima do máximo normal (nível IV no Bronze até VII no Diamante; Fortuna IV e V no Ouro e no Diamante).
+- [x] **Bônus de ativação:** dinheiro proporcional ao próximo rank (10% a 50%) e XP em todas as skills, os dois proporcionais aos dias do VIP.
+- [x] **Perks em outros plugins, por permissão:** XP a mais nas skills, desconto na taxa do Pix, missão diária extra e venda automática.
 
 ### 🧹 ItemCleaner
 - [ ] **Achados e perdidos**: os itens limpos vão pra uma caixa que dá pra recuperar pagando uma taxa. Também tira dinheiro de circulação e evita reclamação de quem perdeu item. 🟡
@@ -208,4 +212,5 @@ Webhook com anúncios do servidor:
 - **Servidor de teste** (`test-server/`): montagem automática, configs de teste e backup automático do mundo.
 - **Rankup** (v1): ranks medievais, minas que se regeneram e bônus de venda na loja.
 - **Balanceamento do rankup**: simulação da progressão, minas e preços calibrados pra 150 h até o Rei, e medição da economia (painel, loja e rankups) com um script de análise.
+- **VIP**: kit mensal com equipamento completo encantado acima do máximo, bônus de ativação (dinheiro e XP), XP a mais nas skills, desconto no Pix, missão extra e venda automática. O rankup foi recalibrado com Fortuna III como referência.
 - **Correção**: o Rankup não estava no `loadbefore` do painel e podia pegar a economia antes dele, ficando fora do fluxo por plugin.

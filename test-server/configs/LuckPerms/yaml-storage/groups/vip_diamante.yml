@@ -1,12 +1,15 @@
 name: vip_diamante
 permissions:
 - vip.desconto.diamante
+- vip.missao.extra
+- vip.perk.autovenda
 - vip.perk.feed
 - vip.perk.fly
 - vip.perk.heal
 - vip.perk.kit
 - vip.perk.particulas
 - vip.perk.warp
+- vip.xp.diamante
 prefixes:
 - '&b[Diamante] ':
     priority: 1

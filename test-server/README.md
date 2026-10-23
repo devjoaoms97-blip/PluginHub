@@ -63,7 +63,7 @@ Só os plugins com valores mudados têm config aqui. Subpastas são copiadas tam
 | BossPlugin | Vida de 500 (800 no Wither) | Matar rápido |
 | MissoesPlugin | Quantidades em cerca de 1/10 | Completar rápido |
 | EconomyShopPlugin | `itens.yml` com tudo o que sai das minas do rankup (carvão, minérios brutos, troncos, diamante, netherrack, pepita de ouro, bloco de ametista...) | O `/sell` já comprar o minério. Só é copiado se a loja ainda não tiver itens |
-| LuckPerms | Grupos `vip_bronze`, `vip_prata`, `vip_ouro` e `vip_diamante`, com as permissões dos perks e o desconto na loja (`yaml-storage/groups/`) | O `/vip fly`, o `/vip kit` e os outros perks funcionarem. Sem os grupos, o `/vip add` dá o VIP, mas nenhum perk. São os mesmos grupos do README do `vip-plugin` |
+| LuckPerms | Grupos `vip_bronze`, `vip_prata`, `vip_ouro` e `vip_diamante`, com as permissões dos perks, dos descontos, do XP a mais, da missão extra e da venda automática (`yaml-storage/groups/`) | O `/vip fly`, o `/vip kit` e os outros perks funcionarem. Sem os grupos, o `/vip add` dá o VIP, mas nenhum perk. São os mesmos grupos do README do `vip-plugin` |
 
 As minas não vêm prontas: crie com `/mina admin`, usando as composições de `tools/economia/minas-planejadas.yml` (veja o README do `rankup-plugin`). Pra ver um resumo da economia do servidor de teste, rode `python tools/economia/analisar.py`.
 

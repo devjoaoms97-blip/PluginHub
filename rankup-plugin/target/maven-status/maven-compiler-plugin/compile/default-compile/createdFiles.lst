@@ -10,6 +10,9 @@ com\example\rankup\command\MinaCommand.class
 com\example\rankup\listener\MinaListener.class
 com\example\rankup\model\Rank.class
 com\example\rankup\listener\ChatListener.class
+com\example\rankup\util\LojaIntegration.class
 com\example\rankup\command\RankupCommand.class
+com\example\rankup\command\AutoVendaCommand.class
 com\example\rankup\manager\MinaManager.class
 com\example\rankup\util\PixIntegration.class
+com\example\rankup\listener\ColetaMinaListener.class

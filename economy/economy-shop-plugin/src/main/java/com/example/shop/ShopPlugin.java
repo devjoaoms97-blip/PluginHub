@@ -5,6 +5,7 @@ import com.example.shop.command.SellCommand;
 import com.example.shop.command.ShopCommand;
 import com.example.shop.gui.ShopGUI;
 import com.example.shop.gui.ShopGUIListener;
+import com.example.shop.manager.AutoVenda;
 import com.example.shop.manager.PriceHistoryManager;
 import com.example.shop.manager.PriceRegenTask;
 import com.example.shop.manager.ShopManager;
@@ -14,6 +15,7 @@ import com.example.shop.util.RankupIntegration;
 import com.example.shop.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,6 +29,7 @@ public class ShopPlugin extends JavaPlugin {
     private ShopGUI shopGUI;
     private PriceHistoryManager priceHistoryManager;
     private VendasDiariasManager vendasDiariasManager;
+    private AutoVenda autoVenda;
     private PixIntegration pixIntegration;
     private MissoesIntegration missoesIntegration;
     private RankupIntegration rankupIntegration;
@@ -46,6 +49,7 @@ public class ShopPlugin extends JavaPlugin {
         this.shopGUI = new ShopGUI(this);
         this.priceHistoryManager = new PriceHistoryManager(this);
         this.vendasDiariasManager = new VendasDiariasManager(this);
+        this.autoVenda = new AutoVenda(this);
         this.pixIntegration = new PixIntegration(this);
         this.missoesIntegration = new MissoesIntegration(this);
         this.rankupIntegration = new RankupIntegration(this);
@@ -159,6 +163,14 @@ public class ShopPlugin extends JavaPlugin {
 
     public PriceHistoryManager getPriceHistoryManager() {
         return priceHistoryManager;
+    }
+
+    /**
+     * API pro RankupPlugin (por reflexão): vende na hora o que o jogador minerou, se a loja compra
+     * esse item. Retorna false se não comprou, e aí o item cai no chão normalmente.
+     */
+    public boolean venderAutomaticamente(Player jogador, ItemStack stack) {
+        return autoVenda.vender(jogador, stack);
     }
 
     public VendasDiariasManager getVendasDiariasManager() {

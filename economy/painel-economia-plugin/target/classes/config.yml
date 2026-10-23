@@ -31,6 +31,7 @@ tipos:
     "SellCommand#venderTudoDoInventario": "Venda (/sell all)"
     "ShopGUIListener#comprarQuantidade": "Compra (menu)"
     "ShopGUIListener#venderQuantidade": "Venda (menu)"
+    "AutoVenda#vender": "Venda automática (VIP)"
   PixPlugin:
     "PixCommand#pagar": "Pix (pagar)"
     "PixCommand#aceitar": "Pix (cobrança paga)"
@@ -38,6 +39,7 @@ tipos:
     "ChequeListener": "Cheque resgatado"
   VipPlugin:
     "VipCommand#processarPagamentoRevenda": "Revenda de código VIP"
+    "BonusAtivacao#conceder": "Bônus de ativação do VIP"
   SkillsPlugin:
     "RewardManager": "Level up de skill"
   MissoesPlugin:

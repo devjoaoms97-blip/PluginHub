@@ -16,6 +16,21 @@ recompensa:
   # Dinheiro dado ao subir de nível = nivel-novo * este valor
   dinheiro-por-nivel: 25
 
+vip-bonus-xp:
+  # XP a mais em todas as skills por permissão (vale o maior que o jogador tiver). O VipPlugin
+  # dá essas permissões pelos grupos do LuckPerms. Também vale pro XP das missões e do bônus
+  # de ativação do VIP. É uma LISTA de propósito: chave com ponto viraria seção aninhada.
+  ativado: true
+  permissoes:
+    - permissao: "vip.xp.diamante"
+      percentual: 50
+    - permissao: "vip.xp.ouro"
+      percentual: 30
+    - permissao: "vip.xp.prata"
+      percentual: 20
+    - permissao: "vip.xp.bronze"
+      percentual: 10
+
 # Taxa de bônus por nível de cada skill (fração, ex: 0.005 = 0,5% por nível)
 bonus-por-nivel:
   espadas: 0.005

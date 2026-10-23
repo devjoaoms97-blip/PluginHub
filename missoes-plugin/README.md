@@ -34,6 +34,10 @@ Sem `alvos`, qualquer um conta. Duas missões do mesmo tipo podem contar ao mesm
 
 O progresso aparece na barra de ação enquanto o jogador faz a missão. Ao completar, o pagamento é na hora, com mensagem e som.
 
+## Missão extra de VIP
+
+Quem tem a permissão `vip.missao.extra` (VIP Ouro e Diamante, pelos grupos do LuckPerms) recebe uma missão diária a mais. Para ganhar o bônus de completar todas, precisa completar as 4. Quem vira VIP no meio do dia ganha a extra na hora, sem perder o progresso das outras. Configurado em `vip-missoes-extras`.
+
 ## Missões semanais
 
 Funcionam igual às diárias, com um pool próprio (`semanais.pool`) e um bônus próprio. Elas trocam na virada de domingo pra segunda, no horário do servidor. O `config.yml` já vem com 5 semanais de exemplo: diamante, mobs, dano no boss, venda e pesca. Pra desligar, use `semanais.ativado: false`.

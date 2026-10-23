@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public class VipCommand implements CommandExecutor, TabCompleter {
 
     private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private static final Set<String> SUBCOMANDOS_PERK = Set.of("fly", "heal", "feed", "kit", "particula", "warp");
+    private static final Set<String> SUBCOMANDOS_PERK = Set.of("fly", "heal", "feed", "kit", "kitmensal", "particula", "warp");
 
     private final VipPlugin plugin;
     private final PerkCommand perkCommand;
@@ -133,6 +133,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
                 + " §aaté §f" + dataFormatada + "§a.");
 
         avisarConcessao(alvo, tier, dataFormatada);
+        plugin.getBonusAtivacao().conceder(alvo, tier, dias);
     }
 
     private void tratarRemove(CommandSender sender, String[] args) {
@@ -238,6 +239,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         player.sendMessage("§aCódigo resgatado! Você recebeu VIP " + plugin.getNomeExibicao(code.getTier())
                 + " §apor §f" + code.getDias() + " dias§a, válido até §f" + dataFormatada + "§a.");
         plugin.refrescarTagJogador(player);
+        plugin.getBonusAtivacao().conceder(player, code.getTier(), code.getDias());
     }
 
     /** Cobra o comprador e repassa (menos a taxa de revenda) pro vendedor, se houver um. */
@@ -542,7 +544,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/vip resgatar <codigo> §7- resgata um código comprado na lojinha ou de outro jogador");
         sender.sendMessage("§f/vip vender <preco> <codigo> §7- revende um código ainda não resgatado por coins");
         sender.sendMessage("§f/vip cancelarvenda §7- cancela sua venda em aberto e recupera o VIP");
-        sender.sendMessage("§f/vip fly|heal|feed|kit|warp §7- perks de quem tem VIP ativo");
+        sender.sendMessage("§f/vip fly|heal|feed|kit|kitmensal|warp §7- perks de quem tem VIP ativo");
         sender.sendMessage("§f/vip particula <tipo|off> §7- escolhe a partícula que te segue");
         if (sender.hasPermission("vip.admin")) {
             sender.sendMessage("§7--- Staff ---");
@@ -565,7 +567,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             List<String> opcoes = new ArrayList<>(List.of("check", "tiers", "resgatar", "vender", "cancelarvenda",
-                    "fly", "heal", "feed", "kit", "particula", "warp"));
+                    "fly", "heal", "feed", "kit", "kitmensal", "particula", "warp"));
             if (sender.hasPermission("vip.admin")) {
                 opcoes.addAll(List.of("add", "remove", "list", "reload", "gerarcodigo", "codigos", "revogarcodigo"));
             }

@@ -3,6 +3,7 @@ package com.example.vip;
 import com.example.vip.command.VipCommand;
 import com.example.vip.listener.ChatTagListener;
 import com.example.vip.listener.ParticleTrailListener;
+import com.example.vip.manager.BonusAtivacao;
 import com.example.vip.manager.CodeManager;
 import com.example.vip.manager.CooldownManager;
 import com.example.vip.manager.VipManager;
@@ -25,6 +26,7 @@ public class VipPlugin extends JavaPlugin {
     private ChatTagListener chatTagListener;
     private ParticleTrailListener particleTrailListener;
     private Economy economy;
+    private BonusAtivacao bonusAtivacao;
 
     @Override
     public void onEnable() {
@@ -40,6 +42,7 @@ public class VipPlugin extends JavaPlugin {
         this.vipManager = new VipManager(this);
         this.codeManager = new CodeManager(this);
         this.cooldownManager = new CooldownManager(this);
+        this.bonusAtivacao = new BonusAtivacao(this);
 
         VipCommand vipCommand = new VipCommand(this);
         getCommand("vip").setExecutor(vipCommand);
@@ -49,6 +52,7 @@ public class VipPlugin extends JavaPlugin {
         this.particleTrailListener = new ParticleTrailListener(this);
         Bukkit.getPluginManager().registerEvents(chatTagListener, this);
         Bukkit.getPluginManager().registerEvents(particleTrailListener, this);
+        Bukkit.getPluginManager().registerEvents(bonusAtivacao, this);
 
         int intervaloMin = getConfig().getInt("verificacao-expiracao-minutos", 5);
         long periodoTicks = 20L * 60 * Math.max(1, intervaloMin);
@@ -96,6 +100,10 @@ public class VipPlugin extends JavaPlugin {
         return cooldownManager;
     }
 
+    public BonusAtivacao getBonusAtivacao() {
+        return bonusAtivacao;
+    }
+
     public ParticleTrailListener getParticleTrailListener() {
         return particleTrailListener;
     }
@@ -138,6 +146,14 @@ public class VipPlugin extends JavaPlugin {
 
     public int getCooldownKitHoras(VipTier tier) {
         return getConfig().getInt(chaveTier(tier, "cooldown-kit-horas"), 24);
+    }
+
+    public List<String> getKitMensal(VipTier tier) {
+        return getConfig().getStringList(chaveTier(tier, "kit-mensal"));
+    }
+
+    public int getCooldownKitMensalDias(VipTier tier) {
+        return getConfig().getInt(chaveTier(tier, "cooldown-kit-mensal-dias"), 30);
     }
 
     public int getCooldownHealMinutos(VipTier tier) {

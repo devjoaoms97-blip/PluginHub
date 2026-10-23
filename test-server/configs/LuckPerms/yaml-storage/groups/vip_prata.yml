@@ -1,11 +1,13 @@
 name: vip_prata
 permissions:
 - vip.desconto.prata
+- vip.perk.autovenda
 - vip.perk.feed
 - vip.perk.fly
 - vip.perk.heal
 - vip.perk.kit
 - vip.perk.particulas
+- vip.xp.prata
 prefixes:
 - '&f[&bPrata&f] ':
     priority: 1

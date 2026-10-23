@@ -145,7 +145,7 @@ def rankups(csv_arquivo, ranks, itens, loja_cfg, minas):
                 observadas.setdefault(l["para"], []).append(horas - entrou_no_rank[l["de"]])
             entrou_no_rank[l["para"]] = horas
 
-    cenario = argparse.Namespace(jogadores=3, fortuna=0, eficiencia=3, utilizacao=0.5)
+    cenario = argparse.Namespace(**simular.REFERENCIA)
     esperadas = {rank["id"]: horas for rank, _, _, horas, _ in simular.simular(ranks, itens, loja_cfg, minas, cenario)}
     desvios = []
     print(f"  {'rank':<12}{'rankups':>8}{'mediana':>9}{'simulado':>10}")

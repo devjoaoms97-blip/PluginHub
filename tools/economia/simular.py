@@ -25,6 +25,10 @@ ITENS = RAIZ / "test-server/configs/EconomyShopPlugin/itens.yml"
 LOJA = RAIZ / "economy/economy-shop-plugin/src/main/resources/config.yml"
 MINAS = Path(__file__).with_name("minas-planejadas.yml")
 
+# Jogador da meta de 150 h: não-VIP, 3 por mina, picareta de diamante com Eficiência III e
+# Fortuna III (dá pra encantar na mesa). Os VIPs Ouro e Diamante ganham Fortuna IV e V no kit mensal.
+REFERENCIA = dict(jogadores=3, fortuna=3, eficiencia=3, utilizacao=0.5)
+
 # bloco: (dureza, item que dropa, quantidade média sem fortuna, como a fortuna age)
 # fortuna "minerio" = fórmula vanilla dos minérios; "soma" = +nível/2 (redstone); None = não age
 BLOCOS = {
@@ -186,12 +190,14 @@ def main():
                      argparse.Namespace(jogadores=args.jogadores or 1, fortuna=args.fortuna or 0,
                                         eficiencia=args.eficiencia, utilizacao=args.utilizacao))]
     else:
-        base = dict(eficiencia=args.eficiencia, utilizacao=args.utilizacao)
+        ref = dict(REFERENCIA, eficiencia=args.eficiencia, utilizacao=args.utilizacao)
         cenarios = [
-            ("Sozinho na mina, sem fortuna", argparse.Namespace(jogadores=1, fortuna=0, **base)),
-            ("3 jogadores por mina, sem fortuna (referência)", argparse.Namespace(jogadores=3, fortuna=0, **base)),
-            ("10 jogadores por mina, sem fortuna", argparse.Namespace(jogadores=10, fortuna=0, **base)),
-            ("3 jogadores por mina, Fortuna III", argparse.Namespace(jogadores=3, fortuna=3, **base)),
+            ("Não-VIP: 3 por mina, Fortuna III (referência)", argparse.Namespace(**ref)),
+            ("Sem Fortuna", argparse.Namespace(**dict(ref, fortuna=0))),
+            ("Sozinho na mina, Fortuna III", argparse.Namespace(**dict(ref, jogadores=1))),
+            ("10 por mina, Fortuna III", argparse.Namespace(**dict(ref, jogadores=10))),
+            ("VIP Ouro: Fortuna IV, Eficiência V", argparse.Namespace(**dict(ref, fortuna=4, eficiencia=5))),
+            ("VIP Diamante: Fortuna V, Eficiência V", argparse.Namespace(**dict(ref, fortuna=5, eficiencia=5))),
         ]
 
     print(f"Eficiência {args.eficiencia}, utilização {args.utilizacao:.0%}, "

@@ -12,6 +12,21 @@ taxa:
   # (a taxa mínima nunca é maior que o próprio valor da transação).
   minimo: 0.0
 
+  # Desconto na taxa pra quem PAGA, por permissão (vale o maior). Os grupos de VIP do
+  # LuckPerms já têm essas permissões (as mesmas do desconto da loja). É uma LISTA de propósito:
+  # chave com ponto viraria seção aninhada.
+  vip-descontos:
+    ativado: true
+    permissoes:
+      - permissao: "vip.desconto.diamante"
+        percentual: 80
+      - permissao: "vip.desconto.ouro"
+        percentual: 60
+      - permissao: "vip.desconto.prata"
+        percentual: 40
+      - permissao: "vip.desconto.bronze"
+        percentual: 20
+
 limite:
   # Máximo que cada jogador pode ENVIAR por dia via Pix (/pix pagar, /pix aceitar e os
   # botões do /pix qrcode), somando o valor bruto antes da taxa. Zera à meia-noite (horário

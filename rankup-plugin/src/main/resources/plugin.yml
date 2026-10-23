@@ -24,11 +24,17 @@ commands:
     aliases: [minas]
     permission: rankup.usar
     permission-message: "§cVocê não tem permissão para usar as minas."
+  autovenda:
+    description: Liga ou desliga a venda automática do que você minera (VIP).
+    usage: "Uso: /autovenda"
 
 permissions:
   rankup.usar:
     description: Permite subir de rank, ver os ranks e ir pras minas.
     default: true
+  vip.perk.autovenda:
+    description: Venda automática do que se minera nas minas (/autovenda). Dê pelos grupos de VIP no LuckPerms.
+    default: false
   rankup.admin:
     description: Cria e configura minas, muda o rank de jogadores e ignora a proteção das minas.
     default: op

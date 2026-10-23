@@ -35,6 +35,10 @@ taxa:
 
 **Simplificação atual:** o histórico (`/pix historico`) ainda registra o valor bruto da transação, não o valor líquido recebido — a taxa aparece só na mensagem de chat no momento da transação, não fica gravada por transação individual no extrato. Se quiser ver a taxa no histórico também, dá pra estender `TransacaoRegistro` pra guardar os dois valores; é só pedir.
 
+## Desconto de VIP na taxa
+
+Quem **paga** (no `/pix pagar` ou ao aceitar uma cobrança) e tem VIP paga menos taxa: 20% de desconto no Bronze, 40% no Prata, 60% no Ouro e 80% no Diamante. O desconto vem por permissão (`vip.desconto.<tier>`, as mesmas do desconto da loja), configurado em `taxa.vip-descontos`. Vale o maior que o jogador tiver.
+
 ## Limite diário de transferência
 
 Teto de quanto cada jogador pode **enviar** por dia, contra fraude entre contas (por exemplo, uma conta roubada sendo esvaziada de uma vez):

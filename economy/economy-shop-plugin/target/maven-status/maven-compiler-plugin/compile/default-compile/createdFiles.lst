@@ -8,6 +8,7 @@ com\example\shop\gui\ShopGUIHolder$Tela.class
 com\example\shop\util\PixIntegration.class
 com\example\shop\command\ShopCommand.class
 com\example\shop\gui\ShopGUIListener.class
+com\example\shop\manager\AutoVenda.class
 com\example\shop\gui\ShopGUI.class
 com\example\shop\gui\ShopGUIHolder.class
 com\example\shop\ShopPlugin.class

@@ -102,7 +102,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
 
         if (!verificarLimite(pagador, valor)) return;
 
-        double taxa = plugin.calcularTaxaTransacao(valor);
+        double taxa = plugin.calcularTaxaTransacao(valor, pagador);
         double valorLiquido = valor - taxa;
 
         econ.withdrawPlayer(pagador, valor);
@@ -199,7 +199,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
 
         OfflinePlayer cobrador = Bukkit.getOfflinePlayer(charge.getCobradorId());
 
-        double taxa = plugin.calcularTaxaTransacao(charge.getValor());
+        double taxa = plugin.calcularTaxaTransacao(charge.getValor(), jogador);
         double valorLiquido = charge.getValor() - taxa;
 
         econ.withdrawPlayer(jogador, charge.getValor());

@@ -4,11 +4,15 @@ import com.example.vip.VipPlugin;
 import com.example.vip.manager.CooldownManager;
 import com.example.vip.manager.CooldownManager.Perk;
 import com.example.vip.model.VipTier;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Lógica dos perks de VIP (fly, heal, feed, kit, particula, warp). Não é mais um
+ * Lógica dos perks de VIP (fly, heal, feed, kit, kitmensal, particula, warp). Não é mais um
  * {@code CommandExecutor} — desde que tudo virou subcomando de {@code /vip}, é só um
  * helper chamado por {@link VipCommand#onCommand}, que já garantiu que quem chamou é um
  * {@link Player}. Continua checando aqui, por dentro, se esse player tem VIP ativo e a
@@ -32,7 +36,7 @@ public class PerkCommand {
         this.plugin = plugin;
     }
 
-    /** Ponto de entrada único, chamado pelo VipCommand pra "fly", "heal", "feed", "kit", "particula" e "warp". */
+    /** Ponto de entrada único, chamado pelo VipCommand pra "fly", "heal", "feed", "kit", "kitmensal", "particula" e "warp". */
     public void executar(Player player, String subcomando, String[] args) {
         VipTier tier = plugin.getVipManager().getTierAtivo(player.getUniqueId());
         if (tier == null) {
@@ -45,6 +49,7 @@ public class PerkCommand {
             case "heal" -> tratarHeal(player, tier);
             case "feed" -> tratarFeed(player, tier);
             case "kit" -> tratarKit(player, tier);
+            case "kitmensal" -> tratarKitMensal(player, tier);
             case "particula" -> tratarParticula(player, tier, args);
             case "warp" -> tratarWarp(player);
             default -> player.sendMessage("§cPerk não reconhecido.");
@@ -109,16 +114,41 @@ public class PerkCommand {
         if (!perkPermitido(player, "kit", "vip.perk.kit")) {
             return;
         }
-        if (!passouCooldown(Perk.KIT, player, plugin.getCooldownKitHoras(tier) * 60)) {
-            return;
-        }
-
         List<String> itens = plugin.getKit(tier);
         if (itens.isEmpty()) {
             player.sendMessage("§7Nenhum kit configurado pro seu tier ainda.");
             return;
         }
+        if (!passouCooldown(Perk.KIT, player, plugin.getCooldownKitHoras(tier) * 60)) {
+            return;
+        }
+        int entregues = entregarItens(player, tier, itens);
+        player.sendMessage("§aKit de VIP " + plugin.getNomeExibicao(tier) + " §aentregue! §7(" + entregues + " itens)");
+    }
 
+    /** Kit com ferramentas encantadas, uma vez a cada {@code cooldown-kit-mensal-dias}. Usa a mesma permissão do kit. */
+    private void tratarKitMensal(Player player, VipTier tier) {
+        if (!perkPermitido(player, "kit", "vip.perk.kit")) {
+            return;
+        }
+        List<String> itens = plugin.getKitMensal(tier);
+        if (itens.isEmpty()) {
+            player.sendMessage("§7Seu tier de VIP não tem kit mensal.");
+            return;
+        }
+        if (!passouCooldown(Perk.KIT_MENSAL, player, plugin.getCooldownKitMensalDias(tier) * 24 * 60)) {
+            return;
+        }
+        int entregues = entregarItens(player, tier, itens);
+        player.sendMessage("§aKit mensal de VIP " + plugin.getNomeExibicao(tier) + " §aentregue! §7(" + entregues + " itens)");
+    }
+
+    /**
+     * Cada linha é {@code MATERIAL[:quantidade[:encantamento=nivel,...]]}, por exemplo
+     * {@code NETHERITE_PICKAXE:1:fortune=5,efficiency=5}. Os encantamentos usam o nome do Minecraft
+     * e podem passar do nível máximo normal (Fortuna V). O que não cabe no inventário cai no chão.
+     */
+    private int entregarItens(Player player, VipTier tier, List<String> itens) {
         int entregues = 0;
         for (String linha : itens) {
             String[] partes = linha.split(":");
@@ -126,14 +156,31 @@ public class PerkCommand {
                 Material material = Material.valueOf(partes[0].trim().toUpperCase(Locale.ROOT));
                 int quantidade = partes.length > 1 ? Integer.parseInt(partes[1].trim()) : 1;
                 ItemStack item = new ItemStack(material, quantidade);
+                if (partes.length > 2) {
+                    encantar(item, partes[2]);
+                }
                 Map<Integer, ItemStack> sobras = player.getInventory().addItem(item);
                 sobras.values().forEach(sobra -> player.getWorld().dropItemNaturally(player.getLocation(), sobra));
                 entregues++;
             } catch (IllegalArgumentException e) {
-                plugin.getLogger().warning("Item inválido no kit de " + tier + ": \"" + linha + "\"");
+                plugin.getLogger().warning("Item inválido no kit de " + tier + ": \"" + linha + "\" (" + e.getMessage() + ")");
             }
         }
-        player.sendMessage("§aKit de VIP " + plugin.getNomeExibicao(tier) + " §aentregue! §7(" + entregues + " itens)");
+        return entregues;
+    }
+
+    private void encantar(ItemStack item, String encantamentos) {
+        var registro = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT);
+        for (String par : encantamentos.split(",")) {
+            String[] nomeNivel = par.split("=");
+            String nome = nomeNivel[0].trim().toLowerCase(Locale.ROOT);
+            Enchantment encantamento = registro.get(NamespacedKey.minecraft(nome));
+            if (encantamento == null) {
+                throw new IllegalArgumentException("encantamento desconhecido: " + nome);
+            }
+            int nivel = nomeNivel.length > 1 ? Integer.parseInt(nomeNivel[1].trim()) : 1;
+            item.addUnsafeEnchantment(encantamento, nivel);
+        }
     }
 
     private void tratarParticula(Player player, VipTier tier, String[] args) {

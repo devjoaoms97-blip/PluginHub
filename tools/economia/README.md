@@ -10,7 +10,9 @@ Dois scripts em Python pra calibrar e acompanhar a economia do rankup. Precisam 
 
 ## Meta
 
-Um jogador ativo chega ao **Rei em cerca de 150 h** de jogo, e cada rank leva cerca de 1,5× o tempo do anterior: o primeiro leva 1 h, e o último cerca de 49 h.
+Um jogador ativo **sem VIP, com picareta de Fortuna III**, chega ao **Rei em cerca de 150 h** de jogo, e cada rank leva cerca de 1,5× o tempo do anterior: o primeiro leva 1 h, e o último cerca de 48 h.
+
+A Fortuna vale nas minas (decisão de 2026-10-22). Quem não é VIP chega à Fortuna III na mesa de encantamento. Os VIPs Ouro e Diamante ganham Fortuna IV e V no kit mensal (`/vip kitmensal`), o que é parte do incentivo pra comprar VIP.
 
 ## Simulação (`simular.py`)
 
@@ -26,19 +28,23 @@ Ela lê os ranks do `rankup-plugin/src/main/resources/config.yml`, os preços da
 - **Picareta de diamante com Eficiência III.** O tempo de cada bloco segue a regra do Minecraft: a dureza do bloco e a espera de 5 ticks entre um bloco e outro.
 - **50% do tempo quebrando bloco.** O resto vai em andar, vender e esperar o reset da mina. Mude com `--utilizacao`.
 - **Preço da loja no equilíbrio.** O preço cai a cada unidade vendida e volta aos poucos. A simulação usa o ponto em que as duas forças empatam, com N jogadores vendendo o mesmo minério. A referência usa 3 por mina.
-- **Sem Fortuna.** Com Fortuna III, os minérios dropam cerca de 2,2× mais.
+- **Fortuna III na referência.** A Fortuna multiplica o drop dos minérios (III: cerca de 2,2×; V: cerca de 3,3×), mas não age em pedra, tronco e blocos. Por isso as minas de bloco do fim do jogo não ganham com ela.
 - **Só mineração.** Missões, boss e bounty também dão dinheiro, mas pouco perto da mina a partir do meio do jogo. No começo, as missões aceleram os primeiros ranks.
 
-**Resultado com os preços atuais (3 jogadores por mina, sem Fortuna):**
+**Resultado com os preços atuais:**
 
 | Cenário | Horas até o Rei |
 |---|---|
-| Sozinho na mina | ~127 h |
-| 3 por mina (referência) | ~150 h |
-| 10 por mina | ~214 h |
-| 3 por mina, com Fortuna III | ~116 h |
+| Não-VIP, 3 por mina, Fortuna III (referência) | ~150 h |
+| Não-VIP sem Fortuna | ~200 h |
+| Sozinho na mina, Fortuna III | ~128 h |
+| 10 por mina, Fortuna III | ~209 h |
+| VIP Bronze (Fortuna III, Eficiência III) | ~150 h |
+| VIP Prata (Fortuna III, Eficiência IV) | ~131 h |
+| VIP Ouro (Fortuna IV, Eficiência V) | ~112 h |
+| VIP Diamante (Fortuna V, Eficiência V) | ~107 h |
 
-A diferença entre "sozinho" e "10 por mina" é a loja dinâmica: quanto mais gente vende o mesmo minério, mais o preço cai. A Fortuna é a maior alavanca que ainda não está decidida (veja o ROADMAP).
+A diferença entre "sozinho" e "10 por mina" é a loja dinâmica: quanto mais gente vende o mesmo minério, mais o preço cai. Nos VIPs, a Eficiência pesa quase tanto quanto a Fortuna, porque é ela que faz quebrar mais blocos por hora.
 
 **Quando rodar de novo:** sempre que mudar o preço de um rank, a composição de uma mina ou o preço de um item da loja. Se a mina usar um bloco novo, ele precisa entrar na tabela `BLOCOS` do `simular.py` (dureza e o que ele dropa).
 

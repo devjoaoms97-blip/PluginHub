@@ -15,7 +15,7 @@ import java.util.function.ToIntFunction;
 import java.util.logging.Level;
 
 /**
- * Último uso de cada perk com cooldown (heal, feed, kit), por jogador, salvo em
+ * Último uso de cada perk com cooldown (heal, feed, kit, kit mensal), por jogador, salvo em
  * {@code cooldowns.yml} — assim reiniciar o servidor não dá um "uso grátis" pra ninguém.
  *
  * Ao salvar, descarta registros que já passaram do MAIOR cooldown configurado pra aquele
@@ -24,7 +24,7 @@ import java.util.logging.Level;
 public class CooldownManager {
 
     public enum Perk {
-        HEAL, FEED, KIT
+        HEAL, FEED, KIT, KIT_MENSAL
     }
 
     private final VipPlugin plugin;
@@ -59,6 +59,7 @@ public class CooldownManager {
             case HEAL -> plugin::getCooldownHealMinutos;
             case FEED -> plugin::getCooldownFeedMinutos;
             case KIT -> tier -> plugin.getCooldownKitHoras(tier) * 60;
+            case KIT_MENSAL -> tier -> plugin.getCooldownKitMensalDias(tier) * 24 * 60;
         };
         int maior = 0;
         for (VipTier tier : VipTier.values()) {

@@ -17,6 +17,7 @@ Todos os comandos, de jogador e de staff, entram por `/vip <ação>` — não te
 | `/vip heal` | quem tem VIP | Cura instantânea (cooldown por tier) |
 | `/vip feed` | quem tem VIP | Restaura a fome (cooldown por tier) |
 | `/vip kit` | quem tem VIP | Resgata o kit do seu tier (cooldown por tier) |
+| `/vip kitmensal` | quem tem VIP | Resgata o equipamento encantado do seu tier (armadura, armas e ferramentas), uma vez a cada 30 dias |
 | `/vip particula <tipo\|off>` | quem tem VIP | Escolhe o efeito de partícula que te segue |
 | `/vip warp` | quem tem VIP | Teleporta pra área exclusiva de VIP |
 | `/vip add <jogador> <tier> <dias>` | staff | Concede/renova VIP direto (sem passar por código) |
@@ -131,6 +132,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_bronze permission set vip.perk.kit true
 /lp group vip_bronze permission set vip.perk.particulas true
 /lp group vip_bronze permission set vip.desconto.bronze true
+/lp group vip_bronze permission set vip.xp.bronze true
 
 /lp creategroup vip_prata
 /lp group vip_prata meta setprefix "&f[&bPrata&f] "
@@ -140,6 +142,8 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_prata permission set vip.perk.particulas true
 /lp group vip_prata permission set vip.perk.fly true
 /lp group vip_prata permission set vip.desconto.prata true
+/lp group vip_prata permission set vip.xp.prata true
+/lp group vip_prata permission set vip.perk.autovenda true
 
 /lp creategroup vip_ouro
 /lp group vip_ouro meta setprefix "&6[Ouro] "
@@ -150,6 +154,9 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_ouro permission set vip.perk.fly true
 /lp group vip_ouro permission set vip.perk.warp true
 /lp group vip_ouro permission set vip.desconto.ouro true
+/lp group vip_ouro permission set vip.xp.ouro true
+/lp group vip_ouro permission set vip.perk.autovenda true
+/lp group vip_ouro permission set vip.missao.extra true
 
 /lp creategroup vip_diamante
 /lp group vip_diamante meta setprefix "&b[Diamante] "
@@ -160,6 +167,9 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_diamante permission set vip.perk.fly true
 /lp group vip_diamante permission set vip.perk.warp true
 /lp group vip_diamante permission set vip.desconto.diamante true
+/lp group vip_diamante permission set vip.xp.diamante true
+/lp group vip_diamante permission set vip.perk.autovenda true
+/lp group vip_diamante permission set vip.missao.extra true
 ```
 
 Essa distribuição de perks por tier é só sugestão — dá pra dar `/vip fly` já no Bronze, por exemplo, é só adicionar a permissão no grupo. Essa mudança não precisa de reload nem de reiniciar nada, é instantânea via LuckPerms.
@@ -175,6 +185,67 @@ Vá até o local desejado e anote as coordenadas (`F3`), depois edite `warp-vip.
 /vip fly
 /vip kit
 ```
+
+## Benefícios por tier
+
+| Benefício | Bronze | Prata | Ouro | Diamante |
+|---|---|---|---|---|
+| Kit mensal (`/vip kitmensal`) | Diamante, nível IV | Netherite, nível V | Netherite, nível VI | Netherite, nível VII |
+| Fortuna da picareta | III | III | IV | V |
+| Bônus de ativação: dinheiro | 10% do próximo rank | 20% | 35% | 50% |
+| Bônus de ativação: XP em cada skill | 500 | 1.500 | 3.000 | 5.000 |
+| XP a mais nas skills (enquanto ativo) | +10% | +20% | +30% | +50% |
+| Desconto na taxa do Pix | 20% | 40% | 60% | 80% |
+| Desconto na loja e no aluguel de barraca | 5% | 10% | 15% | 20% |
+| Venda automática ao minerar (`/autovenda`) | — | ✔ | ✔ | ✔ |
+| Missão diária extra | — | — | ✔ | ✔ |
+
+Os benefícios que moram em outros plugins (XP, Pix, missões, venda automática, descontos) funcionam por permissão, dada pelos grupos do LuckPerms (veja "Setup"). Cada plugin tem a sua lista de permissões no próprio `config.yml`.
+
+### Kit mensal
+
+O `/vip kitmensal` entrega, uma vez a cada `cooldown-kit-mensal-dias` (30), um equipamento completo. O Bronze recebe itens de diamante, e os outros recebem netherite. O **nível** é o dos encantamentos de força, e passa do máximo normal do Minecraft: Proteção, Afiação, Saque, Força, e Densidade e Empalamento nos itens do Diamante. Os de utilidade ficam no máximo normal: Inquebrável III, Remendo (Ouro e Diamante), Infinidade, Lealdade III e Peso-pena IV.
+
+| | Bronze | Prata | Ouro | Diamante |
+|---|---|---|---|---|
+| Picareta | Fortuna III, Eficiência III | Fortuna III, Eficiência IV | Fortuna IV, Eficiência V | Fortuna V, Eficiência V |
+| Machado, armadura completa, espada, arco, escudo | ✔ | ✔ | ✔ | ✔ |
+| Besta e lança (skill Lanceiro) | — | — | ✔ | ✔ |
+| Maça (skill Marreteiro), tridente e elytra | — | — | — | ✔ |
+| Maçãs douradas | 8 | 16 | 16 + 1 encantada | 32 + 3 encantadas |
+| Outros | — | 16 pérolas | 16 pérolas, 2 totens | 16 pérolas, 4 totens, 64 foguetes |
+
+A espada do Diamante também tem Aspecto Flamejante II, e o arco tem Chama.
+
+**Sobre o equilíbrio:**
+- **Proteção** acima de V não faz diferença. Quatro peças com Proteção V já dão o limite do Minecraft, que é 80% menos dano. Do Prata para cima, a armadura está no máximo.
+- **Afiação VII** dá +4 de dano por golpe (a V dá +3).
+- O VIP de tier alto fica bem mais forte em PvP, no bounty e no boss. Essa foi a escolha, para incentivar a compra.
+
+Pela simulação do rankup (`tools/economia`), quem não é VIP e encanta Fortuna III na mesa chega ao Rei em cerca de 150 h. O Bronze leva o mesmo tempo, sem precisar juntar XP para encantar. O Prata leva cerca de 131 h, o Ouro 112 h e o Diamante 107 h, sem contar o bônus de ativação.
+
+**Formato dos itens:** `MATERIAL:quantidade:nome=nivel,...`, com os nomes do Minecraft (`fortune`, `sharpness`, `protection`...). Vale para os dois kits. Exemplo:
+```yaml
+kit-mensal:
+  - "NETHERITE_SWORD:1:sharpness=7,looting=7,unbreaking=3,mending=1"
+cooldown-kit-mensal-dias: 30
+```
+Um item com nome ou encantamento errado é pulado e avisado no console. Um tier sem `kit-mensal` responde "Seu tier de VIP não tem kit mensal" e não gasta o cooldown.
+
+### Bônus de ativação
+
+Quando um VIP é ativado, com `/vip add` ou `/vip resgatar`, o jogador recebe:
+- **Dinheiro:** uma porcentagem do preço do **próximo rank** dele no RankupPlugin. Quem está no Rei recebe a porcentagem do preço do próprio Rei. Por ser proporcional, o bônus pesa o mesmo no começo e no fim do jogo: o Diamante ganha sempre meio rank.
+- **XP em todas as 13 skills.** Os níveis sobem normalmente, mas **sem o dinheiro por nível** das skills, e o chat mostra um resumo só ("Suas skills subiram 40 níveis no total"). Sem isso, um jogador novo subiria muitos níveis baratos de uma vez: nos testes, 10.000 XP no Diamante pagavam R$ 25 mil, quinze vezes o bônus em dinheiro. O bônus contínuo de XP do VIP não se soma a esse XP. Se o jogador estiver offline (num `/vip add`, por exemplo), recebe quando entrar.
+
+Tudo é **proporcional aos dias**: um código de 7 dias dá 7/30 do bônus, e um de 60 dias dá o dobro. Assim, comprar vários códigos curtos não rende mais que um longo.
+
+```yaml
+bonus-ativacao:
+  dinheiro-percentual-proximo-rank: 50
+  xp-por-skill: 5000
+```
+Sem o RankupPlugin, o bônus em dinheiro é zero. Sem o SkillsPlugin, não há XP. No painel da economia, o dinheiro aparece como "Bônus de ativação do VIP".
 
 ## Integração com a loja (EconomyShopPlugin)
 
@@ -219,8 +290,8 @@ O `.jar` sai em `target/VipPlugin.jar`.
 
 1. **A tag de chat/tablist é implementada aqui, não pelo LuckPerms** — o LuckPerms guarda `meta setprefix` pra você usar com outros plugins (placeholders, scoreboard, etc.), mas o VipPlugin não lê esse prefixo; ele usa o próprio campo `nome-exibicao` do `config.yml`. Isso evita uma dependência a mais (não precisa de PlaceholderAPI), mas significa que você define a tag em dois lugares. Se preferir unificar lendo o prefixo do LuckPerms direto, é só pedir.
 2. **`/vip warp` é um único ponto fixo pra todos os tiers** — não tem um warp por tier.
-3. **Cooldowns de heal/feed/kit ficam salvos em `cooldowns.yml`**, então reiniciar o servidor não dá um uso grátis pra ninguém. Registros que já passaram do maior cooldown configurado são descartados ao salvar, pro arquivo não crescer pra sempre.
-4. **`/vip kit` sempre entrega o kit inteiro do tier atual** — não acumula nem soma kits de tiers anteriores.
+3. **Cooldowns de heal/feed/kit/kit mensal ficam salvos em `cooldowns.yml`**, então reiniciar o servidor não dá um uso grátis pra ninguém. Registros que já passaram do maior cooldown configurado são descartados ao salvar, pro arquivo não crescer pra sempre.
+4. **`/vip kit` e `/vip kitmensal` sempre entregam o kit inteiro do tier atual** — não acumulam nem somam kits de tiers anteriores. O cooldown do kit mensal é por jogador, não por tier: quem resgata no Bronze e sobe pro Diamante no mesmo mês espera o mês acabar.
 5. **A validade do código vem desligada** (`codigos.validade-padrao-dias: 0`). Por padrão, um código só some quando é totalmente usado ou revogado. Ligue no `config.yml` se quiser um prazo pra resgatar (veja "Validade do código").
 6. **A integração com o site é via RCON, ainda não construída** — quando o site existir de verdade, ele precisa só rodar `vip gerarcodigo <tier> <dias>` via RCON depois de confirmar o pagamento. Nenhuma mudança no plugin é necessária pra isso funcionar; se quiser, mais pra frente, uma API HTTP própria em vez de RCON, é um projeto à parte.
 7. **Um jogador só pode ter um código à venda por vez** — checado explicitamente (`buscarCodigoDeVenda`), não uma consequência de outra coisa. Se quiser permitir múltiplas vendas simultâneas, é só tirar essa checagem.

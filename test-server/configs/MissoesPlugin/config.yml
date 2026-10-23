@@ -7,6 +7,15 @@
 
 missoes-por-dia: 3
 
+# Missões diárias a mais por permissão (vale a maior). O VipPlugin dá vip.missao.extra pros
+# tiers Ouro e Diamante pelos grupos do LuckPerms. Quem vira VIP no meio do dia ganha a extra
+# na hora. É uma LISTA de propósito: chave com ponto viraria seção aninhada.
+vip-missoes-extras:
+  ativado: true
+  permissoes:
+    - permissao: "vip.missao.extra"
+      quantidade: 1
+
 bonus-todas:
   coins: 300
   # Opcional: XP de uma skill do SkillsPlugin (nome da skill, ex: DEFESA). Sem o SkillsPlugin,

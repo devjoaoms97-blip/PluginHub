@@ -7,6 +7,7 @@ import com.example.missoes.model.ProgressoJogador;
 import com.example.missoes.model.TipoMissao;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -137,27 +138,62 @@ public class MissaoManager {
         LocalDate inicio = periodo.inicio(LocalDate.now());
         ProgressoJogador atual = jogadores.get(periodo).get(jogador);
         if (atual != null && atual.getDia().equals(inicio)) {
+            if (periodo == Periodo.DIARIA) completarExtras(jogador, atual);
             return atual;
         }
-        ProgressoJogador novo = sortear(periodo, inicio);
+        ProgressoJogador novo = sortear(periodo, inicio, jogador);
         jogadores.get(periodo).put(jogador, novo);
         sujo = true;
         return novo;
+    }
+
+    /**
+     * Quem virou VIP depois do sorteio do dia ganha na hora as missões extras que faltam, sem
+     * perder o progresso das que já tinha.
+     */
+    private void completarExtras(UUID jogador, ProgressoJogador atual) {
+        int faltam = quantasDiarias(jogador) - atual.getProgresso().size();
+        if (faltam <= 0) return;
+        List<String> ids = new ArrayList<>(pools.get(Periodo.DIARIA).keySet());
+        ids.removeAll(atual.getProgresso().keySet());
+        Collections.shuffle(ids);
+        for (String id : ids.subList(0, Math.min(faltam, ids.size()))) {
+            atual.getProgresso().put(id, 0);
+            sujo = true;
+        }
+    }
+
+    /** missoes-por-dia mais as extras de VIP (a maior que o jogador tiver, se estiver online). */
+    private int quantasDiarias(UUID jogador) {
+        int base = Math.max(1, plugin.getConfig().getInt("missoes-por-dia", 3));
+        Player online = Bukkit.getPlayer(jogador);
+        if (online == null || !plugin.getConfig().getBoolean("vip-missoes-extras.ativado", true)) return base;
+        int extras = 0;
+        List<?> permissoes = plugin.getConfig().getList("vip-missoes-extras.permissoes");
+        if (permissoes != null) {
+            for (Object item : permissoes) {
+                if (item instanceof Map<?, ?> mapa && mapa.get("permissao") instanceof String permissao
+                        && mapa.get("quantidade") instanceof Number quantidade && online.hasPermission(permissao)) {
+                    extras = Math.max(extras, quantidade.intValue());
+                }
+            }
+        }
+        return base + extras;
     }
 
     /** Descarta as missões do período atual do jogador e sorteia outras (staff). */
     public ProgressoJogador resortear(UUID jogador, Periodo periodo) {
-        ProgressoJogador novo = sortear(periodo, periodo.inicio(LocalDate.now()));
+        ProgressoJogador novo = sortear(periodo, periodo.inicio(LocalDate.now()), jogador);
         jogadores.get(periodo).put(jogador, novo);
         sujo = true;
         return novo;
     }
 
-    private ProgressoJogador sortear(Periodo periodo, LocalDate inicio) {
+    private ProgressoJogador sortear(Periodo periodo, LocalDate inicio, UUID jogador) {
         List<String> ids = new ArrayList<>(pools.get(periodo).keySet());
         Collections.shuffle(ids);
         int quantas = periodo == Periodo.DIARIA
-                ? Math.max(1, plugin.getConfig().getInt("missoes-por-dia", 3))
+                ? quantasDiarias(jogador)
                 : Math.max(1, plugin.getConfig().getInt("semanais.quantidade", 2));
         ProgressoJogador progresso = new ProgressoJogador(inicio);
         for (String id : ids.subList(0, Math.min(quantas, ids.size()))) {

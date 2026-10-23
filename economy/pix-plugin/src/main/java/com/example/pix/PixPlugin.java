@@ -1,8 +1,12 @@
 package com.example.pix;
 
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.Map;
 
 public class PixPlugin extends JavaPlugin {
 
@@ -79,5 +83,28 @@ public class PixPlugin extends JavaPlugin {
         double taxa = valor * (percentual / 100.0);
         taxa = Math.max(taxa, minimo);
         return Math.min(taxa, valor);
+    }
+
+    /** A taxa de cima com o desconto de VIP de quem paga ({@code taxa.vip-descontos}). */
+    public double calcularTaxaTransacao(double valor, Player pagador) {
+        return calcularTaxaTransacao(valor) * (1 - descontoTaxaVip(pagador) / 100.0);
+    }
+
+    /**
+     * Maior desconto (%) na taxa que o jogador tem por permissão. LISTA de {permissao, percentual},
+     * igual ao desconto de VIP da loja: chave com ponto viraria seção aninhada num mapa.
+     */
+    private double descontoTaxaVip(Player pagador) {
+        if (!getConfig().getBoolean("taxa.vip-descontos.ativado", true)) return 0;
+        List<?> permissoes = getConfig().getList("taxa.vip-descontos.permissoes");
+        if (permissoes == null) return 0;
+        double maior = 0;
+        for (Object item : permissoes) {
+            if (item instanceof Map<?, ?> mapa && mapa.get("permissao") instanceof String permissao
+                    && mapa.get("percentual") instanceof Number percentual && pagador.hasPermission(permissao)) {
+                maior = Math.max(maior, percentual.doubleValue());
+            }
+        }
+        return Math.min(100, maior);
     }
 }

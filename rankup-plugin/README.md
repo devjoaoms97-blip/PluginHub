@@ -14,6 +14,7 @@ Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro �
 | `/ranks <jogador>` | todos | Rank de outro jogador |
 | `/mina` | todos | Lista as minas (✔ = você tem acesso) |
 | `/mina <id>` | todos | Teleporta pra mina, se você tiver o rank |
+| `/autovenda` | VIP (`vip.perk.autovenda`) | Liga ou desliga a venda automática do que você minera |
 | `/ranks admin set <jogador> <rank>` | staff | Muda o rank de alguém (roda os `comandos-ao-subir`) |
 | `/ranks admin reload` | staff | Recarrega o config (ranks e preços) |
 | `/mina admin pos1` / `pos2` | staff | Marca os cantos da mina (o bloco pra onde você olha) |
@@ -49,6 +50,10 @@ No reset, quem está dentro (ou em cima) vai pro ponto de teleporte da mina, e n
 
 **Proteção do mundo.** Em `protecao.mundos`, liste os mundos em que, **fora das minas**, ninguém quebra nem coloca blocos. É o normal num mundo de rankup, em que só as minas são mineráveis.
 
+**Coleta direta.** Dentro de uma mina, o que você minera vai direto pro inventário, e a experiência direto pra você (com o Remendo consertando a ferramenta, como o orbe faria). Vale para todos os jogadores e não deixa itens nem orbes no chão, o que também reduz o lag. Só cai no chão o que não couber no inventário, com o aviso "Inventário cheio!" na barra acima dele.
+
+**Venda automática (VIP).** Quem tem `vip.perk.autovenda` (VIP Prata, Ouro e Diamante) vende na hora tudo o que minera dentro de uma mina, e o dinheiro aparece na barra acima do inventário. Vale o mesmo que o `/sell`, com o preço dinâmico, o bônus do rank e o imposto. O que a loja não compra vai pro inventário. O `/autovenda` desliga e liga; a escolha fica gravada no jogador. No painel, aparece como "Venda automática (VIP)".
+
 **Chat.** O rank aparece antes do nome e convive com as tags do clã e do VIP: `[Fazendeiro] [ABC] [VIP Ouro] Nome: mensagem`.
 
 ## Montando as minas (passo a passo)
@@ -65,22 +70,22 @@ No reset, quem está dentro (ou em cima) vai pro ponto de teleporte da mina, e n
 5. `/mina admin resetar carvao` pra preencher.
 6. Cadastre na loja os itens que saem da mina (`/shop admin add`), senão o `/sell` não compra.
 
-**Minas por rank.** As composições com peso estão em [`tools/economia/minas-planejadas.yml`](../tools/economia/minas-planejadas.yml). Elas foram calibradas pra cada mina render cerca de 1,6× a anterior, então cada rank novo vale a pena:
+**Minas por rank.** As composições com peso estão em [`tools/economia/minas-planejadas.yml`](../tools/economia/minas-planejadas.yml). Elas foram calibradas pra cada mina render cerca de 1,6× a anterior com uma picareta de Fortuna III, então cada rank novo vale a pena:
 
 | Rank | Mina | Blocos (peso) |
 |---|---|---|
 | Camponês | Pedreira | stone 80, coal_ore 20 |
-| Fazendeiro | Cobre | stone 77, coal_ore 17, copper_ore 6 |
+| Fazendeiro | Cobre | stone 81, coal_ore 15, copper_ore 4 |
 | Lenhador | Bosque | oak_log 50, spruce_log 50 |
 | Ferreiro | Ferro | stone 55, iron_ore 30, coal_ore 15 |
-| Mercador | Ouro | stone 57, gold_ore 18, iron_ore 25 |
-| Escudeiro | Redstone | deepslate 10, deepslate_redstone_ore 30, deepslate_lapis_ore 60 |
+| Mercador | Ouro | stone 63, gold_ore 12, iron_ore 25 |
+| Escudeiro | Redstone | deepslate 30, deepslate_redstone_ore 25, deepslate_lapis_ore 45 |
 | Clérigo | Ametista | amethyst_block 60, deepslate_lapis_ore 40 |
-| Cavaleiro | Diamante | deepslate 55, deepslate_diamond_ore 45 |
-| Barão | Esmeralda | deepslate 50, deepslate_emerald_ore 25, deepslate_diamond_ore 25 |
-| Conde | Nether | netherrack 35, nether_quartz_ore 35, nether_gold_ore 20, ancient_debris 10 |
-| Duque | Blocos | iron_block 50, gold_block 50 |
-| Rei | Tesouro | iron_block 75, diamond_block 15, emerald_block 5, ancient_debris 5 |
+| Cavaleiro | Diamante | deepslate 62, deepslate_diamond_ore 38 |
+| Barão | Esmeralda | deepslate 60, deepslate_emerald_ore 18, deepslate_diamond_ore 22 |
+| Conde | Nether | netherrack 26, nether_quartz_ore 30, nether_gold_ore 20, ancient_debris 24 |
+| Duque | Blocos | iron_block 37, gold_block 55, diamond_block 8 |
+| Rei | Tesouro | iron_block 62, diamond_block 25, emerald_block 8, ancient_debris 5 |
 
 Tudo o que essas minas dropam precisa estar na loja, inclusive `NETHERRACK`, `GOLD_NUGGET` e `AMETHYST_BLOCK`. O `itens.yml` do servidor de teste já tem tudo.
 
@@ -96,7 +101,7 @@ ranks:
   - id: fazendeiro
     nome: "Fazendeiro"
     cor: "&a"
-    preco: 2300
+    preco: 3400
     multiplicador-venda: 1.05
   # ... até o Rei
 
@@ -123,7 +128,7 @@ integracao:
 
 ## Balanceamento
 
-Os preços dos ranks foram calibrados pra um jogador ativo chegar ao **Rei em cerca de 150 h** de jogo. A conta usa as minas acima, os preços da loja e uma velocidade de mineração estimada. O script que faz a conta está em `tools/economia/` (veja o README de lá). Rode de novo sempre que mudar um preço de rank, uma mina ou um preço da loja.
+Os preços dos ranks foram calibrados pra um jogador ativo **sem VIP, com picareta de Fortuna III** (encantada na mesa), chegar ao **Rei em cerca de 150 h** de jogo. Os VIPs Ouro e Diamante ganham Fortuna IV e V no kit mensal e chegam em cerca de 112 h e 107 h. Sem Fortuna, são cerca de 200 h. A conta usa as minas acima, os preços da loja e uma velocidade de mineração estimada. O script que faz a conta está em `tools/economia/` (veja o README de lá). Rode de novo sempre que mudar um preço de rank, uma mina ou um preço da loja.
 
 Com jogadores de verdade, o `rankups.csv` mostra quanto tempo cada rank está levando de fato, e o `/economia` mostra o dinheiro novo por hora jogada.
 

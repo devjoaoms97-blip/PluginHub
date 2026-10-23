@@ -5,6 +5,7 @@ permissions:
 - vip.perk.heal
 - vip.perk.kit
 - vip.perk.particulas
+- vip.xp.bronze
 prefixes:
 - '&7[Bronze] ':
     priority: 1

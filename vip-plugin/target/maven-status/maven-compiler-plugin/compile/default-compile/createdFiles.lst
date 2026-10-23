@@ -7,6 +7,7 @@ com\example\vip\model\VipTier.class
 com\example\vip\model\VipAtivo.class
 com\example\vip\model\VipCode.class
 com\example\vip\VipPlugin.class
+com\example\vip\manager\BonusAtivacao.class
 com\example\vip\listener\ParticleTrailListener.class
 com\example\vip\command\PerkCommand.class
 com\example\vip\manager\CooldownManager.class

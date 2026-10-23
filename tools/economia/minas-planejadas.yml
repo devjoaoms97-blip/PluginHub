@@ -1,14 +1,14 @@
 # Minas usadas na simulação (simular.py). Mesma ideia do /mina admin bloco: bloco e peso.
 # Não é lido pelo plugin: as minas de verdade ficam no minas.yml do servidor. Quando montar
 # as minas no jogo, use estas composições (ou mude aqui e rode a simulação de novo).
-# Calibradas pra cada mina render cerca de 1,6x a anterior (3 jogadores por mina, sem fortuna).
+# Calibradas pra cada mina render cerca de 1,6x a anterior (3 jogadores por mina, Fortuna III).
 minas:
   pedreira:
     rank: campones
     blocos: {stone: 80, coal_ore: 20}
   cobre:
     rank: fazendeiro
-    blocos: {stone: 77, coal_ore: 17, copper_ore: 6}
+    blocos: {stone: 81, coal_ore: 15, copper_ore: 4}
   bosque:
     rank: lenhador
     blocos: {oak_log: 50, spruce_log: 50}
@@ -17,25 +17,25 @@ minas:
     blocos: {stone: 55, iron_ore: 30, coal_ore: 15}
   ouro:
     rank: mercador
-    blocos: {stone: 57, gold_ore: 18, iron_ore: 25}
+    blocos: {stone: 63, gold_ore: 12, iron_ore: 25}
   redstone:
     rank: escudeiro
-    blocos: {deepslate: 10, deepslate_redstone_ore: 30, deepslate_lapis_ore: 60}
+    blocos: {deepslate: 30, deepslate_redstone_ore: 25, deepslate_lapis_ore: 45}
   ametista:
     rank: clerigo
     blocos: {amethyst_block: 60, deepslate_lapis_ore: 40}
   diamante:
     rank: cavaleiro
-    blocos: {deepslate: 55, deepslate_diamond_ore: 45}
+    blocos: {deepslate: 62, deepslate_diamond_ore: 38}
   esmeralda:
     rank: barao
-    blocos: {deepslate: 50, deepslate_emerald_ore: 25, deepslate_diamond_ore: 25}
+    blocos: {deepslate: 60, deepslate_emerald_ore: 18, deepslate_diamond_ore: 22}
   nether:
     rank: conde
-    blocos: {netherrack: 35, nether_quartz_ore: 35, nether_gold_ore: 20, ancient_debris: 10}
+    blocos: {netherrack: 26, nether_quartz_ore: 30, nether_gold_ore: 20, ancient_debris: 24}
   blocos:
     rank: duque
-    blocos: {iron_block: 50, gold_block: 50}
+    blocos: {iron_block: 37, gold_block: 55, diamond_block: 8}
   tesouro:
     rank: rei
-    blocos: {iron_block: 75, diamond_block: 15, emerald_block: 5, ancient_debris: 5}
+    blocos: {iron_block: 62, diamond_block: 25, emerald_block: 8, ancient_debris: 5}

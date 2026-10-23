@@ -36,6 +36,12 @@ Nomes de skill aceitos no comando admin: `espadas`, `machado`, `arqueiro`, `porr
 
 Ao usar `setlevel`, o XP acumulado daquela skill é zerado (já que o "degrau" mudou manualmente, não faria sentido manter XP de um nível diferente).
 
+## Bônus de XP do VIP
+
+Quem tem VIP ganha XP a mais em todas as skills: +10% no Bronze, +20% no Prata, +30% no Ouro e +50% no Diamante. O bônus vem por permissão (`vip.xp.<tier>`, dada pelos grupos do LuckPerms), configurado em `vip-bonus-xp`. Vale o maior que o jogador tiver, e vale também para o XP das missões.
+
+**XP de bônus.** O bônus de ativação do VIP dá XP pelo `adicionarXpBonus`: sobe os níveis, mas não paga o `recompensa.dinheiro-por-nivel` nem manda o "SKILL UP" de cada nível, e não recebe o bônus de XP do VIP por cima.
+
 ## Requisitos
 
 - Paper 26.2 (Java 25)

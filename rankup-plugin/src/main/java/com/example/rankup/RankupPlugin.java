@@ -1,8 +1,10 @@
 package com.example.rankup;
 
+import com.example.rankup.command.AutoVendaCommand;
 import com.example.rankup.command.MinaCommand;
 import com.example.rankup.command.RanksCommand;
 import com.example.rankup.command.RankupCommand;
+import com.example.rankup.listener.ColetaMinaListener;
 import com.example.rankup.listener.ChatListener;
 import com.example.rankup.listener.MinaListener;
 import com.example.rankup.manager.MinaManager;
@@ -10,6 +12,7 @@ import com.example.rankup.manager.RankManager;
 import com.example.rankup.manager.RegistroRankups;
 import com.example.rankup.model.Rank;
 import com.example.rankup.util.Formato;
+import com.example.rankup.util.LojaIntegration;
 import com.example.rankup.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;
@@ -27,6 +30,7 @@ public class RankupPlugin extends JavaPlugin {
     private MinaManager minaManager;
     private PixIntegration pixIntegration;
     private RegistroRankups registroRankups;
+    private LojaIntegration lojaIntegration;
 
     @Override
     public void onEnable() {
@@ -43,6 +47,7 @@ public class RankupPlugin extends JavaPlugin {
         this.minaManager = new MinaManager(this);
         this.pixIntegration = new PixIntegration(this);
         this.registroRankups = new RegistroRankups(this);
+        this.lojaIntegration = new LojaIntegration(this);
 
         RankupCommand rankup = new RankupCommand(this);
         getCommand("rankup").setExecutor(rankup);
@@ -56,6 +61,9 @@ public class RankupPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new MinaListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+        ColetaMinaListener coleta = new ColetaMinaListener(this);
+        getServer().getPluginManager().registerEvents(coleta, this);
+        getCommand("autovenda").setExecutor(new AutoVendaCommand(coleta));
 
         getServer().getScheduler().runTaskTimer(this, minaManager::tick, 20L, 20L);
         if (getConfig().getBoolean("minas.resetar-ao-ligar", true)) {
@@ -112,6 +120,16 @@ public class RankupPlugin extends JavaPlugin {
         return rankManager.getRankDe(jogador).multiplicadorVenda();
     }
 
+    /**
+     * Preço do próximo rank do jogador; no último rank, o preço dele mesmo. Usado pelo VipPlugin
+     * pro bônus de ativação em dinheiro, proporcional ao rank.
+     */
+    public double precoProximoRank(UUID jogador) {
+        Rank atual = rankManager.getRankDe(jogador);
+        Rank proximo = rankManager.getProximo(atual);
+        return proximo != null ? proximo.preco() : atual.preco();
+    }
+
     /** Id do rank do jogador (ex: "fazendeiro"). */
     public String rankDe(UUID jogador) {
         return rankManager.getRankDe(jogador).id();
@@ -139,6 +157,10 @@ public class RankupPlugin extends JavaPlugin {
 
     public PixIntegration getPixIntegration() {
         return pixIntegration;
+    }
+
+    public LojaIntegration getLojaIntegration() {
+        return lojaIntegration;
     }
 
     public RegistroRankups getRegistroRankups() {

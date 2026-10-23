@@ -39,17 +39,17 @@ itens:
     passo: 0.01
   OAK_LOG:
     categoria: Minérios
-    preco-base: 5
+    preco-base: 7
     margem: 50.0
-    minimo: 1.0
-    maximo: 2.5
+    minimo: 1.4
+    maximo: 3.5
     passo: 0.01
   SPRUCE_LOG:
     categoria: Minérios
-    preco-base: 5
+    preco-base: 7
     margem: 50.0
-    minimo: 1.0
-    maximo: 2.5
+    minimo: 1.4
+    maximo: 3.5
     passo: 0.01
   RAW_IRON:
     categoria: Minérios
