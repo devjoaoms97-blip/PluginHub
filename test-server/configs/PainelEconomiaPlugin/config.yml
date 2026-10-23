@@ -72,3 +72,11 @@ tipos:
     "TerrenoManager#darLance": "Lance em leilão de imóvel"
     "TerrenoManager#devolverLance": "Lance de imóvel devolvido"
     "TerrenoManager#pagarDivida": "Dívida de imposto de terreno"
+  DueloPlugin:
+    "DueloManager#reterAposta": "Aposta de duelo"
+    "DueloManager#pagarVencedor": "Prêmio de duelo"
+    "DueloManager#devolverAposta": "Aposta de duelo devolvida"
+  GladiadorPlugin:
+    "EventoManager#cobrarInscricao": "Inscrição no Gladiador"
+    "EventoManager#devolverInscricao": "Inscrição no Gladiador devolvida"
+    "EventoManager#pagarPremio": "Prêmio do Gladiador"

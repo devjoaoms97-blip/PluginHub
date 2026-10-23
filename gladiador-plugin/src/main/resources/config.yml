@@ -1,0 +1,42 @@
+# Configuração do GladiadorPlugin
+#
+# Evento de PvP na arena: a staff (ou a agenda) abre as inscrições, os inscritos vão pra arena
+# e vence o último jogador (modo individual) ou o último clã (modo por clã) de pé. Cada um luta
+# com o próprio equipamento, e quem morre perde os itens (o mundo das arenas não guarda
+# inventário). Desconectar ou sair da arena elimina.
+
+# Mundo das arenas. Quem estiver nele (num duelo, por exemplo) não se inscreve.
+mundo-arenas: arenas
+
+inscricao:
+  # Valor padrão da inscrição (a staff pode usar outro em /gladiador abrir). Vai pro pote.
+  valor: 2000.0
+  # Quanto tempo as inscrições ficam abertas.
+  duracao-segundos: 300
+  # Lembretes no chat quando faltar esse tanto pra fechar.
+  avisos-segundos: [240, 120, 60, 30, 10]
+
+premio:
+  # Somado às inscrições. Vem do servidor (é dinheiro novo na economia).
+  servidor: 10000.0
+
+minimo:
+  # Com menos que isso ao fechar as inscrições, o evento é cancelado e as inscrições voltam.
+  jogadores: 4
+  clas: 2
+
+luta:
+  # Tempo na arena antes de valer dano.
+  preparacao-segundos: 15
+  # Passado esse tempo, quem estiver de pé divide o pote.
+  tempo-maximo-minutos: 20
+  # Tempo que os vencedores ficam na arena pra pegar os itens dos outros.
+  tempo-pra-pegar-itens-segundos: 30
+
+# Abre sozinho nesses horários: "DIA HH:mm individual" ou "DIA HH:mm cla" (DIA: SEGUNDA a
+# DOMINGO). Lista vazia desativa.
+agenda: []
+
+integracao:
+  # Registra inscrições e prêmios no /pix historico (precisa do PixPlugin).
+  pix: true

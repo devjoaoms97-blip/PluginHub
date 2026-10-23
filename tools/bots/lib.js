@@ -115,6 +115,32 @@ async function minerar(bot, caixa, n) {
   return quebrados
 }
 
+/**
+ * O bot anda até o outro e bate com a espada (se tiver) até ele morrer, ou até `limiteMs`.
+ * Devolve true se o outro morreu.
+ */
+async function lutar(bot, alvoBot, limiteMs = 40000) {
+  const espada = bot.inventory.items().find(i => i.name.endsWith('_sword'))
+  if (espada) await bot.equip(espada, 'hand')
+  let morreu = false
+  const aoMorrer = () => { morreu = true }
+  alvoBot.once('death', aoMorrer)
+  for (const fim = Date.now() + limiteMs; Date.now() < fim && !morreu;) {
+    const e = Object.values(bot.entities).find(x => x.username === alvoBot.username)
+    if (e) {
+      await bot.lookAt(e.position.offset(0, 1.6, 0))
+      const d = bot.entity.position.distanceTo(e.position)
+      bot.setControlState('forward', d > 2.5)
+      bot.setControlState('sprint', d > 6)
+      if (d < 3.2) bot.attack(e)
+    }
+    await espera(600)
+  }
+  bot.clearControlStates()
+  alvoBot.removeListener('death', aoMorrer)
+  return morreu
+}
+
 /** Leva o bot ao spawn da mina, depois de resetar ela e limpar os itens soltos. */
 async function irParaMina(nomeBot, m) {
   await console_('minecraft:kill @e[type=item]')
@@ -147,6 +173,6 @@ function rodar(teste) {
 }
 
 module.exports = {
-  espera, semCor, console: console_, criarBot, capturar, itensNoChao, inventario, mina, minerar, irParaMina, nomeNovo,
+  espera, semCor, console: console_, criarBot, capturar, itensNoChao, inventario, mina, minerar, irParaMina, nomeNovo, lutar,
   verificar, terminar, rodar,
 }

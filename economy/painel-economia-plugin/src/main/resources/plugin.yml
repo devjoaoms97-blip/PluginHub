@@ -20,6 +20,8 @@ loadbefore:
   - ClasPlugin
   - RankupPlugin
   - TerrenosPlugin
+  - DueloPlugin
+  - GladiadorPlugin
 
 commands:
   economia:

@@ -1,0 +1,10 @@
+com\example\duelo\model\Convite.class
+com\example\duelo\DueloPlugin.class
+com\example\duelo\listener\DueloListener.class
+com\example\duelo\model\Duelo$Fase.class
+com\example\duelo\model\Duelo.class
+com\example\duelo\command\DueloCommand.class
+com\example\duelo\model\Arena.class
+com\example\duelo\util\Formato.class
+com\example\duelo\manager\DueloManager.class
+com\example\duelo\util\PixIntegration.class

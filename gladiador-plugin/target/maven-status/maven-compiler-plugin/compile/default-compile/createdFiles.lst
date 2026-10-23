@@ -1,0 +1,15 @@
+com\example\gladiador\manager\EventoManager.class
+com\example\gladiador\model\Evento$Modo.class
+com\example\gladiador\util\PixIntegration.class
+com\example\gladiador\listener\GladiadorListener.class
+com\example\gladiador\util\Formato.class
+com\example\gladiador\manager\AgendaManager$Horario.class
+com\example\gladiador\model\Evento.class
+com\example\gladiador\GladiadorPlugin.class
+com\example\gladiador\model\Arena.class
+com\example\gladiador\command\GladiadorCommand.class
+com\example\gladiador\model\Evento$Fase.class
+com\example\gladiador\command\GladiadorCommand$1.class
+com\example\gladiador\model\Evento$Participante.class
+com\example\gladiador\util\ClasIntegration.class
+com\example\gladiador\manager\AgendaManager.class

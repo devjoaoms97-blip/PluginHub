@@ -1,0 +1,23 @@
+name: DueloPlugin
+version: '1.0.0'
+main: com.example.duelo.DueloPlugin
+api-version: '26.2'
+author: Você
+description: X1 com aposta em arenas, com perda de itens e ranking de vitórias.
+softdepend: [Vault, PixPlugin]
+
+commands:
+  duelo:
+    description: Desafia alguém pro X1.
+    usage: "Uso: /duelo <jogador> [valor] | /duelo <aceitar|recusar|stats|top>"
+    aliases: [x1, duel]
+    permission: duelo.usar
+    permission-message: "§cVocê não tem permissão para duelar."
+
+permissions:
+  duelo.usar:
+    description: Permite desafiar e aceitar duelos.
+    default: true
+  duelo.admin:
+    description: Cria arenas de X1, cancela duelos e usa comandos durante o duelo.
+    default: op

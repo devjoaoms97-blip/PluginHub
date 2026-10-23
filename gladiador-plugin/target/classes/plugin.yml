@@ -1,0 +1,23 @@
+name: GladiadorPlugin
+version: '1.0.0'
+main: com.example.gladiador.GladiadorPlugin
+api-version: '26.2'
+author: Você
+description: Evento Gladiador de PvP, individual ou por clã, com inscrição, prêmio, perda de itens e ranking.
+softdepend: [Vault, PixPlugin, ClasPlugin]
+
+commands:
+  gladiador:
+    description: Evento Gladiador.
+    usage: "Uso: /gladiador <entrar|sair|info|top>"
+    aliases: [glad]
+    permission: gladiador.usar
+    permission-message: "§cVocê não tem permissão para o Gladiador."
+
+permissions:
+  gladiador.usar:
+    description: Permite se inscrever no Gladiador.
+    default: true
+  gladiador.admin:
+    description: Abre, inicia e cancela o Gladiador, monta a arena e usa comandos durante a luta.
+    default: op

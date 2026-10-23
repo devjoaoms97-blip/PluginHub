@@ -38,7 +38,7 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 - **Visual do spawn:** primeiro, tentar um mapa pronto de spawn medieval (mundo pronto ou `.schem` da 1.13 ou mais nova, com licença para servidor público). Se não ficar bom, plano B: montar a parte funcional (plataformas, caminhos, minas, mercado) e decorar depois.
 - **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (imposto, Pix e painel).
 - **Mundo de recursos:** as missões de matar mobs, pescar, colher e cortar árvores precisam dele, porque mob de spawner não conta e o rankup protege o mundo fora das minas.
-- **Arenas:** o boss já tem o `/boss setlocal`. O X1 é o Duelo com aposta. O Gladiador é um plugin novo.
+- **Arenas:** o boss já tem o `/boss setlocal`. O X1 é o Duelo com aposta (`duelo-plugin`), e o Gladiador, o `gladiador-plugin`. No servidor de teste, `tools/bots/montar-arenas.js` monta arenas simples de pedra, até o mapa chegar.
 - **Itens nas arenas de PvP (X1 e Gladiador):** cada um luta com o próprio equipamento, e **quem morre perde os itens**.
 
 ---
@@ -71,12 +71,16 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 - [x] Recompensa contra um clã inteiro (contrato por abate).
 - [x] Aparecer no Discord quando uma recompensa grande for colocada ou cobrada (webhook no próprio plugin; migrar pra Ponte com o Discord quando ela existir).
 
-### Duelo com aposta 🟡
-`/duelo <jogador> <valor>`: os dois apostam, o valor fica retido e a luta é numa arena 1v1. O vencedor leva tudo, menos uma taxa.
-- Arenas no mundo `arenas` (`/duelo setarena`), com 2 ou 3 iguais para haver mais de um duelo ao mesmo tempo.
-- Luta com o equipamento do próprio jogador, e quem morre perde os itens (decisão de 2026-10-23).
-- Desconectar no meio da luta conta como derrota.
-- Ranking de vitórias.
+### Duelo com aposta ✅ v1 (`duelo-plugin`)
+`/duelo <jogador> [valor]`: os dois apostam, o valor fica retido e a luta é numa arena 1v1 do mundo `arenas`. O vencedor leva o pote menos 5%. Sem valor, é amistoso.
+- Várias arenas (`/duelo arena criar|pos1|pos2`), um duelo por arena.
+- Luta com o equipamento do próprio jogador, e quem morre perde os itens (decisão de 2026-10-23). O vencedor tem 20 s para pegar os itens.
+- Desconectar conta como derrota. Depois de 5 minutos de luta, empate com as apostas devolvidas.
+- Ranking de vitórias e derrotas (`/duelo top`).
+
+**Próximos passos**
+- [ ] Espectadores (`/duelo assistir`). 🟢
+- [ ] Os abates em duelo não contarem para o placar de abates do clã nem para o Bounty, para ninguém combinar duelo com um amigo para farmar. 🟢
 
 ### Mercado de Barracas ✅ v1 (`economy/barracas-plugin`)
 Comércio entre jogadores em barracas alugadas no spawn, com lojas por placa em baús. A v1 está implementada (veja o README do plugin), com estas decisões:
@@ -132,13 +136,18 @@ Terrenos de 32x32 num mundo em grade gerado pelo plugin, comprados por R$ 50.000
 - [ ] Permissões separadas para os amigos (só abrir baú, só construir). 🟢
 - [ ] Missão de pagar o imposto ou de construir no terreno. 🟢
 
-### Gladiador 🟡
-Evento de PvP na arena do mundo `arenas`, aberto pela staff ou por agenda: inscrição com contagem regressiva, todos entram na arena e vence o último em pé.
+### Gladiador ✅ v1 (`gladiador-plugin`)
+Evento de PvP na arena do mundo `arenas`, aberto pela staff ou pela agenda: inscrição paga, contagem regressiva, todos entram na arena e vence o último de pé.
 - Dois modos, escolhidos ao abrir o evento: **individual** (todos contra todos) e **por clã** (vence o último clã com alguém vivo; usa o ClasPlugin, sem dano entre membros do mesmo clã).
 - Cada um luta com o próprio equipamento, e quem morre perde os itens (decisão de 2026-10-23).
-- Prêmio em coins, pago pelo servidor ou por uma taxa de inscrição. No modo por clã, vai para o clã ou é dividido entre os membros.
+- Pote: inscrições (R$ 2.000 cada) mais R$ 10.000 do servidor. No modo por clã, é dividido entre quem lutou pelo clã vencedor.
 - Quem desconecta ou sai da arena é eliminado.
-- Ranking de vitórias e anúncio no chat (e no Discord, quando a ponte existir).
+- Ranking de vitórias de jogadores e de clãs.
+
+**Próximos passos**
+- [ ] Anúncio no Discord, quando a ponte existir. 🟢
+- [ ] Borda que fecha com o tempo, para a luta não se arrastar. 🟡
+- [ ] Prêmio do modo por clã direto no banco do clã, como opção. 🟢
 
 ### Ponte com o Discord 🟢
 Webhook com anúncios do servidor:
@@ -212,7 +221,7 @@ Webhook com anúncios do servidor:
 ## 🔗 Integrações entre plugins
 - O Boss paga em coins o ranking de dano.
 - ~~Missões dão XP de skill.~~ ✅
-- ~~Bounty e Barracas aparecem no `/pix historico`.~~ ✅ Falta o Duelo.
+- ~~Bounty, Barracas, Duelo e Gladiador aparecem no `/pix historico`.~~ ✅
 - ~~Missões de vender na loja e de dano no boss.~~ ✅
 - ~~Clãs ganham pontos no boss e mostram a tag na tab junto com o VIP.~~ ✅
 - ~~O rank dá bônus no `/sell` da loja.~~ ✅

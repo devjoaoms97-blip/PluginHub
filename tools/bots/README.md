@@ -26,12 +26,17 @@ node ping.js                # o bot entra e fala no chat: confere a conexão
 node teste-coleta.js        # coleta direta na mina, sem VIP, e inventário cheio
 node teste-vip.js           # benefícios do VIP Diamante
 node teste-terrenos.js      # terrenos e leilão de imóvel (precisa do mundo terrenos)
+node montar-arenas.js       # monta arenas simples de X1 e do Gladiador no mundo arenas
+node teste-duelo.js         # X1 com aposta (precisa das arenas)
+node teste-gladiador.js     # Gladiador individual e por clã (precisa das arenas)
 ```
 Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`node teste-coleta.js cobre`). O bot precisa ter o rank da mina; um jogador novo só minera nas minas do primeiro rank.
 
 | Script | O que confere |
 |---|---|
 | `teste-coleta.js` | O minerado vai pro inventário, sem itens nem orbes no chão. Com o inventário cheio, só a sobra cai, com o aviso "Inventário cheio" |
+| `teste-duelo.js` | Desafio e aceite com apostas retidas, contagem sem dano, ninguém de fora bate, comandos bloqueados, morte com perda de itens e prêmio menos a taxa, volta para onde estava, ranking, recusa e cancelamento com devolução |
+| `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução |
 | `teste-terrenos.js` | Compra, borda da grade, proteção (vizinho, rua, amigo), imposto, confisco por imposto atrasado, leilão de imóvel (dívida do dono antigo, lance superado e devolvido, vencedor leva o que tem dentro) e leilão sem lances |
 | `teste-vip.js` | Pix com 80% de desconto na taxa, missão diária extra, bônus de ativação sem o dinheiro por nível das skills, kit mensal encantado e com cooldown, venda automática e `/autovenda` |
 
@@ -45,8 +50,12 @@ O `lib.js` tem o necessário:
 - `capturar(bot, fn)` devolve o chat e a barra recebidos durante `fn`;
 - `mina(nome)`, `irParaMina` e `minerar(bot, mina, n)` cuidam das minas do RankupPlugin;
 - `inventario` e `itensNoChao` mostram o que o bot tem e o que caiu;
+- `lutar(bot, alvo)` anda até o outro e bate até ele morrer;
 - `verificar(condicao, descricao)` e `terminar(...bots)` registram e encerram.
 
 Dicas:
 - Use `minecraft:give`, `minecraft:clear` e `minecraft:xp` no console. As versões da Essentials se comportam diferente; o `give` dela, por exemplo, dá 64 de qualquer item.
 - Nessa versão, o Mineflayer não lê os encantamentos dos itens. Para conferir, use o `minecraft:data get entity` no console, como o `teste-vip.js` faz.
+- Para PvP, use o `lutar` em vez do `minecraft:damage ... by <jogador>`: nos testes, esse comando às vezes dizia "Applied" sem tirar vida.
+- Use `minecraft:tp` para levar os bots: o `tp` da Essentials recusa lugares que acha perigosos ("Há um buraco no chão!").
+- No 26.2, o `setworldspawn` vale para o servidor todo, não só para o mundo em que roda. Rodar ele em outro mundo muda onde os jogadores novos entram.

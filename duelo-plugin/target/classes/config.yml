@@ -1,0 +1,36 @@
+# Configuração do DueloPlugin (X1 com aposta)
+#
+# /duelo <jogador> [valor]: o desafiado aceita, as duas apostas ficam retidas e os dois vão
+# pra uma arena livre. Cada um luta com o próprio equipamento, e quem morre perde os itens
+# (o mundo das arenas não guarda inventário). O vencedor leva o pote menos a taxa, que some da
+# economia. Desconectar conta como derrota.
+
+# Mundo das arenas. Quem estiver nele (outro evento) não começa duelo.
+mundo-arenas: arenas
+
+aposta:
+  # 0 permite duelo amistoso, sem aposta.
+  minima: 0
+  # 0 = sem limite.
+  maxima: 0
+
+convite:
+  expira-segundos: 60
+
+duelo:
+  # % do pote que fica com o servidor (some da economia).
+  taxa-percentual: 5.0
+  # Contagem antes da luta, com os dois parados e sem dano.
+  contagem-segundos: 5
+  # Passado esse tempo, é empate: as apostas voltam e os dois saem.
+  tempo-maximo-minutos: 5
+  # Tempo que o vencedor fica na arena pra pegar os itens de quem perdeu.
+  tempo-pra-pegar-itens-segundos: 20
+
+anuncio:
+  # Duelos com aposta a partir desse valor são anunciados pra todo o servidor.
+  aposta-minima: 10000.0
+
+integracao:
+  # Registra apostas e prêmios no /pix historico (precisa do PixPlugin).
+  pix: true
