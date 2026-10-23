@@ -24,6 +24,23 @@ Tudo o que está planejado para os plugins, num só lugar. Os READMEs de cada pl
 
 O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 
+## Mapa do rankup (decisões de 2026-10-23)
+
+O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividido em mundos, cada um com as próprias regras (PvP, proteção, mobs). Para isso, entram o Multiverse-Core (vários mundos) e o WorldEdit ou o FAWE (colar schematics).
+
+| Mundo | O que tem | PvP |
+|---|---|---|
+| `spawn` (vazio) | Spawn, warps, placas do rankup e do ranking, área VIP, mercado das Barracas, loja e as 12 minas | Não |
+| `terrenos` (grade) | Terrenos comprados com coins, com aluguel. Servem também para fazendas | Não |
+| `recursos` (normal) | Mobs naturais, pesca, árvores e PvP do Bounty e dos clãs. Resetado de tempos em tempos | Sim |
+| `arenas` (vazio) | Arena do boss, arenas de X1 e arena do Gladiador. Só se entra por comando ou warp, com volta ao spawn no fim | Sim |
+
+- **Visual do spawn:** primeiro, tentar um mapa pronto de spawn medieval (mundo pronto ou `.schem` da 1.13 ou mais nova, com licença para servidor público). Se não ficar bom, plano B: montar a parte funcional (plataformas, caminhos, minas, mercado) e decorar depois.
+- **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (aluguel, Pix e painel).
+- **Mundo de recursos:** as missões de matar mobs, pescar, colher e cortar árvores precisam dele, porque mob de spawner não conta e o rankup protege o mundo fora das minas.
+- **Arenas:** o boss já tem o `/boss setlocal`. O X1 é o Duelo com aposta. O Gladiador é um plugin novo.
+- **Itens nas arenas de PvP (X1 e Gladiador):** cada um luta com o próprio equipamento, e **quem morre perde os itens**.
+
 ---
 
 ## 🆕 Plugins novos
@@ -56,7 +73,8 @@ O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 
 ### Duelo com aposta 🟡
 `/duelo <jogador> <valor>`: os dois apostam, o valor fica retido e a luta é numa arena 1v1. O vencedor leva tudo, menos uma taxa.
-- Arena configurável (`/duelo setarena`), com inventário próprio ou com o do jogador (configurável).
+- Arenas no mundo `arenas` (`/duelo setarena`), com 2 ou 3 iguais para haver mais de um duelo ao mesmo tempo.
+- Luta com o equipamento do próprio jogador, e quem morre perde os itens (decisão de 2026-10-23).
 - Desconectar no meio da luta conta como derrota.
 - Ranking de vitórias.
 
@@ -108,6 +126,14 @@ No rankup, terreno vira opcional: as minas e o spawn já são protegidos. Faz se
 - Permissões por jogador (construir, abrir baú, usar porta).
 - Aluguel ou imposto recorrente sobre o terreno, que é uma das maiores formas de tirar dinheiro de circulação em servidor de economia.
 - Destrava o `/pix agendar` (pagar aluguel de terreno automaticamente).
+
+### Gladiador 🟡
+Evento de PvP na arena do mundo `arenas`, aberto pela staff ou por agenda: inscrição com contagem regressiva, todos entram na arena e vence o último em pé.
+- Dois modos, escolhidos ao abrir o evento: **individual** (todos contra todos) e **por clã** (vence o último clã com alguém vivo; usa o ClasPlugin, sem dano entre membros do mesmo clã).
+- Cada um luta com o próprio equipamento, e quem morre perde os itens (decisão de 2026-10-23).
+- Prêmio em coins, pago pelo servidor ou por uma taxa de inscrição. No modo por clã, vai para o clã ou é dividido entre os membros.
+- Quem desconecta ou sai da arena é eliminado.
+- Ranking de vitórias e anúncio no chat (e no Discord, quando a ponte existir).
 
 ### Ponte com o Discord 🟢
 Webhook com anúncios do servidor:
