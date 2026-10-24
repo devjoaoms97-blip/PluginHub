@@ -13,10 +13,13 @@ aluguel:
   aviso-minutos-antes: 30
 
 barracas:
+  # A loja de cada barraca é um NPC com a skin do dono. Cada anúncio (/barraca vender ou
+  # /barraca comprar) tem um estoque virtual de até estoque-por-anuncio unidades do item.
   normal:
-    max-baus: 4
+    max-anuncios: 5
   especial:
-    max-baus: 8
+    max-anuncios: 10
+  estoque-por-anuncio: 1728  # 27 pilhas de 64, um baú cheio
 
 leilao:
   # Quanto tempo dura o leilão de uma barraca especial que ficou livre.
@@ -33,7 +36,7 @@ vendas:
   taxa-percentual: 5.0
 
 retirada:
-  # Por quantos dias a caixa de retirada guarda os itens dos baús depois que o aluguel acaba.
+  # Por quantos dias a caixa de retirada guarda o estoque da loja depois que o aluguel acaba.
   dias-guardado: 7
 
 vip-descontos:
@@ -49,6 +52,10 @@ vip-descontos:
       percentual: 10
     - permissao: "vip.desconto.bronze"
       percentual: 5
+
+holograma:
+  # Altura do texto do holograma de entrada (/barraca holograma), em blocos acima do ponto marcado.
+  altura: 2.0
 
 integracao:
   # Registra aluguéis, leilões ganhos e compras nas barracas no /pix historico (se o PixPlugin

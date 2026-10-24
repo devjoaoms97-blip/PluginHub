@@ -13,10 +13,13 @@ aluguel:
   aviso-minutos-antes: 5
 
 barracas:
+  # A loja de cada barraca é um NPC com a skin do dono. Cada anúncio (/barraca vender ou
+  # /barraca comprar) tem um estoque virtual de até estoque-por-anuncio unidades do item.
   normal:
-    max-baus: 4
+    max-anuncios: 5
   especial:
-    max-baus: 8
+    max-anuncios: 10
+  estoque-por-anuncio: 1728  # 27 pilhas de 64, um baú cheio
 
 leilao:
   # Quanto tempo dura o leilão de uma barraca especial que ficou livre.

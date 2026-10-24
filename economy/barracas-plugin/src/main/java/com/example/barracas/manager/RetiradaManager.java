@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * Caixa de retirada: quando o aluguel acaba, o que estava nos baús da barraca vem pra cá, e o
+ * Caixa de retirada: quando o aluguel acaba, o estoque da loja da barraca vem pra cá, e o
  * dono pega com {@code /barraca retirar}. Cada lote fica guardado por {@code retirada.dias-guardado}
  * (padrão 7) — depois disso é descartado, pra não acumular itens de quem largou o servidor.
  */

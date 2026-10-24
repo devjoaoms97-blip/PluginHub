@@ -4,7 +4,6 @@ import com.example.barracas.BarracasPlugin;
 import com.example.barracas.model.Barraca;
 import com.example.barracas.model.BlocoPos;
 import org.bukkit.Location;
-import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,8 +28,8 @@ import java.util.UUID;
  * Protege a área das barracas. Dentro de uma barraca:
  * <ul>
  *   <li>Staff ({@code barracas.admin}) faz qualquer coisa — é quem constrói e mantém.</li>
- *   <li>O inquilino só coloca/quebra <b>baús e placas</b> (até o máximo de baús), e só ele abre os baús.</li>
- *   <li>Ninguém mais mexe em nada.</li>
+ *   <li>Mais ninguém mexe em nada — a loja é o NPC, com estoque virtual. Só sobram pro inquilino os
+ *       baús e placas da época da loja por baú: ele ainda abre e quebra os que colocou.</li>
  * </ul>
  * Também bloqueia os jeitos "indiretos" de tirar item ou bloco de lá: funil puxando de baú,
  * pistão, explosão e balde.
@@ -46,10 +45,6 @@ public class ProtecaoListener implements Listener {
     private boolean ehInquilino(Player jogador, Barraca barraca) {
         UUID dono = barraca.getDono();
         return dono != null && dono.equals(jogador.getUniqueId()) && barraca.estaAlugada(System.currentTimeMillis());
-    }
-
-    private boolean ehBauOuPlaca(Block bloco) {
-        return plugin.isBau(bloco.getType()) || Tag.ALL_SIGNS.isTagged(bloco.getType());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -72,7 +67,7 @@ public class ProtecaoListener implements Listener {
 
         evento.setCancelled(true);
         jogador.sendMessage(ehInquilino(jogador, barraca)
-                ? "§cVocê só pode quebrar os baús e placas que você mesmo colocou."
+                ? "§cA barraca é da staff. Sua loja é o NPC: §f/barraca loja§c."
                 : "§cEssa área é de uma barraca do mercado.");
     }
 
@@ -84,28 +79,13 @@ public class ProtecaoListener implements Listener {
         Player jogador = evento.getPlayer();
         if (plugin.isAdmin(jogador)) return;
 
-        if (!ehInquilino(jogador, barraca)) {
-            evento.setCancelled(true);
-            jogador.sendMessage("§cEssa área é de uma barraca do mercado. Alugue uma com §f/barraca alugar§c.");
-            return;
-        }
-        if (!ehBauOuPlaca(evento.getBlock())) {
-            evento.setCancelled(true);
-            jogador.sendMessage("§cNa barraca você só pode colocar baús, barris e placas.");
-            return;
-        }
-        if (plugin.isBau(evento.getBlock().getType())
-                && plugin.getBarracaManager().contarBaus(barraca) >= plugin.getMaxBaus(barraca)) {
-            evento.setCancelled(true);
-            jogador.sendMessage("§cSua barraca já tem o máximo de §f" + plugin.getMaxBaus(barraca) + " §cbaús.");
-            return;
-        }
-
-        barraca.getBlocosDoDono().add(BlocoPos.de(evento.getBlock()));
-        plugin.getBarracaManager().salvar();
+        evento.setCancelled(true);
+        jogador.sendMessage(ehInquilino(jogador, barraca)
+                ? "§cNão precisa de baú: sua loja é o NPC. Anuncie com §f/barraca vender§c e abasteça em §f/barraca loja§c."
+                : "§cEssa área é de uma barraca do mercado. Alugue uma com §f/barraca alugar§c.");
     }
 
-    /** Só o inquilino (e a staff) abre baús dentro da barraca. Placas de loja são tratadas no LojaListener. */
+    /** Só o inquilino (e a staff) abre baús dentro da barraca — os da decoração e os que sobraram da loja por baú. */
     @EventHandler(priority = EventPriority.HIGH)
     public void aoInteragir(PlayerInteractEvent evento) {
         if (evento.getAction() != Action.RIGHT_CLICK_BLOCK || evento.getClickedBlock() == null) return;
@@ -119,7 +99,7 @@ public class ProtecaoListener implements Listener {
         if (plugin.isAdmin(jogador) || ehInquilino(jogador, barraca)) return;
 
         evento.setCancelled(true);
-        jogador.sendMessage("§cEsse baú é de uma barraca. Clique na placa §f[Vender] §cpra comprar (ou §f[Comprar] §cpra vender).");
+        jogador.sendMessage("§cEsse baú é de uma barraca. Pra comprar, clique no NPC vendedor.");
     }
 
     /** Ninguém além do inquilino/staff edita placa dentro da barraca (inclusive placas da decoração). */
@@ -133,40 +113,6 @@ public class ProtecaoListener implements Listener {
         evento.setCancelled(true);
     }
 
-    // ---------------------------------------------------------------------
-    // Placa de entrada (pode ficar fora da área da barraca)
-    // ---------------------------------------------------------------------
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void aoQuebrarPlacaDeEntrada(BlockBreakEvent evento) {
-        Barraca barraca = plugin.getBarracaManager().getBarracaDaPlaca(evento.getBlock());
-        if (barraca == null) return;
-        if (plugin.isAdmin(evento.getPlayer())) {
-            barraca.setPlaca(null);
-            plugin.getBarracaManager().salvar();
-            evento.getPlayer().sendMessage("§7Placa de entrada da barraca §f" + barraca.getId() + " §7removida.");
-            return;
-        }
-        evento.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void aoEditarPlacaDeEntrada(SignChangeEvent evento) {
-        if (plugin.getBarracaManager().getBarracaDaPlaca(evento.getBlock()) != null) {
-            evento.setCancelled(true); // o texto é do plugin, nem a staff edita na mão
-        }
-    }
-
-    /** Clique na placa de entrada mostra a situação da barraca (e como alugar). */
-    @EventHandler(priority = EventPriority.HIGH)
-    public void aoClicarPlacaDeEntrada(PlayerInteractEvent evento) {
-        if (evento.getAction() != Action.RIGHT_CLICK_BLOCK || evento.getClickedBlock() == null
-                || evento.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return;
-        Barraca barraca = plugin.getBarracaManager().getBarracaDaPlaca(evento.getClickedBlock());
-        if (barraca == null) return;
-        evento.setCancelled(true);
-        evento.getPlayer().performCommand("barraca info " + barraca.getId());
-    }
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoExplodirEntidade(EntityExplodeEvent evento) {
         evento.blockList().removeIf(this::protegidoDeExplosao);
@@ -178,8 +124,7 @@ public class ProtecaoListener implements Listener {
     }
 
     private boolean protegidoDeExplosao(Block bloco) {
-        return plugin.getBarracaManager().getBarracaEm(bloco) != null
-                || plugin.getBarracaManager().getBarracaDaPlaca(bloco) != null;
+        return plugin.getBarracaManager().getBarracaEm(bloco) != null;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

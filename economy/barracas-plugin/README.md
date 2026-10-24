@@ -1,6 +1,6 @@
 # BarracasPlugin
 
-Mercado entre jogadores em **barracas alugadas no spawn**. O jogador paga um aluguel ao servidor por um período (padrão: **6h**) e, dentro da barraca, vende os próprios itens (ou compra os dos outros) com **placas em baús**.
+Mercado entre jogadores em **barracas alugadas no spawn**. O jogador paga um aluguel ao servidor por um período (padrão: **6h**) e a barraca ganha um **NPC vendedor com a skin dele**. Clicando no NPC, os outros jogadores compram os itens que ele anunciou (ou vendem pra ele). O estoque fica guardado no plugin, sem baús.
 
 - **Barracas normais**: alugadas por ordem de chegada, pelo preço delas, e podem ser renovadas, inclusive automaticamente.
 - **Barracas especiais** (★, maiores e mais perto do spawn): vão a **leilão** toda vez que ficam livres, com lance mínimo igual ao preço da barraca. **Não renovam**, senão o dono atual nunca soltaria e o leilão não aconteceria.
@@ -16,65 +16,60 @@ Mercado entre jogadores em **barracas alugadas no spawn**. O jogador paga um alu
 | `/barraca autorenovar` | dono | Liga ou desliga a renovação automática (só barracas normais) |
 | `/barraca lance <id> <valor>` | todos | Dá um lance no leilão de uma barraca especial |
 | `/barraca sair confirmar` | dono | Devolve a barraca antes da hora, sem reembolso |
-| `/barraca retirar` | todos | Pega os itens que estavam nos baús quando o aluguel acabou |
+| `/barraca vender <quantidade> <preço>` | dono | Anuncia o item da mão na loja (já leva o que tiver dele no inventário pro estoque) |
+| `/barraca comprar <quantidade> <preço>` | dono | A loja passa a comprar o item da mão dos outros jogadores |
+| `/barraca loja` | dono | Abre o estoque da loja (o mesmo que clicar no próprio NPC) |
+| `/barraca retirar` | todos | Pega o estoque da loja quando o aluguel acabou |
 | `/barraca pos1` / `pos2` | staff | Marca os cantos da área (o bloco para onde você está olhando) |
 | `/barraca criar <id> [especial]` | staff | Cria a barraca na área marcada |
 | `/barraca remover <id>` | staff | Apaga a barraca |
 | `/barraca liberar <id>` | staff | Encerra o aluguel atual (os itens vão pra retirada do dono) |
 | `/barraca preco <id> <valor\|padrao>` | staff | Preço próprio da barraca (`padrao` volta pro preço do config) |
-| `/barraca placa <id> [remover]` | staff | Transforma a placa pra onde você está olhando na placa de entrada da barraca |
+| `/barraca holograma <id> [remover]` | staff | Põe o holograma de entrada da barraca no bloco onde você está |
+| `/barraca npc <id> [remover]` | staff | Marca onde fica o NPC vendedor: no bloco onde você está, olhando pra onde você olha |
 | `/barraca reload` | staff | Recarrega o `config.yml` |
 
 Aliases: `/barracas`, `/mercado`.
 
-## Montando a loja (dono)
+## A loja (NPC)
 
-1. Coloque um **baú** (ou barril) dentro da barraca, com o item que quer vender.
-2. Coloque uma **placa** presa no baú (na lateral) ou em cima dele e escreva:
-   ```
-   [Vender]
-   64
-   150
-   ```
-   A 1ª linha é `[Vender]`, a 2ª é a quantidade por venda e a 3ª (ou a 4ª) é o preço. O preço aceita `150`, `150,50` ou `R$ 1.500,00`.
-3. O plugin reescreve a placa como `[Vender] / 64x / diamond / R$ 150,00` e a encera, pra ninguém editar o texto.
+Enquanto a barraca está alugada, um NPC com a **skin do dono** e o nome "Loja de Fulano" fica parado no ponto que a staff marcou (`/barraca npc`). Barraca livre não tem NPC: quem anuncia é o holograma de entrada.
 
-O **item à venda fica gravado na placa** no momento em que ela é criada, a partir do primeiro item do baú. Trocar o conteúdo do baú depois não muda o que a placa vende. Pra mudar o item ou o preço, quebre a placa e coloque outra.
+**Dono:**
+1. Segure o item e rode `/barraca vender 64 150`: cada venda é de 64 unidades por R$ 150,00. O preço aceita `150`, `150,50` ou `1.500,00`. O que você tiver desse item no inventário já vai pro estoque.
+2. Pra a loja **comprar** dos outros, segure uma unidade do item e rode `/barraca comprar 64 150`. O pagamento sai da sua conta.
+3. Clique no seu NPC (ou use `/barraca loja`) pra ver o estoque:
+   - **Esquerdo** num anúncio de venda coloca mais itens do inventário;
+   - **Direito** retira o estoque (ou os itens que a loja comprou);
+   - **Shift + clique** remove o anúncio. O estoque volta pro inventário, e o que não couber vai pra `/barraca retirar`.
 
-**Quem compra:**
-- **Botão direito** na placa compra: o dinheiro vai pro dono (menos a taxa) e os itens vão pro inventário de quem comprou.
-- **Botão esquerdo** só mostra as informações e o estoque, em número de vendas disponíveis.
-- A compra é recusada se faltar estoque, saldo ou espaço no inventário. Nada é cobrado nesses casos.
+O item anunciado fica fixo desde a criação (com encantamentos, nome etc.). Pra mudar o preço, remova o anúncio e crie de novo. Cada barraca normal tem até **5 anúncios** e a especial até **10**, com até **1.728 unidades** (um baú cheio) de estoque em cada.
+
+**Quem compra:** clique no NPC e no item.
+- Num anúncio de venda, compra um lote: o dinheiro vai pro dono (menos a taxa) e os itens vão pro seu inventário.
+- Num anúncio de compra, vende um lote: os itens saem do seu inventário e o dinheiro sai da conta do dono (com a mesma taxa, descontada de quem vendeu).
+- É recusado se faltar estoque, saldo, espaço no inventário, ou se a loja já comprou o máximo. Nada é cobrado nesses casos.
 - O dono recebe aviso de cada venda e de quando o estoque acaba (se estiver online).
-
-### Placa `[Comprar]`: o dono compra dos outros
-
-Mesmo formato, com `[Comprar]` na 1ª linha. Antes de criar a placa, coloque no baú **uma unidade** do item que quer comprar: é assim que a placa sabe qual é o item. A placa fica `[Comprar] / 64x / diamond / R$ 150,00`.
-
-- Quem tem o item clica com o **botão direito**: os itens saem do inventário dele e vão pro baú, e o preço sai da **conta do dono** (com a mesma taxa de venda, descontada de quem vendeu).
-- É recusado se faltar o item no inventário (só conta o inventário, não a armadura vestida), espaço no baú ou saldo do dono. Quando o dono está sem saldo, ele é avisado (se estiver online).
-- **Botão esquerdo** mostra quanto espaço ainda tem no baú.
 
 ## Proteção da área
 
 Dentro de uma barraca:
 - A **staff** (`barracas.admin`) pode tudo. É quem constrói e mantém as barracas.
-- O **dono** só coloca e quebra **baús, barris e placas** (até o máximo de baús) e é o único que abre os baús. A construção da staff fica intacta.
-- **Mais ninguém** mexe em nada.
+- **Mais ninguém** coloca ou quebra blocos, nem o dono: a loja é o NPC.
 - Também ficam bloqueados: funil puxando item de baú, pistão, explosão e balde.
 
-## Placa de entrada ("Aluga-se")
+## Holograma de entrada ("Aluga-se")
 
-A staff pode escolher uma placa (dentro ou fora da área) pra mostrar a situação da barraca: olhe pra placa e rode `/barraca placa <id>`. Ela se atualiza sozinha:
+A staff pode marcar a entrada de cada barraca (dentro ou fora da área): fique no lugar e rode `/barraca holograma <id>`. Ali aparece um holograma que se atualiza sozinho:
 
 ```
-[Barraca]         [Barraca]         [Barraca ★]
-banca1            banca1            central
-Aluga-se          Fulano            Em leilão
-R$ 500,00         5h 20min          R$ 1.250,00
+[Barraca] banca1     [Barraca] banca1     [Barraca ★] central
+ALUGA-SE             Dono: Fulano         EM LEILÃO
+R$ 500,00            Vence em 5h 20min    R$ 1.250,00
+/barraca alugar ...                       /barraca lance ...
 ```
 
-Clicar nela mostra o `/barraca info`. Ninguém edita o texto, e só a staff quebra a placa (o que desliga a placa de entrada). Explosão não destrói a placa. O tempo restante é atualizado a cada 30s.
+Clicar nele mostra o `/barraca info`. O tempo restante é atualizado a cada 30s, e a altura do texto fica em `holograma.altura`. O holograma não fica salvo no mundo: aparece quando o chunk carrega. Se a entrada era uma placa (versões antigas), a placa sai sozinha.
 
 ## Preço por barraca
 
@@ -87,7 +82,7 @@ Com `/barraca autorenovar`, o aluguel se renova sozinho no último minuto, mesmo
 ## Fim do aluguel
 
 - Aviso pro dono 30 min antes de vencer (configurável).
-- Quando vence, as placas param de vender. O conteúdo dos baús do dono vai pra **caixa de retirada**, e os baús e placas dele saem da barraca.
+- Quando vence, o NPC some e o estoque de todos os anúncios vai pra **caixa de retirada**.
 - A caixa de retirada guarda os itens por **7 dias** (configurável). Depois disso, eles são descartados. Ao entrar no servidor, o jogador é avisado se tem itens esperando.
 - A barraca normal fica livre. A especial volta a leilão.
 
@@ -116,8 +111,9 @@ aluguel:
   renovacao-maxima-horas: 12   # até quanto tempo dá pra acumular renovando
   aviso-minutos-antes: 30
 barracas:
-  normal:   { max-baus: 4 }
-  especial: { max-baus: 8 }
+  normal:   { max-anuncios: 5 }
+  especial: { max-anuncios: 10 }
+  estoque-por-anuncio: 1728    # unidades do item em cada anúncio
 leilao:
   duracao-minutos: 10
   incremento-minimo-percentual: 5
@@ -136,7 +132,7 @@ integracao:
 Com o PixPlugin instalado, aparecem no `/pix historico`:
 - aluguel, renovação e renovação automática, como "Loja do Servidor";
 - leilão vencido;
-- compras nas barracas (placas `[Vender]` e `[Comprar]`), no extrato de quem comprou e de quem vendeu.
+- compras e vendas nas lojas das barracas, no extrato de quem comprou e de quem vendeu.
 
 O registro no Pix é por reflexão, igual ao da EconomyShop. O plugin funciona normalmente sem o Pix.
 
@@ -146,7 +142,15 @@ O registro no Pix é por reflexão, igual ao da EconomyShop. O plugin funciona n
 2. Pra cada uma, olhe pra um canto e rode `/barraca pos1`. Depois olhe pro canto oposto, do piso até o teto, e rode `/barraca pos2`.
 3. Crie com `/barraca criar banca1` (normal) ou `/barraca criar central especial` (a especial já entra em leilão).
 4. Ajuste o preço e as durações no `config.yml` e rode `/barraca reload`. Pra dar um preço diferente a uma barraca, use `/barraca preco <id> <valor>`.
-5. (Opcional) Coloque uma placa na entrada de cada barraca, olhe pra ela e rode `/barraca placa <id>`.
+5. Fique atrás do balcão de cada barraca, olhando pro caminho, e rode `/barraca npc <id>`.
+6. (Opcional) Fique na entrada de cada barraca e rode `/barraca holograma <id>`.
+
+O spawn do EstruturasPlugin (`/estrutura construir spring`) faz esses passos sozinho para as barracas dele. Pelo console, os comandos de staff que pedem posição aceitam o lugar depois de `em`:
+```
+barraca criar <id> [especial] em <mundo> <x1> <y1> <z1> <x2> <y2> <z2>
+barraca npc <id> em <mundo> <x> <y> <z> <yaw>
+barraca holograma <id> em <mundo> <x> <y> <z>
+```
 
 ## Requisitos
 
@@ -169,5 +173,4 @@ O `.jar` sai em `target/BarracasPlugin.jar`.
 2. **As compras nas barracas não contam pro limite diário do Pix.** Elas não passam pelo `/pix pagar`.
 3. **O aviso de vencimento não é salvo em disco.** Se o servidor reiniciar nos últimos 30 min do aluguel, o dono pode receber o aviso duas vezes.
 4. **Uma área por barraca, em forma de caixa.** Barraca em formato de L precisa ser feita como duas barracas.
-5. **Placa de loja só funciona presa no baú** (na lateral) ou logo em cima ou embaixo dele. Placa solta perto do baú não vale.
-6. **A placa de entrada só é atualizada com o chunk carregado.** Ao carregar, ela pode mostrar o texto antigo por até 30s.
+5. **Atualizando da versão com baús:** as placas `[Vender]`/`[Comprar]` param de funcionar. Os baús que o inquilino já tinha colocado continuam abrindo pra ele, e quando o aluguel acaba o conteúdo deles vai pra retirada, como antes.

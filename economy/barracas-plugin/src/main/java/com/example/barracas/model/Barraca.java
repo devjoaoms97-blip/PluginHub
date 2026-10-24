@@ -2,7 +2,9 @@ package com.example.barracas.model;
 
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,12 +19,14 @@ import java.util.UUID;
  *       mínimo por ordem de chegada até o próximo ciclo.</li>
  * </ul>
  *
- * {@code blocosDoDono} guarda onde o inquilino colocou baús e placas — é o que sai da barraca
- * quando o aluguel acaba (o conteúdo dos baús vai pra caixa de retirada), deixando a construção
- * da staff intacta.
+ * A loja é um NPC (no ponto {@code npc}, marcado pela staff) com as {@code ofertas} do dono e o
+ * estoque virtual delas. Quando o aluguel acaba, o estoque vai pra caixa de retirada.
  *
- * {@code preco} null = usa o preço padrão do config. {@code placa} é a placa de entrada (dono ou
- * "Aluga-se"), opcional, sempre no mesmo mundo da barraca.
+ * {@code blocosDoDono} é das versões em que a loja era por baú e placa: guarda onde o inquilino
+ * colocou baús e placas, que saem (com o conteúdo indo pra retirada) quando o aluguel acaba.
+ *
+ * {@code preco} null = usa o preço padrão do config. {@code entrada} é onde fica o holograma (dono
+ * ou "Aluga-se"), opcional, sempre no mesmo mundo da barraca.
  */
 public class Barraca {
 
@@ -38,7 +42,10 @@ public class Barraca {
     private final Set<BlocoPos> blocosDoDono = new HashSet<>();
     private Leilao leilao;
     private Double preco;
-    private BlocoPos placa;
+    private BlocoPos entrada;
+    private BlocoPos npc;
+    private float npcYaw;
+    private final List<Oferta> ofertas = new ArrayList<>();
     private boolean renovacaoAutomatica;
     // desconto de VIP do último aluguel/renovação manual: usado na renovação automática com o dono offline
     private int ultimoDesconto;
@@ -144,12 +151,29 @@ public class Barraca {
         this.preco = preco;
     }
 
-    public BlocoPos getPlaca() {
-        return placa;
+    public BlocoPos getEntrada() {
+        return entrada;
     }
 
-    public void setPlaca(BlocoPos placa) {
-        this.placa = placa;
+    public void setEntrada(BlocoPos entrada) {
+        this.entrada = entrada;
+    }
+
+    public BlocoPos getNpc() {
+        return npc;
+    }
+
+    public float getNpcYaw() {
+        return npcYaw;
+    }
+
+    public void setNpc(BlocoPos npc, float yaw) {
+        this.npc = npc;
+        this.npcYaw = yaw;
+    }
+
+    public List<Oferta> getOfertas() {
+        return ofertas;
     }
 
     public boolean isRenovacaoAutomatica() {

@@ -4,10 +4,14 @@ C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugi
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\listener\LojaListener.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\listener\ProtecaoListener.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\manager\BarracaManager.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\manager\Hologramas.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\manager\Npcs.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\manager\RetiradaManager.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\model\Barraca.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\model\BlocoPos.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\model\Leilao.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\model\Oferta.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\util\DiscordIntegration.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\util\Formato.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\util\Itens.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\economy\barracas-plugin\src\main\java\com\example\barracas\util\PixIntegration.java

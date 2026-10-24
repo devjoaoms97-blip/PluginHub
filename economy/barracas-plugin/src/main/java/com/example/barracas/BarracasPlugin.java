@@ -5,6 +5,8 @@ import com.example.barracas.listener.JogadorListener;
 import com.example.barracas.listener.LojaListener;
 import com.example.barracas.listener.ProtecaoListener;
 import com.example.barracas.manager.BarracaManager;
+import com.example.barracas.manager.Hologramas;
+import com.example.barracas.manager.Npcs;
 import com.example.barracas.manager.RetiradaManager;
 import com.example.barracas.model.Barraca;
 import com.example.barracas.util.DiscordIntegration;
@@ -25,6 +27,9 @@ public class BarracasPlugin extends JavaPlugin {
     private Economy economy;
     private RetiradaManager retiradaManager;
     private BarracaManager barracaManager;
+    private Hologramas hologramas;
+    private Npcs npcs;
+    private LojaListener loja;
     private PixIntegration pixIntegration;
     private DiscordIntegration discord;
 
@@ -41,6 +46,8 @@ public class BarracasPlugin extends JavaPlugin {
         }
 
         this.retiradaManager = new RetiradaManager(this);
+        this.hologramas = new Hologramas(this);
+        this.npcs = new Npcs(this);
         this.barracaManager = new BarracaManager(this);
         this.pixIntegration = new PixIntegration(this);
 
@@ -49,8 +56,13 @@ public class BarracasPlugin extends JavaPlugin {
         getCommand("barraca").setTabCompleter(comando);
 
         getServer().getPluginManager().registerEvents(new ProtecaoListener(this), this);
-        getServer().getPluginManager().registerEvents(new LojaListener(this), this);
+        this.loja = new LojaListener(this);
+        getServer().getPluginManager().registerEvents(loja, this);
         getServer().getPluginManager().registerEvents(new JogadorListener(this), this);
+        getServer().getPluginManager().registerEvents(hologramas, this);
+        getServer().getPluginManager().registerEvents(npcs, this);
+        getServer().getScheduler().runTask(this, hologramas::carregarTodos);
+        getServer().getScheduler().runTask(this, npcs::carregarTodos);
 
         // Vencimento de aluguel e fim de leilão — a cada 1s, pra leilão terminar na hora certa
         getServer().getScheduler().runTaskTimer(this, barracaManager::tick, 20L, 20L);
@@ -60,6 +72,12 @@ public class BarracasPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (hologramas != null) {
+            hologramas.removerTodos();
+        }
+        if (npcs != null) {
+            npcs.removerTodos();
+        }
         if (barracaManager != null) {
             barracaManager.salvar();
         }
@@ -93,6 +111,18 @@ public class BarracasPlugin extends JavaPlugin {
         return barracaManager;
     }
 
+    public Hologramas getHologramas() {
+        return hologramas;
+    }
+
+    public Npcs getNpcs() {
+        return npcs;
+    }
+
+    public LojaListener getLoja() {
+        return loja;
+    }
+
     public PixIntegration getPixIntegration() {
         return pixIntegration;
     }
@@ -115,15 +145,22 @@ public class BarracasPlugin extends JavaPlugin {
         return Math.max(1, getConfig().getInt("aluguel.duracao-horas", 6)) * 3_600_000L;
     }
 
-    public int getMaxBaus(Barraca barraca) {
+    /** Quantos anúncios (/barraca vender e /barraca comprar) a loja dessa barraca pode ter. */
+    public int getMaxOfertas(Barraca barraca) {
         String tipo = barraca.isEspecial() ? "especial" : "normal";
-        return Math.max(1, getConfig().getInt("barracas." + tipo + ".max-baus", barraca.isEspecial() ? 8 : 4));
+        return Math.max(1, Math.min(21, getConfig().getInt("barracas." + tipo + ".max-anuncios", barraca.isEspecial() ? 10 : 5)));
+    }
+
+    /** Quanto cabe no estoque virtual de cada anúncio, em unidades do item. */
+    public int getEstoqueMaximo() {
+        return Math.max(1, getConfig().getInt("barracas.estoque-por-anuncio", 27 * 64));
     }
 
     public double getTaxaVendaPercentual() {
         return Math.max(0, Math.min(100, getConfig().getDouble("vendas.taxa-percentual", 5)));
     }
 
+    /** Baús da decoração e os que sobraram da época da loja por baú. */
     public boolean isBau(Material material) {
         return material == Material.CHEST || material == Material.TRAPPED_CHEST || material == Material.BARREL;
     }

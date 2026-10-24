@@ -5,8 +5,10 @@ import com.example.barracas.manager.BarracaManager;
 import com.example.barracas.model.Barraca;
 import com.example.barracas.model.BlocoPos;
 import com.example.barracas.model.Leilao;
+import com.example.barracas.model.Oferta;
 import com.example.barracas.util.Formato;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -14,6 +16,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +26,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * /barraca — jogador: alugar, renovar, autorenovar, sair, lance, info, lista, retirar.
- * Staff (barracas.admin): pos1, pos2, criar, remover, liberar, preco, placa, reload.
+ * /barraca — jogador: alugar, renovar, autorenovar, sair, lance, info, lista, retirar, e a loja
+ * (vender, comprar, loja). Staff (barracas.admin): pos1, pos2, criar, remover, liberar, preco,
+ * holograma, npc, reload. Criar, npc e holograma também vão pelo console, com o lugar depois de
+ * "em" (é assim que o EstruturasPlugin cadastra as barracas do spawn).
  */
 public class BarracaCommand implements CommandExecutor, TabCompleter {
 
@@ -50,10 +55,16 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         }
 
         String sub = args[0].toLowerCase(Locale.ROOT);
+        int em = List.of(args).indexOf("em");
+        if (em > 0 && (sub.equals("criar") || sub.equals("npc") || sub.equals("holograma"))) {
+            if (exigirAdmin(sender)) porLocal(sender, sub, args, em);
+            return true;
+        }
         switch (sub) {
             case "lista" -> lista(sender);
             case "info" -> info(sender, args);
-            case "alugar", "renovar", "autorenovar", "sair", "lance", "retirar", "pos1", "pos2", "criar", "placa" -> {
+            case "alugar", "renovar", "autorenovar", "sair", "lance", "retirar", "vender", "comprar", "loja",
+                 "pos1", "pos2", "criar", "holograma", "npc" -> {
                 if (!(sender instanceof Player jogador)) {
                     sender.sendMessage("§cSó jogadores podem usar esse comando.");
                     return true;
@@ -65,9 +76,13 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
                     case "sair" -> sair(jogador, args);
                     case "lance" -> lance(jogador, args);
                     case "retirar" -> retirar(jogador);
+                    case "vender" -> anunciar(jogador, args, Oferta.Tipo.VENDA);
+                    case "comprar" -> anunciar(jogador, args, Oferta.Tipo.COMPRA);
+                    case "loja" -> loja(jogador);
+                    case "npc" -> npc(jogador, args);
                     case "pos1", "pos2" -> marcarPosicao(jogador, sub);
                     case "criar" -> criar(jogador, args);
-                    case "placa" -> placa(jogador, args);
+                    case "holograma" -> holograma(jogador, args);
                 }
             }
             case "preco" -> preco(sender, args);
@@ -139,8 +154,8 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
 
         jogador.sendMessage("§aVocê alugou a barraca §f" + barraca.getId() + " §apor §f" + Formato.tempo(duracao)
                 + " §a(§f" + Formato.valor(preco) + "§a" + (desconto > 0 ? ", desconto de VIP: " + desconto + "%" : "") + ").");
-        jogador.sendMessage("§7Coloque até §f" + plugin.getMaxBaus(barraca) + " baús §7com o item e uma placa em cada: "
-                + "§f[Vender] §7(ou §f[Comprar]§7) / §fquantidade §7/ §fpreço§7.");
+        jogador.sendMessage("§7Sua loja é o NPC da barraca. Com o item na mão, anuncie com §f/barraca vender <quantidade> <preço>"
+                + " §7(ou §f/barraca comprar§7) e abasteça clicando no NPC ou em §f/barraca loja§7.");
         if (!barraca.isEspecial()) {
             jogador.sendMessage("§7Pra não perder a barraca, ligue a renovação automática: §f/barraca autorenovar§7.");
         }
@@ -215,7 +230,7 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length < 2 || !args[1].equalsIgnoreCase("confirmar")) {
             jogador.sendMessage("§eIsso devolve a barraca §f" + barraca.getId() + " §eagora, §csem reembolso§e. "
-                    + "Os itens dos baús vão pra §f/barraca retirar§e. Pra confirmar: §f/barraca sair confirmar");
+                    + "O estoque da loja vai pra §f/barraca retirar§e. Pra confirmar: §f/barraca sair confirmar");
             return;
         }
         int pilhas = barracas().liberar(barraca, true);
@@ -247,6 +262,103 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         }
     }
 
+    /** /barraca vender|comprar <quantidade> <preço>, com o item na mão: cria um anúncio na loja do NPC. */
+    private void anunciar(Player jogador, String[] args, Oferta.Tipo tipo) {
+        String comando = tipo == Oferta.Tipo.VENDA ? "vender" : "comprar";
+        Barraca barraca = barracas().getBarracaDe(jogador.getUniqueId());
+        if (barraca == null || !barraca.estaAlugada(System.currentTimeMillis())) {
+            jogador.sendMessage("§cVocê precisa ter uma barraca alugada. Veja as livres em §f/barraca lista§c.");
+            return;
+        }
+        if (args.length < 3) {
+            jogador.sendMessage("§cUso: §f/barraca " + comando + " <quantidade> <preço> §7(com o item na mão)");
+            return;
+        }
+        ItemStack mao = jogador.getInventory().getItemInMainHand();
+        if (mao.getType().isAir()) {
+            jogador.sendMessage("§cSegure na mão o item que quer " + comando + ".");
+            return;
+        }
+        int quantidade;
+        try {
+            quantidade = Integer.parseInt(args[1].replace("x", ""));
+        } catch (NumberFormatException e) {
+            quantidade = -1;
+        }
+        if (quantidade < 1 || quantidade > plugin.getEstoqueMaximo()) {
+            jogador.sendMessage("§cQuantidade por " + (tipo == Oferta.Tipo.VENDA ? "venda" : "compra")
+                    + " inválida (1 a " + plugin.getEstoqueMaximo() + ").");
+            return;
+        }
+        double preco = Formato.lerPreco(args[2]);
+        if (preco <= 0) {
+            jogador.sendMessage("§cPreço inválido. Use um número, ex: §f150§c ou §f150,50§c.");
+            return;
+        }
+        if (barraca.getOfertas().size() >= plugin.getMaxOfertas(barraca)) {
+            jogador.sendMessage("§cSua loja já tem o máximo de §f" + plugin.getMaxOfertas(barraca)
+                    + " §canúncios. Remova um (shift + clique no menu da loja) antes.");
+            return;
+        }
+        for (Oferta existente : barraca.getOfertas()) {
+            if (existente.getTipo() == tipo && existente.mesmoItem(mao)) {
+                jogador.sendMessage("§cVocê já tem um anúncio pra " + comando + " esse item. Remova o antigo pra mudar o preço.");
+                return;
+            }
+        }
+
+        Oferta oferta = new Oferta(tipo, mao, quantidade, preco, 0);
+        barraca.getOfertas().add(oferta);
+        String descricao = quantidade + "x " + Formato.nomeItem(mao) + " §apor §f" + Formato.valor(preco);
+        if (tipo == Oferta.Tipo.VENDA) {
+            jogador.sendMessage("§aAnúncio criado: vende §f" + descricao + "§a.");
+            plugin.getLoja().depositar(jogador, oferta); // já leva o que tiver no inventário
+        } else {
+            jogador.sendMessage("§aAnúncio criado: compra §f" + descricao
+                    + "§a. O pagamento sai da sua conta; retire os itens comprados no NPC.");
+        }
+        barracas().salvar();
+    }
+
+    private void loja(Player jogador) {
+        Barraca barraca = barracas().getBarracaDe(jogador.getUniqueId());
+        if (barraca == null || !barraca.estaAlugada(System.currentTimeMillis())) {
+            jogador.sendMessage("§cVocê não tem nenhuma barraca alugada.");
+            return;
+        }
+        plugin.getLoja().abrir(jogador, barraca);
+    }
+
+    /** /barraca npc <id> [remover]: o vendedor fica onde a staff está, olhando pra onde ela olha. */
+    private void npc(Player jogador, String[] args) {
+        if (!exigirAdmin(jogador)) return;
+        if (args.length < 2) {
+            jogador.sendMessage("§cUso: §f/barraca npc <id> §7(no lugar do vendedor, olhando pro balcão) §7| §f/barraca npc <id> remover");
+            return;
+        }
+        Barraca barraca = barracas().get(args[1]);
+        if (barraca == null) {
+            jogador.sendMessage("§cBarraca §f" + args[1] + " §cnão existe.");
+            return;
+        }
+        if (args.length >= 3 && args[2].equalsIgnoreCase("remover")) {
+            barraca.setNpc(null, 0);
+            barracas().salvar(); // salvar já tira o NPC
+            jogador.sendMessage("§aA barraca §f" + barraca.getId() + " §anão tem mais ponto de NPC.");
+            return;
+        }
+        if (!jogador.getWorld().getName().equals(barraca.getMundo())) {
+            jogador.sendMessage("§cO NPC precisa ficar no mesmo mundo da barraca.");
+            return;
+        }
+        // yaw arredondado pro ponto cardeal mais próximo: o vendedor fica alinhado com o balcão
+        float yaw = Math.round(jogador.getLocation().getYaw() / 90f) * 90f;
+        barraca.setNpc(BlocoPos.de(jogador.getLocation().getBlock()), yaw);
+        barracas().salvar(); // salvar já põe o NPC (se a barraca estiver alugada)
+        jogador.sendMessage("§aPonto do NPC da barraca §f" + barraca.getId() + " §amarcado onde você está. "
+                + "§7Ele aparece com a skin do dono enquanto a barraca estiver alugada.");
+    }
+
     private void retirar(Player jogador) {
         int[] resultado = plugin.getRetiradaManager().retirar(jogador);
         if (resultado[0] == 0 && resultado[1] == 0) {
@@ -276,7 +388,7 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("§e§l--- Barraca " + barraca.getId() + " ---");
         sender.sendMessage("§7Tipo: §f" + (barraca.isEspecial() ? "especial (leilão, não renova)" : "normal")
-                + " §7| Máx. de baús: §f" + plugin.getMaxBaus(barraca));
+                + " §7| Máx. de anúncios: §f" + plugin.getMaxOfertas(barraca));
         sender.sendMessage("§7" + (barraca.isEspecial() ? "Lance mínimo" : "Aluguel") + ": §f"
                 + Formato.valor(plugin.getPrecoAluguel(barraca)) + " §7por §f" + Formato.tempo(plugin.getDuracaoAluguelMs())
                 + (barraca.getPreco() == null ? " §8(preço padrão)" : ""));
@@ -284,6 +396,8 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
                 + (barraca.isRenovacaoAutomatica() ? " §8(renovação automática ligada)" : ""));
         if (sender.hasPermission(BarracasPlugin.PERMISSAO_ADMIN)) {
             sender.sendMessage("§7Área: §f" + barraca.getMundo() + " " + barraca.getMin() + " → " + barraca.getMax());
+            sender.sendMessage("§7NPC: " + (barraca.getNpc() == null ? "§cnão marcado §7(§f/barraca npc " + barraca.getId() + "§7)"
+                    : "§f" + barraca.getNpc()));
         }
     }
 
@@ -356,19 +470,81 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
             jogador.sendMessage("§cMarque os dois cantos antes, com §f/barraca pos1 §ce §f/barraca pos2§c.");
             return;
         }
+        boolean especial = args.length >= 3 && args[2].equalsIgnoreCase("especial");
+        if (criarArea(jogador, id, especial, mundo, a, b)) {
+            pos1.remove(uuid);
+            pos2.remove(uuid);
+        }
+    }
+
+    private boolean criarArea(CommandSender sender, String id, boolean especial, World mundo, BlocoPos a, BlocoPos b) {
         BlocoPos min = new BlocoPos(Math.min(a.x(), b.x()), Math.min(a.y(), b.y()), Math.min(a.z(), b.z()));
         BlocoPos max = new BlocoPos(Math.max(a.x(), b.x()), Math.max(a.y(), b.y()), Math.max(a.z(), b.z()));
         if (barracas().sobrepoeAlguma(mundo.getName(), min, max)) {
-            jogador.sendMessage("§cEssa área sobrepõe outra barraca.");
+            sender.sendMessage("§cEssa área sobrepõe outra barraca.");
+            return false;
+        }
+        barracas().criar(id, mundo, a, b, especial);
+        sender.sendMessage("§aBarraca §f" + id + " §acriada" + (especial ? " como §6especial§a (já entrou em leilão)" : "")
+                + "§a: §f" + min + " → " + max + "§a.");
+        return true;
+    }
+
+    /**
+     * Versão com o lugar explícito, pro console:
+     * criar <id> [especial] em <mundo> <x1> <y1> <z1> <x2> <y2> <z2> |
+     * npc <id> em <mundo> <x> <y> <z> <yaw> | holograma <id> em <mundo> <x> <y> <z>
+     */
+    private void porLocal(CommandSender sender, String sub, String[] args, int em) {
+        int numeros = switch (sub) {
+            case "criar" -> 6;
+            case "npc" -> 4;
+            default -> 3;
+        };
+        World mundo = args.length > em + 1 ? Bukkit.getWorld(args[em + 1]) : null;
+        if (args.length < em + 2 + numeros || mundo == null) {
+            sender.sendMessage("§cUso: §f/barraca criar <id> [especial] em <mundo> <x1> <y1> <z1> <x2> <y2> <z2>§c, "
+                    + "§f/barraca npc <id> em <mundo> <x> <y> <z> <yaw> §cou §f/barraca holograma <id> em <mundo> <x> <y> <z>");
+            return;
+        }
+        int[] v = new int[numeros];
+        try {
+            for (int i = 0; i < numeros; i++) v[i] = (int) Math.floor(Double.parseDouble(args[em + 2 + i]));
+        } catch (NumberFormatException e) {
+            sender.sendMessage("§cCoordenadas inválidas.");
+            return;
+        }
+        String id = args[1].toLowerCase(Locale.ROOT);
+
+        if (sub.equals("criar")) {
+            if (!id.matches("[a-z0-9_-]{1,24}")) {
+                sender.sendMessage("§cId inválido: use letras minúsculas, números, - ou _ (até 24 caracteres).");
+            } else if (barracas().get(id) != null) {
+                sender.sendMessage("§cJá existe uma barraca §f" + id + "§c.");
+            } else {
+                criarArea(sender, id, args[2].equalsIgnoreCase("especial"), mundo,
+                        new BlocoPos(v[0], v[1], v[2]), new BlocoPos(v[3], v[4], v[5]));
+            }
             return;
         }
 
-        boolean especial = args.length >= 3 && args[2].equalsIgnoreCase("especial");
-        barracas().criar(id, mundo, a, b, especial);
-        pos1.remove(uuid);
-        pos2.remove(uuid);
-        jogador.sendMessage("§aBarraca §f" + id + " §acriada" + (especial ? " como §6especial§a (já entrou em leilão)" : "")
-                + "§a: §f" + min + " → " + max + "§a.");
+        Barraca barraca = barracas().get(id);
+        if (barraca == null) {
+            sender.sendMessage("§cBarraca §f" + args[1] + " §cnão existe.");
+            return;
+        }
+        if (!mundo.getName().equals(barraca.getMundo())) {
+            sender.sendMessage("§cPrecisa ser no mesmo mundo da barraca.");
+            return;
+        }
+        BlocoPos pos = new BlocoPos(v[0], v[1], v[2]);
+        if (sub.equals("npc")) {
+            barraca.setNpc(pos, v[3]);
+        } else {
+            barraca.setEntrada(pos);
+        }
+        barracas().salvar(); // salvar já põe o NPC/holograma
+        sender.sendMessage("§a" + (sub.equals("npc") ? "NPC" : "Holograma") + " da barraca §f" + id + " §aem §f" + pos + "§a.");
     }
 
     /** /barraca preco <id> <valor|padrao> — preço próprio da barraca (e lance mínimo, se especial). */
@@ -399,11 +575,11 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
                 + (barraca.isEspecial() ? " §7— é o lance mínimo dos próximos leilões." : " §7— vale a partir do próximo aluguel ou renovação."));
     }
 
-    /** /barraca placa <id> [remover] — a placa pra onde a staff está olhando vira a placa de entrada. */
-    private void placa(Player jogador, String[] args) {
+    /** /barraca holograma <id> [remover]: o holograma de entrada vai pro bloco onde a staff está. */
+    private void holograma(Player jogador, String[] args) {
         if (!exigirAdmin(jogador)) return;
         if (args.length < 2) {
-            jogador.sendMessage("§cUso: §f/barraca placa <id> §7(olhando pra uma placa) §7| §f/barraca placa <id> remover");
+            jogador.sendMessage("§cUso: §f/barraca holograma <id> §7(no lugar da entrada) §7| §f/barraca holograma <id> remover");
             return;
         }
         Barraca barraca = barracas().get(args[1]);
@@ -412,29 +588,19 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
             return;
         }
         if (args.length >= 3 && args[2].equalsIgnoreCase("remover")) {
-            barraca.setPlaca(null);
-            barracas().salvar();
-            jogador.sendMessage("§aA barraca §f" + barraca.getId() + " §anão tem mais placa de entrada (a placa continua lá, sem atualizar).");
+            barraca.setEntrada(null);
+            barracas().salvar(); // salvar já tira o holograma
+            jogador.sendMessage("§aA barraca §f" + barraca.getId() + " §anão tem mais holograma de entrada.");
             return;
         }
-        Block alvo = jogador.getTargetBlockExact(6);
-        if (alvo == null || !org.bukkit.Tag.ALL_SIGNS.isTagged(alvo.getType())) {
-            jogador.sendMessage("§cOlhe pra uma placa (até 6 blocos) e rode o comando de novo.");
+        if (!jogador.getWorld().getName().equals(barraca.getMundo())) {
+            jogador.sendMessage("§cO holograma precisa ficar no mesmo mundo da barraca.");
             return;
         }
-        if (!alvo.getWorld().getName().equals(barraca.getMundo())) {
-            jogador.sendMessage("§cA placa precisa estar no mesmo mundo da barraca.");
-            return;
-        }
-        Barraca outra = barracas().getBarracaDaPlaca(alvo);
-        if (outra != null && outra != barraca) {
-            jogador.sendMessage("§cEssa placa já é a placa de entrada da barraca §f" + outra.getId() + "§c.");
-            return;
-        }
-        barraca.setPlaca(BlocoPos.de(alvo));
-        barracas().salvar(); // salvar já escreve a placa
-        jogador.sendMessage("§aPlaca de entrada da barraca §f" + barraca.getId() + " §adefinida. Ela mostra o dono, ou "
-                + "\"Aluga-se\" com o preço quando estiver livre, e se atualiza sozinha.");
+        barraca.setEntrada(BlocoPos.de(jogador.getLocation().getBlock()));
+        barracas().salvar(); // salvar já põe o holograma
+        jogador.sendMessage("§aHolograma de entrada da barraca §f" + barraca.getId() + " §acolocado onde você está. Ele mostra o dono, ou "
+                + "\"Aluga-se\" com o preço quando estiver livre, e se atualiza sozinho.");
     }
 
     private void remover(CommandSender sender, String[] args) {
@@ -496,14 +662,18 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/barraca autorenovar §7- liga/desliga a renovação automática do aluguel");
         sender.sendMessage("§f/barraca lance <id> <valor> §7- dá um lance no leilão de uma barraca especial");
         sender.sendMessage("§f/barraca sair confirmar §7- devolve sua barraca antes da hora (sem reembolso)");
-        sender.sendMessage("§f/barraca retirar §7- pega os itens que estavam nos baús quando o aluguel acabou");
+        sender.sendMessage("§f/barraca vender <quantidade> <preço> §7- anuncia o item da mão na loja do seu NPC");
+        sender.sendMessage("§f/barraca comprar <quantidade> <preço> §7- sua loja passa a comprar o item da mão");
+        sender.sendMessage("§f/barraca loja §7- abre o estoque da sua loja (o mesmo que clicar no NPC)");
+        sender.sendMessage("§f/barraca retirar §7- pega os itens da loja quando o aluguel acabou");
         if (sender.hasPermission(BarracasPlugin.PERMISSAO_ADMIN)) {
             sender.sendMessage("§f/barraca pos1 §7| §fpos2 §7- (staff) marca os cantos da área");
             sender.sendMessage("§f/barraca criar <id> [especial] §7- (staff) cria a barraca na área marcada");
             sender.sendMessage("§f/barraca remover <id> §7- (staff) apaga a barraca");
             sender.sendMessage("§f/barraca liberar <id> §7- (staff) encerra o aluguel atual");
             sender.sendMessage("§f/barraca preco <id> <valor|padrao> §7- (staff) preço próprio da barraca");
-            sender.sendMessage("§f/barraca placa <id> [remover] §7- (staff) placa de entrada (olhando pra placa)");
+            sender.sendMessage("§f/barraca holograma <id> [remover] §7- (staff) holograma de entrada, onde você está");
+            sender.sendMessage("§f/barraca npc <id> [remover] §7- (staff) lugar do NPC vendedor, onde você está");
             sender.sendMessage("§f/barraca reload §7- (staff) recarrega o config.yml");
         }
     }
@@ -512,14 +682,15 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> opcoes = new ArrayList<>();
         if (args.length == 1) {
-            opcoes.addAll(List.of("lista", "info", "alugar", "renovar", "autorenovar", "lance", "sair", "retirar"));
+            opcoes.addAll(List.of("lista", "info", "alugar", "renovar", "autorenovar", "lance", "sair", "retirar",
+                    "vender", "comprar", "loja"));
             if (sender.hasPermission(BarracasPlugin.PERMISSAO_ADMIN)) {
-                opcoes.addAll(List.of("pos1", "pos2", "criar", "remover", "liberar", "preco", "placa", "reload"));
+                opcoes.addAll(List.of("pos1", "pos2", "criar", "remover", "liberar", "preco", "holograma", "npc", "reload"));
             }
         } else if (args.length == 2) {
             String sub = args[0].toLowerCase(Locale.ROOT);
             switch (sub) {
-                case "info", "remover", "preco", "placa" -> opcoes.addAll(barracas().getBarracas().keySet());
+                case "info", "remover", "preco", "holograma", "npc" -> opcoes.addAll(barracas().getBarracas().keySet());
                 case "alugar" -> barracas().getBarracas().values().stream()
                         .filter(b -> b.getDono() == null && !b.emLeilao()).forEach(b -> opcoes.add(b.getId()));
                 case "lance" -> barracas().getBarracas().values().stream()
@@ -534,7 +705,7 @@ public class BarracaCommand implements CommandExecutor, TabCompleter {
             opcoes.add("especial");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("preco")) {
             opcoes.add("padrao");
-        } else if (args.length == 3 && args[0].equalsIgnoreCase("placa")) {
+        } else if (args.length == 3 && (args[0].equalsIgnoreCase("holograma") || args[0].equalsIgnoreCase("npc"))) {
             opcoes.add("remover");
         }
 

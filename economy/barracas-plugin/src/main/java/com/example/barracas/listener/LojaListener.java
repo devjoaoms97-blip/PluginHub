@@ -2,228 +2,245 @@ package com.example.barracas.listener;
 
 import com.example.barracas.BarracasPlugin;
 import com.example.barracas.model.Barraca;
-import com.example.barracas.model.BlocoPos;
+import com.example.barracas.model.Oferta;
 import com.example.barracas.util.Formato;
+import com.example.barracas.util.Itens;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Container;
-import org.bukkit.block.Sign;
-import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
- * Loja por placa nos baús da barraca.
- *
- * O inquilino coloca um baú com o item, e uma placa nele (na parede do baú ou em cima dele):
- * <pre>
- * [Vender]
- * 64
- * 150        (preço na 3ª ou na 4ª linha)
- * </pre>
- * O plugin reescreve a placa ({@code [Vender] / 64x / diamond / R$ 150,00}) e grava o item, a
- * quantidade, o preço e o dono no PersistentDataContainer da placa — o item vendido fica fixo
- * desde a criação, então ninguém troca o conteúdo do baú depois que o comprador viu o anúncio.
- * A placa é encerada pra ninguém editar o texto.
- *
- * Botão direito na placa compra; botão esquerdo só mostra as informações (e o estoque).
- *
- * <b>[Comprar]</b> é o contrário: o dono paga quem traz o item. Mesmo formato de placa (o baú
- * precisa ter uma unidade do item na criação, pra fixar qual é). O visitante clica com o item no
- * inventário: os itens vão pro baú, e o preço sai da conta do dono (com a mesma taxa de venda,
- * descontada de quem vendeu). Precisa de espaço no baú e saldo do dono.
+ * Loja do NPC da barraca. Clicar no vendedor abre um menu com as ofertas do dono:
+ * <ul>
+ *   <li><b>Visitante</b>: clique numa oferta de venda compra um lote; numa oferta de compra, vende
+ *       um lote pro dono (os itens saem do inventário e o dinheiro sai da conta do dono).</li>
+ *   <li><b>Dono</b>: o mesmo menu vira o estoque — esquerdo coloca do inventário, direito retira,
+ *       shift + clique remove o anúncio. Os anúncios são criados com /barraca vender e /barraca comprar.</li>
+ * </ul>
+ * O estoque é virtual (fica na barraca, no barracas.yml). A taxa de venda sai de quem recebe.
  */
 public class LojaListener implements Listener {
 
-    private static final int QUANTIDADE_MAXIMA = 27 * 64; // um baú simples cheio
+    private static final LegacyComponentSerializer LEGADO = LegacyComponentSerializer.legacySection();
+    private static final int TAMANHO = 27;
+    private static final int SLOT_INFO = 22;
+
+    /** Menu aberto: de qual barraca, se é a visão do dono, e qual oferta está em cada slot. */
+    private static final class Menu implements InventoryHolder {
+        private final String barraca;
+        private final boolean dono;
+        private final Map<Integer, Oferta> ofertas = new HashMap<>();
+        private Inventory inventario;
+
+        private Menu(String barraca, boolean dono) {
+            this.barraca = barraca;
+            this.dono = dono;
+        }
+
+        @Override
+        public Inventory getInventory() {
+            return inventario;
+        }
+    }
 
     private final BarracasPlugin plugin;
-    private final NamespacedKey chaveItem;
-    private final NamespacedKey chaveQuantidade;
-    private final NamespacedKey chavePreco;
-    private final NamespacedKey chaveDono;
-    private final NamespacedKey chaveBarraca;
-    private final NamespacedKey chaveModo; // "vender" (padrão, placas antigas não têm) ou "comprar"
 
     public LojaListener(BarracasPlugin plugin) {
         this.plugin = plugin;
-        this.chaveItem = new NamespacedKey(plugin, "loja_item");
-        this.chaveQuantidade = new NamespacedKey(plugin, "loja_quantidade");
-        this.chavePreco = new NamespacedKey(plugin, "loja_preco");
-        this.chaveDono = new NamespacedKey(plugin, "loja_dono");
-        this.chaveBarraca = new NamespacedKey(plugin, "loja_barraca");
-        this.chaveModo = new NamespacedKey(plugin, "loja_modo");
     }
 
     // ---------------------------------------------------------------------
-    // Criação da placa
+    // Abrir
     // ---------------------------------------------------------------------
-    // HIGHEST (não MONITOR) porque reescreve o texto; roda depois da proteção (HIGH) ter cancelado o que não pode
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void aoEscreverPlaca(SignChangeEvent evento) {
-        String primeira = textoPuro(evento.getLine(0));
-        boolean compra = primeira.equalsIgnoreCase("[comprar]");
-        if (!compra && !primeira.equalsIgnoreCase("[vender]")) return;
-        String rotulo = compra ? "[Comprar]" : "[Vender]";
+    @EventHandler(priority = EventPriority.LOW)
+    public void aoClicarNpc(PlayerInteractEntityEvent evento) {
+        if (evento.getHand() != EquipmentSlot.HAND) return;
+        String id = plugin.getNpcs().getBarraca(evento.getRightClicked());
+        if (id == null) return;
+        evento.setCancelled(true);
 
-        Player jogador = evento.getPlayer();
-        Block bloco = evento.getBlock();
-        Barraca barraca = plugin.getBarracaManager().getBarracaEm(bloco);
-        if (barraca == null || !jogador.getUniqueId().equals(barraca.getDono())) {
-            jogador.sendMessage("§cPlacas §f" + rotulo + " §csó funcionam dentro da sua barraca alugada.");
+        Barraca barraca = plugin.getBarracaManager().get(id);
+        if (barraca == null || !barraca.estaAlugada(System.currentTimeMillis())) {
+            evento.getPlayer().sendMessage("§cEssa loja está fechada.");
             return;
         }
+        abrir(evento.getPlayer(), barraca);
+    }
 
-        int quantidade;
-        try {
-            quantidade = Integer.parseInt(textoPuro(evento.getLine(1)).replace("x", "").trim());
-        } catch (NumberFormatException e) {
-            quantidade = -1;
-        }
-        if (quantidade < 1 || quantidade > QUANTIDADE_MAXIMA) {
-            jogador.sendMessage("§cNa 2ª linha coloque a quantidade por " + (compra ? "compra" : "venda") + " (1 a " + QUANTIDADE_MAXIMA + ").");
-            return;
-        }
+    /** Abre a loja: o dono vê o estoque, os outros veem a vitrine. */
+    public void abrir(Player jogador, Barraca barraca) {
+        boolean dono = jogador.getUniqueId().equals(barraca.getDono());
+        Menu menu = new Menu(barraca.getId(), dono);
+        String titulo = dono ? "§8Sua loja (estoque)" : "§8Loja de " + barraca.getNomeDono();
+        menu.inventario = Bukkit.createInventory(menu, TAMANHO, LEGADO.deserialize(titulo));
+        desenhar(menu, barraca);
+        jogador.openInventory(menu.inventario);
+    }
 
-        double preco = Formato.lerPreco(textoPuro(evento.getLine(3)));
-        if (preco <= 0) {
-            preco = Formato.lerPreco(textoPuro(evento.getLine(2))); // aceita o preço na 3ª linha também
-        }
-        if (preco <= 0) {
-            jogador.sendMessage("§cNa 3ª ou 4ª linha coloque o preço (ex: §f150§c ou §f150,50§c).");
-            return;
-        }
+    private void desenhar(Menu menu, Barraca barraca) {
+        Inventory inv = menu.inventario;
+        inv.clear();
+        menu.ofertas.clear();
 
-        Block bloBau = acharBau(bloco);
-        if (bloBau == null || !barraca.getBlocosDoDono().contains(BlocoPos.de(bloBau))
-                || !(bloBau.getState() instanceof Container container)) {
-            jogador.sendMessage("§cA placa precisa estar presa num baú seu (na lateral ou em cima dele).");
-            return;
+        List<Oferta> ofertas = barraca.getOfertas();
+        for (int i = 0; i < ofertas.size() && i < SLOT_INFO; i++) {
+            Oferta oferta = ofertas.get(i);
+            menu.ofertas.put(i, oferta);
+            inv.setItem(i, icone(oferta, menu.dono));
         }
 
-        ItemStack modelo = primeiroItem(container.getInventory());
-        if (modelo == null) {
-            jogador.sendMessage(compra
-                    ? "§cColoque no baú uma unidade do item que quer comprar antes de criar a placa (é assim que ela sabe qual é)."
-                    : "§cColoque o item que quer vender no baú antes de criar a placa.");
-            return;
+        List<String> info = new ArrayList<>();
+        if (menu.dono) {
+            info.add("§7Anúncios: §f" + ofertas.size() + "/" + plugin.getMaxOfertas(barraca));
+            info.add("§7Novo anúncio, com o item na mão:");
+            info.add("§f/barraca vender <quantidade> <preço>");
+            info.add("§f/barraca comprar <quantidade> <preço>");
+            info.add("§7Taxa de cada venda: §f" + plugin.getTaxaVendaPercentual() + "%");
+        } else {
+            info.add("§7Dono: §f" + barraca.getNomeDono());
+            info.add(ofertas.isEmpty() ? "§7Nenhum anúncio no momento." : "§7Clique num item pra comprar ou vender.");
+        }
+        inv.setItem(SLOT_INFO, item(Material.OAK_SIGN, (barraca.isEspecial() ? "§6★ " : "§e") + "Barraca " + barraca.getId(), info));
+    }
+
+    private ItemStack icone(Oferta oferta, boolean dono) {
+        ItemStack icone = oferta.getModelo();
+        icone.setAmount(Math.max(1, Math.min(oferta.getQuantidade(), icone.getMaxStackSize())));
+        int capacidade = plugin.getEstoqueMaximo();
+        int lotes = oferta.getEstoque() / oferta.getQuantidade();
+
+        List<String> lore = new ArrayList<>();
+        boolean venda = oferta.getTipo() == Oferta.Tipo.VENDA;
+        lore.add(venda ? "§a§lÀ VENDA" : "§d§lCOMPRA-SE");
+        lore.add("§f" + oferta.getQuantidade() + "x §7por §f" + Formato.valor(oferta.getPreco()));
+        if (dono) {
+            if (venda) {
+                lore.add("§7Estoque: §f" + oferta.getEstoque() + "/" + capacidade + " §7(" + lotes + " venda(s))");
+                lore.add("§eEsquerdo: §7colocar do seu inventário");
+                lore.add("§eDireito: §7retirar o estoque");
+            } else {
+                lore.add("§7Já comprado: §f" + oferta.getEstoque() + "/" + capacidade);
+                lore.add("§eDireito: §7retirar os itens comprados");
+            }
+            lore.add("§cShift + clique: §7remover o anúncio");
+        } else if (venda) {
+            lore.add(lotes > 0 ? "§7Estoque: §f" + lotes + " venda(s)" : "§cSem estoque");
+            lore.add("§eClique pra comprar");
+        } else {
+            int cabe = (capacidade - oferta.getEstoque()) / oferta.getQuantidade();
+            lore.add(cabe > 0 ? "§7Ainda compra: §f" + cabe + " vez(es)" : "§cNão está comprando agora");
+            lore.add("§eClique pra vender");
         }
 
-        String nomeItem = Formato.nomeItem(modelo);
-        evento.line(0, legado(compra ? "§5§l[Comprar]" : "§1§l[Vender]"));
-        evento.line(1, legado("§0" + quantidade + "x"));
-        evento.line(2, legado("§0" + (nomeItem.length() > 15 ? nomeItem.substring(0, 15) : nomeItem)));
-        evento.line(3, legado("§2" + Formato.valor(preco)));
+        ItemMeta meta = icone.getItemMeta();
+        List<Component> linhas = new ArrayList<>(meta.hasLore() ? meta.lore() : List.of());
+        if (!linhas.isEmpty()) linhas.add(Component.empty());
+        lore.forEach(l -> linhas.add(LEGADO.deserialize(l)));
+        meta.lore(linhas);
+        icone.setItemMeta(meta);
+        return icone;
+    }
 
-        // O texto da placa só é aplicado depois do evento; grava os dados no tick seguinte
-        int qtdFinal = quantidade;
-        double precoFinal = preco;
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            if (!(bloco.getState() instanceof Sign placa)) return;
-            PersistentDataContainer pdc = placa.getPersistentDataContainer();
-            pdc.set(chaveItem, PersistentDataType.BYTE_ARRAY, modelo.serializeAsBytes());
-            pdc.set(chaveQuantidade, PersistentDataType.INTEGER, qtdFinal);
-            pdc.set(chavePreco, PersistentDataType.DOUBLE, precoFinal);
-            pdc.set(chaveDono, PersistentDataType.STRING, jogador.getUniqueId().toString());
-            pdc.set(chaveBarraca, PersistentDataType.STRING, barraca.getId());
-            pdc.set(chaveModo, PersistentDataType.STRING, compra ? "comprar" : "vender");
-            placa.setWaxed(true);
-            placa.update();
-        });
+    private ItemStack item(Material material, String nome, List<String> lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(LEGADO.deserialize(nome));
+        meta.lore(lore.stream().map(l -> (Component) LEGADO.deserialize(l)).toList());
+        item.setItemMeta(meta);
+        return item;
+    }
 
-        jogador.sendMessage(compra
-                ? "§aCompra criada: você paga §f" + Formato.valor(preco) + " §apor §f" + quantidade + "x " + nomeItem
-                + "§a. Deixe espaço no baú e saldo na conta — o pagamento sai dela."
-                : "§aLoja criada: §f" + quantidade + "x " + nomeItem + " §apor §f" + Formato.valor(preco)
-                + "§a. Mantenha o baú abastecido com esse mesmo item.");
+    /** Redesenha todos os menus abertos dessa barraca (o estoque mudou pra todo mundo). */
+    private void redesenharAbertos(Barraca barraca) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (online.getOpenInventory().getTopInventory().getHolder() instanceof Menu menu
+                    && menu.barraca.equals(barraca.getId())) {
+                desenhar(menu, barraca);
+            }
+        }
     }
 
     // ---------------------------------------------------------------------
-    // Clique na placa
+    // Cliques no menu
     // ---------------------------------------------------------------------
     @EventHandler(priority = EventPriority.HIGH)
-    public void aoClicarPlaca(PlayerInteractEvent evento) {
-        if (evento.getHand() != EquipmentSlot.HAND || evento.getClickedBlock() == null) return;
-        if (evento.getAction() != Action.RIGHT_CLICK_BLOCK && evento.getAction() != Action.LEFT_CLICK_BLOCK) return;
-        if (!(evento.getClickedBlock().getState() instanceof Sign placa)) return;
+    public void aoClicarMenu(InventoryClickEvent evento) {
+        if (!(evento.getView().getTopInventory().getHolder() instanceof Menu menu)) return;
+        evento.setCancelled(true); // nada entra nem sai do menu como item de verdade
+        if (!(evento.getWhoClicked() instanceof Player jogador)) return;
+        if (evento.getClickedInventory() != evento.getView().getTopInventory()) return;
 
-        PersistentDataContainer pdc = placa.getPersistentDataContainer();
-        if (!pdc.has(chaveItem, PersistentDataType.BYTE_ARRAY)) return; // não é placa de loja
-
-        Player jogador = evento.getPlayer();
-        UUID dono = UUID.fromString(pdc.get(chaveDono, PersistentDataType.STRING));
-        boolean ehDono = dono.equals(jogador.getUniqueId());
-
-        // Botão esquerdo do dono quebra a placa normalmente (pra trocar preço/item)
-        if (evento.getAction() == Action.LEFT_CLICK_BLOCK && ehDono) return;
-        if (evento.getAction() == Action.RIGHT_CLICK_BLOCK) evento.setCancelled(true); // não abre editor da placa
-
-        ItemStack modelo = ItemStack.deserializeBytes(pdc.get(chaveItem, PersistentDataType.BYTE_ARRAY));
-        int quantidade = pdc.getOrDefault(chaveQuantidade, PersistentDataType.INTEGER, 1);
-        double preco = pdc.getOrDefault(chavePreco, PersistentDataType.DOUBLE, 0.0);
-        Barraca barraca = plugin.getBarracaManager().get(pdc.getOrDefault(chaveBarraca, PersistentDataType.STRING, ""));
-
-        if (barraca == null || !dono.equals(barraca.getDono()) || !barraca.estaAlugada(System.currentTimeMillis())) {
-            jogador.sendMessage("§cEssa loja está fechada.");
+        Barraca barraca = plugin.getBarracaManager().get(menu.barraca);
+        if (barraca == null || !barraca.estaAlugada(System.currentTimeMillis())) {
+            jogador.closeInventory();
+            jogador.sendMessage("§cEssa loja fechou.");
+            return;
+        }
+        boolean dono = jogador.getUniqueId().equals(barraca.getDono());
+        if (dono != menu.dono) { // a barraca trocou de dono com o menu aberto
+            jogador.closeInventory();
             return;
         }
 
-        Block bloBau = acharBau(evento.getClickedBlock());
-        Inventory estoque = bloBau != null && bloBau.getState() instanceof Container c ? c.getInventory() : null;
-
-        if ("comprar".equals(pdc.get(chaveModo, PersistentDataType.STRING))) {
-            if (evento.getAction() == Action.LEFT_CLICK_BLOCK || ehDono) {
-                int espaco = estoque == null ? 0 : espacoLivre(estoque, modelo) / quantidade;
-                jogador.sendMessage("§eCompra-se: §f" + quantidade + "x " + Formato.nomeItem(modelo) + " §epor §f"
-                        + Formato.valor(preco) + " §7(espaço no baú: " + espaco + " venda(s)) §7— loja de §f"
-                        + barraca.getNomeDono() + (ehDono ? "" : "§7. Botão direito com o item no inventário pra vender."));
-                return;
-            }
-            venderPraBarraca(jogador, barraca, estoque, modelo, quantidade, preco);
+        Oferta oferta = menu.ofertas.get(evento.getSlot());
+        if (oferta == null || !barraca.getOfertas().contains(oferta)) {
+            desenhar(menu, barraca);
             return;
         }
 
-        int disponivel = estoque == null ? 0 : contar(estoque, modelo);
-
-        if (evento.getAction() == Action.LEFT_CLICK_BLOCK || ehDono) {
-            jogador.sendMessage("§eÀ venda: §f" + quantidade + "x " + Formato.nomeItem(modelo) + " §epor §f"
-                    + Formato.valor(preco) + " §7(estoque: " + (disponivel / quantidade) + " venda(s)) §7— loja de §f"
-                    + barraca.getNomeDono() + (ehDono ? "" : "§7. Botão direito pra comprar."));
-            return;
+        if (dono) {
+            if (evento.isShiftClick()) removerOferta(jogador, barraca, oferta);
+            else if (evento.isLeftClick() && oferta.getTipo() == Oferta.Tipo.VENDA) depositar(jogador, oferta);
+            else if (evento.isRightClick()) retirar(jogador, oferta);
+        } else if (oferta.getTipo() == Oferta.Tipo.VENDA) {
+            comprar(jogador, barraca, oferta);
+        } else {
+            venderPraLoja(jogador, barraca, oferta);
         }
 
-        comprar(jogador, barraca, estoque, modelo, quantidade, preco, disponivel);
+        plugin.getBarracaManager().salvar();
+        redesenharAbertos(barraca);
     }
 
-    private void comprar(Player comprador, Barraca barraca, Inventory estoque, ItemStack modelo, int quantidade,
-                         double preco, int disponivel) {
-        Economy econ = plugin.getEconomy();
-        if (econ == null) {
-            comprador.sendMessage("§cO sistema de economia (Vault) não está disponível no servidor.");
-            return;
-        }
-        if (estoque == null || disponivel < quantidade) {
-            comprador.sendMessage("§cEssa loja está sem estoque no momento.");
+    @EventHandler(priority = EventPriority.HIGH)
+    public void aoArrastarMenu(InventoryDragEvent evento) {
+        if (evento.getView().getTopInventory().getHolder() instanceof Menu) evento.setCancelled(true);
+    }
+
+    // ---------------------------------------------------------------------
+    // Visitante
+    // ---------------------------------------------------------------------
+    private void comprar(Player comprador, Barraca barraca, Oferta oferta) {
+        Economy econ = exigirEconomia(comprador);
+        if (econ == null) return;
+        int quantidade = oferta.getQuantidade();
+        double preco = oferta.getPreco();
+        ItemStack modelo = oferta.getModelo();
+
+        if (oferta.getEstoque() < quantidade) {
+            comprador.sendMessage("§cEsse item está sem estoque.");
             return;
         }
         if (!econ.has(comprador, preco)) {
@@ -231,7 +248,7 @@ public class LojaListener implements Listener {
                     + " §c| Seu saldo: §f" + Formato.valor(econ.getBalance(comprador)));
             return;
         }
-        if (espacoLivre(comprador.getInventory(), modelo) < quantidade) {
+        if (Itens.espacoLivre(comprador, modelo) < quantidade) {
             comprador.sendMessage("§cVocê não tem espaço no inventário pra §f" + quantidade + "x " + Formato.nomeItem(modelo) + "§c.");
             return;
         }
@@ -242,9 +259,8 @@ public class LojaListener implements Listener {
 
         econ.withdrawPlayer(comprador, preco);
         econ.depositPlayer(Bukkit.getOfflinePlayer(dono), liquido);
-
-        remover(estoque, modelo, quantidade);
-        entregar(comprador, modelo, quantidade);
+        oferta.setEstoque(oferta.getEstoque() - quantidade);
+        Itens.entregar(comprador, modelo, quantidade);
 
         plugin.getPixIntegration().registrarEntreJogadores(comprador.getUniqueId(), dono, preco, "Compra na barraca");
 
@@ -257,26 +273,27 @@ public class LojaListener implements Listener {
         if (donoOnline != null) {
             donoOnline.sendMessage("§a" + comprador.getName() + " comprou §f" + descricao + " §ana sua barraca. Você recebeu §f"
                     + Formato.valor(liquido) + (taxa > 0 ? " §7(taxa: " + Formato.valor(taxa) + ")" : "") + "§a.");
-            if (contar(estoque, modelo) < quantidade) {
+            if (oferta.getEstoque() < quantidade) {
                 donoOnline.sendMessage("§eSua loja de §f" + Formato.nomeItem(modelo) + " §eficou sem estoque.");
             }
         }
     }
 
-    /** Placa [Comprar]: o visitante entrega os itens e recebe do dono (menos a taxa). */
-    private void venderPraBarraca(Player vendedor, Barraca barraca, Inventory estoque, ItemStack modelo, int quantidade, double preco) {
-        Economy econ = plugin.getEconomy();
-        if (econ == null) {
-            vendedor.sendMessage("§cO sistema de economia (Vault) não está disponível no servidor.");
-            return;
-        }
-        if (contarNoJogador(vendedor, modelo) < quantidade) {
+    /** Oferta de compra: o visitante entrega os itens e recebe do dono (menos a taxa). */
+    private void venderPraLoja(Player vendedor, Barraca barraca, Oferta oferta) {
+        Economy econ = exigirEconomia(vendedor);
+        if (econ == null) return;
+        int quantidade = oferta.getQuantidade();
+        double preco = oferta.getPreco();
+        ItemStack modelo = oferta.getModelo();
+
+        if (Itens.contar(vendedor, modelo) < quantidade) {
             vendedor.sendMessage("§cVocê precisa ter §f" + quantidade + "x " + Formato.nomeItem(modelo)
                     + " §cno inventário (o mesmo item, sem diferença de encantamento ou nome).");
             return;
         }
-        if (estoque == null || espacoLivre(estoque, modelo) < quantidade) {
-            vendedor.sendMessage("§cO baú dessa barraca está cheio — ela não está comprando agora.");
+        if (oferta.getEstoque() + quantidade > plugin.getEstoqueMaximo()) {
+            vendedor.sendMessage("§cEssa barraca já comprou o máximo desse item e não está comprando agora.");
             return;
         }
         UUID dono = barraca.getDono();
@@ -296,9 +313,8 @@ public class LojaListener implements Listener {
 
         econ.withdrawPlayer(contaDono, preco);
         econ.depositPlayer(vendedor, liquido);
-
-        removerDoJogador(vendedor, modelo, quantidade);
-        guardar(estoque, modelo, quantidade);
+        Itens.remover(vendedor, modelo, quantidade);
+        oferta.setEstoque(oferta.getEstoque() + quantidade);
 
         plugin.getPixIntegration().registrarEntreJogadores(dono, vendedor.getUniqueId(), preco, "Venda pra barraca");
 
@@ -310,132 +326,62 @@ public class LojaListener implements Listener {
         Player donoOnline = Bukkit.getPlayer(dono);
         if (donoOnline != null) {
             donoOnline.sendMessage("§a" + vendedor.getName() + " vendeu §f" + descricao + " §apra sua barraca. Você pagou §f"
-                    + Formato.valor(preco) + "§a.");
-            if (espacoLivre(estoque, modelo) < quantidade) {
-                donoOnline.sendMessage("§eO baú da sua compra de §f" + Formato.nomeItem(modelo) + " §eencheu.");
-            }
+                    + Formato.valor(preco) + "§a. Retire os itens no NPC ou com §f/barraca loja§a.");
         }
     }
 
     // ---------------------------------------------------------------------
-    // Auxiliares
+    // Dono
     // ---------------------------------------------------------------------
-
-    /** Só a parte de guardar do inventário (sem armadura vestida nem a mão secundária). */
-    private int contarNoJogador(Player jogador, ItemStack modelo) {
-        int total = 0;
-        for (ItemStack item : jogador.getInventory().getStorageContents()) {
-            if (item != null && item.isSimilar(modelo)) total += item.getAmount();
+    /** Move do inventário pro estoque tudo o que for igual ao item anunciado, até a capacidade. */
+    public void depositar(Player dono, Oferta oferta) {
+        ItemStack modelo = oferta.getModelo();
+        int cabe = plugin.getEstoqueMaximo() - oferta.getEstoque();
+        int quantidade = Math.min(Itens.contar(dono, modelo), cabe);
+        if (quantidade <= 0) {
+            dono.sendMessage(cabe <= 0
+                    ? "§cO estoque desse anúncio está cheio (§f" + plugin.getEstoqueMaximo() + "§c)."
+                    : "§cVocê não tem §f" + Formato.nomeItem(modelo) + " §cigual ao anunciado no inventário.");
+            return;
         }
-        return total;
+        Itens.remover(dono, modelo, quantidade);
+        oferta.setEstoque(oferta.getEstoque() + quantidade);
+        dono.sendMessage("§aColocou §f" + quantidade + "x " + Formato.nomeItem(modelo) + " §ano estoque (agora §f"
+                + oferta.getEstoque() + "§a).");
     }
 
-    private void removerDoJogador(Player jogador, ItemStack modelo, int quantidade) {
-        ItemStack[] slots = jogador.getInventory().getStorageContents();
-        int faltam = quantidade;
-        for (int i = 0; i < slots.length && faltam > 0; i++) {
-            ItemStack item = slots[i];
-            if (item == null || !item.isSimilar(modelo)) continue;
-            int tirar = Math.min(faltam, item.getAmount());
-            faltam -= tirar;
-            item.setAmount(item.getAmount() - tirar);
+    private void retirar(Player dono, Oferta oferta) {
+        ItemStack modelo = oferta.getModelo();
+        int quantidade = Math.min(oferta.getEstoque(), Itens.espacoLivre(dono, modelo));
+        if (quantidade <= 0) {
+            dono.sendMessage(oferta.getEstoque() <= 0 ? "§7Não tem nada no estoque desse anúncio." : "§cSeu inventário está cheio.");
+            return;
         }
-        jogador.getInventory().setStorageContents(slots);
+        oferta.setEstoque(oferta.getEstoque() - quantidade);
+        Itens.entregar(dono, modelo, quantidade);
+        dono.sendMessage("§aRetirou §f" + quantidade + "x " + Formato.nomeItem(modelo) + "§a."
+                + (oferta.getEstoque() > 0 ? " §7Ainda ficaram §f" + oferta.getEstoque() + "§7 (inventário cheio)." : ""));
     }
 
-    /** Põe {@code quantidade} do item no baú (espaço já conferido; o que não couber cai em cima dele). */
-    private void guardar(Inventory inventario, ItemStack modelo, int quantidade) {
-        int faltam = quantidade;
-        while (faltam > 0) {
-            ItemStack pilha = modelo.clone();
-            int qtd = Math.min(faltam, modelo.getMaxStackSize());
-            pilha.setAmount(qtd);
-            faltam -= qtd;
-            inventario.addItem(pilha).values().forEach(sobra -> {
-                if (inventario.getLocation() != null) {
-                    inventario.getLocation().getWorld().dropItemNaturally(inventario.getLocation().add(0.5, 1, 0.5), sobra);
-                }
-            });
+    /** Remove o anúncio: o estoque volta pro inventário, e o que não couber vai pra caixa de retirada. */
+    private void removerOferta(Player dono, Barraca barraca, Oferta oferta) {
+        ItemStack modelo = oferta.getModelo();
+        int proInventario = Math.min(oferta.getEstoque(), Itens.espacoLivre(dono, modelo));
+        int praRetirada = oferta.getEstoque() - proInventario;
+        Itens.entregar(dono, modelo, proInventario);
+        if (praRetirada > 0) {
+            plugin.getRetiradaManager().adicionar(dono.getUniqueId(), Itens.pilhas(modelo, praRetirada));
         }
+        barraca.getOfertas().remove(oferta);
+        dono.sendMessage("§eAnúncio de §f" + Formato.nomeItem(modelo) + " §eremovido."
+                + (praRetirada > 0 ? " §7O que não coube (§f" + praRetirada + "§7) está em §f/barraca retirar§7." : ""));
     }
 
-    /** Baú onde a placa está presa (placa de parede) ou logo abaixo/acima dela. */
-    private Block acharBau(Block placa) {
-        if (placa.getBlockData() instanceof WallSign parede) {
-            Block preso = placa.getRelative(parede.getFacing().getOppositeFace());
-            return plugin.isBau(preso.getType()) ? preso : null;
+    private Economy exigirEconomia(Player jogador) {
+        Economy econ = plugin.getEconomy();
+        if (econ == null) {
+            jogador.sendMessage("§cO sistema de economia (Vault) não está disponível no servidor.");
         }
-        for (BlockFace face : new BlockFace[]{BlockFace.DOWN, BlockFace.UP}) {
-            Block vizinho = placa.getRelative(face);
-            if (plugin.isBau(vizinho.getType())) return vizinho;
-        }
-        return null;
-    }
-
-    private ItemStack primeiroItem(Inventory inventario) {
-        for (ItemStack item : inventario.getContents()) {
-            if (item != null && !item.getType().isAir()) {
-                ItemStack modelo = item.clone();
-                modelo.setAmount(1);
-                return modelo;
-            }
-        }
-        return null;
-    }
-
-    private int contar(Inventory inventario, ItemStack modelo) {
-        int total = 0;
-        for (ItemStack item : inventario.getContents()) {
-            if (item != null && item.isSimilar(modelo)) total += item.getAmount();
-        }
-        return total;
-    }
-
-    private int espacoLivre(Inventory inventario, ItemStack modelo) {
-        int livre = 0;
-        int max = modelo.getMaxStackSize();
-        ItemStack[] slots = inventario instanceof org.bukkit.inventory.PlayerInventory p
-                ? p.getStorageContents() : inventario.getContents();
-        for (ItemStack item : slots) {
-            if (item == null || item.getType().isAir()) livre += max;
-            else if (item.isSimilar(modelo)) livre += Math.max(0, max - item.getAmount());
-        }
-        return livre;
-    }
-
-    private void remover(Inventory inventario, ItemStack modelo, int quantidade) {
-        int faltam = quantidade;
-        for (int i = 0; i < inventario.getSize() && faltam > 0; i++) {
-            ItemStack item = inventario.getItem(i);
-            if (item == null || !item.isSimilar(modelo)) continue;
-            int tirar = Math.min(faltam, item.getAmount());
-            faltam -= tirar;
-            if (tirar == item.getAmount()) {
-                inventario.setItem(i, null);
-            } else {
-                item.setAmount(item.getAmount() - tirar);
-            }
-        }
-    }
-
-    private void entregar(Player jogador, ItemStack modelo, int quantidade) {
-        int faltam = quantidade;
-        while (faltam > 0) {
-            ItemStack pilha = modelo.clone();
-            int qtd = Math.min(faltam, modelo.getMaxStackSize());
-            pilha.setAmount(qtd);
-            faltam -= qtd;
-            // espaço já conferido antes; o que sobrar (não deveria) cai no chão em vez de sumir
-            jogador.getInventory().addItem(pilha).values()
-                    .forEach(sobra -> jogador.getWorld().dropItemNaturally(jogador.getLocation(), sobra));
-        }
-    }
-
-    private String textoPuro(String linha) {
-        return linha == null ? "" : org.bukkit.ChatColor.stripColor(linha).trim().toLowerCase(Locale.ROOT);
-    }
-
-    private net.kyori.adventure.text.Component legado(String texto) {
-        return LegacyComponentSerializer.legacySection().deserialize(texto);
+        return econ;
     }
 }

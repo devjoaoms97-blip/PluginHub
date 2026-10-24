@@ -4,7 +4,9 @@ import com.example.barracas.BarracasPlugin;
 import com.example.barracas.model.Barraca;
 import com.example.barracas.model.BlocoPos;
 import com.example.barracas.model.Leilao;
+import com.example.barracas.model.Oferta;
 import com.example.barracas.util.Formato;
+import com.example.barracas.util.Itens;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,15 +19,11 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Container;
-import org.bukkit.block.Sign;
-import org.bukkit.block.sign.Side;
-import org.bukkit.block.sign.SignSide;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,14 +42,14 @@ import java.util.logging.Level;
  * retidos, pra um restart no meio do leilão não sumir com o dinheiro de ninguém.
  *
  * {@link #tick()} roda a cada segundo: renova automaticamente quem pediu, vence aluguéis, manda o
- * aviso de vencimento, encerra leilões e (a cada 30s) atualiza as placas de entrada.
+ * aviso de vencimento, encerra leilões e (a cada 30s) atualiza os hologramas de entrada.
  */
 public class BarracaManager {
 
     private final BarracasPlugin plugin;
     private final File arquivo;
     private final Map<String, Barraca> barracas = new LinkedHashMap<>();
-    private int segundosDesdePlacas;
+    private int segundosDesdeHologramas;
 
     public BarracaManager(BarracasPlugin plugin) {
         this.plugin = plugin;
@@ -97,31 +95,11 @@ public class BarracaManager {
         return null;
     }
 
-    /** A barraca cuja placa de entrada é esse bloco, ou null. */
-    public Barraca getBarracaDaPlaca(Block bloco) {
-        BlocoPos pos = BlocoPos.de(bloco);
-        for (Barraca b : barracas.values()) {
-            if (pos.equals(b.getPlaca()) && b.getMundo().equals(bloco.getWorld().getName())) return b;
-        }
-        return null;
-    }
-
     public boolean sobrepoeAlguma(String mundo, BlocoPos min, BlocoPos max) {
         for (Barraca b : barracas.values()) {
             if (b.sobrepoe(mundo, min, max)) return true;
         }
         return false;
-    }
-
-    /** Quantos baús (ou barris) o inquilino já colocou nessa barraca. */
-    public int contarBaus(Barraca barraca) {
-        World mundo = Bukkit.getWorld(barraca.getMundo());
-        if (mundo == null) return 0;
-        int total = 0;
-        for (BlocoPos pos : barraca.getBlocosDoDono()) {
-            if (plugin.isBau(mundo.getBlockAt(pos.x(), pos.y(), pos.z()).getType())) total++;
-        }
-        return total;
     }
 
     // ---------------------------------------------------------------------
@@ -173,13 +151,18 @@ public class BarracaManager {
     }
 
     /**
-     * Devolve a barraca: o conteúdo dos baús do inquilino vai pra caixa de retirada, os baús e
-     * placas dele somem (a construção da staff fica intacta) e, se for especial e
-     * {@code abrirLeilao}, ela volta a leilão. Retorna quantas pilhas foram pra retirada.
+     * Devolve a barraca: o estoque da loja vai pra caixa de retirada, os anúncios somem e, se for
+     * especial e {@code abrirLeilao}, ela volta a leilão. Barracas da época dos baús também têm os
+     * baús e placas do inquilino tirados (com o conteúdo indo pra retirada). Retorna quantas
+     * pilhas foram pra retirada.
      */
     public int liberar(Barraca barraca, boolean abrirLeilao) {
         UUID dono = barraca.getDono();
         List<ItemStack> itens = new ArrayList<>();
+        for (Oferta oferta : barraca.getOfertas()) {
+            itens.addAll(Itens.pilhas(oferta.getModelo(), oferta.getEstoque()));
+        }
+        barraca.getOfertas().clear();
 
         World mundo = Bukkit.getWorld(barraca.getMundo());
         if (mundo != null) {
@@ -331,7 +314,7 @@ public class BarracaManager {
         anunciarLeilao("§6⚖ §f" + leilao.getNomeLicitante() + " §6venceu o leilão da barraca §f"
                 + barraca.getId() + " §6por §f" + Formato.valor(leilao.getLance()) + "§6!");
         notificar(leilao.getLicitante(), "§aA barraca §f" + barraca.getId() + " §aé sua por §f"
-                + Formato.tempo(plugin.getDuracaoAluguelMs()) + "§a. Coloque baús e placas §f[Vender] §apra montar a loja.");
+                + Formato.tempo(plugin.getDuracaoAluguelMs()) + "§a. Monte a loja com o item na mão: §f/barraca vender <quantidade> <preço>§a.");
     }
 
     // ---------------------------------------------------------------------
@@ -373,9 +356,10 @@ public class BarracaManager {
             }
         }
 
-        if (++segundosDesdePlacas >= 30) {
-            segundosDesdePlacas = 0;
-            barracas.values().forEach(this::atualizarPlaca); // o tempo restante muda sozinho
+        if (++segundosDesdeHologramas >= 30) {
+            segundosDesdeHologramas = 0;
+            barracas.values().forEach(plugin.getHologramas()::atualizar); // o tempo restante muda sozinho
+            barracas.values().forEach(plugin.getNpcs()::atualizar); // e um NPC que sumiu volta
         }
     }
 
@@ -410,51 +394,9 @@ public class BarracaManager {
                 + "§a. Vale por mais §f" + Formato.tempo(novoFim - System.currentTimeMillis()) + "§a.");
     }
 
-    // ---------------------------------------------------------------------
-    // Placa de entrada (dono / "Aluga-se")
-    // ---------------------------------------------------------------------
-
-    /** Reescreve a placa de entrada da barraca, se ela tiver uma e o chunk estiver carregado. */
-    public void atualizarPlaca(Barraca barraca) {
-        BlocoPos pos = barraca.getPlaca();
-        World mundo = Bukkit.getWorld(barraca.getMundo());
-        if (pos == null || mundo == null || !mundo.isChunkLoaded(pos.x() >> 4, pos.z() >> 4)) return;
-        if (!(mundo.getBlockAt(pos.x(), pos.y(), pos.z()).getState() instanceof Sign placa)) return;
-
-        long agora = System.currentTimeMillis();
-        String[] linhas = new String[4];
-        linhas[0] = barraca.isEspecial() ? "§6§l[Barraca ★]" : "§1§l[Barraca]";
-        linhas[1] = "§0" + barraca.getId();
-        if (barraca.getDono() != null) {
-            linhas[2] = "§0" + barraca.getNomeDono();
-            linhas[3] = "§8" + Formato.tempo(barraca.getAlugadaAte() - agora);
-        } else if (barraca.emLeilao()) {
-            Leilao leilao = barraca.getLeilao();
-            linhas[2] = "§6§lEm leilão";
-            linhas[3] = "§0" + Formato.valor(leilao.temLance() ? leilao.getLance() : plugin.getPrecoAluguel(barraca));
-        } else {
-            linhas[2] = "§2§lAluga-se";
-            linhas[3] = "§0" + Formato.valor(plugin.getPrecoAluguel(barraca));
-        }
-
-        SignSide frente = placa.getSide(Side.FRONT);
-        boolean mudou = false;
-        for (int i = 0; i < 4; i++) {
-            String atual = LegacyComponentSerializer.legacySection().serialize(frente.line(i));
-            if (!atual.equals(linhas[i])) {
-                frente.line(i, LegacyComponentSerializer.legacySection().deserialize(linhas[i]));
-                mudou = true;
-            }
-        }
-        if (mudou || !placa.isWaxed()) {
-            placa.setWaxed(true); // ninguém edita o texto clicando
-            placa.update();
-        }
-    }
-
     public String avisoRetirada(int pilhas) {
         if (pilhas <= 0) return "";
-        return " §7Os itens dos baús (§f" + pilhas + " pilha(s)§7) estão em §f/barraca retirar §7por §f"
+        return " §7Os itens da loja (§f" + pilhas + " pilha(s)§7) estão em §f/barraca retirar §7por §f"
                 + plugin.getRetiradaManager().diasGuardado() + " dias§7.";
     }
 
@@ -492,7 +434,21 @@ public class BarracaManager {
                 }
 
                 if (s.contains("preco")) barraca.setPreco(s.getDouble("preco"));
-                if (s.getString("placa") != null) barraca.setPlaca(BlocoPos.parse(s.getString("placa")));
+                // "placa" é das versões em que a entrada era uma placa
+                String entrada = s.getString("entrada", s.getString("placa"));
+                if (entrada != null) barraca.setEntrada(BlocoPos.parse(entrada));
+                String npc = s.getString("npc");
+                if (npc != null) barraca.setNpc(BlocoPos.parse(npc), (float) s.getDouble("npc-yaw"));
+                ConfigurationSection ofertas = s.getConfigurationSection("ofertas");
+                if (ofertas != null) {
+                    for (String indice : ofertas.getKeys(false)) {
+                        ConfigurationSection o = ofertas.getConfigurationSection(indice);
+                        ItemStack item = o == null ? null : o.getItemStack("item");
+                        if (item == null) continue;
+                        barraca.getOfertas().add(new Oferta(Oferta.Tipo.valueOf(o.getString("tipo", "VENDA")), item,
+                                Math.max(1, o.getInt("quantidade")), o.getDouble("preco"), o.getInt("estoque")));
+                    }
+                }
                 barraca.setRenovacaoAutomatica(s.getBoolean("renovacao-automatica"));
                 barraca.setUltimoDesconto(s.getInt("ultimo-desconto"));
 
@@ -520,7 +476,20 @@ public class BarracaManager {
             yaml.set(base + ".max", b.getMax().toString());
             yaml.set(base + ".especial", b.isEspecial());
             yaml.set(base + ".preco", b.getPreco());
-            yaml.set(base + ".placa", b.getPlaca() == null ? null : b.getPlaca().toString());
+            yaml.set(base + ".entrada", b.getEntrada() == null ? null : b.getEntrada().toString());
+            if (b.getNpc() != null) {
+                yaml.set(base + ".npc", b.getNpc().toString());
+                yaml.set(base + ".npc-yaw", (double) b.getNpcYaw());
+            }
+            for (int i = 0; i < b.getOfertas().size(); i++) {
+                Oferta o = b.getOfertas().get(i);
+                String chave = base + ".ofertas." + i;
+                yaml.set(chave + ".tipo", o.getTipo().name());
+                yaml.set(chave + ".item", o.getModelo());
+                yaml.set(chave + ".quantidade", o.getQuantidade());
+                yaml.set(chave + ".preco", o.getPreco());
+                yaml.set(chave + ".estoque", o.getEstoque());
+            }
             if (b.isRenovacaoAutomatica()) yaml.set(base + ".renovacao-automatica", true);
             if (b.getUltimoDesconto() > 0) yaml.set(base + ".ultimo-desconto", b.getUltimoDesconto());
             if (b.getDono() != null) {
@@ -546,8 +515,9 @@ public class BarracaManager {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Não foi possível salvar barracas.yml", e);
         }
-        // toda mudança de estado passa por aqui: a placa de entrada acompanha na hora
-        barracas.values().forEach(this::atualizarPlaca);
+        // toda mudança de estado passa por aqui: o holograma de entrada e o NPC acompanham na hora
+        barracas.values().forEach(plugin.getHologramas()::atualizar);
+        barracas.values().forEach(plugin.getNpcs()::atualizar);
     }
 
     /** Anuncia no chat e no Discord (categoria "leiloes"). */
