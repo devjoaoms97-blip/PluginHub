@@ -28,6 +28,12 @@ public class VipPlugin extends JavaPlugin {
     private Economy economy;
     private BonusAtivacao bonusAtivacao;
 
+    private final com.example.vip.util.DiscordIntegration discord = new com.example.vip.util.DiscordIntegration(this);
+
+    public com.example.vip.util.DiscordIntegration getDiscord() {
+        return discord;
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();

@@ -8,6 +8,7 @@ import com.example.boss.manager.ArenaManager;
 import com.example.boss.manager.BossManager;
 import com.example.boss.manager.ChampionManager;
 import com.example.boss.manager.LootManager;
+import com.example.boss.manager.Recompensas;
 import com.example.boss.manager.ScheduleManager;
 import com.example.boss.util.DiscordIntegration;
 import org.bukkit.Bukkit;
@@ -23,6 +24,7 @@ public class BossPlugin extends JavaPlugin {
     private ChampionManager championManager;
     private BossManager bossManager;
     private ScheduleManager scheduleManager;
+    private Recompensas recompensas;
     private DiscordIntegration discord;
 
     @Override
@@ -35,6 +37,7 @@ public class BossPlugin extends JavaPlugin {
         this.championManager = new ChampionManager(this);
         this.bossManager = new BossManager(this);
         this.scheduleManager = new ScheduleManager(this);
+        this.recompensas = new Recompensas(this);
 
         BossCommand comando = new BossCommand(this);
         getCommand("boss").setExecutor(comando);
@@ -93,8 +96,25 @@ public class BossPlugin extends JavaPlugin {
         return bossManager;
     }
 
+    /**
+     * API pública (PlacarPlugin, por reflexão): "AGORA!" com o boss vivo, o próximo horário da
+     * agenda (ex: "sáb 21:00"), ou null com a agenda vazia.
+     */
+    public String textoProximoBoss() {
+        if (bossManager != null && bossManager.estaAtivo()) return "AGORA!";
+        java.time.LocalDateTime quando = scheduleManager == null ? null : scheduleManager.proximo();
+        if (quando == null) return null;
+        String dia = quando.toLocalDate().equals(java.time.LocalDate.now()) ? "hoje"
+                : quando.getDayOfWeek().getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.forLanguageTag("pt-BR")).replace(".", "");
+        return dia + " " + String.format("%02d:%02d", quando.getHour(), quando.getMinute());
+    }
+
     public ScheduleManager getScheduleManager() {
         return scheduleManager;
+    }
+
+    public Recompensas getRecompensas() {
+        return recompensas;
     }
 
     public DiscordIntegration getDiscord() {

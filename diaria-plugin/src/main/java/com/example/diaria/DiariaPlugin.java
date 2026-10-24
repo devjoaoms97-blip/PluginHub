@@ -119,16 +119,34 @@ public class DiariaPlugin extends JavaPlugin implements Listener, CommandExecuto
             return true;
         }
         double valor = resgatar(jogador, dia);
+        double bonus = bonusVip(jogador);
         jogador.sendMessage("§a§lRecompensa diária! §aDia §f" + dia + " §ade " + percentuais().size() + ": §f" + formatar(valor)
-                + (dia == percentuais().size() ? " §6(bônus do último dia!)" : "") + "§a.");
+                + (dia == percentuais().size() ? " §6(bônus do último dia!)" : "")
+                + (bonus > 0 ? " §6(+" + String.format(Locale.ROOT, "%.0f", bonus) + "% de VIP)" : "") + "§a.");
         jogador.sendMessage("§7Volte amanhã pro dia §f" + (dia % percentuais().size() + 1) + "§7. Se perder um dia, a sequência recomeça.");
         jogador.playSound(jogador.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f);
         return true;
     }
 
+    /**
+     * Bônus do VIP na diária (%), pela maior permissão que o jogador tiver ({@code vip-bonus}).
+     * LISTA de propósito: chave com ponto viraria seção aninhada.
+     */
+    private double bonusVip(Player jogador) {
+        if (!getConfig().getBoolean("vip-bonus.ativado", true)) return 0;
+        double maior = 0;
+        for (Map<?, ?> item : getConfig().getMapList("vip-bonus.permissoes")) {
+            if (item.get("permissao") instanceof String permissao && item.get("percentual") instanceof Number percentual
+                    && jogador.hasPermission(permissao)) {
+                maior = Math.max(maior, percentual.doubleValue());
+            }
+        }
+        return maior;
+    }
+
     /** Paga e grava. Separado pro painel da economia mostrar como "Recompensa diária". */
     private double resgatar(Player jogador, int dia) {
-        double valor = valor(jogador.getUniqueId(), dia);
+        double valor = valor(jogador.getUniqueId(), dia) * (1 + bonusVip(jogador) / 100.0);
         economy.depositPlayer(jogador, valor);
         registros.put(jogador.getUniqueId(), new Registro(LocalDate.now(), dia));
         salvar();

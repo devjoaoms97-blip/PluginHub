@@ -82,6 +82,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             case "gerarcodigo" -> tratarGerarCodigo(sender, args);
             case "codigos" -> tratarCodigos(sender);
             case "revogarcodigo" -> tratarRevogarCodigo(sender, args);
+            case "setwarp" -> tratarSetWarp(sender, args);
             default -> enviarAjuda(sender);
         }
         return true;
@@ -240,6 +241,9 @@ public class VipCommand implements CommandExecutor, TabCompleter {
                 + " §apor §f" + code.getDias() + " dias§a, válido até §f" + dataFormatada + "§a.");
         plugin.refrescarTagJogador(player);
         plugin.getBonusAtivacao().conceder(player, code.getTier(), code.getDias());
+        plugin.getDiscord().enviar("vip", "💎 " + player.getName() + " ativou VIP "
+                + org.bukkit.ChatColor.stripColor(plugin.getNomeExibicao(code.getTier())) + " por " + code.getDias() + " dias"
+                + (code.getPreco() > 0 ? " (comprado de outro jogador)" : "") + "!");
     }
 
     /** Cobra o comprador e repassa (menos a taxa de revenda) pro vendedor, se houver um. */
@@ -293,6 +297,23 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         if (!Double.isFinite(preco) || preco < 0) { // parseDouble aceita NaN/Infinity, e NaN passa por qualquer comparação com zero
             player.sendMessage("§cPreço inválido.");
             return;
+        }
+
+        // faixa de preço por tier (revenda.precos.<tier>.minimo/maximo; 0 = sem limite)
+        VipCode consultado = plugin.getCodeManager().buscar(args[2]);
+        if (consultado != null) {
+            String chaveTier = "revenda.precos." + consultado.getTier().name().toLowerCase(Locale.ROOT);
+            // sem valor explícito pra cair no padrão do config.yml do jar (configs antigos não têm a seção)
+            double minimo = plugin.getConfig().getDouble(chaveTier + ".minimo");
+            double maximo = plugin.getConfig().getDouble(chaveTier + ".maximo");
+            if (minimo > 0 && preco < minimo) {
+                player.sendMessage("§cO preço mínimo pra revender VIP " + plugin.getNomeExibicao(consultado.getTier()) + " §cé §f" + formatarCoins(minimo) + "§c.");
+                return;
+            }
+            if (maximo > 0 && preco > maximo) {
+                player.sendMessage("§cO preço máximo pra revender VIP " + plugin.getNomeExibicao(consultado.getTier()) + " §cé §f" + formatarCoins(maximo) + "§c.");
+                return;
+            }
         }
 
         if (plugin.getCodeManager().buscarCodigoDeVenda(player.getUniqueId()) != null) {
@@ -537,6 +558,32 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         return valor;
     }
 
+    /** /vip setwarp [tier]: a staff marca onde fica a área VIP (de todos, ou só de um tier). */
+    private void tratarSetWarp(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("vip.admin")) {
+            sender.sendMessage("§cVocê não tem permissão.");
+            return;
+        }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("§cSó jogadores (o warp fica onde você está).");
+            return;
+        }
+        VipTier tier = args.length > 1 ? VipTier.fromString(args[1]) : null;
+        if (args.length > 1 && tier == null) {
+            sender.sendMessage("§cTier inválido. Use: " + String.join(", ", nomesTiers()));
+            return;
+        }
+        String base = tier == null ? "warp-vip" : "warp-vip.tiers." + tier.name().toLowerCase(Locale.ROOT);
+        var loc = player.getLocation();
+        plugin.getConfig().set(base + ".mundo", loc.getWorld().getName());
+        plugin.getConfig().set(base + ".x", Math.round(loc.getX() * 10) / 10.0);
+        plugin.getConfig().set(base + ".y", Math.round(loc.getY() * 10) / 10.0);
+        plugin.getConfig().set(base + ".z", Math.round(loc.getZ() * 10) / 10.0);
+        plugin.getConfig().set(base + ".yaw", Math.round(loc.getYaw()));
+        plugin.saveConfig();
+        sender.sendMessage("§aWarp VIP" + (tier == null ? "" : " " + plugin.getNomeExibicao(tier)) + " §amarcado aqui.");
+    }
+
     private void enviarAjuda(CommandSender sender) {
         sender.sendMessage("§e§l--- Comandos do VIP ---");
         sender.sendMessage("§f/vip check §7- mostra seu VIP atual");
@@ -555,6 +602,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§f/vip gerarcodigo <tier> <dias> [usos] [validade-dias] §7- gera um código pra lojinha entregar");
             sender.sendMessage("§f/vip codigos §7- lista códigos ativos ainda não resgatados");
             sender.sendMessage("§f/vip revogarcodigo <codigo> §7- invalida um código antes de ser usado");
+            sender.sendMessage("§f/vip setwarp [tier] §7- marca a área VIP (de todos, ou só de um tier) onde você está");
             sender.sendMessage("§f/vip reload §7- recarrega o config.yml");
         }
     }
@@ -569,7 +617,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             List<String> opcoes = new ArrayList<>(List.of("check", "tiers", "resgatar", "vender", "cancelarvenda",
                     "fly", "heal", "feed", "kit", "kitmensal", "particula", "warp"));
             if (sender.hasPermission("vip.admin")) {
-                opcoes.addAll(List.of("add", "remove", "list", "reload", "gerarcodigo", "codigos", "revogarcodigo"));
+                opcoes.addAll(List.of("add", "remove", "list", "reload", "gerarcodigo", "codigos", "revogarcodigo", "setwarp"));
             }
             return opcoes;
         }
@@ -584,6 +632,9 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 4 && sub.equals("add")) {
             return List.of("7", "15", "30", "60");
+        }
+        if (args.length == 2 && sub.equals("setwarp")) {
+            return nomesTiers();
         }
         if (args.length == 2 && sub.equals("gerarcodigo")) {
             return nomesTiers();

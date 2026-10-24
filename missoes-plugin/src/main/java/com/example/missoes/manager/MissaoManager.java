@@ -100,11 +100,13 @@ public class MissaoManager {
                 Object coins = bruto.get("coins");
                 Object skill = bruto.get("skill");
                 Object xp = bruto.get("xp");
+                Object rankMinimo = bruto.get("rank-minimo");
                 pool.put(id, new Missao(id, periodo, tipo, alvos, quantidade,
                         descricao != null ? String.valueOf(descricao) : tipo.name().toLowerCase(Locale.ROOT) + " " + quantidade,
                         coins instanceof Number n ? n.doubleValue() : 0,
                         skill != null ? String.valueOf(skill).toUpperCase(Locale.ROOT) : null,
-                        xp instanceof Number n ? n.doubleValue() : 0));
+                        xp instanceof Number n ? n.doubleValue() : 0,
+                        rankMinimo != null ? String.valueOf(rankMinimo).toLowerCase(Locale.ROOT) : null));
             } catch (RuntimeException e) {
                 plugin.getLogger().warning("Missão " + (periodo == Periodo.SEMANAL ? "semanal" : "diária")
                         + " inválida ignorada: " + bruto + " (" + e.getMessage() + ")");
@@ -154,7 +156,7 @@ public class MissaoManager {
     private void completarExtras(UUID jogador, ProgressoJogador atual) {
         int faltam = quantasDiarias(jogador) - atual.getProgresso().size();
         if (faltam <= 0) return;
-        List<String> ids = new ArrayList<>(pools.get(Periodo.DIARIA).keySet());
+        List<String> ids = disponiveis(Periodo.DIARIA, jogador);
         ids.removeAll(atual.getProgresso().keySet());
         Collections.shuffle(ids);
         for (String id : ids.subList(0, Math.min(faltam, ids.size()))) {
@@ -189,8 +191,19 @@ public class MissaoManager {
         return novo;
     }
 
+    /** Ids do pool que o jogador pode receber: as de {@code rank-minimo} só se ele já tiver o rank. */
+    private List<String> disponiveis(Periodo periodo, UUID jogador) {
+        List<String> ids = new ArrayList<>();
+        for (Missao missao : pools.get(periodo).values()) {
+            if (missao.rankMinimo() == null || plugin.getRankupIntegration().temAcesso(jogador, missao.rankMinimo())) {
+                ids.add(missao.id());
+            }
+        }
+        return ids;
+    }
+
     private ProgressoJogador sortear(Periodo periodo, LocalDate inicio, UUID jogador) {
-        List<String> ids = new ArrayList<>(pools.get(periodo).keySet());
+        List<String> ids = disponiveis(periodo, jogador);
         Collections.shuffle(ids);
         int quantas = periodo == Periodo.DIARIA
                 ? quantasDiarias(jogador)

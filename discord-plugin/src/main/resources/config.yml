@@ -25,3 +25,18 @@ categorias:
     ativado: true
     webhook-url: ""
     nome: "Leilões"
+  # Alguém ativou um VIP (código da lojinha ou comprado de outro jogador).
+  vip:
+    ativado: true
+    webhook-url: ""
+    nome: "VIP"
+  # Pix alto (valor no config do PixPlugin): pro canal da STAFF, de preferência com webhook próprio.
+  pix:
+    ativado: true
+    webhook-url: ""
+    nome: "Alerta Pix"
+  # Barraca alugada e barraca liberada (venceu, saiu ou a staff liberou).
+  barracas:
+    ativado: true
+    webhook-url: ""
+    nome: "Barracas"

@@ -8,6 +8,8 @@ import com.example.skills.listener.PlayerConnectionListener;
 import com.example.skills.listener.RegenListener;
 import com.example.skills.listener.StunListener;
 import com.example.skills.item.AdagaUtil;
+import com.example.skills.manager.EventoXp;
+import com.example.skills.manager.RankingSkills;
 import com.example.skills.manager.AtordoamentoManager;
 import com.example.skills.manager.BonusCalculator;
 import com.example.skills.manager.CombatTagManager;
@@ -36,6 +38,8 @@ public class SkillsPlugin extends JavaPlugin {
     private AdagaUtil adagaUtil;
     private SangramentoManager sangramentoManager;
     private AtordoamentoManager atordoamentoManager;
+    private EventoXp eventoXp;
+    private RankingSkills rankingSkills;
 
     @Override
     public void onEnable() {
@@ -57,6 +61,8 @@ public class SkillsPlugin extends JavaPlugin {
         this.adagaUtil = new AdagaUtil(this);
         this.sangramentoManager = new SangramentoManager(this);
         this.atordoamentoManager = new AtordoamentoManager(this);
+        this.eventoXp = new EventoXp(this);
+        this.rankingSkills = new RankingSkills(this);
 
         SkillsCommand skillsCommand = new SkillsCommand(this);
         getCommand("skills").setExecutor(skillsCommand);
@@ -72,6 +78,8 @@ public class SkillsPlugin extends JavaPlugin {
         int intervaloSegundos = getConfig().getInt("passivas.intervalo-segundos", 10);
         long intervaloTicks = intervaloSegundos * 20L;
         passiveSkillsTask.runTaskTimer(this, intervaloTicks, intervaloTicks);
+        // começo e fim do XP em dobro são anunciados no chat
+        getServer().getScheduler().runTaskTimer(this, eventoXp::conferir, 20L * 60, 20L * 60);
 
         getLogger().info("SkillsPlugin ativado!");
     }
@@ -127,6 +135,14 @@ public class SkillsPlugin extends JavaPlugin {
         }
         economy = rsp.getProvider();
         return economy != null;
+    }
+
+    public EventoXp getEventoXp() {
+        return eventoXp;
+    }
+
+    public RankingSkills getRankingSkills() {
+        return rankingSkills;
     }
 
     public Economy getEconomy() {

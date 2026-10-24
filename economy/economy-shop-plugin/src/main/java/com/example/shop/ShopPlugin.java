@@ -5,6 +5,7 @@ import com.example.shop.command.SellCommand;
 import com.example.shop.command.ShopCommand;
 import com.example.shop.gui.ShopGUI;
 import com.example.shop.gui.ShopGUIListener;
+import com.example.shop.manager.EventoMercado;
 import com.example.shop.manager.AutoVenda;
 import com.example.shop.manager.PriceHistoryManager;
 import com.example.shop.manager.PriceRegenTask;
@@ -26,6 +27,7 @@ public class ShopPlugin extends JavaPlugin {
 
     private Economy economy;
     private ShopManager shopManager;
+    private EventoMercado eventoMercado;
     private ShopGUI shopGUI;
     private PriceHistoryManager priceHistoryManager;
     private VendasDiariasManager vendasDiariasManager;
@@ -46,6 +48,7 @@ public class ShopPlugin extends JavaPlugin {
         }
 
         this.shopManager = new ShopManager(this);
+        this.eventoMercado = new EventoMercado(this);
         this.shopGUI = new ShopGUI(this);
         this.priceHistoryManager = new PriceHistoryManager(this);
         this.vendasDiariasManager = new VendasDiariasManager(this);
@@ -76,6 +79,9 @@ public class ShopPlugin extends JavaPlugin {
         long intervaloHistoricoTicks = intervaloHistoricoMinutos * 60L * 20L;
         getServer().getScheduler().runTaskTimer(this, priceHistoryManager::registrarSnapshotDeTodos,
                 intervaloHistoricoTicks, intervaloHistoricoTicks);
+
+        // eventos de mercado: confere a cada minuto se o atual acabou ou se é hora de sortear outro
+        getServer().getScheduler().runTaskTimer(this, eventoMercado::tick, 20L * 60, 20L * 60);
 
         long cincoMin = 20L * 60 * 5;
         getServer().getScheduler().runTaskTimer(this, vendasDiariasManager::salvarSeMudou, cincoMin, cincoMin);
@@ -151,6 +157,10 @@ public class ShopPlugin extends JavaPlugin {
 
     public Economy getEconomy() {
         return economy;
+    }
+
+    public EventoMercado getEventoMercado() {
+        return eventoMercado;
     }
 
     public ShopManager getShopManager() {

@@ -39,6 +39,10 @@ categorias:
 
 Para pegar a URL: no Discord, **Editar canal > Integrações > Webhooks > Novo webhook > Copiar URL do webhook**.
 
+### Categorias ligadas
+
+`boss`, `gladiador`, `leiloes`, `vip` (VIP ativado), `pix` (Pix alto, do PixPlugin; de preferência com webhook próprio num canal da staff) e `barracas` (barraca alugada e liberada).
+
 ## Comandos (staff, `discord.admin`)
 
 | Comando | O que faz |

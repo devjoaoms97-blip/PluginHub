@@ -127,6 +127,10 @@ public class MissoesGUI implements Listener {
             case PESCAR -> Material.FISHING_ROD;
             case VENDER -> Material.EMERALD;
             case DANO_BOSS -> Material.DRAGON_HEAD;
+            case VENDER_BARRACA -> Material.BARREL;
+            case SUBIR_RANK -> Material.GOLDEN_HELMET;
+            case MINERAR_MINA -> Material.DIAMOND_PICKAXE;
+            case PAGAR_IMPOSTO -> Material.GOLD_INGOT;
         };
     }
 

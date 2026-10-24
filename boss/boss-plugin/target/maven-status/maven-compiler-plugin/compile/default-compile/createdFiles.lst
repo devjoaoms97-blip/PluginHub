@@ -1,3 +1,4 @@
+com\example\boss\util\VipIntegration.class
 com\example\boss\listener\BossDeathListener.class
 com\example\boss\model\TipoGatilhoFase.class
 com\example\boss\BossPlugin.class
@@ -14,6 +15,8 @@ com\example\boss\listener\BossExplosionListener.class
 com\example\boss\model\BossProfile.class
 com\example\boss\model\LootEntry.class
 com\example\boss\command\BossCommand.class
+com\example\boss\util\SkillsIntegration.class
 com\example\boss\manager\ScheduleManager$Horario.class
 com\example\boss\manager\ArenaManager.class
 com\example\boss\manager\ChampionManager.class
+com\example\boss\manager\Recompensas.class

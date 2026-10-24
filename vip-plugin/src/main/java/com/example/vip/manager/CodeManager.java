@@ -43,6 +43,7 @@ public class CodeManager {
     private final VipPlugin plugin;
     private final File arquivo;
     private final Map<String, VipCode> codigos = new HashMap<>();
+    private final Map<UUID, java.util.List<String>> avisosPendentes = new java.util.HashMap<>();
     private final SecureRandom random = new SecureRandom();
 
     public CodeManager(VipPlugin plugin) {
@@ -109,10 +110,37 @@ public class CodeManager {
      * Remove os códigos que passaram do prazo sem ser resgatados. Chamado antes de qualquer
      * consulta e também pela tarefa periódica do plugin. Retorna quantos removeu.
      */
+    /**
+     * O código que estava à venda venceu sem ninguém comprar: avisa o vendedor agora, se estiver
+     * online, ou guarda o aviso pra quando ele entrar ({@code avisos-pendentes} no codigos.yml).
+     */
+    private void avisarVendedor(VipCode code) {
+        String msg = "§cSeu código §fVIP-" + code.getCodigo() + " §c(" + plugin.getNomeExibicao(code.getTier())
+                + "§c, " + code.getDias() + " dias) que estava à venda venceu sem ser comprado e foi apagado.";
+        org.bukkit.entity.Player vendedor = org.bukkit.Bukkit.getPlayer(code.getVendedorId());
+        if (vendedor != null) {
+            vendedor.sendMessage(msg);
+        } else {
+            avisosPendentes.computeIfAbsent(code.getVendedorId(), k -> new java.util.ArrayList<>()).add(msg);
+        }
+    }
+
+    /** Entrega os avisos guardados de códigos vencidos (chamado quando o jogador entra). */
+    public void entregarAvisos(org.bukkit.entity.Player jogador) {
+        java.util.List<String> avisos = avisosPendentes.remove(jogador.getUniqueId());
+        if (avisos == null) return;
+        avisos.forEach(jogador::sendMessage);
+        salvar();
+    }
+
     public int limparExpirados() {
         long agora = System.currentTimeMillis();
         int antes = codigos.size();
-        codigos.values().removeIf(code -> code.expirado(agora));
+        codigos.values().removeIf(code -> {
+            if (!code.expirado(agora)) return false;
+            if (code.getVendedorId() != null) avisarVendedor(code);
+            return true;
+        });
         int removidos = antes - codigos.size();
         if (removidos > 0) {
             salvar();
@@ -202,6 +230,16 @@ public class CodeManager {
             return;
         }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(arquivo);
+        var avisos = yaml.getConfigurationSection("avisos-pendentes");
+        if (avisos != null) {
+            for (String id : avisos.getKeys(false)) {
+                try {
+                    avisosPendentes.put(UUID.fromString(id), new java.util.ArrayList<>(avisos.getStringList(id)));
+                } catch (IllegalArgumentException ignorado) {
+                    // UUID inválido: descarta
+                }
+            }
+        }
         var secao = yaml.getConfigurationSection("codigos");
         if (secao == null) {
             return;
@@ -252,6 +290,7 @@ public class CodeManager {
                 yaml.set(base + ".expira-em", code.getExpiraEm());
             }
         }
+        avisosPendentes.forEach((id, lista) -> yaml.set("avisos-pendentes." + id, lista));
         try {
             yaml.save(arquivo);
         } catch (IOException e) {

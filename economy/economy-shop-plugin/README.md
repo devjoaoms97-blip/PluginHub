@@ -60,6 +60,16 @@ Uma pequena porcentagem de toda venda **desaparece** (não vai pra ninguém, nem
 
 `/shop admin list` agora marca com `[NO PISO]` todo item cujo preço de venda atual já bateu no `minimo` configurado, e mostra um resumo (quantos itens e qual %) no final. Isso é um sinal de que a oferta de venda daquele item está acima do que `passo` + regeneração conseguem absorver — ou seja, o preço está permanentemente "no chão" e o mínimo provavelmente está alto demais (ou o imposto está baixo demais) pra segurar aquele volume. Use `/shop admin list piso` pra ver só os itens nessa situação, sem precisar rolar a lista inteira.
 
+## Eventos de mercado ("alta do diamante")
+
+A cada `eventos-mercado.intervalo-horas`, com `chance`% de sorte, um item da lista `eventos-mercado.itens` (que esteja cadastrado na loja) fica em alta por `duracao-horas`: a loja paga um multiplicador entre `multiplicador-minimo` e `multiplicador-maximo` na venda dele (no `/sell`, no menu e na venda automática). O preço dinâmico continua caindo a cada unidade vendida. Começo e fim vão pro chat, o menu mostra "📈 em alta" no item e na categoria, e `/shop evento` mostra o item, o preço e quanto falta. O evento atual fica salvo no config e sobrevive a reinício.
+
+A staff põe um item em alta na hora com `/shop admin evento <item> <multiplicador> <horas>` (`/shop admin evento parar` encerra).
+
+## Categorias fixas
+
+`categorias` no config ("Nome:ÍCONE") define a ordem e o ícone das categorias do menu, que aparecem mesmo vazias. O `/shop admin additem` sugere essas categorias no Tab, pra não surgir "Minerio" e "Minérios" separados. A categoria que só existe nos itens cadastrados vai depois, com o ícone do primeiro item.
+
 ## Bônus do rank (RankupPlugin)
 
 Se o RankupPlugin estiver instalado, toda venda (`/sell`, `/sell all` e o menu) é multiplicada pelo bônus do rank do jogador (`multiplicador-venda` no config do Rankup). Com 1.25, ele recebe 25% a mais. O bônus entra antes do imposto, e a mensagem de venda mostra quanto foi. A integração é por reflexão: sem o RankupPlugin, nada muda.

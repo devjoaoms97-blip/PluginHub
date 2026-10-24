@@ -1,3 +1,4 @@
+com\example\shop\manager\EventoMercado.class
 com\example\shop\command\BuyCommand.class
 com\example\shop\model\ShopItem.class
 com\example\shop\manager\PriceHistoryManager.class

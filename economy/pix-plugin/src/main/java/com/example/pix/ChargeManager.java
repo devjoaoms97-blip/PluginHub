@@ -135,9 +135,14 @@ public class ChargeManager {
     }
 
     public void registrarTransacao(UUID de, UUID para, double valor, String tipo) {
+        registrarTransacao(de, para, valor, tipo, 0);
+    }
+
+    /** Pagamento entre jogadores; {@code taxa} é a parte do valor que sumiu (aparece no extrato). */
+    public void registrarTransacao(UUID de, UUID para, double valor, String tipo, double taxa) {
         long agora = System.currentTimeMillis();
-        adicionarAoHistorico(de, new TransacaoRegistro(de, para, valor, tipo, agora));
-        adicionarAoHistorico(para, new TransacaoRegistro(de, para, valor, tipo, agora));
+        adicionarAoHistorico(de, new TransacaoRegistro(de, para, valor, tipo, agora, null, taxa));
+        adicionarAoHistorico(para, new TransacaoRegistro(de, para, valor, tipo, agora, null, taxa));
         salvar();
     }
 
@@ -242,7 +247,8 @@ public class ChargeManager {
                                 r.getDouble("valor"),
                                 r.getString("tipo"),
                                 r.getLong("data"),
-                                r.getString("entidade")));
+                                r.getString("entidade"),
+                                r.getDouble("taxa", 0)));
                         if (deque.size() >= HISTORICO_MAX_POR_JOGADOR) break;
                     }
                     if (!deque.isEmpty()) {
@@ -284,6 +290,9 @@ public class ChargeManager {
                 yaml.set(base + ".data", r.getData());
                 if (r.getNomeEntidade() != null) {
                     yaml.set(base + ".entidade", r.getNomeEntidade());
+                }
+                if (r.getTaxa() > 0) {
+                    yaml.set(base + ".taxa", r.getTaxa());
                 }
             }
         }

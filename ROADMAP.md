@@ -30,18 +30,21 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 
 | Mundo | O que tem | PvP |
 |---|---|---|
-| `spawn` (vazio) | Spawn, warps, hologramas do rankup e do ranking, área VIP, mercado das Barracas, loja e as 12 minas | Não |
+| `spawn` (vazio) | Spawn fechado com as barracas e os NPCs de dicas, a Avenida das 12 minas (colada no portão norte) e a arena do boss, enterrada (colada no portão sul) | Não |
 | `terrenos` (grade) | Terrenos comprados com coins, com imposto semanal. Servem também para fazendas | Não |
 | `recursos` (normal) | Mobs naturais, pesca, árvores e PvP do Bounty e dos clãs. Resetado a cada 30 dias pelo `recursos-plugin`, com borda de 6.000 blocos e `/recursos` para um ponto aleatório seguro | Sim |
-| `arenas` (vazio) | Arena do boss, arenas de X1 e arena do Gladiador. Só se entra por comando ou warp, com volta ao spawn no fim | Sim |
+| `arenas` (vazio) | Arena de X1 e arena do Gladiador, a 1.200 blocos uma da outra. Só se entra por comando ou warp (a plateia por `/warp plateia-x1` e `/warp plateia-gladiador`), com volta ao spawn no fim | Sim |
 
-- **Visual do spawn:** primeiro, tentar um mapa pronto de spawn medieval (mundo pronto ou `.schem` da 1.13 ou mais nova, com licença para servidor público). Se não ficar bom, plano B: montar a parte funcional (plataformas, caminhos, minas, mercado) e decorar depois.
-- **Mapa funcional** ✅ (plano B, 2026-10-23): `tools/bots/montar-mapa.js` monta o mundo `spawn` (o spawn fechado do EstruturasPlugin, com 32 barracas e a única saída pra avenida das 12 minas de 21 x 21) e o `arenas` (saguão, 3 X1, Gladiador e boss), e cadastra tudo nos plugins. No lugar de placas, hologramas (os das minas, das barracas e dos terrenos vêm dos plugins). Os poços das minas ficam cheios de pedra para a staff criar cada mina (`/mina admin`). Navegação a pé pelas avenidas, mais `/spawn` e `/warp` (o `/spawn` vem do EssentialsXSpawn). O boss começa marcado na arena nova, e a staff muda com `/boss setlocal`. Falta decorar; se não ficar bom, voltamos atrás. 🟡
+- **Visual do spawn** ✅ (2026-10-24): em vez de um mapa pronto, as construções saem de código, pelo EstruturasPlugin (`/estrutura construir <id>`), inspiradas em mapas da CurseForge e da BuiltByBit e ajustadas jogando.
+- **Mapa funcional** ✅: `tools/bots/montar-mapa.js` monta tudo por partes (`minas`, `spawn`, `barracas`, `boss`, `dicas`, `arenas`, `marcar`), pra dar pra refazer uma parte sem mexer no resto, e cadastra tudo nos plugins:
+  - **Spawn** (`spring`): fechado, com fonte, jardins, 32 barracas com NPC e só dois portões. O norte encosta na **Avenida das Minas** (`minas`), com os 12 poços; o sul desce por uma escadaria fechada até a **arena do boss** (`toxica`), enterrada 32 blocos pra não aparecer por cima do spawn, com um degrau de 4 blocos na chegada pros mobs do boss não subirem.
+  - **Arenas**: X1 `axepvp` (nichos fechados pros lutadores, teto de vidro e galeria da plateia) e Gladiador `coliseu` (3x maior, teto de vidro e arquibancada fechada), longe uma da outra.
+  - As 12 minas entram prontas com `cadastrar --minas`. Navegação a pé, mais `/spawn` e `/warp` (o `/spawn` vem do EssentialsXSpawn).
 - **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (imposto, Pix e painel).
 - **Servidor de teste:** o `montar.bat` baixa o Multiverse e o WorldEdit, e o `configurar-mundos.bat` cria os 4 mundos.
 - **Mundo de recursos:** as missões de matar mobs, pescar, colher e cortar árvores precisam dele, porque mob de spawner não conta e o rankup protege o mundo fora das minas.
-- **NPCs** (pendente): junto dos hologramas do mapa funcional, NPCs na praça (guia de "como começar"), na loja (abre o `/sell` e mostra preços), nos portais (Terrenos, Recursos, Arenas) e na entrada de cada mina. Avaliar um plugin pronto (Citizens ou FancyNpcs, conferindo o suporte ao 26.2) ou um plugin nosso, mais simples, só com NPC que roda comando ao clicar. 🟡
-- **Arenas:** o boss já tem o `/boss setlocal`. O X1 é o Duelo com aposta (`duelo-plugin`), e o Gladiador, o `gladiador-plugin`. As arenas definitivas (3 de X1, Gladiador com pilares e boss) ficam no mundo `arenas` do mapa funcional.
+- **NPCs**: plugin nosso, com o Mannequin do 26.2 (sem Citizens). Já existem os vendedores das barracas (skin do dono) e 12 NPCs de dicas pelo spawn (DicasPlugin), com balão de fala animado. Ainda faltam: NPC da loja (abre o `/sell` e mostra preços) e um na entrada de cada mina. 🟡
+- **Arenas:** o X1 é o Duelo com aposta (`duelo-plugin`), e o Gladiador, o `gladiador-plugin`. A arena do boss marca o local dele sozinha ao ser construída. Hoje há uma arena de X1 só, então um duelo por vez; dá pra construir cópias da `axepvp` em outros lugares do mundo `arenas` quando precisar de mais.
 - **Itens nas arenas de PvP (X1 e Gladiador):** cada um luta com o próprio equipamento, e **quem morre perde os itens**.
 
 ---
@@ -65,7 +68,7 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 - [x] Missão de vender na loja e de causar dano no boss.
 - [x] Menu visual (GUI) no `/missoes`.
 - [x] Missões semanais, maiores e com recompensa melhor.
-- [ ] Missão de vender nas barracas (entre jogadores). 🟢
+- [x] Missão de vender nas barracas (entre jogadores).
 
 ### Recompensa por cabeça (Bounty) ✅ v1 (`bounty-plugin`)
 `/bounty colocar <jogador> <valor>`: o valor fica retido (com taxa de 10%), recompensas se somam e quem matar leva. Expira em 7 dias, devolvendo aos contribuintes. Contra farm: mesmo IP, mesmo clã e cooldown por matador. `/bounty cla <tag> <valor por abate> <abates>` caça um clã inteiro. Anúncios grandes vão pro Discord por webhook.
@@ -87,8 +90,8 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 
 ### Mercado de Barracas ✅ v1 (`economy/barracas-plugin`)
 Comércio entre jogadores em barracas alugadas no spawn. A loja é um NPC com a skin do dono e estoque virtual (antes era por placa em baús). A v1 está implementada (veja o README do plugin), com estas decisões:
-- A área é definida por **dois pontos** (`/barraca pos1`, `/barraca pos2`).
-- O dono **só coloca baús e placas**. A construção da staff fica intacta.
+- A área é definida por **dois pontos** (`/barraca pos1`, `/barraca pos2`), ou cadastrada pelo console (o spawn do EstruturasPlugin cadastra as 32 sozinho).
+- O dono **não constrói nada**: anuncia com `/barraca vender` e `/barraca comprar` e abastece pelo NPC. A construção da staff fica intacta.
 - O aluguel dura **6h**.
 - **Barracas normais**: por ordem de chegada, com renovação.
 - **Barracas especiais** (maiores, perto do spawn): vão a **leilão** quando ficam livres, com lance mínimo igual ao preço das normais. Não renovam.
@@ -99,6 +102,7 @@ Comércio entre jogadores em barracas alugadas no spawn. A loja é um NPC com a 
 - [x] Holograma na entrada, com o nome do dono ou "Aluga-se" quando estiver livre (`/barraca holograma <id>`). Antes era uma placa.
 - [x] Preço de aluguel por barraca (`/barraca preco <id> <valor>`).
 - [x] Aluguel pago automaticamente: `/barraca autorenovar`, do próprio plugin. Migrar pro `/pix agendar` quando ele existir. 🟢
+- [x] Loja por NPC com estoque virtual, no lugar dos baús e placas (2026-10-24).
 
 ### Clãs ✅ v1 (`clas-plugin`)
 Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), convites com botão, banco compartilhado com extrato (também no `/pix historico`), fogo amigo desligado (inclusive poção e explosão), chat do clã (`/cc`) e ranking por pontos (abates + boss).
@@ -121,7 +125,7 @@ Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), c
 - [x] Coleta direta nas minas pra todos: drops e XP vão pro jogador, sem itens no chão.
 - [x] Venda automática ao minerar como benefício de VIP (`/autovenda`, Prata pra cima).
 - [x] Menu (GUI) no `/ranks` e no `/mina`.
-- [ ] Missão de subir de rank e missões por mina. 🟢
+- [x] Missão de subir de rank e missões por mina.
 - [ ] Mina privada do clã ou do VIP. 🟡
 - [x] Holograma com o tempo até o próximo reset da mina.
 - [x] Fortuna nas minas: **vale** (decisão de 2026-10-22). A meta de 150 h é pra quem não é VIP e tem Fortuna III, da mesa de encantamento. Os VIPs Ouro e Diamante ganham Fortuna IV e V no kit mensal (`/vip kitmensal`) e chegam em cerca de 112 h e 107 h.
@@ -138,7 +142,7 @@ Terrenos de 32x32 num mundo em grade gerado pelo plugin, comprados por R$ 50.000
 - [x] Holograma na entrada do terreno, com o dono, "À venda" ou o leilão. Antes era uma placa.
 - [ ] Juntar terrenos vizinhos do mesmo dono. 🟡
 - [x] Permissões separadas para os amigos (construir, baús, usar).
-- [ ] Missão de pagar o imposto ou de construir no terreno. 🟢
+- [x] Missão de pagar o imposto ou de construir no terreno.
 
 ### Gladiador ✅ v1 (`gladiador-plugin`)
 Evento de PvP na arena do mundo `arenas`, aberto pela staff ou pela agenda: inscrição paga, contagem regressiva, todos entram na arena e vence o último de pé.
@@ -152,7 +156,7 @@ Evento de PvP na arena do mundo `arenas`, aberto pela staff ou pela agenda: insc
 - [x] Anúncio no Discord (abertura e resultado).
 - [x] Borda que fecha com o tempo, para a luta não se arrastar. O dano fora dela cresce a cada segundo (2, 3, 4... até 20) e ignora a armadura.
 - [x] Destaques com tag no chat até o próximo Gladiador: [Ceifador] (mais abates), [Fujão] (mais blocos andados) e [Top Damage] (mais dano).
-- [ ] Prêmio do modo por clã direto no banco do clã, como opção. 🟢
+- [x] Prêmio do modo por clã direto no banco do clã, como opção.
 
 ### Combate 1.8 ✅ v1 (`combate-plugin`)
 Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo entre golpes configurável e separado por mão** (`/combate intervalo`, de 0 ao padrão de 0,5 s ou mais; alternar as duas mãos bate duas vezes mais), **bloqueio com a espada** (só sem escudo na segunda mão) e **duas mãos** (o botão direito bate com a espada, o machado ou o soco da segunda mão, cada um com a sua skill). Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado continuam como no jogo atual.
@@ -160,76 +164,91 @@ Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo en
 **Próximos passos**
 - [ ] Testar jogando e decidir o que fazer com a maça, a lança e o machado do kit mensal do VIP, que ficam fortes sem recarga. 🟢
 - [ ] Conferir no jogo a animação da espada bloqueando. 🟢
+- [x] **Corrigido (2026-10-24):** com espada na principal, o botão direito num inimigo bloqueava em vez de bater com a segunda mão (o cliente nunca manda o clique da segunda mão quando a principal "faz algo").
 - [ ] Calibrar o tempo entre golpes jogando (o dano por segundo muda com ele). 🟢
 
 ### Ponte com o Discord ✅ v1 (`discord-plugin`)
-Os outros plugins mandam os anúncios para o DiscordPlugin, e cada categoria vai para o seu webhook ou para o padrão. Já ligados: Boss (aparecimento e morte com o ranking), Gladiador (abertura e resultado) e leilões (terrenos e barracas especiais). O Bounty continua com o webhook próprio.
-
-**Ainda não ligados**
-- VIP resgatado e código colocado à venda.
-- Transação suspeita no Pix (ver alerta em Pix, mais abaixo).
-- Barraca alugada ou liberada.
+Os outros plugins mandam os anúncios para o DiscordPlugin, e cada categoria vai para o seu webhook ou para o padrão. Já ligados: Boss (aparecimento e morte com o ranking), Gladiador (abertura e resultado), leilões (terrenos e barracas especiais), VIP ativado (categoria `vip`), Pix alto (categoria `pix`, a partir de `discord.pix-suspeito-valor` no PixPlugin; de preferência num canal da staff) e barraca alugada ou liberada (categoria `barracas`). O Bounty continua com o webhook próprio.
 
 ### Recompensa diária de login ✅ v1 (`diaria-plugin`)
 `/diaria` numa sequência de 7 dias, com uma % do preço do próximo rank (0,5% a 2,5%, mínimo de R$ 200): a semana toda dá 7% de um rank. Perder um dia volta pro 1.
 
-- [ ] Bônus de VIP na recompensa diária. 🟢
+- [x] Bônus de VIP na recompensa diária.
+
+### Estruturas ✅ v1 (`estruturas-plugin`)
+Constrói estruturas de código, sem WorldEdit (`/estrutura construir <id> [mundo x y z]`, também pelo console), aos poucos pra não travar e com `/estrutura desfazer`. No fim, roda comandos de integração (cadastra as barracas, marca o local do boss). Estruturas: `spring` (spawn), `spring-barracas`, `minas`, `axepvp` (X1), `coliseu` (Gladiador) e `toxica` (boss).
+
+**Próximos passos**
+- [ ] NPC da loja e um em cada mina (ver "NPCs", no mapa). 🟡
+- [ ] Cópias da arena de X1, pra mais de um duelo ao mesmo tempo. 🟢
+
+### NPCs de dicas ✅ v1 (`dicas-plugin`)
+NPCs pelo spawn que falam ao receber um clique direito: o balão cresce, escreve letra por letra e some. Cada clique mostra a próxima fala. 12 NPCs com 4 falas cada (`/dica` pra criar e editar).
+
+### Oficinas da mina ✅ v1 (`oficinas-plugin`)
+Quatro barraquinhas temáticas na praça de entrada da Avenida das Minas (estrutura `oficinas`), cada uma com um NPC de serviço: **Ferreiro** (repara os itens por uma taxa pelo desgaste, material e encantamentos), **Bruxa** (mesa de encantamento sempre no nível 30, com a câmara de estantes escondida embaixo da barraca), **Picareteiro** (picaretas prontas, encantadas ou não) e **Sábio** (níveis de XP). A bruxa põe o lápis; cada NPC tem skin temática. Desconto de VIP e registro no `/pix historico`.
+- [ ] Mais oficinas no fundo da avenida (ex: vendedor de comida, troca de minério por fragmento). 🟡
+- [ ] Missões nas oficinas (reparar, encantar). 🟡
+
+### Placar lateral ✅ v1 (`placar-plugin`)
+Scoreboard no canto da tela com saldo, rank, barra até o próximo rank, clã, missões do dia, próximo boss e jogadores online. Linhas no config, com placeholders; `/placar` liga e desliga.
+- [ ] Linha com a skill em uso e o XP dela (ver SkillsPlugin). 🟡
 
 ---
 
 ## 🔧 Features nos plugins atuais
 
 ### 🐉 BossPlugin
-- [ ] **Ranking de dano com prêmio**: o top 3 recebe coins proporcionais ao dano, e não só o último hit. 🟢
-- [ ] **XP de skill por participar**, conforme o dano causado. 🟢
-- [ ] **`/boss proximo`**: mostra quando é o próximo spawn da agenda. 🟢
-- [ ] **Código de VIP pro campeão**: entrega opcional de um código de VIP de curta duração. Funciona como vitrine do VIP. 🟢
+- [x] **Ranking de dano com prêmio**: o top 3 recebe coins proporcionais ao dano, e não só o último hit.
+- [x] **XP de skill por participar**, conforme o dano causado.
+- [x] **`/boss proximo`**: mostra quando é o próximo spawn da agenda.
+- [x] **Código de VIP pro campeão**: entrega opcional de um código de VIP de curta duração. Funciona como vitrine do VIP.
 - [ ] **Boss "elite"**: aparece raramente, com o dobro de vida e de dano e loot melhor. 🟡
-- [ ] **Recompensa em dinheiro** pro campeão, além do item. 🟢
+- [x] **Recompensa em dinheiro** pro campeão, além do item.
 
 ### ⚔️ SkillsPlugin
-- [ ] **`/skills top <skill>`**: ranking global por skill. 🟢
-- [ ] **Bônus sazonal**: XP em dobro configurável (por exemplo, no fim de semana), com aviso no chat. 🟢
-- [ ] **Efeito visual no level up**, com partícula própria de cada skill. 🟢
+- [x] **`/skills top <skill>`**: ranking global por skill.
+- [x] **Bônus sazonal**: XP em dobro configurável (por exemplo, no fim de semana), com aviso no chat. Fim de semana pelo config (`xp-dobro.dias`) ou na hora com `/skills admin xpdobro <mult> <horas>`.
+- [x] **Efeito visual no level up**, com partícula própria de cada skill.
 - [ ] **Prestígio**: no nível 50, resetar a skill em troca de um bônus permanente. 🟡
 - [ ] **Scoreboard lateral** com o XP da skill em uso. 🟡
 - [ ] **Escudo Perfeito (parry)**: bloquear no tempo exato anula o dano e atordoa o atacante. 🟡
 - [ ] **Corrigir**: morrer só por Sangramento não credita quem aplicou o efeito. 🟡
 
 ### 🛒 EconomyShopPlugin
-- [ ] **Eventos de mercado**: um item sorteado tem o preço multiplicado por algumas horas ("alta do diamante"), com anúncio no chat. 🟢
-- [ ] **Venda em massa**: `/sell all` e `/sell mao`. 🟢
-- [ ] **Categorias fixas**: uma lista definida no config em vez de texto livre, pra evitar "Minerio" e "Minerios" separados. 🟢
+- [x] **Eventos de mercado**: um item sorteado tem o preço multiplicado por algumas horas ("alta do diamante"), com anúncio no chat. A cada `intervalo-horas`, com uma chance, por `duracao-horas`; a staff liga com `/shop admin evento <item> <mult> <horas>`, e `/shop evento` mostra o item em alta.
+- [x] **Venda em massa**: `/sell all` (e `/sell` vende o item da mão).
+- [x] **Categorias fixas**: uma lista definida no config em vez de texto livre, pra evitar "Minerio" e "Minerios" separados. `categorias` no config ("Nome:ÍCONE"), na ordem do menu.
 
 ### 💸 PixPlugin
 - [ ] **Alerta de transação suspeita**: um envio grande perto do limite, ou uma conta nova recebendo de várias contas, gera aviso pra staff. Aproveita o `LimiteManager`. 🟡
-- [ ] **`/pix chave <apelido>`**: um apelido para receber pagamentos. 🟢
+- [x] **`/pix chave <apelido>`**: um apelido para receber pagamentos.
 - [x] **`/pix agendar`**: pagamentos recorrentes entre jogadores. (O imposto do terreno e o aluguel das barracas já se pagam sozinhos.)
-- [ ] **Som e título na tela** ao receber um pagamento ou uma cobrança. 🟢
-- [ ] **`/pix admin log <jogador>`**: a staff investiga as transações de alguém. 🟢
-- [ ] **Taxa no histórico**: o extrato passa a mostrar o valor líquido e a taxa de cada transação. 🟢
+- [x] **Som e título na tela** ao receber um pagamento ou uma cobrança.
+- [x] **`/pix admin log <jogador>`**: a staff investiga as transações de alguém.
+- [x] **Taxa no histórico**: o extrato passa a mostrar o valor líquido e a taxa de cada transação.
 
 ### 🧾 ChequePlugin
-- [ ] **Cheque nominal**: só a pessoa indicada pode resgatar. 🟢
+- [x] **Cheque nominal**: só a pessoa indicada pode resgatar.
 - [ ] **Cancelar ou estornar** um cheque emitido por engano. 🟡
-- [ ] **Log** de cheques emitidos e resgatados. 🟢
-- [ ] **Limite de valor** por cheque, ou cooldown. 🟢
+- [x] **Log** de cheques emitidos e resgatados.
+- [x] **Limite de valor** por cheque, ou cooldown. Valor máximo e cooldown no config; `cheque.limite.ignorar` pula os dois. O ID resgatado não resgata de novo (segura cópia por dupe).
 
 ### 👑 VipPlugin
 - [ ] **Integração com o site via RCON**: o plugin já está pronto, falta construir o site. 🔴 (fora do plugin)
-- [ ] **Preço mínimo e máximo** no `/vip vender`. 🟢
-- [ ] **Um warp diferente para cada tier.** 🟢
+- [x] **Preço mínimo e máximo** no `/vip vender`.
+- [x] **Um warp diferente para cada tier.** `/vip setwarp <tier>`; o tier sem área própria vai pra área geral.
 - [ ] **Ler a tag do prefixo do LuckPerms**, pra configurar num lugar só. 🟡
-- [ ] **Avisar o vendedor** quando o código à venda dele vence. 🟢
+- [x] **Avisar o vendedor** quando o código à venda dele vence.
 - [x] **Kit mensal** (`/vip kitmensal`): armadura, armas e ferramentas, de diamante no Bronze e de netherite nos outros, com encantamentos acima do máximo normal (nível IV no Bronze até VII no Diamante; Fortuna IV e V no Ouro e no Diamante).
 - [x] **Bônus de ativação:** dinheiro proporcional ao próximo rank (10% a 50%) e XP em todas as skills, os dois proporcionais aos dias do VIP.
 - [x] **Perks em outros plugins, por permissão:** XP a mais nas skills, desconto na taxa do Pix, missão diária extra e venda automática.
 
 ### 🧹 ItemCleaner
 - [ ] **Achados e perdidos**: os itens limpos vão pra uma caixa que dá pra recuperar pagando uma taxa. Também tira dinheiro de circulação e evita reclamação de quem perdeu item. 🟡
-- [ ] **Limpar orbes de XP** também. 🟢
-- [ ] **Aviso da limpeza manual configurável** (hoje é fixo em 10s). 🟢
-- [ ] **Não limpar itens perto de jogadores.** 🟢
+- [x] **Limpar orbes de XP** também.
+- [x] **Aviso da limpeza manual configurável** (hoje é fixo em 10s).
+- [x] **Não limpar itens perto de jogadores.** `protecao-perto-de-jogador` (8 blocos).
 
 ---
 
@@ -276,3 +295,5 @@ Os outros plugins mandam os anúncios para o DiscordPlugin, e cada categoria vai
 - **Rankup**: prestígio, rank na tab, menus do `/ranks` e do `/mina` e holograma das minas.
 - **Pix**: `/pix agendar`.
 - **Ponte com o Discord** (`discord-plugin`) e **recompensa diária** (`diaria-plugin`).
+- **Mapa** (2026-10-24): EstruturasPlugin (spawn, Avenida das Minas, X1, coliseu e arena do boss enterrada), barracas com loja por NPC, NPCs de dicas e `montar-mapa.js` por partes. O boss não quebra mais blocos, e o mundo `spawn` passou pra dificuldade normal (sem mobs naturais), pro boss existir lá.
+- **Combate**: golpe com a segunda mão funcionando com o cliente de verdade.

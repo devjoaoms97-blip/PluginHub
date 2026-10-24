@@ -27,6 +27,17 @@ taxa:
       - permissao: "vip.desconto.bronze"
         percentual: 20
 
+discord:
+  # Pix a partir desse valor vai pro Discord da staff (categoria "pix" do DiscordPlugin), pra
+  # conferir conta roubada sendo esvaziada ou lavagem entre contas. 0 desliga.
+  pix-suspeito-valor: 100000
+
+notificacao:
+  # Quem recebe um Pix (pagamento, cobrança aceita ou agendado) ganha um título na tela com o
+  # valor e um som, além da mensagem no chat.
+  titulo: true
+  som: true
+
 limite:
   # Máximo que cada jogador pode ENVIAR por dia via Pix (/pix pagar, /pix aceitar e os
   # botões do /pix qrcode), somando o valor bruto antes da taxa. Zera à meia-noite (horário

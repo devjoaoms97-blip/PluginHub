@@ -19,6 +19,9 @@ inscricao:
 premio:
   # Somado às inscrições. Vem do servidor (é dinheiro novo na economia).
   servidor: 10000.0
+  # No modo por clã: true manda o prêmio inteiro pro banco do clã vencedor (/cla banco), em vez
+  # de dividir entre os membros que sobraram de pé. Sem o ClasPlugin, divide como sempre.
+  cla-no-banco: false
 
 minimo:
   # Com menos que isso ao fechar as inscrições, o evento é cancelado e as inscrições voltam.

@@ -2,14 +2,17 @@ package com.example.boss.listener;
 
 import com.example.boss.BossPlugin;
 import com.example.boss.util.BossTagUtil;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 /**
@@ -18,7 +21,8 @@ import org.bukkit.persistence.PersistentDataType;
  * Roda em MONITOR (depois de todos os outros plugins, incluindo os bônus do SkillsPlugin)
  * e ignora eventos cancelados, então conta o dano final que realmente entrou. Projéteis
  * (flecha, tridente arremessado etc.) contam pra quem atirou. O dano é limitado à vida
- * que o boss ainda tinha, pra o golpe final "exagerado" não inflar o ranking.
+ * que o boss ainda tinha, pra o golpe final "exagerado" não inflar o ranking. O dano também é
+ * separado pela skill da arma (espada, machado, arco...), pro XP de participação ir pra skill certa.
  */
 public class BossDamageListener implements Listener {
 
@@ -38,8 +42,25 @@ public class BossDamageListener implements Listener {
 
         double dano = Math.min(evento.getFinalDamage(), boss.getHealth());
         if (dano > 0) {
-            plugin.getBossManager().registrarDano(atacante.getUniqueId(), dano);
+            plugin.getBossManager().registrarDano(atacante.getUniqueId(), dano, skillDoGolpe(evento.getDamager(), atacante));
         }
+    }
+
+    /** A skill do SkillsPlugin que treina com esse golpe, ou null. */
+    private String skillDoGolpe(Entity causador, Player atacante) {
+        if (causador instanceof Trident) return "TRIDENTE";
+        if (causador instanceof AbstractArrow) return "ARQUEIRO";
+        if (causador instanceof Projectile) return null;
+        // o golpe da segunda mão (CombatePlugin) troca as mãos durante o golpe: a arma certa está na principal
+        ItemStack arma = atacante.getInventory().getItemInMainHand();
+        String nome = arma.getType().name();
+        if (arma.getType().isAir()) return "PORRADEIRO";
+        if (nome.endsWith("_SWORD")) return "ESPADAS";
+        if (nome.endsWith("_AXE")) return "MACHADO";
+        if (nome.endsWith("_SPEAR")) return "LANCEIRO";
+        if (nome.equals("MACE")) return "MARRETEIRO";
+        if (nome.equals("TRIDENT")) return "TRIDENTE";
+        return null;
     }
 
     private Player resolverJogador(Entity causador) {

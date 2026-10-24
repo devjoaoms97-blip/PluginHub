@@ -16,6 +16,14 @@ recompensa:
   # Dinheiro dado ao subir de nível = nivel-novo * este valor
   dinheiro-por-nivel: 25
 
+# XP em dobro (ou outro multiplicador) nos dias fixos abaixo. A staff também liga na hora com
+# /skills admin xpdobro <multiplicador> <horas>. Vale pro XP de combate, das missões e do boss
+# (por cima do bônus do VIP). Começo e fim são anunciados no chat.
+xp-dobro:
+  ativado: true
+  multiplicador: 2.0
+  dias: [SABADO, DOMINGO]
+
 vip-bonus-xp:
   # XP a mais em todas as skills por permissão (vale o maior que o jogador tiver). O VipPlugin
   # dá essas permissões pelos grupos do LuckPerms. Também vale pro XP das missões e do bônus

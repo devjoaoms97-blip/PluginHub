@@ -1,8 +1,6 @@
 // Gladiador: modo individual (inscrição paga, preparação sem dano, desconexão elimina, último de
 // pé leva o pote, destaques com tag no chat) e modo por clã (sem dano entre o mesmo clã, prêmio dividido entre quem lutou
 // pelo clã vencedor). Precisa da arena (node montar-mapa.js). Uso: node teste-gladiador.js
-const fs = require('fs')
-const path = require('path')
 const t = require('./lib')
 
 const dinheiro = r => Number((r.match(/\$([\d,.]+)/) || [, 'NaN'])[1].replace(/,/g, ''))
@@ -16,12 +14,15 @@ const naArena = bot => Math.hypot(bot.entity.position.x - 600, bot.entity.positi
 // usa 4 pontos colados no centro (livre, por causa da borda final); os originais voltam no fim.
 const PONTOS_DO_TESTE = [[598.5, 0.5, -90], [602.5, 0.5, 90], [600.5, -1.5, 0], [600.5, 2.5, 180]]
 
-/** Os pontos de entrada gravados no arena.yml do servidor de teste: [x, y, z, yaw]. */
+/**
+ * Os 16 pontos de entrada oficiais do coliseu (os mesmos do montar-mapa.js), olhando pro centro:
+ * [x, y, z, yaw]. Não lê o arena.yml: um teste interrompido no meio deixava lá os 4 do teste, e
+ * o próximo "restaurava" pra eles.
+ */
 function pontosOriginais() {
-  const yml = fs.readFileSync(path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'GladiadorPlugin', 'arena.yml'), 'utf8')
-  const spawns = yml.slice(yml.indexOf('spawns:'))
-  return [...spawns.matchAll(/x: ([-\d.]+)\s+y: ([-\d.]+)\s+z: ([-\d.]+)\s+pitch: [-\d.]+\s+yaw: ([-\d.]+)/g)]
-    .map(m => m.slice(1).map(Number))
+  const relativos = [[38, 0], [19, 28], [0, 32], [-27, 23], [-38, 0], [-27, -23], [0, -32], [27, -23],
+    [46, 22], [18, 42], [-14, 43], [-46, 22], [-46, -22], [-27, -39], [14, -43], [46, -22]]
+  return relativos.map(([dx, dz]) => [600 + dx + 0.5, 65, dz + 0.5, Math.round(Math.atan2(dx, -dz) * 180 / Math.PI)])
 }
 
 /** Troca os pontos de entrada da arena (o bot da staff fica em cada um e roda o spawn add). */
@@ -56,8 +57,8 @@ t.rodar(async () => {
     const info = await t.console('gladiador arena info')
     console.log(`  pontos originais de volta: ${info}`)
     await t.console('deop BotStaff')
-    staff.quit()
   }
+  await t.terminar(staff)
 })
 
 async function testar() {
@@ -143,5 +144,6 @@ async function testar() {
   await t.console('gladiador cancelar')
   t.verificar(await saldo(semCla.username) === antes, 'cancelado, a inscrição voltou')
 
-  await t.terminar(p1, p2, p3, semCla)
+  // sem t.terminar aqui: ele encerra o processo e o finally (que devolve os pontos da arena) não rodaria
+  for (const b of [p1, p2, p3, semCla]) b.quit()
 }

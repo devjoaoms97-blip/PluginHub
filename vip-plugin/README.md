@@ -115,6 +115,14 @@ codigos:
 
 Isso usa exatamente a mesma peça de código de resgate da seção anterior — só muda quem anexa o preço (o próprio jogador que tem o código em mãos, não a staff). `revenda.ativado: false` no `config.yml` desliga essa feature inteira se não quiser esse tipo de comércio no seu servidor. Precisa de Vault instalado — sem ele, `/vip vender` avisa e não deixa continuar.
 
+### Faixa de preço e aviso de vencimento
+
+`revenda.precos.<tier>.minimo/maximo` limita o preço no `/vip vender` (0 = sem limite). Isso evita lavar dinheiro entre contas com um VIP vendido por 1 milhão, ou derrubar o mercado vendendo por 1 coin. Se o código à venda vence sem ninguém comprar, o vendedor é avisado: na hora, se estiver online, ou quando entrar (o aviso fica guardado no `codigos.yml`).
+
+### Discord
+
+Quando alguém ativa um VIP, sai um anúncio na categoria `vip` do DiscordPlugin.
+
 ## Setup — depois de instalar
 
 ### 1. Copiar o `.jar` e deixar gerar o `config.yml`
@@ -178,6 +186,8 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 Essa distribuição de perks por tier é só sugestão — dá pra dar `/vip fly` já no Bronze, por exemplo, é só adicionar a permissão no grupo. Essa mudança não precisa de reload nem de reiniciar nada, é instantânea via LuckPerms.
 
 ### 3. Definir o warp exclusivo
+
+Cada tier pode ter a própria área: `/vip setwarp <tier>` marca onde você está (vai pra `warp-vip.tiers.<tier>`), e `/vip setwarp` sozinho marca a área geral. O tier sem área própria vai pra geral.
 Vá até o local desejado e anote as coordenadas (`F3`), depois edite `warp-vip.mundo/x/y/z` no `config.yml` e rode `/vip reload`.
 
 ### 4. Testar o fluxo completo

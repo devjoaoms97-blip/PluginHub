@@ -14,6 +14,13 @@ Plugin para Spigot/Paper (1.20.x) que transforma papel em um **cheque** resgatá
 
 3. Qualquer jogador com o cheque em mãos pode **clicar com o botão direito** para resgatá-lo: o valor é depositado na conta dele (via Vault) e o item é consumido.
 
+## Cheque nominal, limites e log
+
+- `/cheque <valor> [jogador]`: com o jogador, o cheque é **nominal**. O nome vai no lore e só ele resgata.
+- **Limites** (`config.yml`): `limite.valor-maximo` por cheque e `limite.cooldown-segundos` entre emissões. A permissão `cheque.limite.ignorar` pula os dois.
+- **Log**: cada emissão, resgate e recusa vira uma linha em `plugins/ChequePlugin/cheques.log`, com data, jogador, valor e o ID do cheque.
+- **Anti-cópia**: o ID de cada cheque resgatado fica em `resgatados.yml`. Um cheque com ID já resgatado (cópia de um dupe) é recusado, anulado e registrado no log.
+
 ## Requisitos
 
 - Servidor **Paper** 26.2 (requer Java 25)

@@ -71,7 +71,22 @@ public class ChequeListener implements Listener {
             return;
         }
 
+        String id = pdc.get(plugin.getChequeIdKey(), PersistentDataType.STRING);
+        String nominal = pdc.get(plugin.getChequeNominalKey(), PersistentDataType.STRING);
+        if (nominal != null && !nominal.equals(player.getUniqueId().toString())) {
+            player.sendMessage(ChatColor.RED + "Este cheque é nominal: só "
+                    + org.bukkit.Bukkit.getOfflinePlayer(java.util.UUID.fromString(nominal)).getName() + " pode resgatar.");
+            return;
+        }
+        if (plugin.getChequeLog().jaResgatado(id)) {
+            plugin.getChequeLog().recusado(player.getName(), valor, id, "já resgatado");
+            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+            player.sendMessage(ChatColor.RED + "Este cheque já foi resgatado antes (cópia). Ele foi anulado.");
+            return;
+        }
+
         economy.depositPlayer(player, valor);
+        plugin.getChequeLog().resgatado(player.getName(), valor, id);
 
         // Consome apenas 1 unidade do cheque
         if (item.getAmount() > 1) {

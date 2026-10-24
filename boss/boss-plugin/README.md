@@ -15,6 +15,8 @@ Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases din
 9. **Contagem regressiva** no chat antes do spawn agendado (padrão: 10, 5 e 1 min antes)
 10. **Ranking de dano**: quando o boss morre, o chat mostra o top 3 de quem mais bateu nele
 11. **Discord**: com o DiscordPlugin, o aparecimento e a morte (campeão e ranking de dano) vão para a categoria `boss`
+12. **Recompensas**: coins pro top 3 do ranking de dano e pro campeão, XP de skill pra todo mundo que bateu (proporcional ao dano, na skill da arma usada: espada, machado, arco, tridente, lança, maça ou soco) e, opcional, um código de VIP pro campeão
+13. **`/boss proximo`**: qualquer jogador vê quando o próximo boss da agenda aparece
 
 ## Requisitos
 
@@ -26,6 +28,7 @@ Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases din
 
 | Comando | Ação |
 |---|---|
+| `/boss proximo` | Quando o próximo boss da agenda aparece (**qualquer jogador**) |
 | `/boss start` | Inicia um boss **aleatório** entre os normais (não especiais) |
 | `/boss start <id>` | Inicia um perfil específico (ex: `/boss start wither`) |
 | `/boss list` | Lista os perfis configurados e seus ids |
@@ -34,6 +37,24 @@ Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases din
 | `/boss additem <chance%>` | Adiciona o item na mão ao loot do chão |
 | `/boss addchampionitem <peso%>` | Adiciona o item na mão ao sorteio de prêmio do campeão |
 | `/boss reload` | Recarrega o `config.yml` |
+
+## Recompensas
+
+```yaml
+recompensas:
+  ranking-dano: [15000, 10000, 5000]   # coins pro 1º, 2º e 3º (lista vazia desativa)
+  campeao-dinheiro: 20000               # coins pro campeão, além do item (0 desativa)
+  xp-skill-maximo: 3000                 # XP de skill de quem tirou 100% da vida do boss (0 desativa)
+  xp-skill-minimo: 100                  # mínimo pra quem bateu pelo menos um pouco
+  codigo-vip:                           # código de VIP de 1 uso pro campeão (VipPlugin)
+    ativado: false
+    tier: bronze
+    dias: 3
+    validade-dias: 7                    # prazo pra resgatar (0 = não expira)
+```
+
+- O dinheiro vem do servidor, então entra dinheiro novo na economia. Sem o Vault, só o dinheiro fica de fora.
+- O XP é dividido entre as skills das armas que o jogador usou, na proporção do dano de cada uma. Só ganha quem está online quando o boss morre.
 
 ## Arena pronta
 
@@ -53,7 +74,7 @@ A arena do boss pode ser construída pelo EstruturasPlugin: `/estrutura construi
 | `curar` *(novo)* | O boss recupera uma % da vida máxima (mecânica de fúria/desespero) |
 | `teleporte_ataque` *(novo)* | Teleporta pra perto de um jogador aleatório e desfere um golpe surpresa |
 
-Todos exigem a permissão `boss.admin` (padrão: op).
+Todos, menos o `/boss proximo`, exigem a permissão `boss.admin` (padrão: op).
 
 ## ⚠️ Atualizando de uma versão anterior
 

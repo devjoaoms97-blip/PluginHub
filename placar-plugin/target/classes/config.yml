@@ -1,0 +1,31 @@
+# Configuração do PlacarPlugin (scoreboard lateral)
+#
+# Título e linhas (no máximo 15), de cima pra baixo. '&' pras cores. Placeholders:
+#   {jogador} {saldo} {rank} {proximo-rank} {progresso} {cla} {missoes} {boss} {online} {max}
+# Cada informação vem do plugin dela (Rankup, Clãs, Missões, Boss); sem o plugin, aparece "—".
+# Linhas iguais (ex: duas vazias) podem repetir à vontade.
+
+titulo: "&6&l⛏ RANKUP"
+
+linhas:
+  - "&8&m                    "
+  - "&fSaldo: &a{saldo}"
+  - "&fRank: {rank}"
+  - "&fPróximo: {proximo-rank}"
+  - " {progresso}"
+  - ""
+  - "&fClã: {cla}"
+  - "&fMissões hoje: {missoes}"
+  - "&fPróximo boss: &e{boss}"
+  - ""
+  - "&fOnline: &a{online}&7/{max}"
+  - "&8&m                    "
+
+textos:
+  sem-cla: "&7nenhum"
+
+# De quantos em quantos ticks o placar se atualiza (20 ticks = 1 s). Mínimo 10.
+intervalo-ticks: 40
+
+# Mundos onde o placar não aparece (ex: arena de evento com placar próprio).
+mundos-sem-placar: []

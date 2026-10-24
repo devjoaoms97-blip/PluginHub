@@ -31,6 +31,11 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             return tratarAdmin(sender, args);
         }
 
+        if (args.length > 0 && args[0].equalsIgnoreCase("evento")) {
+            mostrarEvento(sender);
+            return true;
+        }
+
         if (args.length > 0 && (args[0].equalsIgnoreCase("historico") || args[0].equalsIgnoreCase("grafico"))) {
             return tratarHistorico(sender, args);
         }
@@ -104,6 +109,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             case "removeitem" -> tratarRemoveitem(sender);
             case "resetprice" -> tratarResetprice(sender);
             case "list" -> tratarList(sender, args);
+            case "evento" -> tratarEventoAdmin(sender, args);
             case "reload" -> {
                 plugin.reloadConfig();
                 plugin.getShopManager().recarregar();
@@ -112,6 +118,47 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             default -> enviarAjudaAdmin(sender);
         }
         return true;
+    }
+
+    /** /shop evento: o evento de mercado de agora. */
+    private void mostrarEvento(CommandSender sender) {
+        var evento = plugin.getEventoMercado();
+        if (!evento.ativo()) {
+            sender.sendMessage("§7Nenhum item em alta agora. Fique de olho no chat!");
+            return;
+        }
+        long minutos = Math.max(1, (evento.getTermina() - System.currentTimeMillis()) / 60_000);
+        ShopItem item = plugin.getShopManager().getItem(evento.getMaterial());
+        sender.sendMessage("§6📈 Em alta: §f" + evento.nome(evento.getMaterial()) + " §7(x"
+                + String.format(Locale.ROOT, "%.1f", evento.getMultiplicador()).replace('.', ',') + ")"
+                + (item != null ? " §7- a loja paga §f" + formatar(item.getPrecoVendaComEvento()) : "")
+                + " §7- acaba em §f" + (minutos >= 60 ? (minutos / 60) + "h " + (minutos % 60) + "min" : minutos + "min"));
+    }
+
+    /** /shop admin evento <item> <multiplicador> <horas> | parar */
+    private void tratarEventoAdmin(CommandSender sender, String[] args) {
+        if (args.length >= 3 && args[2].equalsIgnoreCase("parar")) {
+            plugin.getEventoMercado().encerrar(true);
+            sender.sendMessage("§aEvento de mercado encerrado.");
+            return;
+        }
+        if (args.length < 5) {
+            sender.sendMessage("§cUso: §f/shop admin evento <item> <multiplicador> <horas> §7| §f/shop admin evento parar");
+            return;
+        }
+        Material material = Material.matchMaterial(args[2]);
+        if (material == null || !plugin.getShopManager().existeItem(material)) {
+            sender.sendMessage("§cEsse item não está cadastrado na loja.");
+            return;
+        }
+        Double mult = parseDouble(args[3], sender);
+        Double horas = parseDouble(args[4], sender);
+        if (mult == null || horas == null) return;
+        if (!Double.isFinite(mult) || mult < 1 || mult > 10 || !Double.isFinite(horas) || horas <= 0 || horas > 168) {
+            sender.sendMessage("§cMultiplicador de 1 a 10 e horas entre 0 e 168.");
+            return;
+        }
+        plugin.getEventoMercado().iniciar(material, mult, horas);
     }
 
     private void tratarAdditem(CommandSender sender, String[] args) {
@@ -277,6 +324,8 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/shop admin list §7- lista todos os itens cadastrados e preços atuais");
         sender.sendMessage("§f/shop admin list piso §7- lista só os itens travados no preço mínimo");
         sender.sendMessage("§f/shop admin reload §7- recarrega o config.yml");
+        sender.sendMessage("§f/shop admin evento <item> <mult> <horas> §7- põe um item em alta agora (§fparar§7 encerra)");
+        sender.sendMessage("§f/shop evento §7- mostra o item em alta");
         sender.sendMessage("§f/shop historico <item> §7- mostra o gráfico de tendência das últimas 24h");
     }
 
@@ -286,10 +335,24 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             List<String> opcoes = new ArrayList<>();
             if (sender.hasPermission("shop.admin")) opcoes.add("admin");
             opcoes.add("historico");
+            opcoes.add("evento");
             return opcoes;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
-            return List.of("additem", "removeitem", "resetprice", "list", "reload");
+            return List.of("additem", "removeitem", "resetprice", "list", "reload", "evento");
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("additem")) {
+            return plugin.getShopManager().getCategorias();
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("evento")) {
+            List<String> opcoes = new ArrayList<>();
+            opcoes.add("parar");
+            String digitado = args[2].toLowerCase(Locale.ROOT);
+            for (Material material : plugin.getShopManager().getTodosItens().keySet()) {
+                String nome = material.name().toLowerCase(Locale.ROOT);
+                if (nome.startsWith(digitado)) opcoes.add(nome);
+            }
+            return opcoes;
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("list")) {
             return List.of("piso");

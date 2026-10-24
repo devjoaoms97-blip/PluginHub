@@ -4,6 +4,7 @@ com\example\estruturas\estrutura\ArenaSpringColiseu$EspelhoZ.class
 com\example\estruturas\estrutura\ArenaSpringColiseu.class
 com\example\estruturas\estrutura\ArenaToxica.class
 com\example\estruturas\estrutura\ArenaColiseu.class
+com\example\estruturas\estrutura\OficinasDaMina.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$Modelo.class
 com\example\estruturas\estrutura\Planta.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$1.class
@@ -19,3 +20,4 @@ com\example\estruturas\estrutura\ArenaAxePvP.class
 com\example\estruturas\estrutura\AvenidaDasMinas$Mina.class
 com\example\estruturas\estrutura\BarracasDoSpawn.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$Quadrante.class
+com\example\estruturas\estrutura\OficinasDaMina$Tema.class

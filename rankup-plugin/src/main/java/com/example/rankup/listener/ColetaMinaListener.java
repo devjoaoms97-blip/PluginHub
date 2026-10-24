@@ -52,6 +52,13 @@ public class ColetaMinaListener implements Listener {
         return true;
     }
 
+    /** Missão de minerar numa mina: todo bloco quebrado dentro dela conta (com ou sem XP). */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void contarMissao(BlockBreakEvent evento) {
+        var mina = plugin.getMinaManager().getMinaEm(evento.getBlock().getLocation());
+        if (mina != null) plugin.getMissoes().progresso(evento.getPlayer(), "MINERAR_MINA", mina.getId(), 1);
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoQuebrar(BlockBreakEvent evento) {
         if (evento.getExpToDrop() <= 0) return;

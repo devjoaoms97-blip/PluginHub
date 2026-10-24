@@ -126,6 +126,21 @@ public class ScheduleManager {
         return -1;
     }
 
+    /** O próximo horário da agenda (a partir de agora), ou null se a agenda estiver vazia. */
+    public LocalDateTime proximo() {
+        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime melhor = null;
+        for (Horario h : horarios) {
+            for (int d = 0; d <= 7; d++) {
+                LocalDateTime candidato = agora.toLocalDate().plusDays(d).atTime(h.hora());
+                if (candidato.getDayOfWeek() != h.dia() || !candidato.isAfter(agora)) continue;
+                if (melhor == null || candidato.isBefore(melhor)) melhor = candidato;
+                break;
+            }
+        }
+        return melhor;
+    }
+
     public void recarregar() {
         carregar();
     }

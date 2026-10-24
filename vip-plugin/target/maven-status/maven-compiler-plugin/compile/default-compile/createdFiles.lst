@@ -3,6 +3,7 @@ com\example\vip\manager\CooldownManager$Perk.class
 com\example\vip\listener\ChatTagListener.class
 com\example\vip\command\VipCommand.class
 com\example\vip\manager\CodeManager.class
+com\example\vip\util\DiscordIntegration.class
 com\example\vip\model\VipTier.class
 com\example\vip\model\VipAtivo.class
 com\example\vip\model\VipCode.class

@@ -56,6 +56,8 @@ public class BossManager {
 
     // Dano total causado no boss atual, por jogador (pro ranking anunciado na morte)
     private final Map<UUID, Double> danoPorJogador = new HashMap<>();
+    // dano de cada jogador separado pela skill da arma usada, pro XP de participação
+    private final Map<UUID, Map<String, Double>> danoPorSkill = new HashMap<>();
 
     private BukkitTask taskMonitoramento;
 
@@ -84,8 +86,14 @@ public class BossManager {
         carregarPerfis();
     }
 
-    public void registrarDano(UUID jogador, double dano) {
+    /** {@code skill} é o nome da skill do SkillsPlugin da arma usada, ou null se não tiver. */
+    public void registrarDano(UUID jogador, double dano, String skill) {
         danoPorJogador.merge(jogador, dano, Double::sum);
+        if (skill != null) danoPorSkill.computeIfAbsent(jogador, k -> new HashMap<>()).merge(skill, dano, Double::sum);
+    }
+
+    public Map<String, Double> getDanoPorSkill(UUID jogador) {
+        return danoPorSkill.getOrDefault(jogador, Map.of());
     }
 
     /** Jogadores ordenados do maior pro menor dano causado no boss atual. */
@@ -207,6 +215,7 @@ public class BossManager {
         fasesPercentuaisDisparadas.clear();
         proximoDisparoTempo.clear();
         danoPorJogador.clear();
+        danoPorSkill.clear();
         long agora = System.currentTimeMillis();
         for (FaseConfig fase : perfil.getFases()) {
             if (fase.getGatilho() == TipoGatilhoFase.INTERVALO_TEMPO) {

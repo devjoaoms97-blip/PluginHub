@@ -11,4 +11,5 @@ com\example\missoes\command\MissoesCommand.class
 com\example\missoes\model\Periodo.class
 com\example\missoes\gui\MissoesGUI.class
 com\example\missoes\listener\ProgressoListener.class
+com\example\missoes\util\RankupIntegration.class
 com\example\missoes\gui\MissoesGUI$Holder.class

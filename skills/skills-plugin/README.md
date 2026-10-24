@@ -30,6 +30,8 @@ Sistema de skills de combate estilo RPG, com 11 skills, progressão por nível, 
 |---|---|
 | `/skills` | Abre o menu visual (GUI) com todas as skills e barras de progresso |
 | `/skills ver` | Mostra um resumo rápido no chat |
+| `/skills top [skill]` | Top 10 de uma skill (nível e XP), ou da soma dos níveis de todas. Funciona no console |
+| `/skills admin xpdobro <multiplicador> <horas>` | (staff) Liga o XP extra agora; `parar` desliga |
 | `/skills admin setlevel <jogador> <skill> <nível>` | (staff) Define manualmente o nível de uma skill de um jogador. Requer permissão `skills.admin` (padrão: op) |
 
 Nomes de skill aceitos no comando admin: `espadas`, `machado`, `arqueiro`, `porradeiro`, `tridente`, `esquiva`, `defesa`, `bloqueio`, `critico`, `regeneracao`, `agilidade`.
@@ -41,6 +43,14 @@ Ao usar `setlevel`, o XP acumulado daquela skill é zerado (já que o "degrau" m
 Quem tem VIP ganha XP a mais em todas as skills: +10% no Bronze, +20% no Prata, +30% no Ouro e +50% no Diamante. O bônus vem por permissão (`vip.xp.<tier>`, dada pelos grupos do LuckPerms), configurado em `vip-bonus-xp`. Vale o maior que o jogador tiver, e vale também para o XP das missões.
 
 **XP de bônus.** O bônus de ativação do VIP dá XP pelo `adicionarXpBonus`: sobe os níveis, mas não paga o `recompensa.dinheiro-por-nivel` nem manda o "SKILL UP" de cada nível, e não recebe o bônus de XP do VIP por cima.
+
+## XP em dobro e efeito do level up
+
+`xp-dobro` no config: nos dias da lista (`[SABADO, DOMINGO]` por padrão) todo XP de skill vale `multiplicador`, por cima do bônus do VIP (combate, missões e boss; o bônus de ativação do VIP não). A staff também liga na hora com `/skills admin xpdobro`, que vale mais que o dos dias fixos e sobrevive a reinício. O começo e o fim são anunciados no chat, e quem entra durante o evento é avisado.
+
+Ao subir de nível, duas espirais da partícula da skill sobem em volta do jogador (crítico nas Espadas, coração na Regeneração...), e no fim vem a explosão de totem. Todo mundo em volta vê.
+
+O `/skills top` lê o `playerdata` de todos (e o cache de quem está online) e guarda o resultado por um minuto.
 
 ## Requisitos
 

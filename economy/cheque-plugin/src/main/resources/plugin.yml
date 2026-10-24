@@ -9,7 +9,7 @@ softdepend: [Vault]
 commands:
   cheque:
     description: Transforma o papel que você segura em um cheque.
-    usage: "Uso correto: /cheque <valor>"
+    usage: "Uso correto: /cheque <valor> [jogador]"
     permission: cheque.criar
     permission-message: "§cVocê não tem permissão para criar cheques."
 
@@ -17,6 +17,9 @@ permissions:
   cheque.criar:
     description: Permite criar cheques a partir de papel.
     default: op
+  cheque.limite.ignorar:
+    description: Emite cheques sem o valor máximo nem o intervalo entre emissões.
+    default: false
   cheque.resgatar:
     description: Permite resgatar cheques.
     default: true

@@ -11,6 +11,9 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +28,10 @@ public class BossCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("proximo")) {
+            proximo(sender);
+            return true;
+        }
         if (!sender.hasPermission("boss.admin")) {
             sender.sendMessage("§cVocê não tem permissão pra usar esse comando.");
             return true;
@@ -127,6 +134,24 @@ public class BossCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    /** /boss proximo (pra todos): quando o boss aparece de novo, pela agenda. */
+    private void proximo(CommandSender sender) {
+        if (plugin.getBossManager().estaAtivo()) {
+            sender.sendMessage("§4☠ §cTem um boss vivo agora! §7Corra pro portão do boss, ao sul do spawn (§f/warp boss§7).");
+            return;
+        }
+        LocalDateTime quando = plugin.getScheduleManager().proximo();
+        if (quando == null) {
+            sender.sendMessage("§7Não tem boss marcado na agenda. Fique de olho no chat.");
+            return;
+        }
+        String dia = quando.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt-BR"));
+        long minutos = Math.max(1, Duration.between(LocalDateTime.now(), quando).toMinutes());
+        String falta = minutos >= 1440 ? (minutos / 1440) + "d " + (minutos % 1440 / 60) + "h"
+                : minutos >= 60 ? (minutos / 60) + "h " + (minutos % 60) + "min" : minutos + "min";
+        sender.sendMessage("§e☠ Próximo boss: §f" + dia + " às " + quando.toLocalTime() + " §7(daqui a " + falta + ")");
+    }
+
     private Player exigirJogador(CommandSender sender) {
         if (sender instanceof Player p) return p;
         sender.sendMessage("§cSomente jogadores podem usar esse comando.");
@@ -144,6 +169,7 @@ public class BossCommand implements CommandExecutor, TabCompleter {
 
     private void enviarAjuda(CommandSender sender) {
         sender.sendMessage("§e§l--- Comandos do Boss ---");
+        sender.sendMessage("§f/boss proximo §7- quando o próximo boss aparece (pra todos)");
         sender.sendMessage("§f/boss start [id] §7- inicia um boss aleatório (ou um específico pelo id)");
         sender.sendMessage("§f/boss list §7- lista os perfis de boss configurados");
         sender.sendMessage("§f/boss stop §7- remove o boss ativo");
@@ -155,9 +181,12 @@ public class BossCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (!sender.hasPermission("boss.admin")) {
+            return args.length == 1 && "proximo".startsWith(args[0].toLowerCase(Locale.ROOT)) ? List.of("proximo") : List.of();
+        }
         if (args.length == 1) {
             List<String> opcoes = new ArrayList<>(List.of(
-                    "start", "list", "stop", "setlocal", "additem", "addchampionitem", "reload"));
+                    "proximo", "start", "list", "stop", "setlocal", "additem", "addchampionitem", "reload"));
             String digitado = args[0].toLowerCase(Locale.ROOT);
             opcoes.removeIf(o -> !o.startsWith(digitado));
             return opcoes;

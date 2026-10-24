@@ -10,6 +10,12 @@ Limpa periodicamente os itens dropados no chão (drops de mob, blocos minerados,
 - Por padrão, **não remove itens renomeados** (ex: na bigorna) — geralmente é sinal de que o jogador guardou aquilo de propósito.
 - Dá pra restringir a mundos específicos (`mundos.modo` + `mundos.lista`), por exemplo pra nunca limpar num mundo de museu/spawn onde itens ficam expostos.
 
+## Orbes de XP, perto de jogador e aviso manual
+
+- `limpar-orbes-xp` (padrão true): os orbes de XP soltos também saem, com a mesma idade mínima.
+- `protecao-perto-de-jogador` (padrão 8 blocos): nada num raio desses de qualquer jogador é removido. O drop de quem está minerando ou lutando ali do lado fica. 0 desliga.
+- `aviso-manual-segundos` e `mensagens.aviso-manual`: o tempo e a mensagem do `/limparchao` sem argumento (antes eram fixos em 10s, com a mensagem da automática).
+
 ## Comandos
 
 | Comando | Ação |

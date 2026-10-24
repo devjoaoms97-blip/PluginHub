@@ -287,8 +287,11 @@ public class EventoManager {
         } else {
             double pote = pote();
             double parte = pote / ganhadores.size();
+            // modo por clã com premio.cla-no-banco: o pote inteiro vai pro banco do clã vencedor
+            boolean noBanco = cla != null && plugin.getConfig().getBoolean("premio.cla-no-banco", false)
+                    && plugin.getClasIntegration().depositarNoBanco(cla, pote, "Prêmio do Gladiador");
             for (UUID id : ganhadores) {
-                pagarPremio(id, parte);
+                if (!noBanco) pagarPremio(id, parte);
                 vitorias.merge(id, 1, Integer::sum);
                 nomes.put(id, esse.getParticipantes().get(id).getNome());
             }
@@ -299,7 +302,8 @@ public class EventoManager {
                     : "§f" + String.join(", ", ganhadores.stream().map(id -> esse.getParticipantes().get(id).getNome()).toList());
             String resultado = "§6§l⚔ GLADIADOR ⚔ " + quem + " §6§lvenceu" + (ganhadores.size() > 1 && cla == null ? " (tempo esgotado)" : "")
                     + "§6§l! §ePrêmio: §f" + Formato.valor(pote)
-                    + (ganhadores.size() > 1 ? " §7(" + Formato.valor(parte) + " pra cada um)" : "") + "§e.";
+                    + (noBanco ? " §7(direto no banco do clã)"
+                    : ganhadores.size() > 1 ? " §7(" + Formato.valor(parte) + " pra cada um)" : "") + "§e.";
             anunciar(resultado);
             plugin.getDiscord().enviar("gladiador", resultado);
         }

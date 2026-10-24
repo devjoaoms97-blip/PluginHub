@@ -175,14 +175,16 @@ public class AgendamentoManager {
         double taxa = online != null ? plugin.calcularTaxaTransacao(a.valor, online) : plugin.calcularTaxaTransacao(a.valor);
         econ.withdrawPlayer(pagador, a.valor);
         econ.depositPlayer(recebedor, a.valor - taxa);
-        plugin.getChargeManager().registrarTransacao(a.pagador, a.recebedor, a.valor, "Pix agendado" + (a.motivo != null ? ": " + a.motivo : ""));
+        plugin.getChargeManager().registrarTransacao(a.pagador, a.recebedor, a.valor, "Pix agendado" + (a.motivo != null ? ": " + a.motivo : ""), taxa);
         limites.registrarEnvio(a.pagador, a.valor);
+        plugin.conferirSuspeito(a.nomePagador, a.nomeRecebedor, a.valor, "Pix agendado");
         a.falhas = 0;
         a.proximo = Math.max(a.proximo, System.currentTimeMillis() - DIA) + (long) a.dias * DIA;
         avisar(online, "§aPix agendado #" + a.id + ": você pagou §f" + valor(a.valor) + " §apara §f" + a.nomeRecebedor
                 + (taxa > 0 ? " §7(taxa: " + valor(taxa) + ")" : "") + "§a. Próximo em §f" + a.dias + " dia(s)§a.");
         avisar(recebedor.getPlayer(), "§aVocê recebeu §f" + valor(a.valor - taxa) + " §ade §f" + a.nomePagador
                 + " §7(Pix agendado" + (a.motivo != null ? ": " + a.motivo : "") + ")§a.");
+        plugin.notificarRecebimento(recebedor.getPlayer(), a.valor - taxa, a.nomePagador);
     }
 
     private void falhou(Agendamento a, String motivo) {

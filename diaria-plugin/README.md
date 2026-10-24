@@ -16,6 +16,10 @@ Cada dia vale uma **% do preço do próximo rank** do jogador (RankupPlugin), pa
 
 É dinheiro novo na economia: aparece no painel como "Recompensa diária" (`/economia tipos DiariaPlugin`) e no `/pix historico`.
 
+## Bônus do VIP
+
+`vip-bonus.permissoes` dá uma % a mais na diária pela maior permissão do jogador (por padrão as mesmas do bônus de XP das skills: bronze +20%, prata +40%, ouro +60%, diamante +100%). A mensagem mostra o bônus.
+
 ## Comandos
 
 | Comando | O que faz |

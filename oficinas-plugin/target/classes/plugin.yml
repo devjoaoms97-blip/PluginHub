@@ -1,0 +1,20 @@
+name: OficinasPlugin
+version: '1.0.0'
+main: com.example.oficinas.OficinasPlugin
+api-version: '26.2'
+author: Você
+description: NPCs de serviço na mina - Ferreiro (reparo), Bruxa (encantamento no máximo), Picareteiro e Sábio (XP e lápis).
+softdepend: [Vault, PixPlugin]
+
+commands:
+  oficina:
+    description: Gerencia as oficinas (NPCs de serviço) da mina.
+    usage: "Uso: /oficina <criar|remover|lista|mesa|abrir|reload>"
+    aliases: [oficinas]
+    permission: oficinas.admin
+    permission-message: "§cVocê não tem permissão para isso."
+
+permissions:
+  oficinas.admin:
+    description: Cria e remove as oficinas.
+    default: op

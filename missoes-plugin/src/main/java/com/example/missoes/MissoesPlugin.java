@@ -7,6 +7,7 @@ import com.example.missoes.manager.MissaoManager;
 import com.example.missoes.model.Periodo;
 import com.example.missoes.model.TipoMissao;
 import com.example.missoes.util.PixIntegration;
+import com.example.missoes.util.RankupIntegration;
 import com.example.missoes.util.SkillsIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ public class MissoesPlugin extends JavaPlugin {
     private MissaoManager missaoManager;
     private PixIntegration pixIntegration;
     private SkillsIntegration skillsIntegration;
+    private RankupIntegration rankupIntegration;
     private MissoesGUI missoesGUI;
 
     @Override
@@ -36,6 +38,7 @@ public class MissoesPlugin extends JavaPlugin {
 
         this.pixIntegration = new PixIntegration(this);
         this.skillsIntegration = new SkillsIntegration(this);
+        this.rankupIntegration = new RankupIntegration(this);
         this.missaoManager = new MissaoManager(this);
         this.missoesGUI = new MissoesGUI(this);
 
@@ -94,6 +97,20 @@ public class MissoesPlugin extends JavaPlugin {
         }
     }
 
+    /** API pública (PlacarPlugin, por reflexão): {concluídas, total} das missões diárias de hoje. */
+    public int[] missoesDoDia(java.util.UUID jogador) {
+        var atual = missaoManager.getAtual(jogador, Periodo.DIARIA);
+        int total = 0;
+        int feitas = 0;
+        for (var entrada : atual.getProgresso().entrySet()) {
+            var missao = missaoManager.getMissao(Periodo.DIARIA, entrada.getKey());
+            if (missao == null) continue;
+            total++;
+            if (entrada.getValue() >= missao.quantidade()) feitas++;
+        }
+        return new int[]{feitas, total};
+    }
+
     public MissoesGUI getMissoesGUI() {
         return missoesGUI;
     }
@@ -108,6 +125,10 @@ public class MissoesPlugin extends JavaPlugin {
 
     public PixIntegration getPixIntegration() {
         return pixIntegration;
+    }
+
+    public RankupIntegration getRankupIntegration() {
+        return rankupIntegration;
     }
 
     public SkillsIntegration getSkillsIntegration() {

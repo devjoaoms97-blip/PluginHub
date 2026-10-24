@@ -166,6 +166,10 @@ warp-vip:
   x: 0
   y: 100
   z: 0
+  # Áreas próprias de cada tier (opcional): o tier sem área aqui vai pra área geral acima.
+  # A staff marca com /vip setwarp <tier> no lugar certo.
+  # tiers:
+  #   diamante: {mundo: spawn, x: 0, y: 65, z: 0, yaw: 0}
 
 # A cada quantos minutos o plugin varre os VIPs ativos e remove quem já expirou.
 verificacao-expiracao-minutos: 5
@@ -190,6 +194,21 @@ revenda:
   # isso, comprar código de staff e revender pro servidor inteiro viraria uma forma de
   # imprimir coins do nada. 0 desativa.
   taxa-percentual: 10.0
+  # Faixa de preço permitida no /vip vender, por tier (0 = sem limite). Evita "lavar" dinheiro
+  # entre contas com um VIP vendido por 1 milhão, ou derrubar o mercado vendendo por 1 coin.
+  precos:
+    bronze:
+      minimo: 5000
+      maximo: 100000
+    prata:
+      minimo: 10000
+      maximo: 200000
+    ouro:
+      minimo: 20000
+      maximo: 400000
+    diamante:
+      minimo: 40000
+      maximo: 800000
 
 mensagens:
   vip-adicionado: "&aVocê recebeu o VIP &f{tier}&a! Válido até &f{data}&a."

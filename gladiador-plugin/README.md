@@ -64,6 +64,10 @@ Staff (`gladiador.admin`):
 | `destaques.ativado` / `destaques.tags.*` | true / `[Ceifador]`, `[Fujão]`, `[Top Damage]` | Destaques no fim da luta e o texto de cada tag (com cores `&`) |
 | `agenda` | vazia | Horários automáticos: `"SABADO 20:00 cla"`, `"DOMINGO 18:00 individual"` |
 
+### Prêmio do clã no banco
+
+Com `premio.cla-no-banco: true`, o modo por clã manda o pote inteiro pro banco do clã vencedor (`/cla banco`), em vez de dividir entre os membros que sobraram de pé. O anúncio avisa "direto no banco do clã". Sem o ClasPlugin, divide como sempre.
+
 ## Integrações
 
 - **Vault:** inscrição e prêmio.

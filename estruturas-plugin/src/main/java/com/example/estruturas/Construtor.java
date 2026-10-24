@@ -4,6 +4,7 @@ import com.example.estruturas.estrutura.ArenaAxePvP;
 import com.example.estruturas.estrutura.ArenaColiseu;
 import com.example.estruturas.estrutura.ArenaSpringColiseu;
 import com.example.estruturas.estrutura.ArenaToxica;
+import com.example.estruturas.estrutura.OficinasDaMina;
 import com.example.estruturas.estrutura.AvenidaDasMinas;
 import com.example.estruturas.estrutura.BarracasDoSpawn;
 import com.example.estruturas.estrutura.Estrutura;
@@ -47,6 +48,7 @@ public class Construtor {
         registrar(new ArenaSpringColiseu());
         registrar(new BarracasDoSpawn());
         registrar(new AvenidaDasMinas());
+        registrar(new OficinasDaMina());
     }
 
     private void registrar(Estrutura estrutura) {

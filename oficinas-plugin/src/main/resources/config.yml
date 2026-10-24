@@ -1,0 +1,106 @@
+# Configuração do OficinasPlugin (NPCs de serviço nas barraquinhas da mina)
+#
+# Nome e descrição de cada NPC ('&' pras cores) e a skin: "textura:<hash>" (a textura do
+# textures.minecraft.net, ex: tirada do mineskin.org) ou o nick de quem empresta a skin. Vazio = padrão.
+tipos:
+  ferreiro:
+    nome: "&6&l⚒ Ferreiro"
+    descricao: "&7Clique: reparar seus itens"
+    skin: "textura:99978656517591349a1dc51b55212948d0978f4651d8a6c64da33c282f8b8513"   # ferreiro de avental
+  bruxa:
+    nome: "&5&l✦ Bruxa"
+    descricao: "&7Clique: encantar (nível 30, sem lápis)"
+    skin: "textura:19c5d75f9426d887b817d2b8d191788450d0e7ee7e00541b6ad879da84995f32"   # bruxa de cabelo roxo
+  picareteiro:
+    nome: "&b&l⛏ Picareteiro"
+    descricao: "&7Clique: comprar picaretas"
+    skin: "textura:1c440eac8bd5308c32cf982c3b9c3c9b49d345db6483ed44784fd2d94fca322e"   # minerador de capacete
+  sabio:
+    nome: "&d&l📖 Sábio"
+    descricao: "&7Clique: comprar XP"
+    skin: "textura:c1a5fab3ccb91fa2364378f64a99b1037e1fc9698c9df525ba3a1f6b9c7c8b42"   # sábio de barba branca
+
+ferreiro:
+  # Preço de reparar um item do totalmente gasto até novo, pelo material: vale a primeira chave
+  # que aparece no nome do item (NETHERITE_PICKAXE → NETHERITE). O reparo parcial paga a fração.
+  preco-cheio:
+    NETHERITE: 1000
+    DIAMOND: 250
+    IRON: 50
+    CHAINMAIL: 50
+    GOLDEN: 40
+    TURTLE: 150
+    STONE: 10
+    LEATHER: 15
+    WOODEN: 5
+    outros: 200   # arco, tridente, maça, elytra, escudo...
+  # % a mais por nível de encantamento (Eficiência V + Inquebrável III + Fortuna III = 11 níveis = +132%).
+  acrescimo-por-nivel-encantamento: 12
+  # Preço mínimo de um reparo.
+  minimo: 1
+
+bruxa:
+  # A bruxa põe o lápis (o espaço dele vem cheio e travado): o jogador só gasta o XP.
+  # Onde fica a mesa de encantamento (com as estantes em volta). A estrutura "oficinas" monta a
+  # câmara embaixo da barraca da bruxa e já marca aqui. A staff muda com /oficina mesa.
+  mesa:
+    mundo: spawn
+    x: -14
+    y: 61
+    z: -25
+  # Taxa por abrir a mesa (além do XP). 0 = de graça.
+  taxa: 0
+
+picareteiro:
+  # O que ele vende, na ordem do menu. encantamentos: id do Minecraft (efficiency, unbreaking,
+  # fortune, silk_touch, mending...) → nível.
+  itens:
+    - material: STONE_PICKAXE
+      preco: 50
+    - material: IRON_PICKAXE
+      preco: 300
+    - material: DIAMOND_PICKAXE
+      preco: 700
+    - material: IRON_PICKAXE
+      nome: "&fPicareta de Ferro &7(Eficiência III)"
+      preco: 1200
+      encantamentos: {efficiency: 3, unbreaking: 2}
+    - material: DIAMOND_PICKAXE
+      nome: "&bPicareta do Minerador"
+      preco: 4500
+      encantamentos: {efficiency: 4, unbreaking: 3}
+    - material: DIAMOND_PICKAXE
+      nome: "&bPicareta da Fortuna"
+      preco: 18000
+      encantamentos: {efficiency: 5, unbreaking: 3, fortune: 3}
+    - material: DIAMOND_PICKAXE
+      nome: "&bPicareta de Seda"
+      preco: 9000
+      encantamentos: {efficiency: 5, unbreaking: 3, silk_touch: 1}
+    - material: NETHERITE_PICKAXE
+      nome: "&5&lPicareta Lendária"
+      preco: 120000
+      encantamentos: {efficiency: 5, unbreaking: 3, fortune: 3, mending: 1}
+
+sabio:
+  # Preço de cada ponto de XP (do nível 0 ao 30 são 1.395 pontos: R$ 2.790 com 2,0).
+  preco-por-ponto: 2.0
+  pacotes-niveis: [1, 5, 10, 30]
+  # Ninguém compra além desse nível.
+  nivel-maximo: 50
+
+# Desconto em todos os serviços por permissão (vale o maior). Os grupos de VIP já têm essas
+# permissões (as mesmas do desconto da loja). LISTA de propósito: chave com ponto viraria seção.
+vip-descontos:
+  - permissao: "vip.desconto.diamante"
+    percentual: 20
+  - permissao: "vip.desconto.ouro"
+    percentual: 15
+  - permissao: "vip.desconto.prata"
+    percentual: 10
+  - permissao: "vip.desconto.bronze"
+    percentual: 5
+
+integracao:
+  # Registra os pagamentos no /pix historico (precisa do PixPlugin).
+  pix: true

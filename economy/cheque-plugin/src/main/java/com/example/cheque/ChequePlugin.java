@@ -12,11 +12,16 @@ public class ChequePlugin extends JavaPlugin {
     // Chaves usadas para gravar dados no item (PersistentDataContainer)
     private NamespacedKey chequeValueKey;
     private NamespacedKey chequeIdKey;
+    private NamespacedKey chequeNominalKey;
+    private ChequeLog chequeLog;
 
     @Override
     public void onEnable() {
         this.chequeValueKey = new NamespacedKey(this, "cheque_valor");
         this.chequeIdKey = new NamespacedKey(this, "cheque_id");
+        this.chequeNominalKey = new NamespacedKey(this, "cheque_nominal");
+        saveDefaultConfig();
+        this.chequeLog = new ChequeLog(this);
 
         if (!setupEconomy()) {
             getLogger().warning("Vault (ou um plugin de economia) não foi encontrado!");
@@ -54,6 +59,14 @@ public class ChequePlugin extends JavaPlugin {
 
     public NamespacedKey getChequeValueKey() {
         return chequeValueKey;
+    }
+
+    public NamespacedKey getChequeNominalKey() {
+        return chequeNominalKey;
+    }
+
+    public ChequeLog getChequeLog() {
+        return chequeLog;
     }
 
     public NamespacedKey getChequeIdKey() {

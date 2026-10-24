@@ -1,5 +1,6 @@
 package com.example.terrenos.manager;
 
+import com.example.terrenos.util.MissoesIntegration;
 import com.example.terrenos.TerrenosPlugin;
 import com.example.terrenos.model.Leilao;
 import com.example.terrenos.model.Permissao;
@@ -40,6 +41,8 @@ import java.util.logging.Level;
  */
 public class TerrenoManager {
 
+    private final MissoesIntegration missoes;
+
     private static final long DIA = 86_400_000L;
     private static final long HORA = 3_600_000L;
 
@@ -51,6 +54,7 @@ public class TerrenoManager {
     private int segundos;
 
     public TerrenoManager(TerrenosPlugin plugin) {
+        this.missoes = new MissoesIntegration(plugin);
         this.plugin = plugin;
         this.arquivo = new File(plugin.getDataFolder(), "terrenos.yml");
         carregar();
@@ -169,6 +173,7 @@ public class TerrenoManager {
         // em dia: soma a partir do vencimento; atrasado: a semana conta a partir de agora
         t.setImpostoPagoAte(Math.max(t.getImpostoPagoAte(), agora) + semanaMs());
         plugin.getPixIntegration().registrarComServidor(t.getDono(), valor, false, "Imposto do terreno " + t.getId());
+        missoes.progresso(Bukkit.getPlayer(t.getDono()), "PAGAR_IMPOSTO", t.getId().toString(), 1);
         salvar();
         return true;
     }

@@ -5,6 +5,7 @@ import com.example.barracas.model.Barraca;
 import com.example.barracas.model.Oferta;
 import com.example.barracas.util.Formato;
 import com.example.barracas.util.Itens;
+import com.example.barracas.util.MissoesIntegration;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
@@ -66,9 +67,11 @@ public class LojaListener implements Listener {
     }
 
     private final BarracasPlugin plugin;
+    private final MissoesIntegration missoes;
 
     public LojaListener(BarracasPlugin plugin) {
         this.plugin = plugin;
+        this.missoes = new MissoesIntegration(plugin);
     }
 
     // ---------------------------------------------------------------------
@@ -270,6 +273,7 @@ public class LojaListener implements Listener {
         comprador.playSound(comprador.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
 
         Player donoOnline = Bukkit.getPlayer(dono);
+        missoes.progresso(donoOnline, "VENDER_BARRACA", modelo.getType().name(), quantidade); // a loja dele vendeu
         if (donoOnline != null) {
             donoOnline.sendMessage("§a" + comprador.getName() + " comprou §f" + descricao + " §ana sua barraca. Você recebeu §f"
                     + Formato.valor(liquido) + (taxa > 0 ? " §7(taxa: " + Formato.valor(taxa) + ")" : "") + "§a.");
@@ -322,6 +326,7 @@ public class LojaListener implements Listener {
         vendedor.sendMessage("§aVocê vendeu §f" + descricao + " §apra barraca de §f" + barraca.getNomeDono()
                 + " §apor §f" + Formato.valor(liquido) + (taxa > 0 ? " §7(taxa: " + Formato.valor(taxa) + ")" : "") + "§a.");
         vendedor.playSound(vendedor.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+        missoes.progresso(vendedor, "VENDER_BARRACA", modelo.getType().name(), quantidade);
 
         Player donoOnline = Bukkit.getPlayer(dono);
         if (donoOnline != null) {

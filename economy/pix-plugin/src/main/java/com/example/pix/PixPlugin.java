@@ -1,5 +1,6 @@
 package com.example.pix;
 
+import java.util.Locale;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -14,6 +15,20 @@ public class PixPlugin extends JavaPlugin {
     private ChargeManager chargeManager;
     private LimiteManager limiteManager;
     private AgendamentoManager agendamentoManager;
+    private ChaveManager chaveManager;
+
+    private final DiscordIntegration discord = new DiscordIntegration(this);
+
+    /**
+     * Pix "suspeito" (valor de {@code discord.pix-suspeito-valor} pra cima) vai pro canal da staff
+     * no Discord, pra conferir se não é conta roubada sendo esvaziada ou lavagem entre contas.
+     */
+    public void conferirSuspeito(String de, String para, double valor, String tipo) {
+        double limiar = getConfig().getDouble("discord.pix-suspeito-valor"); // padrão do jar em configs antigos
+        if (limiar <= 0 || valor < limiar) return;
+        discord.enviar("pix", "⚠️ Pix alto: " + de + " → " + para + ": "
+                + String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", valor) + " (" + tipo + ")");
+    }
 
     @Override
     public void onEnable() {
@@ -22,6 +37,7 @@ public class PixPlugin extends JavaPlugin {
         this.chargeManager = new ChargeManager(this);
         this.limiteManager = new LimiteManager(this);
         this.agendamentoManager = new AgendamentoManager(this);
+        this.chaveManager = new ChaveManager(this);
         // Pix agendado: confere os vencimentos a cada 20 s
         getServer().getScheduler().runTaskTimer(this, agendamentoManager::tick, 400L, 400L);
 
@@ -75,6 +91,30 @@ public class PixPlugin extends JavaPlugin {
 
     public AgendamentoManager getAgendamentoManager() {
         return agendamentoManager;
+    }
+
+    public ChaveManager getChaveManager() {
+        return chaveManager;
+    }
+
+    /**
+     * Título e som pra quem recebeu um Pix (se estiver online), além da mensagem no chat.
+     * Desliga em {@code notificacao.titulo} e {@code notificacao.som}.
+     */
+    public void notificarRecebimento(Player recebedor, double valor, String deNome) {
+        if (recebedor == null || !recebedor.isOnline()) return;
+        if (getConfig().getBoolean("notificacao.titulo", true)) {
+            var legado = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection();
+            recebedor.showTitle(net.kyori.adventure.title.Title.title(
+                    legado.deserialize("§a+ " + String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", valor)),
+                    legado.deserialize("§7Pix de §f" + deNome),
+                    net.kyori.adventure.title.Title.Times.times(java.time.Duration.ofMillis(250),
+                            java.time.Duration.ofMillis(2000), java.time.Duration.ofMillis(500))));
+        }
+        if (getConfig().getBoolean("notificacao.som", true)) {
+            recebedor.playSound(recebedor.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.2f);
+            recebedor.playSound(recebedor.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_CHIME, 0.8f, 1.6f);
+        }
     }
 
     public LimiteManager getLimiteManager() {

@@ -15,6 +15,16 @@ idade-minima-segundos: 10
 # se importa com aquele item (troféu de evento, item guardado de propósito, etc.)
 ignorar-itens-nomeados: true
 
+# Também remove os orbes de XP soltos no chão (com a mesma idade mínima).
+limpar-orbes-xp: true
+
+# Não remove nada num raio de tantos blocos de qualquer jogador (o drop de quem está minerando ou
+# lutando ali do lado fica). 0 desativa.
+protecao-perto-de-jogador: 8
+
+# /limparchao (sem argumento): espera tantos segundos depois do aviso antes de limpar.
+aviso-manual-segundos: 10
+
 mundos:
   # "todos" limpa em todos os mundos.
   # "somente-listados" limpa só nos mundos da lista abaixo.
@@ -25,6 +35,8 @@ mundos:
 mensagens:
   # Use '&' pros códigos de cor. {segundos} e {quantidade} são substituídos automaticamente.
   aviso: "&e[Limpeza] Itens no chão serão removidos em &f{segundos}s&e! Pegue o que for importante."
+  # Aviso da limpeza manual (/limparchao) pela staff.
+  aviso-manual: "&e[Limpeza] A staff vai limpar os itens do chão em &f{segundos}s&e! Pegue o que for importante."
   executado: "&a[Limpeza] &f{quantidade} &aitens removidos do chão."
   # Se false, a limpeza automática continua rodando, só não avisa no chat quando termina
   # (o aviso de contagem regressiva antes de limpar continua acontecendo normalmente).

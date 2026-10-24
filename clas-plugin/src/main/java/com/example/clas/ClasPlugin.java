@@ -89,6 +89,19 @@ public class ClasPlugin extends JavaPlugin {
         return cla == null ? null : cla.getTag();
     }
 
+    /**
+     * API pública (GladiadorPlugin, por reflexão): deposita no banco do clã (dinheiro novo, ex:
+     * prêmio de evento) e lança no extrato do clã com {@code motivo}. False se o clã não existe.
+     */
+    public boolean depositarNoBanco(String tag, double valor, String motivo) {
+        Cla cla = claManager == null ? null : claManager.get(tag);
+        if (cla == null || !(valor > 0) || !Double.isFinite(valor)) return false;
+        cla.setBanco(cla.getBanco() + valor);
+        cla.lancar(motivo, "depósito", valor);
+        claManager.salvar();
+        return true;
+    }
+
     /** API pública (BountyPlugin, por reflexão): a tag como foi criada (maiúsculas certas), ou null se não existe. */
     public String tagExistente(String tag) {
         Cla cla = claManager == null ? null : claManager.get(tag);

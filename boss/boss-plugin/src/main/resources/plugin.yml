@@ -4,14 +4,13 @@ main: com.example.boss.BossPlugin
 api-version: '26.2'
 author: Você
 description: Boss mundial agendado, com fases por vida/tempo, loot configurável e tag de campeão via LuckPerms.
-softdepend: [LuckPerms, DiscordPlugin]
+softdepend: [LuckPerms, DiscordPlugin, Vault, SkillsPlugin, VipPlugin]
 
 commands:
   boss:
     description: Gerencia o boss mundial.
-    usage: "Uso: /boss <start|stop|setlocal|additem|addchampionitem|reload>"
-    permission: boss.admin
-    permission-message: "§cVocê não tem permissão para gerenciar o boss."
+    # sem permissão aqui: o /boss proximo é pra todos; o resto o próprio comando confere (boss.admin)
+    usage: "Uso: /boss proximo | /boss <start|stop|setlocal|additem|addchampionitem|reload>"
 
 permissions:
   boss.admin:

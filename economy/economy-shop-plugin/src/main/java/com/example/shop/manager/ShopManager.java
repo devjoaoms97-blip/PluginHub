@@ -36,12 +36,32 @@ public class ShopManager {
         return itens;
     }
 
+    /**
+     * As categorias do menu: primeiro as fixas do config ({@code categorias}, na ordem de lá, mesmo
+     * vazias), depois as que só aparecem nos itens cadastrados.
+     */
     public java.util.List<String> getCategorias() {
         java.util.LinkedHashSet<String> categorias = new java.util.LinkedHashSet<>();
+        for (String entrada : plugin.getConfig().getStringList("categorias")) {
+            String nome = entrada.split(":", 2)[0].trim();
+            if (!nome.isEmpty()) categorias.add(nome);
+        }
         for (ShopItem item : itens.values()) {
-            categorias.add(item.getCategoria());
+            boolean jaTem = categorias.stream().anyMatch(c -> c.equalsIgnoreCase(item.getCategoria()));
+            if (!jaTem) categorias.add(item.getCategoria());
         }
         return new java.util.ArrayList<>(categorias);
+    }
+
+    /** O ícone da categoria fixa no config ("Nome:MATERIAL"), ou null. */
+    public Material getIconeCategoria(String categoria) {
+        for (String entrada : plugin.getConfig().getStringList("categorias")) {
+            String[] partes = entrada.split(":", 2);
+            if (partes.length == 2 && partes[0].trim().equalsIgnoreCase(categoria)) {
+                return Material.matchMaterial(partes[1].trim());
+            }
+        }
+        return null;
     }
 
     public java.util.List<ShopItem> getItensDaCategoria(String categoria) {

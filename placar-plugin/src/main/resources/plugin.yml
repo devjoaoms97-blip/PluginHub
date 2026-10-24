@@ -1,0 +1,17 @@
+name: PlacarPlugin
+version: '1.0.0'
+main: com.example.placar.PlacarPlugin
+api-version: '26.2'
+author: Você
+description: Scoreboard lateral com saldo, rank, progresso, clã, missões, próximo boss e jogadores online.
+softdepend: [Vault, RankupPlugin, ClasPlugin, MissoesPlugin, BossPlugin]
+
+commands:
+  placar:
+    description: Liga e desliga o placar lateral.
+    usage: "Uso: /placar"
+
+permissions:
+  placar.admin:
+    description: Recarrega o config (/placar reload) e vê o placar de alguém (/placar ver <jogador>).
+    default: op

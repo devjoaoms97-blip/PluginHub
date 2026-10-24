@@ -3,6 +3,7 @@ com\example\terrenos\command\TerrenoCommand.class
 com\example\terrenos\TerrenosPlugin.class
 com\example\terrenos\util\Formato.class
 com\example\terrenos\util\DiscordIntegration.class
+com\example\terrenos\util\MissoesIntegration.class
 com\example\terrenos\model\Leilao.class
 com\example\terrenos\mundo\Grade.class
 com\example\terrenos\manager\Hologramas.class

@@ -44,6 +44,7 @@ public class ChatTagListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         atualizarTabList(event.getPlayer());
+        plugin.getCodeManager().entregarAvisos(event.getPlayer());
     }
 
     public void atualizarTabList(Player player) {

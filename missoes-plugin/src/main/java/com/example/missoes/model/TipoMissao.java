@@ -14,7 +14,18 @@ public enum TipoMissao {
     /** Vender itens pra loja do servidor (EconomyShopPlugin). Alvos: materiais. Conta itens vendidos. */
     VENDER,
     /** Causar dano no boss mundial (BossPlugin). Alvos: tipo do mob do boss (ZOMBIE...). Conta pontos de dano. */
-    DANO_BOSS;
+    DANO_BOSS,
+    /**
+     * Vender nas barracas (BarracasPlugin): conta os itens que o jogador vendeu pra loja de uma
+     * barraca e os que a loja dele vendeu (se ele estiver online). Alvos: materiais.
+     */
+    VENDER_BARRACA,
+    /** Subir de rank (RankupPlugin). Alvos: o id do rank novo. Conta rankups. */
+    SUBIR_RANK,
+    /** Minerar dentro de uma mina (RankupPlugin). Alvos: o id da mina. Conta blocos. */
+    MINERAR_MINA,
+    /** Pagar o imposto do terreno (TerrenosPlugin), na mão ou no automático. Conta pagamentos. */
+    PAGAR_IMPOSTO;
 
     public static TipoMissao de(String texto) {
         try {

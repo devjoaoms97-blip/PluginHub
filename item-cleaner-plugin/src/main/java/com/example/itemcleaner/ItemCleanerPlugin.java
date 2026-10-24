@@ -3,6 +3,8 @@ package com.example.itemcleaner;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -71,7 +73,7 @@ public class ItemCleanerPlugin extends JavaPlugin {
 
     /** Avisa no chat e agenda uma limpeza única depois de {@code segundosAviso}. Usado pelo /limparchao manual. */
     public void limparComAviso(int segundosAviso) {
-        avisar(segundosAviso);
+        avisar(segundosAviso, "mensagens.aviso-manual");
         Bukkit.getScheduler().runTaskLater(this, () -> {
             int removidos = limparItens();
             anunciarExecucao(removidos);
@@ -79,17 +81,33 @@ public class ItemCleanerPlugin extends JavaPlugin {
     }
 
     /**
-     * Remove todos os itens no chão que passam pelos filtros configurados (idade mínima,
-     * itens nomeados, mundos alvo). Retorna quantos foram removidos.
+     * Remove todos os itens no chão (e os orbes de XP, se {@code limpar-orbes-xp}) que passam
+     * pelos filtros configurados (idade mínima, itens nomeados, perto de jogador, mundos alvo).
+     * Retorna quantos foram removidos.
      */
     public int limparItens() {
         int removidos = 0;
         boolean ignorarNomeados = getConfig().getBoolean("ignorar-itens-nomeados", true);
         long idadeMinimaTicks = getConfig().getInt("idade-minima-segundos", 60) * 20L;
+        boolean orbes = getConfig().getBoolean("limpar-orbes-xp", true);
+        double raio = getConfig().getDouble("protecao-perto-de-jogador"); // padrão do jar em configs antigos
+        double raio2 = raio * raio;
 
         for (World mundo : mundosAlvo()) {
+            List<Player> jogadores = raio > 0 ? mundo.getPlayers() : List.of();
             for (Entity entidade : mundo.getEntities()) {
+                if (orbes && entidade instanceof ExperienceOrb orbe) {
+                    if (orbe.getTicksLived() >= idadeMinimaTicks && !pertoDeJogador(orbe, jogadores, raio2)) {
+                        orbe.remove();
+                        removidos++;
+                    }
+                    continue;
+                }
                 if (!(entidade instanceof Item item)) {
+                    continue;
+                }
+                // drops de quem está ali do lado (minerando, lutando) ficam
+                if (pertoDeJogador(item, jogadores, raio2)) {
                     continue;
                 }
                 if (item.getTicksLived() < idadeMinimaTicks) {
@@ -104,6 +122,13 @@ public class ItemCleanerPlugin extends JavaPlugin {
             }
         }
         return removidos;
+    }
+
+    private static boolean pertoDeJogador(Entity entidade, List<Player> jogadores, double raio2) {
+        for (Player p : jogadores) {
+            if (p.getLocation().distanceSquared(entidade.getLocation()) <= raio2) return true;
+        }
+        return false;
     }
 
     private List<World> mundosAlvo() {
@@ -124,7 +149,13 @@ public class ItemCleanerPlugin extends JavaPlugin {
     }
 
     private void avisar(int segundos) {
-        String msg = getConfig().getString("mensagens.aviso", "&e[Limpeza] Itens no chão serão removidos em &f{segundos}s&e!");
+        avisar(segundos, "mensagens.aviso");
+    }
+
+    /** {@code chave}: a mensagem do config ({@code mensagens.aviso} ou {@code mensagens.aviso-manual}). */
+    private void avisar(int segundos, String chave) {
+        String msg = getConfig().getString(chave, getConfig().getString("mensagens.aviso",
+                "&e[Limpeza] Itens no chão serão removidos em &f{segundos}s&e!"));
         msg = msg.replace("{segundos}", String.valueOf(segundos));
         Bukkit.broadcastMessage(traduzirCores(msg));
     }

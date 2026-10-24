@@ -49,3 +49,35 @@ vip-descontos:
     - permissao: "vip.desconto.bronze"
       percentual: 5
 
+# Categorias fixas do menu da loja, na ordem em que aparecem ("Nome:ÍCONE"). Aparecem mesmo
+# vazias; as categorias que só existem nos itens cadastrados vão depois, com o ícone do 1º item.
+categorias:
+  - "Minérios:DIAMOND"
+  - "Blocos:STONE_BRICKS"
+  - "Farm:WHEAT"
+  - "Drops:BONE"
+  - "Madeiras:OAK_LOG"
+  - "Diversos:CHEST"
+
+eventos-mercado:
+  # De tempos em tempos (intervalo-horas), com a chance abaixo, um item da lista fica "em alta":
+  # a loja paga um multiplicador (sorteado entre o mínimo e o máximo) na venda dele, por
+  # duracao-horas. Anunciado no chat no começo e no fim. A staff liga na hora com
+  # /shop admin evento <item> <multiplicador> <horas>. "MATERIAL:nome no anúncio".
+  ativado: true
+  intervalo-horas: 6
+  chance: 50
+  duracao-horas: 2
+  multiplicador-minimo: 1.5
+  multiplicador-maximo: 2.0
+  itens:
+    - "DIAMOND:diamante"
+    - "EMERALD:esmeralda"
+    - "GOLD_INGOT:ouro"
+    - "IRON_INGOT:ferro"
+    - "REDSTONE:redstone"
+    - "LAPIS_LAZULI:lápis-lazúli"
+    - "COAL:carvão"
+    - "COPPER_INGOT:cobre"
+    - "QUARTZ:quartzo"
+    - "AMETHYST_SHARD:ametista"

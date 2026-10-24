@@ -44,7 +44,8 @@ public class ShopGUI {
 
     private ItemStack criarIconeCategoria(String categoria) {
         List<com.example.shop.model.ShopItem> itensDaCategoria = plugin.getShopManager().getItensDaCategoria(categoria);
-        Material icone = itensDaCategoria.isEmpty() ? Material.CHEST : itensDaCategoria.get(0).getMaterial();
+        Material icone = plugin.getShopManager().getIconeCategoria(categoria);
+        if (icone == null) icone = itensDaCategoria.isEmpty() ? Material.CHEST : itensDaCategoria.get(0).getMaterial();
 
         ItemStack item = new ItemStack(icone);
         ItemMeta meta = item.getItemMeta();
@@ -52,6 +53,10 @@ public class ShopGUI {
 
         List<String> lore = new ArrayList<>();
         lore.add("§7" + itensDaCategoria.size() + " item(ns) nessa categoria");
+        var evento = plugin.getEventoMercado();
+        if (evento.ativo() && itensDaCategoria.stream().anyMatch(i -> i.getMaterial() == evento.getMaterial())) {
+            lore.add("§6📈 Em alta: " + evento.nome(evento.getMaterial()));
+        }
         lore.add("");
         lore.add("§7Clique pra abrir");
         meta.setLore(lore);
@@ -110,7 +115,12 @@ public class ShopGUI {
         List<String> lore = new ArrayList<>();
         lore.add("");
         lore.add("§aComprar: §f" + formatar(precoCompra) + (desconto > 0 ? " §7(com " + desconto + "% de VIP)" : " §7(fixo)"));
-        lore.add("§cVender: §f" + formatar(item.getPrecoVendaAtual()) + " §7(varia)");
+        if (item.getMultiplicadorEvento() > 1) {
+            lore.add("§cVender: §6" + formatar(item.getPrecoVendaComEvento()) + " §6📈 em alta (x"
+                    + String.format(Locale.ROOT, "%.1f", item.getMultiplicadorEvento()).replace('.', ',') + ")");
+        } else {
+            lore.add("§cVender: §f" + formatar(item.getPrecoVendaAtual()) + " §7(varia)");
+        }
         lore.add("§7  min " + formatar(item.getPrecoMinimo()) + " / max " + formatar(item.getPrecoMaximo()));
         lore.add("");
         lore.add("§7Clique esquerdo: §fvender 1");

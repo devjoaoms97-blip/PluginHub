@@ -10,7 +10,6 @@ import java.util.Locale;
 
 public class ItemCleanerCommand implements CommandExecutor, TabCompleter {
 
-    private static final int AVISO_MANUAL_SEGUNDOS = 10;
 
     private final ItemCleanerPlugin plugin;
 
@@ -21,9 +20,10 @@ public class ItemCleanerCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            plugin.limparComAviso(AVISO_MANUAL_SEGUNDOS);
+            int segundos = Math.max(1, plugin.getConfig().getInt("aviso-manual-segundos", 10));
+            plugin.limparComAviso(segundos);
             sender.sendMessage("§aLimpeza manual agendada — aviso enviado no chat, itens serão removidos em "
-                    + AVISO_MANUAL_SEGUNDOS + "s.");
+                    + segundos + "s.");
             return true;
         }
 

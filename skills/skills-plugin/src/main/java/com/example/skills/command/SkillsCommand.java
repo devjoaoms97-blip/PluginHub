@@ -1,5 +1,6 @@
 package com.example.skills.command;
 
+import com.example.skills.manager.RankingSkills;
 import com.example.skills.SkillsPlugin;
 import com.example.skills.skill.PlayerSkillData;
 import com.example.skills.skill.Skill;
@@ -30,6 +31,11 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
             return tratarAdmin(sender, args);
         }
 
+        if (args.length > 0 && args[0].equalsIgnoreCase("top")) {
+            mostrarTop(sender, args);
+            return true;
+        }
+
         if (!(sender instanceof Player jogador)) {
             sender.sendMessage("§cSomente jogadores podem usar este comando.");
             return true;
@@ -55,6 +61,10 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
 
         if (args.length >= 2 && args[1].equalsIgnoreCase("criaradaga")) {
             return tratarCriarAdaga(sender);
+        }
+
+        if (args.length >= 2 && args[1].equalsIgnoreCase("xpdobro")) {
+            return tratarXpDobro(sender, args);
         }
 
         if (args.length < 2 || !args[1].equalsIgnoreCase("setlevel")) {
@@ -141,6 +151,52 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    /** /skills top [skill]: top 10 de uma skill, ou da soma dos níveis de todas. */
+    private void mostrarTop(CommandSender sender, String[] args) {
+        Skill skill = null;
+        if (args.length >= 2) {
+            skill = resolverSkill(args[1]);
+            if (skill == null) {
+                sender.sendMessage("§cSkill não encontrada. Use: §f" + nomesDasSkills());
+                return;
+            }
+        }
+        List<RankingSkills.Posicao> top = plugin.getRankingSkills().top(skill, 10);
+        sender.sendMessage("§e§l--- Top " + (skill == null ? "Skills (soma dos níveis)" : skill.getNomeExibicao()) + " ---");
+        if (top.isEmpty()) sender.sendMessage("§7Ninguém no ranking ainda.");
+        String[] cores = {"§6", "§f", "§c"};
+        for (int i = 0; i < top.size(); i++) {
+            RankingSkills.Posicao p = top.get(i);
+            String cor = i < cores.length ? cores[i] : "§7";
+            sender.sendMessage(cor + (i + 1) + "º §f" + p.nome() + " §7- " + (skill == null ? "§f" + p.nivel() + " níveis" : "§fnível " + p.nivel()));
+        }
+        if (skill == null) sender.sendMessage("§7Por skill: §f/skills top <skill>");
+    }
+
+    /** /skills admin xpdobro <multiplicador> <horas> | parar */
+    private boolean tratarXpDobro(CommandSender sender, String[] args) {
+        if (args.length >= 3 && args[2].equalsIgnoreCase("parar")) {
+            plugin.getEventoXp().ligarManual(1, 0);
+            sender.sendMessage("§aEvento de XP manual desligado (os dias fixos do config continuam valendo).");
+            return true;
+        }
+        double multiplicador, horas;
+        try {
+            multiplicador = Double.parseDouble(args[2].replace(",", "."));
+            horas = Double.parseDouble(args[3].replace(",", "."));
+        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            sender.sendMessage("§cUso: §f/skills admin xpdobro <multiplicador> <horas> §7| §f/skills admin xpdobro parar");
+            return true;
+        }
+        if (!Double.isFinite(multiplicador) || multiplicador < 1 || multiplicador > 10 || !Double.isFinite(horas) || horas <= 0) {
+            sender.sendMessage("§cMultiplicador de 1 a 10 e horas maior que zero.");
+            return true;
+        }
+        plugin.getEventoXp().ligarManual(multiplicador, horas);
+        sender.sendMessage("§aXP x" + multiplicador + " nas skills pelas próximas " + horas + "h.");
+        return true;
+    }
+
     private Skill resolverSkill(String texto) {
         String normalizado = texto.toLowerCase(Locale.ROOT);
         for (Skill skill : Skill.values()) {
@@ -186,12 +242,16 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             opcoes.add("ver");
+            opcoes.add("top");
             if (sender.hasPermission("skills.admin")) {
                 opcoes.add("admin");
             }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("top")) {
+            for (Skill skill : Skill.values()) opcoes.add(skill.getChaveConfig());
         } else if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
             opcoes.add("setlevel");
             opcoes.add("criaradaga");
+            opcoes.add("xpdobro");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("setlevel")) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 opcoes.add(p.getName());

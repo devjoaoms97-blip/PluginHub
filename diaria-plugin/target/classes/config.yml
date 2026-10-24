@@ -17,3 +17,18 @@ dias:
 integracao:
   # Registra a recompensa no /pix historico (precisa do PixPlugin).
   pix: true
+
+vip-bonus:
+  # % a mais na diária por permissão (vale a maior). O VipPlugin dá essas permissões pelos grupos
+  # do LuckPerms (as mesmas do bônus de XP das skills). LISTA de propósito: chave com ponto
+  # viraria seção aninhada.
+  ativado: true
+  permissoes:
+    - permissao: "vip.xp.diamante"
+      percentual: 100
+    - permissao: "vip.xp.ouro"
+      percentual: 60
+    - permissao: "vip.xp.prata"
+      percentual: 40
+    - permissao: "vip.xp.bronze"
+      percentual: 20

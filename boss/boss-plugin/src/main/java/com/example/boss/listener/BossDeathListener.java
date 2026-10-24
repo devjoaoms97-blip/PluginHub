@@ -63,6 +63,7 @@ public class BossDeathListener implements Listener {
 
         anunciarRankingDano(discord);
         plugin.getDiscord().enviar("boss", discord.toString());
+        plugin.getRecompensas().distribuir(matador);
 
         plugin.getBossManager().finalizar(true);
     }

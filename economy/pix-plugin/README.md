@@ -21,6 +21,22 @@ Sistema de pagamentos entre jogadores, com pagamento direto e cobranças aceitá
 | `/pix admin resetlimite <jogador>` | (staff) Zera o que um jogador já enviou hoje |
 | `/pix admin vencer <nº>` | (staff) Faz um Pix agendado vencer agora (para testar) |
 
+### Chave Pix
+
+`/pix chave <apelido>` cadastra um apelido (3 a 20 letras, números, `_ . -`) que vale no lugar do nome no `/pix pagar`, `receber`, `agendar` e `admin log`. O apelido é único e não pode ser o nome de outro jogador que já entrou. `/pix chave` mostra a sua e `/pix chave remover` apaga. Ficam em `chaves.yml`.
+
+### Aviso ao receber
+
+Quem recebe um Pix (pagamento, cobrança aceita ou agendado) ganha um título na tela com o valor e um som, além da mensagem. Desliga em `notificacao.titulo` e `notificacao.som`.
+
+### Extrato com a taxa, e o da staff
+
+O extrato mostra a taxa de cada transação: quem pagou vê o valor cheio, e quem recebeu vê o que entrou de fato, os dois com `[taxa R$ x]`. A staff vê o extrato de qualquer um com `/pix admin log <jogador|chave> [qtd]` (permissão `pix.admin`).
+
+### Alerta de Pix alto no Discord
+
+Pix a partir de `discord.pix-suspeito-valor` (padrão R$ 100.000; 0 desliga) vai pra categoria `pix` do DiscordPlugin, pra staff conferir conta roubada ou lavagem entre contas. Vale pro pagamento, a cobrança aceita e o agendado.
+
 ## Taxa de transação (sinkhole)
 
 Toda transação entre jogadores (`/pix pagar` e cobranças aceitas via `/pix aceitar`) agora desconta uma pequena taxa, configurável em `config.yml`:

@@ -51,7 +51,7 @@ public class PerkCommand {
             case "kit" -> tratarKit(player, tier);
             case "kitmensal" -> tratarKitMensal(player, tier);
             case "particula" -> tratarParticula(player, tier, args);
-            case "warp" -> tratarWarp(player);
+            case "warp" -> tratarWarp(player, tier);
             default -> player.sendMessage("§cPerk não reconhecido.");
         }
     }
@@ -216,22 +216,26 @@ public class PerkCommand {
         }
     }
 
-    private void tratarWarp(Player player) {
+    /** Vai pra área do tier ({@code warp-vip.tiers.<tier>}), ou pra área VIP geral se o tier não tiver uma. */
+    private void tratarWarp(Player player, VipTier tier) {
         if (!perkPermitido(player, "warp", "vip.perk.warp")) {
             return;
         }
 
-        String mundoNome = plugin.getConfig().getString("warp-vip.mundo", "world");
+        String doTier = "warp-vip.tiers." + tier.name().toLowerCase(Locale.ROOT);
+        String base = plugin.getConfig().isConfigurationSection(doTier) ? doTier : "warp-vip";
+        String mundoNome = plugin.getConfig().getString(base + ".mundo", "world");
         World mundo = plugin.getServer().getWorld(mundoNome);
         if (mundo == null) {
             player.sendMessage("§cO mundo do warp de VIP não está configurado corretamente.");
             return;
         }
-        double x = plugin.getConfig().getDouble("warp-vip.x");
-        double y = plugin.getConfig().getDouble("warp-vip.y");
-        double z = plugin.getConfig().getDouble("warp-vip.z");
-        player.teleport(new Location(mundo, x, y, z));
-        player.sendMessage("§aTeleportado pra área exclusiva de VIP.");
+        double x = plugin.getConfig().getDouble(base + ".x");
+        double y = plugin.getConfig().getDouble(base + ".y");
+        double z = plugin.getConfig().getDouble(base + ".z");
+        float yaw = (float) plugin.getConfig().getDouble(base + ".yaw", 0);
+        player.teleport(new Location(mundo, x, y, z, yaw, 0));
+        player.sendMessage("§aTeleportado pra área exclusiva " + (base.equals(doTier) ? "do VIP " + plugin.getNomeExibicao(tier) : "de VIP") + "§a.");
     }
 
     // ---------------------------------------------------------------------

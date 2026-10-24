@@ -21,6 +21,8 @@ public class ShopItem {
     private final double passoPercentual;
 
     private double precoVendaAtual;
+    /** Multiplicador do evento de mercado em cima do preço de venda (1 = sem evento). */
+    private double multiplicadorEvento = 1;
 
     public ShopItem(Material material, String categoria, double precoBase, double margemPercentual,
                      double precoMinimo, double precoMaximo, double passoPercentual) {
@@ -46,7 +48,7 @@ public class ShopItem {
 
     /** Vende 1 unidade: retorna o preço pago por ela e já empurra o preço pra baixo pra próxima unidade. */
     public double venderUnidade() {
-        double precoPago = precoVendaAtual;
+        double precoPago = precoVendaAtual * multiplicadorEvento;
         double novoPreco = precoVendaAtual * (1 - passoPercentual / 100.0);
         precoVendaAtual = Math.max(precoMinimo, novoPreco);
         return precoPago;
@@ -89,6 +91,19 @@ public class ShopItem {
 
     public double getPrecoVendaAtual() {
         return precoVendaAtual;
+    }
+
+    public double getMultiplicadorEvento() {
+        return multiplicadorEvento;
+    }
+
+    public void setMultiplicadorEvento(double multiplicadorEvento) {
+        this.multiplicadorEvento = Math.max(1, multiplicadorEvento);
+    }
+
+    /** O que a loja paga agora por 1 unidade, já com o evento de mercado. */
+    public double getPrecoVendaComEvento() {
+        return precoVendaAtual * multiplicadorEvento;
     }
 
     public void setPrecoVendaAtual(double precoVendaAtual) {

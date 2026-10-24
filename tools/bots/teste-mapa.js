@@ -1,5 +1,5 @@
 // Mapa funcional (montar-mapa.js): um jogador novo nasce na fonte do spawn, usa /spawn e /warp, vê
-// os hologramas, os poços das minas estão cheios (e, se a staff já criou a pedreira, dá pra minerar),
+// o painel "Como começar", os poços das minas estão cheios (e, se a staff já criou a pedreira, dá pra minerar),
 // o spawn é protegido e a saída dele encosta na avenida das minas, o portal do saguão das arenas
 // traz de volta, as 32 barracas (com holograma e o NPC de quem aluga) e as arenas estão cadastradas.
 // Uso: node teste-mapa.js
@@ -37,8 +37,12 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => ['minas', 'mercado', 'boss', 'plateia-x1', 'plateia-gladiador'].every(w => m.includes(w))),
     'lista de warps', msgs.join(' ').slice(0, 160))
 
-  const holos = await t.console('execute in minecraft:spawn positioned 0 65 43 run execute if entity @e[type=text_display,tag=mapa,distance=..11]')
-  t.verificar(holos.includes('passed') && holos.match(/Count: (\d+)/)?.[1] === '10', 'os 10 hologramas (sem duplicata) de "como começar" em volta da fonte', holos)
+  // um painel "Como começar" só, no fim da avenida oeste, no lugar dos hologramas espalhados
+  await t.console('execute in minecraft:spawn run forceload add -43 43')
+  await t.espera(1000)
+  const holos = await t.console('execute in minecraft:spawn positioned 0 65 43 run execute if entity @e[type=text_display,tag=mapa,distance=..16]')
+  const painel = await t.console('execute in minecraft:spawn positioned -42.5 66.2 43.5 run data get entity @e[type=text_display,tag=mapa,limit=1,sort=nearest,distance=..1] text.text')
+  t.verificar(!holos.includes('passed') && painel.includes('COMO COME'), 'o painel "Como começar" no fim da avenida oeste, sem hologramas espalhados', `${holos} | ${painel}`)
 
   console.log('\n== Minas ==')
   t.verificar(!(await blocoE('spawn', -19, 64, -40, 'air')) && !(await blocoE('spawn', 19, 50, -165, 'air')),

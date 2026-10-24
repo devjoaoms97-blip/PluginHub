@@ -44,6 +44,26 @@ ranking-dano:
 campeao:
   grupo-luckperms: "boss_campeao"
 
+# O que o boss paga quando morre, além do loot. O dinheiro vem do servidor (entra dinheiro novo
+# na economia) e precisa do Vault.
+recompensas:
+  # Coins pros primeiros do ranking de dano: 1º, 2º, 3º... Lista vazia desativa.
+  ranking-dano: [15000, 10000, 5000]
+  # Coins pro campeão (quem deu o último golpe), além do item. 0 desativa.
+  campeao-dinheiro: 20000
+  # XP de skill por participar: cada jogador ganha até esse XP, proporcional ao % da vida do boss
+  # que tirou, na skill da arma que usou (espada, machado, arco...). 0 desativa.
+  xp-skill-maximo: 3000
+  # Quem bateu pelo menos um pouco ganha no mínimo isso.
+  xp-skill-minimo: 100
+  # Código de VIP pro campeão (gerado pelo VipPlugin, 1 uso): vitrine do VIP.
+  codigo-vip:
+    ativado: false
+    tier: bronze
+    dias: 3
+    # Prazo pra resgatar (0 = não expira).
+    validade-dias: 7
+
 dificuldade:
   # Multiplicador sobre a velocidade de movimento padrão do mob (1.5 = 50% mais rápido)
   velocidade-multiplicador: 2

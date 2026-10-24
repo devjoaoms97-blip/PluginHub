@@ -19,6 +19,7 @@ public class PlayerConnectionListener implements Listener {
         // Carrega os dados (get() já lê do disco se ainda não estiver em cache)
         plugin.getSkillDataManager().get(event.getPlayer().getUniqueId());
         plugin.getPassiveSkillsTask().atualizarVelocidade(event.getPlayer());
+        plugin.getEventoXp().avisar(event.getPlayer());
     }
 
     @EventHandler

@@ -5,9 +5,11 @@
 // O mundo fica salvo: só rode de novo pra refazer alguma parte.
 //
 //   node montar-mapa.js construir [partes...]   (servidor LIGADO) sem partes = minas spawn boss dicas arenas marcar
-//     minas      os 12 poços (cheios de pedra) e a Avenida das Minas (EstruturasPlugin) em volta
+//     minas      os 12 poços (cheios de pedra) e a Avenida das Minas (EstruturasPlugin) em volta, com as oficinas
+//     oficinas   só as 4 barraquinhas de serviço na entrada da avenida (OficinasPlugin: Ferreiro, Bruxa...)
 //     boss       a arena do boss ("toxica"), ao sul do spawn, colada no portão "BOSS"
 //     dicas      os 12 NPCs de dicas pelo spawn (DicasPlugin), com as falas
+//     tutorial   o painel "Como começar", na avenida oeste do spawn (já vem junto com o spawn)
 //     spawn      o spawn inteiro (EstruturasPlugin "spring"), as barracas dele e os hologramas da fonte
 //     barracas   só as 32 barracas do spawn (redesenha e cadastra as que faltam; aluguéis e NPCs ficam)
 //     arenas     saguão, X1 ("axepvp") e Gladiador ("coliseu"), bem longe um do outro, e limpa o que
@@ -182,6 +184,19 @@ async function construirMinas() {
   // avenida, praças e calçadas. Ele nunca escreve nos poços nem na borda deles.
   console.log('\n== Avenida das Minas (EstruturasPlugin: minas) ==')
   await estrutura('minas', W, [0, -21])
+  await construirOficinas()
+}
+
+/**
+ * As 4 barraquinhas de serviço na praça de entrada da avenida (EstruturasPlugin "oficinas"), com
+ * os NPCs do OficinasPlugin e a mesa da bruxa embaixo. Sempre depois da avenida, que passa por cima.
+ */
+async function construirOficinas() {
+  console.log('\n== Oficinas da mina (Ferreiro, Picareteiro, Bruxa, Sábio) ==')
+  await t.console('execute in minecraft:spawn run forceload add -30 -30 30 -20')
+  await t.espera(1500)
+  await estrutura('oficinas', 'spawn', [0, -21])
+  await t.console('execute in minecraft:spawn run forceload remove -30 -30 30 -20')
 }
 
 /**
@@ -204,6 +219,43 @@ async function estruturaNoSpawn(id) {
   console.log(`  barracas: ${BARRACAS_SPAWN.filter(id => new RegExp(`\\b${id}\\b`).test(lista)).length} de ${BARRACAS_SPAWN.length}`)
 }
 
+// Painel "Como começar": um holograma grande só, no fim da avenida oeste (à esquerda de quem nasce
+// olhando pro norte), apoiado nos arbustos floridos de lá e sempre virado pra quem olha.
+const TUTORIAL = { pos: [-43, 0], altura: 2.2, linhas: [
+  ['✦ COMO COMEÇAR ✦', 'gold', true],
+  ['', null],
+  ['1. Minere: portão MINAS, ao norte  (/mina)', 'white'],
+  ['    Na entrada: Ferreiro, Bruxa, Picareteiro e Sábio', 'gray'],
+  ['2. Venda o que minerou: /sell all', 'white'],
+  ['3. Suba de rank: /rankup  (/ranks mostra todos)', 'white'],
+  ['4. Todo dia: /diaria e /missoes', 'white'],
+  ['5. Comércio: barracas pelo spawn, clique no vendedor', 'white'],
+  ['6. Boss: portão BOSS, ao sul  (/boss proximo)', 'white'],
+  ['7. PvP: /duelo e /gladiador', 'white'],
+  ['8. Seu terreno: /terreno auto  ·  Recursos: /recursos', 'white'],
+  ['9. Benefícios: /vip tiers', 'white'],
+  ['', null],
+  ['Os NPCs pelo spawn dão mais dicas: clique neles!', 'aqua'],
+] }
+
+async function construirTutorial() {
+  const W = 'spawn'
+  console.log('\n== Painel "Como começar" ==')
+  // os hologramas soltos das versões antigas (em volta da fonte) e o painel antigo saem
+  await t.console(`${em(W)} forceload add ${SPAWN.x - 48} ${SPAWN.z - 16} ${SPAWN.x + 16} ${SPAWN.z + 16}`)
+  await t.espera(1500)
+  await t.console(`execute in minecraft:${W} positioned ${SPAWN.x} ${CHAO + 1} ${SPAWN.z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..16]`)
+  await t.console(`execute in minecraft:${W} positioned ${SPAWN.x - 42} ${CHAO + 2} ${SPAWN.z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..4]`)
+  const [dx, dz] = TUTORIAL.pos
+  const partes = TUTORIAL.linhas.map(([s, cor, negrito]) =>
+    `{text:"${s}"${cor ? `,color:"${cor}"` : ''}${negrito ? ',bold:1b' : ''}}`).join(',"\\n",')
+  await t.console(`${em(W)} summon minecraft:text_display ${SPAWN.x + dx + 0.5} ${CHAO + TUTORIAL.altura} ${SPAWN.z + dz + 0.5} `
+    + `{Tags:["mapa"],billboard:"vertical",shadow:1b,line_width:400,background:${0xB0101018 | 0},`
+    + `transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[1.6f,1.6f,1.6f]},`
+    + `text:[${partes}]}`)
+  await t.console(`${em(W)} forceload remove ${SPAWN.x - 48} ${SPAWN.z - 16} ${SPAWN.x + 16} ${SPAWN.z + 16}`)
+}
+
 async function construirBarracas() {
   console.log('\n== Barracas do spawn (EstruturasPlugin: spring-barracas) ==')
   await estruturaNoSpawn('spring-barracas')
@@ -214,20 +266,7 @@ async function construirSpawn() {
   console.log('\n== Spawn (EstruturasPlugin: spring) ==')
   await estruturaNoSpawn('spring')
 
-  // como começar: hologramas em volta da fonte, onde o jogador nasce
-  const ajuda = [
-    [[-6, -8], [['Bem-vindo!', 'gold'], ['Suba de rank', null], ['minerando e', null], ['vendendo.', null]]],
-    [[-3, -8], [['/mina', 'aqua'], ['minas do seu', null], ['rank (portão', null], ['ao norte)', null]]],
-    [[0, -8], [['/sell all', 'aqua'], ['vende o que', null], ['minerou', null], ['', null]]],
-    [[3, -8], [['/rankup', 'aqua'], ['sobe de rank', null], ['/ranks: lista', 'gray'], ['', null]]],
-    [[6, -8], [['/diaria', 'aqua'], ['recompensa', null], ['todo dia', null], ['', null]]],
-    [[-6, 8], [['/terreno', 'aqua'], ['seu terreno', null], ['/warp terrenos', 'gray'], ['', null]]],
-    [[-3, 8], [['/recursos', 'aqua'], ['mobs, pesca', null], ['e árvores', null], ['', null]]],
-    [[0, 8], [['/duelo', 'aqua'], ['X1 com aposta', null], ['/gladiador', 'aqua'], ['', null]]],
-    [[3, 8], [['Mercado', 'gold'], ['barracas pelo', null], ['spawn: clique', null], ['no vendedor', null]]],
-    [[6, 8], [['Loja e VIP', 'gold'], ['/shop  /buy', 'aqua'], ['/vip tiers', 'gray'], ['', null]]],
-  ]
-  for (const [[x, z], linhas] of ajuda) await holograma(W, [SPAWN.x + x, CHAO + 1, SPAWN.z + z], linhas)
+  await construirTutorial()
 }
 
 async function construirArenas() {
@@ -469,7 +508,7 @@ if (fase === 'cadastrar') {
 } else if (fase === 'construir' || fase === 'marcar') {
   const partes = {
     'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
-    boss: construirBoss, dicas: construirDicas, arenas: construirArenas, marcar: marcarComBot,
+    boss: construirBoss, oficinas: construirOficinas, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, marcar: marcarComBot,
   }
   // "marcar" sozinho era o atalho antigo pra só a parte do bot
   const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)
@@ -484,6 +523,6 @@ if (fase === 'cadastrar') {
     await t.terminar()
   })
 } else {
-  console.log('Uso: node montar-mapa.js construir [minas|spawn|barracas|boss|dicas|arenas|marcar|limpar-antigo...]   (servidor ligado)'
+  console.log('Uso: node montar-mapa.js construir [minas|oficinas|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
     + '\n     node montar-mapa.js cadastrar [--minas]   (servidor desligado)')
 }

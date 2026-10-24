@@ -142,6 +142,8 @@ public class BarracaManager {
         barraca.setAlugadaAte(ate);
         barraca.setAvisoVencimentoEnviado(false);
         salvar();
+        plugin.getDiscord().enviar("barracas", "🏪 " + nomeDono + " alugou a barraca " + barraca.getId()
+                + (barraca.isEspecial() ? " (especial)" : "") + ".");
     }
 
     public void estender(Barraca barraca, long novoFim) {
@@ -158,6 +160,10 @@ public class BarracaManager {
      */
     public int liberar(Barraca barraca, boolean abrirLeilao) {
         UUID dono = barraca.getDono();
+        if (dono != null) {
+            plugin.getDiscord().enviar("barracas", "🏪 A barraca " + barraca.getId() + (barraca.isEspecial() ? " (especial)" : "")
+                    + " de " + barraca.getNomeDono() + " foi liberada e está livre pra alugar.");
+        }
         List<ItemStack> itens = new ArrayList<>();
         for (Oferta oferta : barraca.getOfertas()) {
             itens.addAll(Itens.pilhas(oferta.getModelo(), oferta.getEstoque()));

@@ -1,5 +1,6 @@
 package com.example.rankup;
 
+import com.example.rankup.util.MissoesIntegration;
 import com.example.rankup.command.AutoVendaCommand;
 import com.example.rankup.command.MinaCommand;
 import com.example.rankup.command.PrestigioCommand;
@@ -28,6 +29,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
 
 public class RankupPlugin extends JavaPlugin {
+
+    private final MissoesIntegration missoes = new MissoesIntegration(this);
 
     public static final String PERMISSAO_ADMIN = "rankup.admin";
 
@@ -131,6 +134,14 @@ public class RankupPlugin extends JavaPlugin {
             getServer().dispatchCommand(getServer().getConsoleSender(), pronto.startsWith("/") ? pronto.substring(1) : pronto);
         }
         if (jogador.getPlayer() != null) atualizarTab(jogador.getPlayer());
+        // missão de subir de rank: só quando sobe mesmo (o /ranks admin set e o prestígio podem descer)
+        if (rankManager.indice(novo) > rankManager.indice(anterior)) {
+            missoes.progresso(jogador.getPlayer(), "SUBIR_RANK", novo.id(), 1);
+        }
+    }
+
+    public MissoesIntegration getMissoes() {
+        return missoes;
     }
 
     /**
@@ -189,6 +200,12 @@ public class RankupPlugin extends JavaPlugin {
      */
     public double precoRankAtual(UUID jogador) {
         return rankManager.getRankDe(jogador).preco();
+    }
+
+    /** Nome colorido do próximo rank, ou null no último (PlacarPlugin). */
+    public String nomeProximoRank(UUID jogador) {
+        Rank proximo = rankManager.getProximo(rankManager.getRankDe(jogador));
+        return proximo == null ? null : proximo.nomeColorido();
     }
 
     /** Id do rank do jogador (ex: "fazendeiro"). */

@@ -4,12 +4,12 @@ main: com.example.pix.PixPlugin
 api-version: '26.2'
 author: Você
 description: Sistema de pagamentos e cobranças entre jogadores (Pix), via Vault.
-softdepend: [Vault]
+softdepend: [Vault, DiscordPlugin]
 
 commands:
   pix:
     description: Sistema de pagamentos entre jogadores.
-    usage: "Uso: /pix <pagar|receber|aceitar|recusar|pendentes|cancelar|historico|qrcode|limite|agendar|agendamentos>"
+    usage: "Uso: /pix <pagar|receber|aceitar|recusar|pendentes|cancelar|historico|qrcode|limite|agendar|agendamentos|chave>"
     permission: pix.usar
     permission-message: "§cVocê não tem permissão para usar o Pix."
 

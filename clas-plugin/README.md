@@ -48,6 +48,10 @@ Permissões: `clas.usar` (padrão: todos) e `clas.admin` (padrão: op).
 - **BountyPlugin**: também consulta `tagDoCla(UUID)` e `tagExistente(String)`, pras recompensas contra um clã inteiro.
 - **PainelEconomiaPlugin**: o custo de criação aparece como saída do `ClasPlugin`. Um depósito no banco também aparece como saída, porque o dinheiro sai da conta do jogador, e o saque volta como entrada.
 
+### API pra outros plugins
+
+`depositarNoBanco(String tag, double valor, String motivo)`: deposita no banco do clã e lança no extrato com o motivo. O GladiadorPlugin usa pra pagar o prêmio do clã.
+
 ## Configuração
 
 ```yaml

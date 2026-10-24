@@ -24,6 +24,20 @@ public class ClasIntegration {
         return clas != null && clas.isEnabled();
     }
 
+    /** Deposita no banco do clã (ClasPlugin#depositarNoBanco). False se não deu (sem plugin, versão antiga, clã sumiu). */
+    public boolean depositarNoBanco(String tag, double valor, String motivo) {
+        Plugin clas = Bukkit.getPluginManager().getPlugin("ClasPlugin");
+        if (clas == null || !clas.isEnabled()) return false;
+        try {
+            Object ok = clas.getClass().getMethod("depositarNoBanco", String.class, double.class, String.class)
+                    .invoke(clas, tag, valor, motivo);
+            return Boolean.TRUE.equals(ok);
+        } catch (ReflectiveOperationException e) {
+            plugin.getLogger().warning("ClasPlugin sem o banco do clã (versão antiga?): " + e.getMessage());
+            return false;
+        }
+    }
+
     /** Tag do clã, ou null se não tem clã (ou não há ClasPlugin). */
     public String tagDoCla(UUID jogador) {
         Plugin clas = Bukkit.getPluginManager().getPlugin("ClasPlugin");

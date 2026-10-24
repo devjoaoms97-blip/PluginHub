@@ -272,3 +272,15 @@ bosses:
         raio: 100
       - acao: mensagem
         texto: "&0&lO Flagelo das Trevas desperta seu poder ancestral!"
+
+# O que o boss paga quando morre, além do loot (precisa do Vault pro dinheiro).
+recompensas:
+  ranking-dano: [15000, 10000, 5000]   # coins pro 1º, 2º e 3º do ranking de dano
+  campeao-dinheiro: 20000               # coins pro campeão (último golpe)
+  xp-skill-maximo: 3000                 # XP de skill por participar, proporcional ao dano, na skill da arma
+  xp-skill-minimo: 100
+  codigo-vip:
+    ativado: true                       # no teste, ligado pra conferir
+    tier: bronze
+    dias: 3
+    validade-dias: 7

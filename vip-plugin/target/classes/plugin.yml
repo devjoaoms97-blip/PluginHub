@@ -4,12 +4,12 @@ main: com.example.vip.VipPlugin
 api-version: '26.2'
 author: Você
 description: Sistema de VIPs por tempo (Bronze/Prata/Ouro/Diamante) via grupos do LuckPerms, com perks (fly, heal, feed, kit, partículas, warp), desconto na loja e resgate por código pra vender fora do Minecraft (Discord/site).
-softdepend: [LuckPerms, EconomyShopPlugin, Vault]
+softdepend: [LuckPerms, EconomyShopPlugin, Vault, DiscordPlugin]
 
 commands:
   vip:
     description: Sistema de VIPs — perks, consulta e resgate de código pros jogadores; gestão pra staff.
-    usage: "Uso: /vip <check|tiers|resgatar|vender|cancelarvenda|fly|heal|feed|kit|particula|warp|add|remove|list|reload|gerarcodigo|codigos|revogarcodigo>"
+    usage: "Uso: /vip <check|tiers|resgatar|vender|cancelarvenda|fly|heal|feed|kit|particula|warp|add|remove|list|reload|gerarcodigo|codigos|revogarcodigo|setwarp>"
 
 permissions:
   vip.admin:

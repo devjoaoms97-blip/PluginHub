@@ -1,0 +1,10 @@
+# Configuração do ChequePlugin
+# Toda emissão e resgate fica em plugins/ChequePlugin/cheques.log, e um cheque com ID já
+# resgatado (cópia) é recusado e anulado.
+
+limite:
+  # Valor máximo de um cheque. 0 desativa.
+  valor-maximo: 1000000
+  # Segundos entre uma emissão e outra do mesmo jogador. 0 desativa.
+  cooldown-segundos: 10
+  # Quem tem a permissão cheque.limite.ignorar não tem nenhum dos dois limites.

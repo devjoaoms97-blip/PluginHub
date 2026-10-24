@@ -53,7 +53,7 @@ Monta o spawn (a estrutura `spring` do EstruturasPlugin, que já cadastra as bar
 
 | Onde | O que tem |
 |---|---|
-| `spawn`, spawn (centro em 0, 43; z -20..106) | Spawn fechado: o jogador nasce na fonte (0, 65, 43), com hologramas de "como começar" em volta. 32 barracas pelas avenidas (28 normais e 4 especiais), com NPC de quem aluga. Só dois portões: "MINAS" ao norte e "BOSS" ao sul, colados nas vizinhas |
+| `spawn`, spawn (centro em 0, 43; z -20..106) | Spawn fechado: o jogador nasce na fonte (0, 65, 43), com o painel "Como começar" (um holograma grande no fim da avenida oeste, sobre os arbustos) e 12 NPCs de dicas. 32 barracas pelas avenidas (28 normais e 4 especiais), com NPC de quem aluga. Só dois portões: "MINAS" ao norte e "BOSS" ao sul, colados nas vizinhas |
 | `spawn`, sul (z 107..253) | Arena do boss (estrutura `toxica`), enterrada: escadaria fechada a partir do portão sul, piso em y 32, centro em (0, 33, 195). `/warp boss` leva pra dentro dela |
 | `spawn`, norte (z -21..-185) | Avenida das Minas (estrutura `minas`): recinto fechado com os 12 poços de mina de 21 x 21 (15 de profundidade, cheios de pedra), em ordem de rank, alternando oeste e leste. O portão dela fica colado no caminho que sai do spawn |
 | `arenas` | Saguão com portal de volta, X1 `axepvp` (centro -600, 0, cadastrada como `axe`) e Gladiador `coliseu` (centro 600, 0, com 16 pontos de entrada), longe um do outro. A plateia entra por `/warp plateia-x1` e `/warp plateia-gladiador` e sai com `/spawn` |
@@ -62,7 +62,7 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 
 | Script | O que confere |
 |---|---|
-| `teste-mapa.js` | Jogador novo nasce na fonte do spawn, `/warp` e `/spawn`, hologramas de "como começar", poços das minas cheios (e a pedreira minerável, se já foi criada), chão do spawn protegido, caminho do portão colado na avenida das minas, portal de volta do saguão das arenas, 32 barracas com holograma e o NPC de quem aluga, 4 arenas de X1 (3 simples e a axepvp) e a do Gladiador prontas |
+| `teste-mapa.js` | Jogador novo nasce na fonte do spawn, `/warp` e `/spawn`, painel "Como começar" (um só, sem hologramas espalhados), poços das minas cheios (e a pedreira minerável, se já foi criada), chão do spawn protegido, caminho do portão colado na avenida das minas, portal de volta do saguão das arenas, 32 barracas com holograma e o NPC de quem aluga, 4 arenas de X1 (3 simples e a axepvp) e a do Gladiador prontas |
 | `teste-coleta.js` | O minerado vai pro inventário, sem itens nem orbes no chão. Com o inventário cheio, só a sobra cai, com o aviso "Inventário cheio" |
 | `teste-combate.js` | Velocidade de ataque, dois golpes seguidos com o dano inteiro, tempo entre golpes (no padrão o 2º golpe em 0,15 s não conta; com 0 conta), bloqueio com a espada tirando metade do dano, sem bloqueio da espada com escudo na outra mão golpe com a espada da segunda mão, espada e machado alternados contando os dois golpes em 0,15 s, a mesma mão não, e soco com a segunda mão vazia |
 | `teste-rankup-extras.js` | Menu do `/ranks` (subir clicando), menu do `/mina` (ir clicando), holograma em cima da mina, rank na tab, prestígio só no último rank, volta pro primeiro com ✦ na tab e no chat |
@@ -73,10 +73,12 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-recursos.js` | `/recursos` em chão firme dentro do raio, borda, espera entre usos, reset marcado com aviso no chat, quem estava lá tirado antes, bloco do mundo antigo sumindo, e quem saiu do servidor lá dentro voltando num lugar seguro do mundo novo |
 | `teste-skills-maos.js` | Machado na mão esquerda treina a skill Machado, soco na esquerda treina o Porradeiro, e a espada da direita (que não bateu) não treina |
 | `teste-duelo.js` | Desafio e aceite com apostas retidas, espectador (modo espectador, sem comandos, volta no fim), contagem sem dano, ninguém de fora bate, comandos bloqueados, morte com perda de itens e prêmio menos a taxa, volta para onde estava, ranking, recusa e cancelamento com devolução |
-| `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução |
+| `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução. No fim, devolve os 16 pontos de entrada oficiais do coliseu |
 | `teste-farm-arenas.js` | Num duelo entre clãs diferentes, com recompensa na cabeça de quem perde: o Bounty não paga (e a recompensa continua), e o placar de abates do clã não muda |
 | `teste-terrenos.js` | Compra, borda da grade, holograma da entrada (à venda, dono, leilão), amigo só com baús, proteção (vizinho, rua, amigo), imposto, confisco por imposto atrasado, leilão de imóvel (dívida do dono antigo, lance superado e devolvido, vencedor leva o que tem dentro) e leilão sem lances |
 | `teste-vip.js` | Pix com 80% de desconto na taxa, missão diária extra, bônus de ativação sem o dinheiro por nível das skills, kit mensal encantado e com cooldown, venda automática e `/autovenda` |
+| `teste-novidades.js` | `/skills top`, XP em dobro pela staff, evento de mercado (anúncio, `/shop evento`, venda), chave Pix (cadastro, nome de outro jogador recusado, pagar pela chave), título ao receber, taxa no extrato, `/pix admin log`, cheque nominal e cooldown, `/vip setwarp <tier>`, preço mínimo do `/vip vender`, `/boss proximo` e ItemCleaner (item perto do jogador fica, orbe longe some) |
+| `teste-oficinas.js` | As 4 oficinas da mina: Ferreiro repara e cobra, Picareteiro vende, Sábio vende XP, Bruxa abre a mesa no nível 30 com o lápis dela (encanta sem lápis, e o lápis não vai pro inventário), e as linhas da scoreboard lateral (`/placar ver`) |
 
 O `teste-vip.js` e o `teste-terrenos.js` usam jogadores novos a cada execução (`Vip`, `Ter` ou `Viz` + um código): o kit mensal e o bônus de ativação só valem uma vez por jogador, e cada um só compra um terreno. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.
 

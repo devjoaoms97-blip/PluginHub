@@ -8,9 +8,10 @@ import java.util.Set;
  *
  * @param alvos nomes de material/entidade em maiúsculo; vazio = qualquer um conta
  * @param skill nome da skill do SkillsPlugin que recebe {@code xp} (ou null pra só coins)
+ * @param rankMinimo id do rank do RankupPlugin a partir do qual a missão pode ser sorteada (null = qualquer um)
  */
 public record Missao(String id, Periodo periodo, TipoMissao tipo, Set<String> alvos, int quantidade, String descricao,
-                     double coins, String skill, double xp) {
+                     double coins, String skill, double xp, String rankMinimo) {
 
     public boolean aceita(String alvo) {
         return alvos.isEmpty() || alvos.contains(alvo);

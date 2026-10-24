@@ -36,9 +36,12 @@ gui:
 # ---------------------------------------------------------------------------------
 # POOL DE MISSÕES
 #   id:         único, sem espaço
-#   tipo:       minerar | colher | matar | pescar | vender | dano_boss
+#   tipo:       minerar | colher | matar | pescar | vender | dano_boss | vender_barraca | subir_rank
+#               | minerar_mina | pagar_imposto
 #   alvos:      lista de materiais (minerar/colher/pescar/vender) ou tipos de mob (matar,
 #               e dano_boss: o mob do boss, ex. ZOMBIE). Sem "alvos" = qualquer um conta.
+#   rank-minimo:(opcional) só sorteia pra quem já tem esse rank do RankupPlugin (ex.: missão de
+#               uma mina que só abre nesse rank)
 #   quantidade: quanto precisa (vender = itens vendidos pra loja; dano_boss = pontos de dano)
 #   descricao:  o que aparece pro jogador
 #   coins:      recompensa em dinheiro
@@ -149,6 +152,36 @@ pool:
 # segunda. Maiores, com recompensa melhor. O progresso conta junto com as diárias
 # (o mesmo bloco minerado avança uma diária e uma semanal ao mesmo tempo).
 # ---------------------------------------------------------------------------------
+
+  - id: vender_barraca
+    tipo: vender_barraca
+    quantidade: 64
+    descricao: "Vender 64 itens nas barracas (pra loja de alguém, ou pela sua)"
+    coins: 400
+
+  - id: mina_pedreira
+    tipo: minerar_mina
+    alvos: [pedreira]
+    quantidade: 500
+    descricao: "Minerar 500 blocos na Pedreira"
+    coins: 250
+
+  - id: mina_ferro
+    tipo: minerar_mina
+    alvos: [ferro]
+    rank-minimo: ferreiro
+    quantidade: 500
+    descricao: "Minerar 500 blocos na mina de Ferro"
+    coins: 1200
+
+  - id: mina_diamante
+    tipo: minerar_mina
+    alvos: [diamante]
+    rank-minimo: cavaleiro
+    quantidade: 500
+    descricao: "Minerar 500 blocos na mina de Diamante"
+    coins: 6000
+
 semanais:
   ativado: true
   quantidade: 2
@@ -189,3 +222,21 @@ semanais:
       quantidade: 100
       descricao: "Pescar 100 vezes"
       coins: 1500
+
+    - id: semanal_rank
+      tipo: subir_rank
+      quantidade: 1
+      descricao: "Subir de rank"
+      coins: 2500
+
+    - id: semanal_imposto
+      tipo: pagar_imposto
+      quantidade: 1
+      descricao: "Pagar o imposto do seu terreno"
+      coins: 1500
+
+    - id: semanal_barraca
+      tipo: vender_barraca
+      quantidade: 640
+      descricao: "Vender 640 itens nas barracas"
+      coins: 3000
