@@ -2,26 +2,31 @@ package com.example.combate;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Enemy;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,6 +39,12 @@ import java.util.UUID;
  * <p>
  * Mirando num inimigo, o botão direito bate; mirando em outro lugar, a espada da mão principal
  * bloqueia. Por isso o golpe da segunda mão desfaz o bloqueio que o mesmo clique começaria.
+ * <p>
+ * O cliente tenta a mão principal antes: interage com a entidade e, se nada acontecer, usa o item
+ * dela. Como a espada da principal bloqueia (o "usar" dela sempre faz algo), o clique da segunda mão
+ * nunca chega ao servidor. Então o clique que chega pela mão principal também vale — só contra
+ * jogadores e monstros, pra não atrapalhar a troca com aldeões, montar e afins. Um clique pode
+ * chegar como mais de um evento (principal e segunda, "interact" e "interact at"): só um golpe por tick.
  */
 public class DuasMaos implements Listener {
 
@@ -41,6 +52,7 @@ public class DuasMaos implements Listener {
     private final NamespacedKey chaveAjuste;
     /** Quem está no meio de um golpe da segunda mão (pra Invulnerabilidade saber de que mão veio). */
     private final Set<UUID> golpeando = new HashSet<>();
+    private final Map<UUID, Integer> ultimoGolpe = new HashMap<>();
 
     public DuasMaos(CombatePlugin plugin) {
         this.plugin = plugin;
@@ -61,14 +73,27 @@ public class DuasMaos implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoClicarComDireito(PlayerInteractEntityEvent evento) {
-        if (evento.getHand() != EquipmentSlot.OFF_HAND) return;
         if (!(evento.getRightClicked() instanceof LivingEntity alvo) || alvo instanceof ArmorStand) return;
         Player jogador = evento.getPlayer();
         PlayerInventory inv = jogador.getInventory();
-        ItemStack segunda = inv.getItemInOffHand();
-        if (!podeGolpear(segunda)) return;
+        if (evento.getHand() == EquipmentSlot.HAND) {
+            // o clique da segunda mão não vem quando a espada da principal pode bloquear
+            boolean espadaNaPrincipal = inv.getItemInMainHand().getType().name().endsWith("_SWORD");
+            if (!espadaNaPrincipal || !(alvo instanceof Player || alvo instanceof Enemy)) return;
+        } else if (evento.getHand() != EquipmentSlot.OFF_HAND) {
+            return;
+        }
+        if (!podeGolpear(inv.getItemInOffHand())) return;
         evento.setCancelled(true);
+        int tick = Bukkit.getCurrentTick();
+        Integer anterior = ultimoGolpe.put(jogador.getUniqueId(), tick);
+        if (anterior != null && anterior == tick) return; // o mesmo clique, em outro evento
         golpearComASegundaMao(jogador, alvo);
+    }
+
+    @EventHandler
+    public void aoSair(PlayerQuitEvent evento) {
+        ultimoGolpe.remove(evento.getPlayer().getUniqueId());
     }
 
     private void golpearComASegundaMao(Player jogador, LivingEntity alvo) {

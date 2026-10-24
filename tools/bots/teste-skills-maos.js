@@ -8,8 +8,8 @@ t.rodar(async () => {
   const a = await t.criarBot(t.nomeNovo('Skl')), b = await t.criarBot(t.nomeNovo('Skv'))
   const W = 'execute in minecraft:arenas run'
   for (const bot of [a, b]) { await t.console(`gamemode survival ${bot.username}`); await t.console(`minecraft:clear ${bot.username}`) }
-  await t.console(`${W} minecraft:tp ${a.username} 99.5 65 40.5 -90 0`)
-  await t.console(`${W} minecraft:tp ${b.username} 101.5 65 40.5 90 0`)
+  await t.console(`${W} minecraft:tp ${a.username} -601.5 65 0.5 -90 0`)
+  await t.console(`${W} minecraft:tp ${b.username} -599.5 65 0.5 90 0`)
   await t.console(`minecraft:item replace entity ${a.username} weapon.mainhand with minecraft:diamond_sword`)
   await t.console(`minecraft:item replace entity ${a.username} weapon.offhand with minecraft:diamond_axe`)
   await t.espera(1500)

@@ -1,5 +1,5 @@
 // Combate no estilo 1.8 (CombatePlugin): sem recarga de ataque, bloqueio com a espada (só sem
-// escudo na segunda mão) e golpe com a arma da segunda mão. Luta numa arena de X1 vazia, onde o
+// escudo na segunda mão) e golpe com a arma da segunda mão. Luta no pátio da arena de X1 (axepvp), onde o
 // PvP vale. Precisa das arenas (node montar-mapa.js). Uso: node teste-combate.js
 const t = require('./lib')
 
@@ -21,6 +21,13 @@ const bater = atacante => e => atacante.attack(e)
 const baterComASegunda = atacante => e => atacante._client.write('use_entity', {
   target: e.id, mouse: 0, sneaking: false, hand: 1, location: { x: 0, y: 0, z: 0 },
 })
+// O que o cliente de verdade manda num clique direito com a espada na mão principal: o clique na
+// entidade pela mão principal e, como a espada bloqueia, "usar o item" da principal. O da segunda mão
+// nunca chega (o cliente só tenta a segunda se a principal não fizer nada).
+const baterComoCliente = atacante => e => {
+  atacante._client.write('use_entity', { target: e.id, mouse: 0, sneaking: false, hand: 0, location: { x: 0, y: 0, z: 0 } })
+  atacante.activateItem()
+}
 
 t.rodar(async () => {
   const a = await t.criarBot(t.nomeNovo('Cma')), b = await t.criarBot(t.nomeNovo('Cmb'))
@@ -29,8 +36,8 @@ t.rodar(async () => {
     await t.console(`minecraft:clear ${bot.username}`)
     await t.console(`minecraft:give ${bot.username} diamond_sword`)
   }
-  await t.console(`${W} minecraft:tp ${a.username} 99.5 65 40.5 -90 0`)
-  await t.console(`${W} minecraft:tp ${b.username} 101.5 65 40.5 90 0`)
+  await t.console(`${W} minecraft:tp ${a.username} -601.5 65 0.5 -90 0`)
+  await t.console(`${W} minecraft:tp ${b.username} -599.5 65 0.5 90 0`)
   await t.espera(1500)
   for (const bot of [a, b]) await bot.equip(bot.inventory.items().find(i => i.name === 'diamond_sword'), 'hand')
   await t.espera(500)
@@ -89,6 +96,10 @@ t.rodar(async () => {
   // espada e machado com 0,15 s de intervalo, no tempo padrão (10 ticks): cada mão tem o seu tempo
   const alternado = await golpe(a, b, async e => { a.attack(e); await t.espera(150); baterComASegunda(a)(e) })
   t.verificar(alternado >= g1 * 1.9, 'espada e machado alternados em 0,15 s: os dois golpes contam', `${alternado.toFixed(1)} (só a espada: ${g1.toFixed(1)})`)
+  const comoCliente = await golpe(a, b, baterComoCliente(a))
+  a.deactivateItem()
+  t.verificar(comoCliente >= g1 * 0.9, 'como o cliente de verdade (clique pela mão principal, espada que bloqueia): bate com o machado da segunda mão',
+    `${comoCliente.toFixed(1)} (só a espada: ${g1.toFixed(1)})`)
   const mesmaMao = await golpe(a, b, async e => { baterComASegunda(a)(e); await t.espera(150); baterComASegunda(a)(e) })
   t.verificar(mesmaMao < g1 * 1.6, 'a mesma mão duas vezes em 0,15 s: só um golpe conta', mesmaMao.toFixed(1))
 

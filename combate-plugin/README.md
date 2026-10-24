@@ -29,6 +29,7 @@ Combate no estilo da 1.8, só no que foi escolhido. Vale no servidor todo.
   - Encantamentos, crítico, repulsão e proteções valem, e o desgaste vai para a arma da segunda mão.
   - **As skills seguem a arma de cada mão**: o machado da esquerda ganha o XP, o bônus de dano e as chances da skill Machado; o soco ganha os do Porradeiro, como a chance de atordoar. As mãos são trocadas só durante o golpe, e as Skills enxergam a arma certa.
   - Mirando num inimigo, o botão direito bate. Mirando em outro lugar, a espada da mão principal bloqueia. Segurar o botão direito em cima do inimigo vira uma sequência de golpes, dentro do tempo da segunda mão.
+  - O cliente tenta a mão principal primeiro e, como a espada dela bloqueia, nunca manda o clique da segunda mão. Por isso, com espada na principal, o clique num **jogador ou monstro** que chega pela mão principal também vira o golpe da segunda mão. Aldeões, montarias e outras entidades continuam com o clique normal. Um clique conta uma vez só, mesmo quando chega como mais de um evento.
 
 ## Config
 
