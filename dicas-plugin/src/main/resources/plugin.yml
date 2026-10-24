@@ -1,0 +1,19 @@
+name: DicasPlugin
+version: '1.0.0'
+main: com.example.dicas.DicasPlugin
+api-version: '26.2'
+author: Você
+description: NPCs de dicas pelo spawn. Clique direito e ele fala, num balão animado em cima da cabeça.
+
+commands:
+  dica:
+    description: Gerencia os NPCs de dicas.
+    usage: "Uso: /dica <criar|fala|falas|tirarfala|nome|skin|mover|remover|lista|reload>"
+    aliases: [dicas]
+    permission: dicas.admin
+    permission-message: "§cVocê não tem permissão para isso."
+
+permissions:
+  dicas.admin:
+    description: Cria e edita os NPCs de dicas.
+    default: op

@@ -1,0 +1,6 @@
+com\example\dicas\manager\NpcsManager.class
+com\example\dicas\model\NpcDica.class
+com\example\dicas\DicasPlugin.class
+com\example\dicas\manager\Dialogos$Fala.class
+com\example\dicas\command\DicaCommand.class
+com\example\dicas\manager\Dialogos.class

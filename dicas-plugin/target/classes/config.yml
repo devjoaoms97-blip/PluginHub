@@ -1,0 +1,16 @@
+# Configuração do DicasPlugin. Os NPCs e as falas ficam no npcs.yml (edite com /dica).
+
+# Texto embaixo do nome do NPC (cores com &).
+descricao: "&7Clique pra conversar"
+
+balao:
+  # Altura do balão acima dos pés do NPC.
+  altura: 2.6
+  # Largura máxima da linha, em pixels: textos maiores quebram linha.
+  largura: 180
+  # Opacidade do fundo (0 = transparente, 255 = opaco).
+  fundo-opacidade: 170
+  # Velocidade da escrita: letras que aparecem a cada tick (20 ticks = 1 segundo).
+  letras-por-tick: 1
+  # Depois de escrito, o balão fica 2 s + isso aqui por letra (em ticks), até no máximo 12 s.
+  ticks-por-letra-lida: 1.2
