@@ -1,6 +1,9 @@
 package com.example.boss.command;
 
 import com.example.boss.BossPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -58,6 +61,17 @@ public class BossCommand implements CommandExecutor, TabCompleter {
             }
 
             case "setlocal" -> {
+                if (args.length >= 5) {
+                    World mundo = Bukkit.getWorld(args[1]);
+                    double x = parseDouble(args[2], sender), y = parseDouble(args[3], sender), z = parseDouble(args[4], sender);
+                    if (mundo == null) {
+                        sender.sendMessage("§cMundo não encontrado: " + args[1]);
+                    } else if (!Double.isNaN(x) && !Double.isNaN(y) && !Double.isNaN(z)) {
+                        plugin.getArenaManager().setLocalizacao(new Location(mundo, x, y, z));
+                        sender.sendMessage("§aLocal da arena definido em " + mundo.getName() + " " + x + ", " + y + ", " + z + ".");
+                    }
+                    return true;
+                }
                 Player p = exigirJogador(sender);
                 if (p == null) return true;
                 plugin.getArenaManager().setLocalizacao(p.getLocation());
@@ -133,7 +147,7 @@ public class BossCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/boss start [id] §7- inicia um boss aleatório (ou um específico pelo id)");
         sender.sendMessage("§f/boss list §7- lista os perfis de boss configurados");
         sender.sendMessage("§f/boss stop §7- remove o boss ativo");
-        sender.sendMessage("§f/boss setlocal §7- define a arena na sua posição atual");
+        sender.sendMessage("§f/boss setlocal [mundo x y z] §7- define a arena na sua posição atual (ou no lugar informado)");
         sender.sendMessage("§f/boss additem <chance%> §7- adiciona item ao loot do chão (segure na mão)");
         sender.sendMessage("§f/boss addchampionitem <peso%> §7- adiciona item ao sorteio do campeão (segure na mão)");
         sender.sendMessage("§f/boss reload §7- recarrega o config.yml");

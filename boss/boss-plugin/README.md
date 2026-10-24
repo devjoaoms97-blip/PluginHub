@@ -30,10 +30,14 @@ Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases din
 | `/boss start <id>` | Inicia um perfil específico (ex: `/boss start wither`) |
 | `/boss list` | Lista os perfis configurados e seus ids |
 | `/boss stop` | Remove o boss ativo |
-| `/boss setlocal` | Define a arena na sua posição atual |
+| `/boss setlocal [mundo x y z]` | Define a arena na sua posição atual (ou, pelo console, no lugar informado) |
 | `/boss additem <chance%>` | Adiciona o item na mão ao loot do chão |
 | `/boss addchampionitem <peso%>` | Adiciona o item na mão ao sorteio de prêmio do campeão |
 | `/boss reload` | Recarrega o `config.yml` |
+
+## Arena pronta
+
+A arena do boss pode ser construída pelo EstruturasPlugin: `/estrutura construir toxica`. Quando termina, ele já roda o `/boss setlocal` no centro dela.
 
 ## Tipos de ação disponíveis (fases e arsenal aleatório usam os mesmos)
 

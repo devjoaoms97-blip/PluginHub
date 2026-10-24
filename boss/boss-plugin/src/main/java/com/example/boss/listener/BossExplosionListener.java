@@ -8,8 +8,10 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
@@ -104,7 +106,25 @@ public class BossExplosionListener implements Listener {
     // mas se acontecer, cancelamos tudo.
     @EventHandler
     public void aoExplodir(EntityExplodeEvent evento) {
-        if (!evento.getEntity().getPersistentDataContainer().has(BossTagUtil.chave(), PersistentDataType.BYTE)) return;
-        evento.setCancelled(true);
+        if (ehBoss(evento.getEntity())) {
+            evento.setCancelled(true);
+            return;
+        }
+        // Projétil do boss (o crânio do Wither): a explosão continua acertando os jogadores, mas
+        // não quebra nada — a arena (paredes e teto de vidro) tem que aguentar a luta inteira.
+        if (evento.getEntity() instanceof Projectile projetil && projetil.getShooter() instanceof Entity atirador
+                && ehBoss(atirador)) {
+            evento.blockList().clear();
+        }
+    }
+
+    // O Wither quebra os blocos em volta quando toma dano: no boss, não quebra.
+    @EventHandler
+    public void aoMudarBloco(EntityChangeBlockEvent evento) {
+        if (ehBoss(evento.getEntity())) evento.setCancelled(true);
+    }
+
+    private boolean ehBoss(Entity entidade) {
+        return entidade.getPersistentDataContainer().has(BossTagUtil.chave(), PersistentDataType.BYTE);
     }
 }

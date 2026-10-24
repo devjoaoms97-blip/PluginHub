@@ -1,0 +1,20 @@
+name: EstruturasPlugin
+version: '1.0.0'
+main: com.example.estruturas.EstruturasPlugin
+api-version: '26.2'
+author: Você
+description: Constrói estruturas prontas (spawn, arenas de X1, Gladiador e boss) a partir de código, sem WorldEdit.
+softdepend: [BossPlugin, BarracasPlugin]
+
+commands:
+  estrutura:
+    description: Constrói estruturas prontas.
+    usage: "Uso: /estrutura <lista|construir|desfazer|status>"
+    aliases: [estruturas]
+    permission: estruturas.admin
+    permission-message: "§cVocê não tem permissão para construir estruturas."
+
+permissions:
+  estruturas.admin:
+    description: Permite construir e desfazer estruturas.
+    default: op
