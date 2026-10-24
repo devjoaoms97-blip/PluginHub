@@ -23,7 +23,7 @@ Terrenos de 32x32 comprados com coins, num mundo próprio em grade. Cada terreno
   - **usar:** portas, alçapões, portões, botões, alavancas, placas de pressão, camas, e montar ou negociar com mobs.
 
   `/terreno amigo add <jogador>` dá tudo; `/terreno amigo add <jogador> baus usar`, só essas.
-- **Placa na entrada.** Na rua, em cima da borda, no meio do lado norte de cada terreno, de frente para quem chega pelo `/terreno home` ou pelo `/terreno ir`. Mostra "À venda" com o preço, o dono ou o leilão com o lance atual. É reescrita quando o terreno muda de situação e quando o chunk carrega. Clicar nela mostra o `/terreno info`.
+- **Holograma na entrada.** Na rua, em cima da borda, no meio do lado norte de cada terreno, onde chega quem usa o `/terreno home` ou o `/terreno ir`. Mostra "À venda" com o preço, o dono ou o leilão com o lance atual, e é atualizado quando o terreno muda de situação. Clicar nele mostra o `/terreno info`. Não fica salvo no mundo: aparece quando o chunk carrega. As placas das versões antigas saem sozinhas.
 - **Abandono.** `/terreno abandonar confirmar` devolve o terreno sem reembolso, e tudo o que tem dentro é apagado.
 
 ## Proteção

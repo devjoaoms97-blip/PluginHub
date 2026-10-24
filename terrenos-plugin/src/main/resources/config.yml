@@ -18,6 +18,8 @@ grade:
   altura-chao: 64
   # Até quantos terrenos a partir do centro, em cada direção (50 = 101 x 101 terrenos).
   raio-maximo: 50
+  # Bioma do mundo inteiro: define a cor da grama e se chove ou neva (plains: grama verde, chuva).
+  bioma: plains
   # Mudar os blocos ou as medidas depois de o mundo existir não muda o que já foi gerado.
   blocos:
     chao: GRASS_BLOCK
@@ -25,10 +27,12 @@ grade:
     calcamento: STONE_BRICKS
     borda: STONE_BRICK_SLAB
 
-placas:
-  # Placa na entrada de cada terreno (na rua, no meio do lado norte) com "À venda", o dono ou
-  # o leilão. Clicar nela mostra o /terreno info.
+holograma:
+  # Holograma na entrada de cada terreno (na rua, no meio do lado norte) com "À venda", o dono ou
+  # o leilão. Clicar nele mostra o /terreno info.
   ativado: true
+  # Altura do texto acima da borda, em blocos.
+  altura: 2.0
 
 compra:
   # Preço fixo de um terreno à venda. A primeira semana de imposto vem incluída.

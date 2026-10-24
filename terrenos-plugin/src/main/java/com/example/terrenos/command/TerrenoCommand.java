@@ -472,6 +472,8 @@ public class TerrenoCommand implements CommandExecutor, TabCompleter {
         if (sub.equals("reload")) {
             plugin.reloadConfig();
             plugin.carregarGrade();
+            plugin.getHologramas().removerTodos();
+            plugin.getHologramas().carregarTodos();
             sender.sendMessage("§aConfig recarregado. §7(mudar o tamanho da grade não regenera o mundo já criado.)");
             return;
         }

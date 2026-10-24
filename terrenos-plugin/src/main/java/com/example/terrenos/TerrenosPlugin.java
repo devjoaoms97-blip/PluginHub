@@ -3,18 +3,22 @@ package com.example.terrenos;
 import com.example.terrenos.command.TerrenoCommand;
 import com.example.terrenos.listener.JogadorListener;
 import com.example.terrenos.listener.ProtecaoListener;
+import com.example.terrenos.manager.Hologramas;
 import com.example.terrenos.manager.Limpador;
-import com.example.terrenos.manager.Placas;
 import com.example.terrenos.manager.TerrenoManager;
 import com.example.terrenos.mundo.GeradorTerrenos;
 import com.example.terrenos.mundo.Grade;
 import com.example.terrenos.util.DiscordIntegration;
 import com.example.terrenos.util.PixIntegration;
 import com.example.terrenos.util.RankupIntegration;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -32,7 +36,7 @@ public class TerrenosPlugin extends JavaPlugin {
     private Grade grade;
     private TerrenoManager terrenoManager;
     private Limpador limpador;
-    private Placas placas;
+    private Hologramas hologramas;
     private PixIntegration pixIntegration;
     private RankupIntegration rankupIntegration;
     private DiscordIntegration discord;
@@ -49,7 +53,7 @@ public class TerrenosPlugin extends JavaPlugin {
         }
 
         this.limpador = new Limpador(this);
-        this.placas = new Placas(this);
+        this.hologramas = new Hologramas(this);
         this.terrenoManager = new TerrenoManager(this);
         this.pixIntegration = new PixIntegration(this);
         this.rankupIntegration = new RankupIntegration(this);
@@ -60,7 +64,8 @@ public class TerrenosPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new ProtecaoListener(this), this);
         getServer().getPluginManager().registerEvents(new JogadorListener(this), this);
-        getServer().getPluginManager().registerEvents(placas, this);
+        getServer().getPluginManager().registerEvents(hologramas, this);
+        getServer().getScheduler().runTask(this, hologramas::carregarTodos);
 
         getServer().getScheduler().runTaskTimer(this, terrenoManager::tick, 20L, 20L);
         getServer().getScheduler().runTaskTimer(this, limpador::tick, 1L, 1L);
@@ -73,6 +78,7 @@ public class TerrenosPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (hologramas != null) hologramas.removerTodos();
         if (terrenoManager != null) terrenoManager.salvar();
     }
 
@@ -80,7 +86,19 @@ public class TerrenosPlugin extends JavaPlugin {
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String mundo, String id) {
         if (grade == null) carregarGrade();
-        return new GeradorTerrenos(() -> grade);
+        return new GeradorTerrenos(() -> grade, this::getBioma);
+    }
+
+    /** Bioma do mundo de terrenos (grade.bioma); um que não existe vira planície. */
+    public Biome getBioma() {
+        String nome = getConfig().getString("grade.bioma", "plains").toLowerCase(Locale.ROOT);
+        NamespacedKey chave = NamespacedKey.fromString(nome);
+        Biome bioma = chave == null ? null : RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME).get(chave);
+        if (bioma == null) {
+            getLogger().warning("Bioma inválido em grade.bioma: " + nome + ". Usando plains.");
+            return Biome.PLAINS;
+        }
+        return bioma;
     }
 
     public void carregarGrade() {
@@ -130,8 +148,8 @@ public class TerrenosPlugin extends JavaPlugin {
         return limpador;
     }
 
-    public Placas getPlacas() {
-        return placas;
+    public Hologramas getHologramas() {
+        return hologramas;
     }
 
     public PixIntegration getPixIntegration() {

@@ -187,7 +187,7 @@ public class TerrenoManager {
         Terreno t = novoDono(id, jogador.getUniqueId(), jogador.getName(), preco);
         plugin.getPixIntegration().registrarComServidor(jogador.getUniqueId(), preco, false, "Compra do terreno " + id);
         salvar();
-        plugin.getPlacas().atualizar(id);
+        plugin.getHologramas().atualizar(id);
         return t;
     }
 
@@ -207,7 +207,7 @@ public class TerrenoManager {
         terrenos.remove(t.getId());
         plugin.getLimpador().limpar(t.getId());
         salvar();
-        plugin.getPlacas().atualizar(t.getId());
+        plugin.getHologramas().atualizar(t.getId());
     }
 
     // ---------------------------------------------------------------------
@@ -232,7 +232,7 @@ public class TerrenoManager {
         t.setDono(null, null);
         t.getAmigos().clear();
         salvar();
-        plugin.getPlacas().atualizar(t.getId());
+        plugin.getHologramas().atualizar(t.getId());
 
         anunciarLeilao("§6§l[Leilão de imóvel] §eO terreno §f" + t.getId() + " §ede §f" + t.getLeilao().getNomeDonoAnterior()
                 + " §evai a leilão com tudo o que tem dentro, por §f" + Formato.tempo(duracao)
@@ -262,7 +262,7 @@ public class TerrenoManager {
         long agora = System.currentTimeMillis();
         if (antiSnipe > 0 && leilao.getTerminaEm() - agora < antiSnipe) leilao.setTerminaEm(agora + antiSnipe);
         salvar();
-        plugin.getPlacas().atualizar(t.getId());
+        plugin.getHologramas().atualizar(t.getId());
 
         anunciar("§6[Leilão de imóvel] §f" + jogador.getName()
                 + " §edeu §f" + Formato.valor(valor) + " §eno terreno §f" + t.getId() + "§e. Termina em §f"
@@ -294,7 +294,7 @@ public class TerrenoManager {
             terrenos.remove(t.getId());
             plugin.getLimpador().limpar(t.getId());
             salvar();
-            plugin.getPlacas().atualizar(t.getId());
+            plugin.getHologramas().atualizar(t.getId());
             anunciarLeilao("§6[Leilão de imóvel] §7O terreno §f" + t.getId()
                     + " §7não recebeu lances. Foi limpo e voltou à venda.");
             return;
@@ -304,7 +304,7 @@ public class TerrenoManager {
         plugin.getPixIntegration().registrarComServidor(leilao.getLicitante(), leilao.getLance(), false,
                 "Leilão do terreno " + t.getId());
         salvar();
-        plugin.getPlacas().atualizar(t.getId());
+        plugin.getHologramas().atualizar(t.getId());
         anunciarLeilao("§6§l[Leilão de imóvel] §f" + leilao.getNomeLicitante()
                 + " §earrematou o terreno §f" + novo.getId() + " §epor §f" + Formato.valor(leilao.getLance()) + "§e!");
         Player vencedor = Bukkit.getPlayer(leilao.getLicitante());
@@ -461,7 +461,7 @@ public class TerrenoManager {
         if (atual != null && atual.emLeilao() && atual.getLeilao().temLance()) devolverLance(atual.getLeilao());
         Terreno t = novoDono(id, jogador.getUniqueId(), jogador.getName(), 0);
         salvar();
-        plugin.getPlacas().atualizar(id);
+        plugin.getHologramas().atualizar(id);
         return t;
     }
 
@@ -470,6 +470,6 @@ public class TerrenoManager {
         Terreno atual = terrenos.remove(id);
         if (atual != null && atual.emLeilao() && atual.getLeilao().temLance()) devolverLance(atual.getLeilao());
         salvar();
-        plugin.getPlacas().atualizar(id);
+        plugin.getHologramas().atualizar(id);
     }
 }
