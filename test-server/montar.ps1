@@ -29,6 +29,10 @@ $downloads = @(
     @{ arquivo = 'plugins\EssentialsX-2.22.0.jar'; remover = 'EssentialsX-*.jar'
        url = 'https://cdn.modrinth.com/data/hXiIvTyT/versions/nY6VN1XH/EssentialsX-2.22.0.jar'
        sha256 = 'bda4685105977fca2e209820a9f0ad24275bd103390a03236f38e59bfdac58e6' },
+    # /spawn e /setspawn (módulo oficial da Essentials, mesma versão)
+    @{ arquivo = 'plugins\EssentialsXSpawn-2.22.0.jar'; remover = 'EssentialsXSpawn-*.jar'
+       url = 'https://cdn.modrinth.com/data/sYpvDxGJ/versions/lc5JHiNJ/EssentialsXSpawn-2.22.0.jar'
+       sha256 = 'dd5377c4c921b9b67814209f4f6646ffbb959729003e721ec5e63c47c7c010b8' },
     @{ arquivo = 'plugins\LuckPerms-Bukkit-5.5.71.jar'; remover = 'LuckPerms-Bukkit-*.jar'
        url = 'https://cdn.modrinth.com/data/Vebnzrzj/versions/b0mk8uS6/LuckPerms-Bukkit-5.5.71.jar'
        sha256 = '49cecb66fa1fd22a133039a490e9c1e5095a238e7cd66eb9d2a16fe6c897550d' },

@@ -1,21 +1,21 @@
 // X1: desafio com aposta, aceite, espectador, contagem sem dano, proteção contra quem é de fora, morte com
 // perda de itens e prêmio menos a taxa, volta pra onde estava, ranking, recusa e cancelamento pela
-// staff com devolução. Precisa das arenas (node montar-arenas.js). Uso: node teste-duelo.js
+// staff com devolução. Precisa das arenas (node montar-mapa.js). Uso: node teste-duelo.js
 const t = require('./lib')
 
 const dinheiro = r => Number((r.match(/\$([\d,.]+)/) || [, 'NaN'])[1].replace(/,/g, ''))
 const saldo = async nome => dinheiro(await t.console(`balance ${nome}`))
 const vida = async nome => Number(((await t.console(`minecraft:data get entity ${nome} Health`)).match(/([\d.]+)f/) || [])[1])
 const mundo = bot => bot.game.dimension
-// as arenas de X1 ficam perto de (100, 65, 0..40) no mundo das arenas
-const foraDaArena = bot => Math.abs(bot.entity.position.z - 20) > 60 || Math.abs(bot.entity.position.x - 100) > 30
+// a arena de X1 (axepvp do EstruturasPlugin) fica em volta de (-600, 65, 0) no mundo das arenas
+const foraDaArena = bot => Math.abs(bot.entity.position.x + 600) > 40 || Math.abs(bot.entity.position.z) > 40
 
 t.rodar(async () => {
   const nomeA = t.nomeNovo('Due'), nomeB = t.nomeNovo('Lut')
   const a = await t.criarBot(nomeA)
   const b = await t.criarBot(nomeB)
   const fora = await t.criarBot('BotStaff')
-  await t.console('mvtp BotStaff world') // o montar-arenas.js deixa ele no mundo das arenas
+  await t.console('mvtp BotStaff world') // o montar-mapa.js deixa ele no spawn; aqui ele sai do mundo das arenas de todo jeito
   for (const n of [nomeA, nomeB]) {
     await t.console(`gamemode survival ${n}`)
     await t.console(`minecraft:clear ${n}`)

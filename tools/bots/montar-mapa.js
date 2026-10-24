@@ -1,0 +1,489 @@
+// Mapa funcional do rankup: o spawn (com as barracas), as minas e as arenas definitivas.
+// O spawn é o "spring" do EstruturasPlugin, construído pelo console: fechado, com a única saída
+// encostando na avenida das minas, e ele mesmo cadastra as 32 barracas (área, NPC e holograma).
+// O resto é só a parte que faz o servidor funcionar (pedra, caminhos, hologramas). Dá pra rodar de novo.
+// O mundo fica salvo: só rode de novo pra refazer alguma parte.
+//
+//   node montar-mapa.js construir [partes...]   (servidor LIGADO) sem partes = minas spawn boss dicas arenas marcar
+//     minas      os 12 poços (cheios de pedra) e a Avenida das Minas (EstruturasPlugin) em volta
+//     boss       a arena do boss ("toxica"), ao sul do spawn, colada no portão "BOSS"
+//     dicas      os 12 NPCs de dicas pelo spawn (DicasPlugin), com as falas
+//     spawn      o spawn inteiro (EstruturasPlugin "spring"), as barracas dele e os hologramas da fonte
+//     barracas   só as 32 barracas do spawn (redesenha e cadastra as que faltam; aluguéis e NPCs ficam)
+//     arenas     saguão, X1 ("axepvp") e Gladiador ("coliseu"), bem longe um do outro, e limpa o que
+//                sobrou das versões anteriores no mundo das arenas
+//     marcar     spawn dos jogadores, warps e local do boss (com o bot da staff)
+//     limpar-antigo   apaga o mapa antigo (praça, mercado, loja, portais e as barracas n1..n8, e1, e2).
+//                     Só uma vez, ao trocar o mapa antigo por este, e ANTES do spawn: fora isso, apagaria
+//                     as barracas e1 e e2 novas.
+//   node montar-mapa.js cadastrar   (servidor DESLIGADO) arenas e configs nos arquivos
+//   node montar-mapa.js cadastrar --minas                também as 12 minas, com os blocos planejados
+//
+// Os poços das minas ficam cheios de pedra, sem mina cadastrada: a staff marca com /mina admin pos1,
+// pos2 e criar. Com "cadastrar --minas", elas já entram prontas e se enchem ao ligar (resetar-ao-ligar).
+//
+//          AVENIDA DAS MINAS (12 poços, norte, z -21 a -185)
+//                             ║
+//            portão "MINAS" (z -20, colado na avenida)
+//               [SPAWN fechado, centro em z 43]
+//        fonte no meio, barracas ao longo das avenidas
+//            portão "BOSS" (z 106, colado na descida)
+//     [ARENA DO BOSS, enterrada: piso em y 32, centro em z 195]
+const fs = require('fs')
+const path = require('path')
+const t = require('./lib')
+
+const PASTA = process.env.MC_TESTE || 'C:\\mc-teste'
+const REPO = path.resolve(__dirname, '..', '..')
+const CHAO = 64 // os pés ficam em y = 65
+
+// ---------------------------------------------------------------------------
+// Medidas
+// ---------------------------------------------------------------------------
+const MINA = { lado: 21, fundo: 15 } // poço de 21 x 21, 15 de profundidade (y 50..64)
+// as minas, em ordem de rank, alternando oeste/leste ao longo da avenida norte
+function posicaoDaMina(i) {
+  const linha = Math.floor(i / 2), oeste = i % 2 === 0
+  const zMax = -30 - 25 * linha, zMin = zMax - (MINA.lado - 1)
+  const xMin = oeste ? -29 : 9, xMax = xMin + MINA.lado - 1
+  const zc = (zMin + zMax) / 2
+  return {
+    // a pedra vai até o chão (y 50..64): por cima, a mina fica no nível da avenida
+    min: [xMin, CHAO - MINA.fundo + 1, zMin], max: [xMax, CHAO, zMax],
+    // ponto de teleporte na calçada, colado na borda do poço (a mão alcança o minério), olhando pra mina
+    spawn: [oeste ? -6.5 : 7.5, CHAO + 1, zc + 0.5, oeste ? 90 : -90, 30],
+    placaAntiga: [oeste ? -4 : 4, CHAO + 1, zc], // versões antigas punham uma placa aqui
+  }
+}
+
+// Spawn (estrutura "spring"): ele acaba na face de fora dos portões, 63 blocos ao norte e ao sul do
+// centro. Com o centro em z = 43, o portão norte fica em z = -20, colado na avenida das minas (z = -21).
+const SPAWN = { x: 0, z: 43 }
+// barracas que o spawn cadastra (b1..b28 normais, e1..e4 especiais) e as do mercado antigo
+const BARRACAS_SPAWN = [...Array.from({ length: 28 }, (_, i) => `b${i + 1}`), 'e1', 'e2', 'e3', 'e4']
+const BARRACAS_ANTIGAS = ['e1', 'e2', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8']
+
+// Arenas do EstruturasPlugin. No mundo arenas, o X1 ("axepvp") e o Gladiador ("coliseu") ficam a
+// 1200 blocos um do outro (a plateia de um não vê o outro), e o boss ("toxica") fica no mundo spawn,
+// colado no portão sul dele. A plateia entra por warp (plateia-x1, plateia-gladiador) e sai com /spawn.
+// X1: piso de 43 x 27 (x -21..21 em volta do centro); cada lutador nasce no nicho fechado de uma
+// parede curta (x -23 e 23), olhando pro outro; a plateia fica na galeria em cima (y 80).
+const AXE = { nome: 'axe', centro: [-600, 0], pos1: [-622.5, 0.5, -90], pos2: [-576.5, 0.5, 90], plateia: [-599.5, 80, -14.5, 0] }
+// Gladiador: o coliseu tem 213 x 189 de estrutura.
+// A área (pos1/pos2, até logo abaixo do teto de vidro) e os 16 pontos de entrada são os do README
+// do EstruturasPlugin, relativos ao centro.
+const GLAD = {
+  centro: [600, 0], min: [-76, 1, -64], max: [76, 10, 64], plateia: [600.5, 77, -65.5, 0], // plateia no deck de vidro
+  pontos: [[38, 0], [19, 28], [0, 32], [-27, 23], [-38, 0], [-27, -23], [0, -32], [27, -23],
+    [46, 22], [18, 42], [-14, 43], [-46, 22], [-46, -22], [-27, -39], [14, -43], [46, -22]],
+}
+// a arena do boss fica enterrada (piso 32 abaixo do chão, pra não aparecer por cima do spawn): a escadaria
+// dela termina 88 blocos ao norte do centro, colada no portão sul do spawn (z = SPAWN.z + 63)
+const BOSS = { centro: [SPAWN.x, SPAWN.z + 64 + 88], chao: CHAO - 32 }
+// o que sobrou das versões anteriores no mundo arenas (as 3 caixas de X1, a axepvp em (0, -80), os
+// coliseus em (0, 100) e (0, 200) e a tóxica em (-135, 0)): sai tudo, só o saguão (x/z -7..7) fica
+const ARENAS_ANTIGAS = [
+  { min: [86, -14], max: [114, 94], altura: 12 },
+  { min: [-34, -114], max: [34, -46], altura: 40 },
+  { min: [-110, 54], max: [110, 298], altura: 44 },
+  { min: [-196, -62], max: [-74, 62], altura: 64 },
+]
+
+// ---------------------------------------------------------------------------
+// Fase 1: construir (servidor ligado)
+// ---------------------------------------------------------------------------
+const em = mundo => `execute in minecraft:${mundo} run`
+
+/** fill em pedaços (o comando tem limite de blocos), com o chunk carregado. */
+async function encher(mundo, [x1, y1, z1], [x2, y2, z2], bloco, modo = '') {
+  const [ax, bx] = [Math.min(x1, x2), Math.max(x1, x2)], [ay, by] = [Math.min(y1, y2), Math.max(y1, y2)], [az, bz] = [Math.min(z1, z2), Math.max(z1, z2)]
+  // o fill aceita até 32768 blocos: pedaços de 32 x 32, em fatias de até 32 de altura
+  const passo = 32
+  for (let x = ax; x <= bx; x += passo) {
+    for (let z = az; z <= bz; z += passo) {
+      const [ex, ez] = [Math.min(bx, x + passo - 1), Math.min(bz, z + passo - 1)]
+      await t.console(`${em(mundo)} forceload add ${x} ${z} ${ex} ${ez}`)
+      for (let y = ay; y <= by; y += passo) {
+        const ey = Math.min(by, y + passo - 1)
+        for (let tentativa = 0; tentativa < 20; tentativa++) {
+          const r = await t.console(`${em(mundo)} fill ${x} ${y} ${z} ${ex} ${ey} ${ez} minecraft:${bloco} ${modo}`.trim())
+          if (!/not loaded/.test(r)) break
+          await t.espera(500)
+        }
+      }
+      await t.console(`${em(mundo)} forceload remove ${x} ${z} ${ex} ${ez}`)
+    }
+  }
+}
+
+/** Caixa oca de parede (só o contorno), do chão até a altura. */
+async function muro(mundo, [x1, z1], [x2, z2], y1, y2, bloco) {
+  await encher(mundo, [x1, y1, z1], [x2, y2, z1], bloco)
+  await encher(mundo, [x1, y1, z2], [x2, y2, z2], bloco)
+  await encher(mundo, [x1, y1, z1], [x1, y2, z2], bloco)
+  await encher(mundo, [x2, y1, z1], [x2, y2, z2], bloco)
+}
+
+const texto = (s, cor) => cor ? `{text:"${s}",color:"${cor}"}` : `"${s}"`
+/**
+ * Holograma (text_display com a tag "mapa") em cima do bloco, com as linhas [texto, cor]. Antes,
+ * tira o holograma e a placa que estiverem ali (de uma montagem anterior), pra dar pra refazer.
+ */
+async function holograma(mundo, [x, y, z], linhas) {
+  const partes = linhas.filter(([s]) => s).map(([s, c]) => texto(s, c)).join(',"\\n",')
+  await t.console(`${em(mundo)} forceload add ${x} ${z}`)
+  await t.console(`${em(mundo)} minecraft:kill @e[type=text_display,tag=mapa,x=${x + 0.5},y=${y},z=${z + 0.5},distance=..2]`)
+  await t.console(`${em(mundo)} fill ${x} ${y} ${z} ${x} ${y} ${z} minecraft:air replace #minecraft:all_signs`)
+  await t.console(`${em(mundo)} summon minecraft:text_display ${x + 0.5} ${y + 1.2} ${z + 0.5} {Tags:["mapa"],billboard:"center",shadow:1b,text:[${partes}]}`)
+  await t.console(`${em(mundo)} forceload remove ${x} ${z}`)
+}
+
+/** Tira a placa que uma montagem antiga deixou nesse bloco (sem pôr nada no lugar). */
+async function tirarPlaca(mundo, [x, y, z]) {
+  await t.console(`${em(mundo)} forceload add ${x} ${z}`)
+  await t.console(`${em(mundo)} fill ${x} ${y} ${z} ${x} ${y} ${z} minecraft:air replace #minecraft:all_signs`)
+  await t.console(`${em(mundo)} forceload remove ${x} ${z}`)
+}
+
+/** Portal: moldura colorida, placa de pressão na frente e bloco de comando embaixo do chão. */
+async function portal(mundo, [x, z], cor, comando, linhas) {
+  await encher(mundo, [x - 2, CHAO + 1, z - 2], [x - 2, CHAO + 4, z + 2], `${cor}_concrete`)
+  await encher(mundo, [x - 2, CHAO + 1, z - 1], [x - 2, CHAO + 3, z + 1], `${cor}_stained_glass`)
+  await t.console(`${em(mundo)} forceload add ${x} ${z}`)
+  await t.console(`${em(mundo)} setblock ${x} ${CHAO - 1} ${z} minecraft:command_block{Command:"${comando.replace(/"/g, '\\"')}"} replace`)
+  await t.console(`${em(mundo)} setblock ${x} ${CHAO} ${z} minecraft:polished_andesite replace`)
+  await t.console(`${em(mundo)} setblock ${x} ${CHAO + 1} ${z} minecraft:stone_pressure_plate replace`)
+  await t.console(`${em(mundo)} forceload remove ${x} ${z}`)
+  await holograma(mundo, [x + 2, CHAO + 1, z], linhas)
+}
+
+/** O mapa antigo: praça, mercado, loja e portais, e as barracas dele. Só na troca pelo mapa novo. */
+async function limparAntigo() {
+  const W = 'spawn'
+  console.log('\n== Limpando o spawn antigo (praça, mercado, loja e portais) ==')
+  for (const id of BARRACAS_ANTIGAS) await t.console(`barraca remover ${id}`)
+  await t.console(`${em(W)} minecraft:kill @e[type=text_display,tag=mapa]`)
+  // tudo ao sul da avenida das minas (z >= -20), inclusive os blocos de comando dos portais (y 63)
+  await encher(W, [-61, CHAO - 1, -20], [80, CHAO + 6, 45], 'air')
+}
+
+async function construirMinas() {
+  const W = 'spawn'
+  console.log('\n== Poços das minas (norte) ==')
+  const planejadas = minasPlanejadas()
+  for (let i = 0; i < planejadas.length; i++) {
+    const p = posicaoDaMina(i)
+    // poço cheio de pedra com borda de tijolo: a staff cria a mina em cima (ou o "cadastrar --minas")
+    await encher(W, [p.min[0] - 1, p.min[1] - 1, p.min[2] - 1], [p.max[0] + 1, CHAO, p.max[2] + 1], 'stone_bricks')
+    await encher(W, p.min, p.max, 'stone')
+    await tirarPlaca(W, p.placaAntiga) // o holograma da mina é do Rankup, quando ela é criada
+  }
+  // o recinto em volta (EstruturasPlugin "minas"): muralha, portão colado no caminho do spawn,
+  // avenida, praças e calçadas. Ele nunca escreve nos poços nem na borda deles.
+  console.log('\n== Avenida das Minas (EstruturasPlugin: minas) ==')
+  await estrutura('minas', W, [0, -21])
+}
+
+/**
+ * Constrói uma estrutura do EstruturasPlugin com os pés no centro dado (o piso fica no CHAO) e
+ * espera terminar.
+ */
+async function estrutura(id, mundo, [x, z], chao = CHAO) {
+  const r = await t.console(`estrutura construir ${id} ${mundo} ${x} ${chao + 1} ${z}`)
+  console.log(`  ${r}`)
+  for (let i = 0; i < 240; i++) { // o spawn inteiro tem uns 300 mil blocos a 8 mil por tick: menos de 1 min
+    await t.espera(1000)
+    if (/Nenhuma/.test(await t.console('estrutura status'))) break
+  }
+}
+
+/** Uma estrutura no centro do spawn, conferindo as barracas cadastradas depois. */
+async function estruturaNoSpawn(id) {
+  await estrutura(id, 'spawn', [SPAWN.x, SPAWN.z])
+  const lista = await t.console('barraca lista')
+  console.log(`  barracas: ${BARRACAS_SPAWN.filter(id => new RegExp(`\\b${id}\\b`).test(lista)).length} de ${BARRACAS_SPAWN.length}`)
+}
+
+async function construirBarracas() {
+  console.log('\n== Barracas do spawn (EstruturasPlugin: spring-barracas) ==')
+  await estruturaNoSpawn('spring-barracas')
+}
+
+async function construirSpawn() {
+  const W = 'spawn'
+  console.log('\n== Spawn (EstruturasPlugin: spring) ==')
+  await estruturaNoSpawn('spring')
+
+  // como começar: hologramas em volta da fonte, onde o jogador nasce
+  const ajuda = [
+    [[-6, -8], [['Bem-vindo!', 'gold'], ['Suba de rank', null], ['minerando e', null], ['vendendo.', null]]],
+    [[-3, -8], [['/mina', 'aqua'], ['minas do seu', null], ['rank (portão', null], ['ao norte)', null]]],
+    [[0, -8], [['/sell all', 'aqua'], ['vende o que', null], ['minerou', null], ['', null]]],
+    [[3, -8], [['/rankup', 'aqua'], ['sobe de rank', null], ['/ranks: lista', 'gray'], ['', null]]],
+    [[6, -8], [['/diaria', 'aqua'], ['recompensa', null], ['todo dia', null], ['', null]]],
+    [[-6, 8], [['/terreno', 'aqua'], ['seu terreno', null], ['/warp terrenos', 'gray'], ['', null]]],
+    [[-3, 8], [['/recursos', 'aqua'], ['mobs, pesca', null], ['e árvores', null], ['', null]]],
+    [[0, 8], [['/duelo', 'aqua'], ['X1 com aposta', null], ['/gladiador', 'aqua'], ['', null]]],
+    [[3, 8], [['Mercado', 'gold'], ['barracas pelo', null], ['spawn: clique', null], ['no vendedor', null]]],
+    [[6, 8], [['Loja e VIP', 'gold'], ['/shop  /buy', 'aqua'], ['/vip tiers', 'gray'], ['', null]]],
+  ]
+  for (const [[x, z], linhas] of ajuda) await holograma(W, [SPAWN.x + x, CHAO + 1, SPAWN.z + z], linhas)
+}
+
+async function construirArenas() {
+  const W = 'arenas'
+  console.log('\n== Saguão das arenas ==')
+  await encher(W, [-7, CHAO, -7], [7, CHAO, 7], 'stone_bricks')
+  await muro(W, [-7, -7], [7, 7], CHAO + 1, CHAO + 1, 'stone_brick_wall')
+  await portal(W, [0, 5], 'light_blue', `execute as @p[distance=..2] in minecraft:spawn run minecraft:tp @s ${SPAWN.x + 0.5} 65 ${SPAWN.z + 0.5} 180 0`,
+    [['Voltar', 'aqua'], ['pro spawn', null], ['', null], ['', null]])
+  await holograma(W, [-3, CHAO + 1, -5], [['/duelo', 'aqua'], ['<jogador> [valor]', null], ['/duelo assistir', 'gray'], ['', null]])
+  await holograma(W, [3, CHAO + 1, -5], [['/gladiador', 'aqua'], ['entrar quando', null], ['abrir', null], ['', null]])
+
+  console.log('\n== Limpando as arenas antigas ==')
+  for (const a of ARENAS_ANTIGAS) await encher(W, [a.min[0], CHAO - 1, a.min[1]], [a.max[0], CHAO + a.altura, a.max[1]], 'air')
+
+  console.log('\n== X1: axepvp ==')
+  await estrutura('axepvp', W, AXE.centro)
+  console.log('\n== Gladiador: coliseu ==')
+  await estrutura('coliseu', W, GLAD.centro)
+}
+
+// NPCs de dicas (DicasPlugin). Os 4 primeiros ficam em volta da fonte, nas diagonais entre as avenidas,
+// virados pra fora (o do norte pro lado das minas, o do sul pro lado do boss); os outros ficam perto
+// dos portões, no fim das avenidas e nos jardins, virados pra fonte. Posição relativa ao centro do
+// spawn; falas com cores do Minecraft (&).
+const DICAS = [
+  { id: 'minerador', nome: '&6Velho Minerador', pos: [-6, -6], falas: [
+    '&fAs minas ficam depois do portão &bMINAS&f, ao norte. Use &e/mina&f pra ver as que o seu rank libera.',
+    '&fMinerou? Vende! &e/sell all&f vende tudo, e &e/rankup&f te leva pro próximo rank. Eu levei 40 anos pra deixar de ser Camponês...',
+    '&fCuidado na mina de &bdiamante&f: meu sobrinho entrou lá com uma picareta de madeira e saiu com uma de diamante. E sem a dignidade.',
+    '&fA mina se enche de novo sozinha de tempos em tempos. Tá vazia? Espere um pouco, ou vá incomodar outra mina.',
+  ] },
+  { id: 'mercadora', nome: '&dDona Cida, a Mercadora', pos: [6, -6], falas: [
+    '&fAs barracas do spawn são de vocês! Alugue uma com &e/barraca alugar&f e um vendedor com a SUA cara trabalha por você.',
+    '&fCom o item na mão: &e/barraca vender 64 150&f. Pronto: ele vende 64 por R$ 150 enquanto você minera.',
+    '&fAs barracas com &6★&f vão a leilão. Da última vez, dois clãs brigaram tanto que o vencedor pagou o preço de uma casa por uma barraca.',
+    '&fPra mandar dinheiro pra alguém, é no &e/pix&f. Eu aceito gorjeta, viu?',
+  ] },
+  { id: 'veterano', nome: '&cVeterano Bartolomeu', pos: [-6, 6], falas: [
+    '&fMuito cuidado ao enfrentar o boss... o primo do cunhado de um conhecido meu foi morto pela &dFeiticeira Maldita&f.',
+    '&fO portão &cBOSS&f, ao sul, desce até a arena. Lá embaixo tem um degrau alto: desceu, só volta com &e/spawn&f!',
+    '&fQuem dá o último golpe no boss vira campeão e leva o melhor prêmio. Quem só assiste leva... boas lembranças.',
+    '&fDizem que o &8Flagelo das Trevas&f só aparece quando a staff quer. Torça pra staff estar de bom humor.',
+  ] },
+  { id: 'guia', nome: '&aZé, o Guia', pos: [6, 6], falas: [
+    '&fBem-vindo! Pegue sua recompensa de todo dia com &e/diaria&f. Quanto mais dias seguidos, melhor.',
+    '&fQuer um X1? &e/duelo <jogador> <valor>&f. Quem perde, perde os itens. Quem ganha, ganha o meu respeito.',
+    '&fNo &6Gladiador&f é todo mundo contra todo mundo. Meu conselho: no fim, a borda fecha no centro. Não seja o último a perceber.',
+    '&fQuer um cantinho seu? &e/terreno&f. Madeira e bicho você acha no mundo de &e/recursos&f.',
+  ] },
+  { id: 'guarda-minas', nome: '&7Guarda do Portão', pos: [6, -38], virado: 'centro', falas: [
+    '&fDaqui pra frente é a &bAvenida das Minas&f. Cada mina tem um holograma com o rank, o que tem nela e quando enche de novo.',
+    '&fSó minera quem tem o rank da mina. Não adianta me olhar assim, a regra não é minha.',
+    '&f&e/mina&f abre o menu das minas: clicou, foi. Bem mais rápido que andar, mas você perde a paisagem.',
+    '&fVIP Prata pra cima vende na hora o que minera. Liga e desliga com &e/autovenda&f.',
+  ] },
+  { id: 'ranzinza', nome: '&8Dona Neusa, a Ranzinza', pos: [-6, -38], virado: 'centro', falas: [
+    '&fNo meu tempo não tinha &e/rankup max&f. A gente subia um rank por vez e ainda agradecia!',
+    '&fChegou no &6Rei&f? Tem o &e/prestigio&f: você volta pro começo, mas com uma estrelinha. Eu acho uma bobagem. Tenho três.',
+    '&fNão empurra! As minas se enchem sozinhas. Quem estiver dentro na hora vai pro ponto de teleporte, inteirinho.',
+    '&fEsse povo de hoje quer tudo de graça. Faz as &e/missoes&f, menino, que paga bem.',
+  ] },
+  { id: 'sentinela-boss', nome: '&cSentinela do Portão', pos: [-6, 38], virado: 'centro', falas: [
+    '&fO boss aparece toda &csexta às 20h&f e todo &csábado às 21h&f. Dez minutos antes, o chat avisa.',
+    '&fQuem dá o último golpe vira &6campeão&f e ganha a tag. Quem bate mais aparece no ranking de dano.',
+    '&fQuem morre na arena deixa os itens lá. Não leve nada que você não aceita perder.',
+    '&fA arena tem cara de tóxica, mas pode pisar à vontade. O que mata mesmo é o boss. E o orgulho.',
+  ] },
+  { id: 'leiloeiro', nome: '&6Leiloeiro Matias', pos: [38, -6], virado: 'centro', falas: [
+    '&fAs barracas &6★&f vão a leilão quando ficam livres: &e/barraca lance <id> <valor>&f. Cada lance precisa ser 5% maior.',
+    '&fLance nos últimos 30 segundos estende o leilão. Aqui ninguém ganha no susto!',
+    '&fFoi superado? Seu dinheiro volta na hora. Eu sou leiloeiro, não ladrão.',
+    '&fBarraca normal pode renovar sozinha: &e/barraca autorenovar&f, enquanto tiver saldo na conta.',
+  ] },
+  { id: 'mestre-armas', nome: '&4Mestre de Armas Duda', pos: [-36, -6], virado: 'centro', falas: [
+    '&fAqui o combate é à moda antiga: sem recarga de golpe. Quem clica mais rápido, bate mais.',
+    '&fBloquear com a espada tira metade do dano. Mas com escudo na outra mão, a espada não bloqueia: escolha.',
+    '&fDá pra lutar com uma arma em cada mão, e cada mão treina a skill da própria arma. Veja em &e/skills&f.',
+    '&fTem recompensa pela sua cabeça? Confira em &e/bounty lista&f. Se não tiver, é porque você é bonzinho demais.',
+  ] },
+  { id: 'banqueira', nome: '&2Banqueira Rosa', pos: [30, -12], virado: 'centro', falas: [
+    '&fPra pagar alguém: &e/pix pagar <jogador> <valor>&f. Rápido, seguro e sem fila.',
+    '&fConta que se repete? &e/pix agendar <jogador> <valor> <dias>&f paga agora e de novo a cada tantos dias.',
+    '&fQuer dar dinheiro de presente? &e/cheque <valor>&f vira um papel que qualquer um pode descontar.',
+    '&fO preço da loja muda com a oferta. Olhe o &e/shop&f antes de vender tudo de uma vez.',
+  ] },
+  { id: 'escriba', nome: '&9Escriba dos Clãs', pos: [-30, 12], virado: 'centro', falas: [
+    '&fJunte os amigos: &e/cla criar&f funda um clã, e &e/cla convidar&f chama a turma.',
+    '&fO clã tem banco em comum (&e/cla banco&f) e chat próprio: &e/cc <mensagem>&f.',
+    '&fNo &6Gladiador por clã&f, ninguém do mesmo clã se machuca. Já a briga pelo prêmio no grupo... aí é com vocês.',
+    '&fO &e/cla top&f mostra os clãs mais fortes. O meu está em último, mas por escolha própria.',
+  ] },
+  { id: 'juca', nome: '&aSeu Juca do Terreno', pos: [12, 30], virado: 'centro', falas: [
+    '&fQuer um lugar só seu? &e/terreno auto&f compra o primeiro terreno livre.',
+    '&fTerreno paga imposto! Ligue o &e/terreno autopagar&f e esqueça. Se atrasar muito, o terreno vai a leilão.',
+    '&fChame os amigos pra construir junto com &e/terreno amigo&f.',
+    '&fMadeira, bicho e peixe, tem tudo no mundo de &e/recursos&f. Ele é refeito de tempos em tempos, então não construa casa lá!',
+  ] },
+]
+
+async function construirDicas() {
+  console.log('\n== NPCs de dicas (DicasPlugin) ==')
+  for (const npc of DICAS) {
+    const [dx, dz] = npc.pos
+    // de costas pra fonte, ou (virado: 'centro') de frente pra ela
+    const yaw = Math.round((npc.virado === 'centro' ? Math.atan2(dx, -dz) : Math.atan2(-dx, dz)) * 180 / Math.PI)
+    await t.console(`dica remover ${npc.id}`) // refaz igual
+    await t.console(`dica criar ${npc.id} em spawn ${SPAWN.x + dx + 0.5} ${CHAO + 1} ${SPAWN.z + dz + 0.5} ${yaw} ${npc.nome}`)
+    for (const fala of npc.falas) await t.console(`dica fala ${npc.id} ${fala}`)
+  }
+}
+
+async function construirBoss() {
+  console.log('\n== Boss: toxica (ao sul do spawn) ==')
+  await estrutura('toxica', 'spawn', BOSS.centro, BOSS.chao) // ela mesma roda o /boss setlocal no centro
+}
+
+/** O bot da staff (op por alguns segundos) marca o que os comandos pedem de posição. */
+async function marcarComBot() {
+  console.log('\n== Spawn, warps e boss ==')
+  // jogador novo nasce na fonte do spawn (no 26.2 o setworldspawn vale pro servidor todo)
+  await t.console(`${em('spawn')} setworldspawn ${SPAWN.x} ${CHAO + 1} ${SPAWN.z}`)
+  await t.console('lp group default permission set essentials.spawn true')
+  await t.console('lp group default permission set essentials.warp true')
+  await t.console('lp group default permission set essentials.warp.list true')
+  const staff = await t.criarBot('BotStaff')
+  await t.console('op BotStaff')
+  await t.console('gamemode creative BotStaff')
+  const ir = async (mundo, x, y, z, yaw) => {
+    await t.console(`${em(mundo)} minecraft:tp BotStaff ${x} ${y} ${z} ${yaw} 0`)
+    await t.espera(1200)
+  }
+  const comando = async (texto) => {
+    const msgs = await t.capturar(staff, () => staff.chat(texto))
+    console.log(`  ${texto}  →  ${msgs.join(' | ')}`)
+  }
+  await ir('spawn', SPAWN.x + 0.5, CHAO + 1, SPAWN.z + 0.5, 180)
+  await comando('/setspawn')
+  await comando('/setspawn newbies')
+  for (const [nome, mundo, x, z, yaw, y = CHAO + 1] of [
+    // mercado: na avenida leste do spawn, entre as barracas
+    ['minas', 'spawn', 0.5, -24.5, 180], ['mercado', 'spawn', SPAWN.x + 16.5, SPAWN.z + 0.5, -90],
+    ['arenas', 'arenas', 0.5, 0.5, 180], ['terrenos', 'terrenos', 34.5, 34.5, 0],
+    ['boss', 'spawn', BOSS.centro[0] + 0.5, BOSS.centro[1] - 42.5, 0, BOSS.chao + 1], // logo depois do túnel da tóxica, olhando pro centro
+    ['plateia-x1', 'arenas', AXE.plateia[0], AXE.plateia[2], AXE.plateia[3], AXE.plateia[1]],
+    ['plateia-gladiador', 'arenas', GLAD.plateia[0], GLAD.plateia[2], GLAD.plateia[3], GLAD.plateia[1]],
+  ]) {
+    await ir(mundo, x, y, z, yaw)
+    await comando(`/setwarp ${nome}`)
+  }
+  // a loja e os portais do spawn antigo não existem mais (o spawn só tem a saída pras minas)
+  for (const nome of ['loja', 'portais']) await t.console(`delwarp ${nome}`)
+  await t.console('deop BotStaff')
+  await t.console('gamemode survival BotStaff')
+  await ir('spawn', SPAWN.x + 0.5, CHAO + 1, SPAWN.z + 0.5, 180)
+  staff.quit()
+}
+
+// ---------------------------------------------------------------------------
+// Fase 2: cadastrar (servidor desligado)
+// ---------------------------------------------------------------------------
+/** As minas do tools/economia/minas-planejadas.yml (id, rank, blocos), em ordem. */
+function minasPlanejadas() {
+  const texto = fs.readFileSync(path.join(REPO, 'tools', 'economia', 'minas-planejadas.yml'), 'utf8')
+  const nomes = rankNomes()
+  const minas = []
+  for (const m of texto.matchAll(/^  (\w+):\s*\n\s+rank: (\w+)\s*\n\s+blocos: \{([^}]*)\}/gm)) {
+    const blocos = Object.fromEntries(m[3].split(',').map(p => p.split(':').map(s => s.trim())).map(([b, w]) => [b.toUpperCase(), Number(w)]))
+    minas.push({ id: m[1], rank: m[2], nomeRank: nomes[m[2]] || m[2], blocos })
+  }
+  if (minas.length !== 12) throw new Error(`esperava 12 minas em minas-planejadas.yml, achei ${minas.length}`)
+  return minas
+}
+
+function rankNomes() {
+  const cfg = fs.readFileSync(path.join(REPO, 'rankup-plugin', 'src', 'main', 'resources', 'config.yml'), 'utf8')
+  return Object.fromEntries([...cfg.matchAll(/- id: (\w+)\s*\n\s+nome: "([^"]+)"/g)].map(m => [m[1], m[2]]))
+}
+
+const local = (mundo, [x, y, z], yaw = 0, pitch = 0, recuo = '    ') =>
+  `${recuo}==: org.bukkit.Location\n${recuo}world_key: minecraft:${mundo}\n${recuo}x: ${x}\n${recuo}y: ${y}\n${recuo}z: ${z}\n${recuo}pitch: ${pitch}\n${recuo}yaw: ${yaw}\n`
+
+/** Troca (ou acrescenta) uma linha "chave: valor" dentro de uma seção de primeiro nível do YAML. */
+function trocarNoYaml(arquivo, secao, chave, valor) {
+  const original = fs.readFileSync(arquivo, 'utf8')
+  const crlf = original.includes('\r\n')
+  let s = original.replace(/\r\n/g, '\n') // o "." da regex não pega o \r das linhas do Windows
+  const re = new RegExp(`(^${secao}:\\s*\\n(?:[ \\t].*\\n|\\s*\\n)*?[ \\t]+${chave}:)[^\\n]*`, 'm')
+  if (!re.test(s)) throw new Error(`não achei ${secao}.${chave} em ${arquivo}`)
+  s = s.replace(re, `$1 ${valor}`)
+  fs.writeFileSync(arquivo, crlf ? s.replace(/\n/g, '\r\n') : s)
+}
+
+function cadastrar(comMinas) {
+  const P = path.join(PASTA, 'plugins')
+  let y
+  if (comMinas) {
+    console.log('== minas.yml (12 minas no mundo spawn; as antigas saem) ==')
+    y = 'minas:\n'
+    minasPlanejadas().forEach((m, i) => {
+      const p = posicaoDaMina(i)
+      y += `  ${m.id}:\n    mundo: spawn\n    min: ${p.min.join(',')}\n    max: ${p.max.join(',')}\n    rank: ${m.rank}\n`
+      y += `    intervalo-minutos: 15\n    reset-percentual: 80.0\n    spawn: ${p.spawn.map(n => n.toFixed(2)).join(',')}\n    composicao:\n`
+      for (const [bloco, peso] of Object.entries(m.blocos)) y += `      ${bloco}: ${peso.toFixed(1)}\n`
+    })
+    fs.writeFileSync(path.join(P, 'RankupPlugin', 'minas.yml'), y)
+  }
+
+  // as barracas não entram aqui: quem cadastra é o próprio spawn, no "construir"
+  console.log('== Duelo: a arena de X1 (axepvp) ==')
+  y = 'arenas:\n'
+  const [a1x, a1z, a1yaw] = AXE.pos1, [a2x, a2z, a2yaw] = AXE.pos2
+  y += `  ${AXE.nome}:\n    pos1:\n${local('arenas', [a1x, CHAO + 1, a1z], a1yaw, 0, '      ')}    pos2:\n${local('arenas', [a2x, CHAO + 1, a2z], a2yaw, 0, '      ')}`
+  fs.writeFileSync(path.join(P, 'DueloPlugin', 'arenas.yml'), y)
+
+  console.log(`== Gladiador: arena e ${GLAD.pontos.length} pontos de entrada ==`)
+  const [gcx, gcz] = GLAD.centro
+  y = `pos1:\n${local('arenas', [gcx + GLAD.min[0] + 0.5, CHAO + GLAD.min[1], gcz + GLAD.min[2] + 0.5], 0, 0, '  ')}`
+  y += `pos2:\n${local('arenas', [gcx + GLAD.max[0] + 0.5, CHAO + GLAD.max[1], gcz + GLAD.max[2] + 0.5], 0, 0, '  ')}spawns:\n`
+  for (const [dx, dz] of GLAD.pontos) {
+    const yaw = Math.round(Math.atan2(dx, -dz) * 180 / Math.PI) // olhando pro centro
+    y += '- ' + local('arenas', [gcx + dx + 0.5, CHAO + 1, gcz + dz + 0.5], yaw, 0, '  ').slice(2)
+  }
+  fs.writeFileSync(path.join(P, 'GladiadorPlugin', 'arena.yml'), y)
+
+  console.log('== configs: proteção do spawn, saída do mundo de recursos e warp VIP ==')
+  trocarNoYaml(path.join(P, 'RankupPlugin', 'config.yml'), 'protecao', 'mundos', '[spawn]')
+  trocarNoYaml(path.join(P, 'RecursosPlugin', 'config.yml'), 'saida', 'mundo', '"spawn"')
+  const vip = path.join(P, 'VipPlugin', 'config.yml')
+  // a área VIP fica na avenida sul do spawn
+  for (const [k, v] of [['mundo', 'spawn'], ['x', SPAWN.x], ['y', CHAO + 1], ['z', SPAWN.z + 20]]) trocarNoYaml(vip, 'warp-vip', k, v)
+  console.log(comMinas ? 'Pronto. Ligue o servidor: as minas se enchem sozinhas.' : 'Pronto. As minas ficam pra staff criar (/mina admin).')
+}
+
+// ---------------------------------------------------------------------------
+const fase = process.argv[2]
+if (fase === 'cadastrar') {
+  cadastrar(process.argv.includes('--minas'))
+} else if (fase === 'construir' || fase === 'marcar') {
+  const partes = {
+    'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
+    boss: construirBoss, dicas: construirDicas, arenas: construirArenas, marcar: marcarComBot,
+  }
+  // "marcar" sozinho era o atalho antigo pra só a parte do bot
+  const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)
+  const ordem = pedidas.length ? pedidas : ['minas', 'spawn', 'boss', 'dicas', 'arenas', 'marcar']
+  const desconhecidas = ordem.filter(p => !partes[p])
+  if (desconhecidas.length) {
+    console.log(`Parte desconhecida: ${desconhecidas.join(', ')}. Use: ${Object.keys(partes).join(', ')}`)
+    process.exit(1)
+  }
+  t.rodar(async () => {
+    for (const parte of ordem) await partes[parte]()
+    await t.terminar()
+  })
+} else {
+  console.log('Uso: node montar-mapa.js construir [minas|spawn|barracas|boss|dicas|arenas|marcar|limpar-antigo...]   (servidor ligado)'
+    + '\n     node montar-mapa.js cadastrar [--minas]   (servidor desligado)')
+}

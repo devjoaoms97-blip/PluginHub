@@ -30,16 +30,18 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 
 | Mundo | O que tem | PvP |
 |---|---|---|
-| `spawn` (vazio) | Spawn, warps, placas do rankup e do ranking, área VIP, mercado das Barracas, loja e as 12 minas | Não |
+| `spawn` (vazio) | Spawn, warps, hologramas do rankup e do ranking, área VIP, mercado das Barracas, loja e as 12 minas | Não |
 | `terrenos` (grade) | Terrenos comprados com coins, com imposto semanal. Servem também para fazendas | Não |
 | `recursos` (normal) | Mobs naturais, pesca, árvores e PvP do Bounty e dos clãs. Resetado a cada 30 dias pelo `recursos-plugin`, com borda de 6.000 blocos e `/recursos` para um ponto aleatório seguro | Sim |
 | `arenas` (vazio) | Arena do boss, arenas de X1 e arena do Gladiador. Só se entra por comando ou warp, com volta ao spawn no fim | Sim |
 
 - **Visual do spawn:** primeiro, tentar um mapa pronto de spawn medieval (mundo pronto ou `.schem` da 1.13 ou mais nova, com licença para servidor público). Se não ficar bom, plano B: montar a parte funcional (plataformas, caminhos, minas, mercado) e decorar depois.
+- **Mapa funcional** ✅ (plano B, 2026-10-23): `tools/bots/montar-mapa.js` monta o mundo `spawn` (o spawn fechado do EstruturasPlugin, com 32 barracas e a única saída pra avenida das 12 minas de 21 x 21) e o `arenas` (saguão, 3 X1, Gladiador e boss), e cadastra tudo nos plugins. No lugar de placas, hologramas (os das minas, das barracas e dos terrenos vêm dos plugins). Os poços das minas ficam cheios de pedra para a staff criar cada mina (`/mina admin`). Navegação a pé pelas avenidas, mais `/spawn` e `/warp` (o `/spawn` vem do EssentialsXSpawn). O boss começa marcado na arena nova, e a staff muda com `/boss setlocal`. Falta decorar; se não ficar bom, voltamos atrás. 🟡
 - **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (imposto, Pix e painel).
 - **Servidor de teste:** o `montar.bat` baixa o Multiverse e o WorldEdit, e o `configurar-mundos.bat` cria os 4 mundos.
 - **Mundo de recursos:** as missões de matar mobs, pescar, colher e cortar árvores precisam dele, porque mob de spawner não conta e o rankup protege o mundo fora das minas.
-- **Arenas:** o boss já tem o `/boss setlocal`. O X1 é o Duelo com aposta (`duelo-plugin`), e o Gladiador, o `gladiador-plugin`. No servidor de teste, `tools/bots/montar-arenas.js` monta arenas simples de pedra, até o mapa chegar.
+- **NPCs** (pendente): junto dos hologramas do mapa funcional, NPCs na praça (guia de "como começar"), na loja (abre o `/sell` e mostra preços), nos portais (Terrenos, Recursos, Arenas) e na entrada de cada mina. Avaliar um plugin pronto (Citizens ou FancyNpcs, conferindo o suporte ao 26.2) ou um plugin nosso, mais simples, só com NPC que roda comando ao clicar. 🟡
+- **Arenas:** o boss já tem o `/boss setlocal`. O X1 é o Duelo com aposta (`duelo-plugin`), e o Gladiador, o `gladiador-plugin`. As arenas definitivas (3 de X1, Gladiador com pilares e boss) ficam no mundo `arenas` do mapa funcional.
 - **Itens nas arenas de PvP (X1 e Gladiador):** cada um luta com o próprio equipamento, e **quem morre perde os itens**.
 
 ---
@@ -84,7 +86,7 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 - [x] Os abates no mundo das arenas (duelo e Gladiador) não contam para o placar de abates do clã nem para o Bounty, para ninguém combinar luta com um amigo para farmar.
 
 ### Mercado de Barracas ✅ v1 (`economy/barracas-plugin`)
-Comércio entre jogadores em barracas alugadas no spawn, com lojas por placa em baús. A v1 está implementada (veja o README do plugin), com estas decisões:
+Comércio entre jogadores em barracas alugadas no spawn. A loja é um NPC com a skin do dono e estoque virtual (antes era por placa em baús). A v1 está implementada (veja o README do plugin), com estas decisões:
 - A área é definida por **dois pontos** (`/barraca pos1`, `/barraca pos2`).
 - O dono **só coloca baús e placas**. A construção da staff fica intacta.
 - O aluguel dura **6h**.
@@ -94,7 +96,7 @@ Comércio entre jogadores em barracas alugadas no spawn, com lojas por placa em 
 
 **Próximos passos**
 - [x] Placa `[Comprar]`: o dono paga quem traz o item.
-- [x] Placa na entrada, com o nome do dono ou "Aluga-se" quando estiver livre (`/barraca placa <id>`).
+- [x] Holograma na entrada, com o nome do dono ou "Aluga-se" quando estiver livre (`/barraca holograma <id>`). Antes era uma placa.
 - [x] Preço de aluguel por barraca (`/barraca preco <id> <valor>`).
 - [x] Aluguel pago automaticamente: `/barraca autorenovar`, do próprio plugin. Migrar pro `/pix agendar` quando ele existir. 🟢
 
@@ -133,7 +135,7 @@ Terrenos de 32x32 num mundo em grade gerado pelo plugin, comprados por R$ 50.000
 - Com 7 dias de atraso, o terreno passa para o servidor e vai a **leilão de imóvel** com tudo o que tem dentro. O lance vencedor some da economia. O dono antigo só dá lance depois de pagar a dívida.
 
 **Próximos passos**
-- [x] Placa na entrada do terreno, com o dono, "À venda" ou o leilão.
+- [x] Holograma na entrada do terreno, com o dono, "À venda" ou o leilão. Antes era uma placa.
 - [ ] Juntar terrenos vizinhos do mesmo dono. 🟡
 - [x] Permissões separadas para os amigos (construir, baús, usar).
 - [ ] Missão de pagar o imposto ou de construir no terreno. 🟢

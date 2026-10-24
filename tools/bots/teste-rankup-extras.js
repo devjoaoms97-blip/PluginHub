@@ -42,7 +42,7 @@ t.rodar(async () => {
 
   console.log('\n== Holograma ==')
   await t.espera(2500)
-  const holo = await t.console(`execute positioned ${mina.spawn[0]} ${mina.spawn[1]} ${mina.spawn[2]} run data get entity @e[type=text_display,limit=1,sort=nearest,distance=..6] text`)
+  const holo = await t.console(`execute in minecraft:${mina.dimensao} positioned ${mina.spawn[0]} ${mina.spawn[1]} ${mina.spawn[2]} run data get entity @e[type=text_display,limit=1,sort=nearest,distance=..6] text`)
   t.verificar(holo.includes('Mina') && holo.includes(mina.nome), 'holograma com o nome da mina em cima do ponto de teleporte', holo.slice(0, 120))
 
   console.log('\n== Rank na tab e prestígio ==')

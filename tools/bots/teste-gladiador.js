@@ -1,14 +1,38 @@
 // Gladiador: modo individual (inscrição paga, preparação sem dano, desconexão elimina, último de
 // pé leva o pote, destaques com tag no chat) e modo por clã (sem dano entre o mesmo clã, prêmio dividido entre quem lutou
-// pelo clã vencedor). Precisa da arena (node montar-arenas.js). Uso: node teste-gladiador.js
+// pelo clã vencedor). Precisa da arena (node montar-mapa.js). Uso: node teste-gladiador.js
+const fs = require('fs')
+const path = require('path')
 const t = require('./lib')
 
 const dinheiro = r => Number((r.match(/\$([\d,.]+)/) || [, 'NaN'])[1].replace(/,/g, ''))
 const saldo = async nome => dinheiro(await t.console(`balance ${nome}`))
-// a arena do Gladiador fica em x -20..20, z 80..120 do mundo das arenas
 // lutar sobe o nível das skills, e cada nível paga um pouco (R$ 50, R$ 75...) por fora do prêmio
 const recebeu = (depois, antes, premio) => depois - antes >= premio && depois - antes < premio + 600
-const naArena = bot => Math.abs(bot.entity.position.x) <= 20 && bot.entity.position.z >= 80 && bot.entity.position.z <= 120
+// o coliseu (EstruturasPlugin) tem o centro em (600, 0) no mundo arenas e piso de 153 x 129
+const naArena = bot => Math.hypot(bot.entity.position.x - 600, bot.entity.position.z) <= 80
+// Os pontos de entrada da arena ficam longe uns dos outros e com ruínas no meio, os bots não têm
+// pathfinding, e o plugin (certo) não deixa teleportar participante. Então, durante o teste, a arena
+// usa 4 pontos colados no centro (livre, por causa da borda final); os originais voltam no fim.
+const PONTOS_DO_TESTE = [[598.5, 0.5, -90], [602.5, 0.5, 90], [600.5, -1.5, 0], [600.5, 2.5, 180]]
+
+/** Os pontos de entrada gravados no arena.yml do servidor de teste: [x, y, z, yaw]. */
+function pontosOriginais() {
+  const yml = fs.readFileSync(path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'GladiadorPlugin', 'arena.yml'), 'utf8')
+  const spawns = yml.slice(yml.indexOf('spawns:'))
+  return [...spawns.matchAll(/x: ([-\d.]+)\s+y: ([-\d.]+)\s+z: ([-\d.]+)\s+pitch: [-\d.]+\s+yaw: ([-\d.]+)/g)]
+    .map(m => m.slice(1).map(Number))
+}
+
+/** Troca os pontos de entrada da arena (o bot da staff fica em cada um e roda o spawn add). */
+async function definirPontos(staff, pontos) {
+  await t.capturar(staff, () => staff.chat('/gladiador arena spawn limpar'), 500)
+  for (const [x, y, z, yaw] of pontos) {
+    await t.console(`execute in minecraft:arenas run minecraft:tp ${staff.username} ${x} ${y} ${z} ${yaw} 0`)
+    await t.espera(700)
+    await t.capturar(staff, () => staff.chat('/gladiador arena spawn add'), 400)
+  }
+}
 
 async function preparar(nomes, saldoInicial) {
   for (const n of nomes) {
@@ -21,6 +45,22 @@ async function preparar(nomes, saldoInicial) {
 }
 
 t.rodar(async () => {
+  const originais = pontosOriginais()
+  const staff = await t.criarBot('BotStaff')
+  await t.console('op BotStaff')
+  await definirPontos(staff, PONTOS_DO_TESTE.map(([x, z, yaw]) => [x, 65, z, yaw]))
+  try {
+    await testar()
+  } finally {
+    await definirPontos(staff, originais)
+    const info = await t.console('gladiador arena info')
+    console.log(`  pontos originais de volta: ${info}`)
+    await t.console('deop BotStaff')
+    staff.quit()
+  }
+})
+
+async function testar() {
   console.log('\n== Individual ==')
   const bots = []
   for (const p of ['Gla', 'Glb', 'Glc', 'Gld']) bots.push(await t.criarBot(t.nomeNovo(p)))
@@ -104,4 +144,4 @@ t.rodar(async () => {
   t.verificar(await saldo(semCla.username) === antes, 'cancelado, a inscrição voltou')
 
   await t.terminar(p1, p2, p3, semCla)
-})
+}

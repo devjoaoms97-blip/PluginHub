@@ -91,7 +91,8 @@ function mina(nome) {
   if (!bloco) throw new Error(`mina ${nome} não existe no minas.yml`)
   const campo = c => bloco.match(new RegExp(`\\n\\s+${c}: (.+)`))[1].split(',').map(Number)
   const [min, max, spawn] = [campo('min'), campo('max'), campo('spawn')]
-  return { nome, min, max, spawn }
+  const mundo = (bloco.match(/\n\s+mundo: (\S+)/) || [, 'world'])[1]
+  return { nome, mundo, dimensao: mundo === 'world' ? 'overworld' : mundo, min, max, spawn }
 }
 
 /** Quebra até n blocos dentro da mina, sempre o mais perto ao alcance. Devolve quantos quebrou. */
@@ -125,11 +126,19 @@ async function lutar(bot, alvoBot, limiteMs = 40000) {
   let morreu = false
   const aoMorrer = () => { morreu = true }
   alvoBot.once('death', aoMorrer)
+  let antes = null, desvio = null, tentativa = 0
   for (const fim = Date.now() + limiteMs; Date.now() < fim && !morreu;) {
     const e = Object.values(bot.entities).find(x => x.username === alvoBot.username)
     if (e) {
-      await bot.lookAt(e.position.offset(0, 1.6, 0))
       const d = bot.entity.position.distanceTo(e.position)
+      // empacou longe (pilar ou mureta no caminho): faz um L, primeiro alinhando um eixo com o alvo
+      if (antes && d > 6 && bot.entity.position.distanceTo(antes) < 0.3) {
+        const p = bot.entity.position // empacou no L também: tenta o outro lado
+        desvio = tentativa++ % 2 === 0 ? new Vec3(e.position.x, p.y, p.z) : new Vec3(p.x, p.y, e.position.z)
+      }
+      if (desvio && (bot.entity.position.distanceTo(desvio) < 1.5 || d < 6)) desvio = null
+      antes = bot.entity.position.clone()
+      await bot.lookAt(desvio ? desvio.offset(0, 1.6, 0) : e.position.offset(0, 1.6, 0))
       bot.setControlState('forward', d > 2.5)
       bot.setControlState('sprint', d > 6)
       if (d < 3.2) bot.attack(e)
@@ -145,7 +154,7 @@ async function lutar(bot, alvoBot, limiteMs = 40000) {
 async function irParaMina(nomeBot, m) {
   await console_('minecraft:kill @e[type=item]')
   await console_(`mina admin resetar ${m.nome}`)
-  await console_(`tp ${nomeBot} ${m.spawn[0]} ${m.spawn[1]} ${m.spawn[2]}`)
+  await console_(`execute in minecraft:${m.dimensao} run minecraft:tp ${nomeBot} ${m.spawn[0]} ${m.spawn[1]} ${m.spawn[2]}`)
   await espera(2000)
 }
 

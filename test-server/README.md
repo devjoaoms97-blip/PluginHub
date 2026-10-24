@@ -13,7 +13,7 @@ O servidor fica **fora do repositório** (padrão: `C:\mc-teste`). Aqui só fica
 Rodar o `montar.bat` significa aceitar o [EULA do Minecraft](https://aka.ms/MinecraftEULA), porque ele grava `eula=true`.
 
 O `montar.bat`:
-- baixa o Paper 26.2, o VaultUnlocked, o EssentialsX, o LuckPerms, o Multiverse-Core, o WorldEdit, o ViaVersion e o ViaBackwards nas versões fixas do `montar.ps1`, conferindo o sha256 (o ViaVersion e o ViaBackwards são para os bots de `tools/bots`);
+- baixa o Paper 26.2, o VaultUnlocked, o EssentialsX (com o EssentialsXSpawn, do `/spawn`), o LuckPerms, o Multiverse-Core, o WorldEdit, o ViaVersion e o ViaBackwards nas versões fixas do `montar.ps1`, conferindo o sha256 (o ViaVersion e o ViaBackwards são para os bots de `tools/bots`);
 - copia os nossos jars;
 - grava o `server.properties`: offline, só `127.0.0.1`, RCON ligado com uma senha gerada na hora;
 - coloca os configs de teste de `configs/`;
@@ -37,7 +37,7 @@ Pra atualizar a versão do Paper ou de um plugin de fora, troque a URL e o sha25
 | `backup.bat` | Backup na hora, com o servidor ligado ou desligado. |
 | `restaurar.bat` | Lista os backups e restaura o escolhido. Rode com o servidor desligado. |
 | `agendar-backup.bat` | Liga o backup automático a cada 2 h (`-Horas 1` muda o intervalo e `-Remover` desliga). |
-| `configurar-mundos.bat` | Com o servidor ligado, cria os mundos do rankup (`spawn`, `arenas`, `terrenos` e `recursos`) e aplica as regras de cada um (PvP, mobs, dia fixo). Pode rodar de novo: mundo que existe não é recriado. |
+| `configurar-mundos.bat` | Com o servidor ligado, cria os mundos do rankup (`spawn`, `arenas`, `terrenos` e `recursos`) e aplica as regras de cada um (PvP, mobs, dia fixo). Pode rodar de novo: mundo que existe não é recriado. Depois, o `tools/bots/montar-mapa.js` monta o mapa funcional neles (veja o README dos bots). |
 
 Entre em `localhost` pelo Minecraft. Na primeira vez, rode `op <seu nick>` e `eco give <nick> 100000` no console. O `online-mode=false` deixa entrar com vários nicks no mesmo PC, pra testar com 2 ou 3 jogadores.
 

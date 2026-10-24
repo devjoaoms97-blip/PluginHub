@@ -1,7 +1,7 @@
 // Borda do Gladiador: muda o config por alguns segundos (a borda começa a fechar 1 s depois da luta
 // e fecha em 10 s), abre um Gladiador com 4 bots parados nos cantos e confere o aviso, o dano
 // crescendo a cada segundo fora (2, 3, 4...), a armadura não reduzindo esse dano e o fim do evento.
-// Volta o config original no fim. Precisa da arena (node montar-arenas.js).
+// Volta o config original no fim. Precisa da arena (node montar-mapa.js).
 // Uso: node teste-gladiador-borda.js
 const t = require('./lib')
 const fs = require('fs')

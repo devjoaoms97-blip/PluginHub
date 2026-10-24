@@ -67,6 +67,7 @@ t.rodar(async () => {
 
   msgs = await t.capturar(bot, () => bot.chat('/autovenda'))
   t.verificar(msgs.some(m => m.includes('desligada')), '/autovenda desliga')
+  await t.irParaMina(nome, mina) // da calçada a mão alcança poucos blocos: enche de novo
   await t.minerar(bot, mina, 4)
   t.verificar(Object.keys(t.inventario(bot)).length > 1, 'desligada, o minério vai pro inventário', JSON.stringify(t.inventario(bot)))
 

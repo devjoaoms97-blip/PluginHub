@@ -1,6 +1,6 @@
 // Abate no mundo das arenas não paga Bounty nem conta no placar de abates do clã (dá pra combinar
 // a luta). Duelo entre dois clãs diferentes, com recompensa na cabeça de quem perde.
-// Precisa das arenas (node montar-arenas.js). Uso: node teste-farm-arenas.js
+// Precisa das arenas (node montar-mapa.js). Uso: node teste-farm-arenas.js
 const t = require('./lib')
 
 const dinheiro = r => Number((r.match(/\$([\d,.]+)/) || [, 'NaN'])[1].replace(/,/g, ''))

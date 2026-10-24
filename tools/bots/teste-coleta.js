@@ -25,8 +25,7 @@ t.rodar(async () => {
   await t.console('minecraft:clear BotTeste')
   await t.console('minecraft:give BotTeste diamond_pickaxe 1')
   await t.console('minecraft:give BotTeste dirt 2240') // 35 pilhas: enche os outros espaços
-  await t.espera(1000)
-  await t.console('minecraft:kill @e[type=item]')
+  await t.irParaMina('BotTeste', mina) // da calçada a mão alcança poucos blocos: enche de novo
   const msgs = await t.capturar(bot, () => t.minerar(bot, mina, 3))
   t.verificar(t.itensNoChao(bot).length > 0, 'a sobra caiu no chão', JSON.stringify(t.itensNoChao(bot)))
   t.verificar(msgs.some(m => m.includes('Inventário cheio')), 'avisou "Inventário cheio" na barra')

@@ -1,6 +1,6 @@
 // Combate no estilo 1.8 (CombatePlugin): sem recarga de ataque, bloqueio com a espada (só sem
 // escudo na segunda mão) e golpe com a arma da segunda mão. Luta numa arena de X1 vazia, onde o
-// PvP vale. Precisa das arenas (node montar-arenas.js). Uso: node teste-combate.js
+// PvP vale. Precisa das arenas (node montar-mapa.js). Uso: node teste-combate.js
 const t = require('./lib')
 
 const W = 'execute in minecraft:arenas run'

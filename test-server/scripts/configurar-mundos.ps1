@@ -1,7 +1,7 @@
 ﻿# Cria e configura os mundos do rankup no servidor de teste, pelo RCON (o servidor precisa estar
 # ligado). Pode rodar de novo: mundo que já existe não é recriado, só tem as regras reaplicadas.
 #
-#   spawn     vazio, com plataforma: spawn, mercado, loja e minas (sem PvP, pacífico, sempre de dia)
+#   spawn     vazio, com plataforma: spawn, mercado, minas e a arena do boss (sem PvP, sem mobs naturais, sempre de dia)
 #   arenas    vazio, com plataforma: X1, Gladiador e boss (PvP, sem mobs naturais, sempre de dia)
 #   terrenos  grade do TerrenosPlugin (sem PvP nem mobs)
 #   recursos  mundo normal, resetado de tempos em tempos pelo RecursosPlugin (PvP)
@@ -55,7 +55,7 @@ foreach ($nome in 'spawn', 'arenas') {
 
 Write-Host 'Regras de cada mundo...' -ForegroundColor Cyan
 $regras = [ordered]@{
-    spawn    = @('mv modify spawn set pvp false', 'mv modify spawn set difficulty peaceful',
+    spawn    = @('mv modify spawn set pvp false', 'mv modify spawn set difficulty normal',
                  'gamerule spawn_mobs false', 'gamerule advance_time false', 'gamerule advance_weather false')
     arenas   = @('mv modify arenas set pvp true',
                  'gamerule spawn_mobs false', 'gamerule advance_time false', 'gamerule advance_weather false', 'gamerule keep_inventory false')
@@ -76,4 +76,4 @@ foreach ($nome in 'spawn', 'arenas') {
 $rcon.Tcp.Close()
 Write-Host ''
 Write-Host 'Mundos prontos.' -ForegroundColor Green
-Write-Host '  Arenas de teste (X1 e Gladiador): node tools\bots\montar-arenas.js, no repositório.'
+Write-Host '  Mapa funcional (praça, minas, mercado, portais e arenas): node tools\bots\montar-mapa.js, no repositório.'
