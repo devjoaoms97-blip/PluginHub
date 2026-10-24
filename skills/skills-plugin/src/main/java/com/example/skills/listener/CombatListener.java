@@ -27,6 +27,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class CombatListener implements Listener {
 
+    /** A marca que o SpawnersPlugin põe nos mobs de pilha. */
+    private static final org.bukkit.NamespacedKey PILHA_DE_SPAWNER = new org.bukkit.NamespacedKey("spawnersplugin", "pilha");
+
+
     private final SkillsPlugin plugin;
     private final XpManager xpManager;
     private final BonusCalculator bonusCalculator;
@@ -48,6 +52,10 @@ public class CombatListener implements Listener {
         double multiplicadorXp = ehPvP
                 ? 1.0
                 : plugin.getConfig().getDouble("xp.multiplicador-pve", 0.5);
+        // mob da pilha de um spawner (SpawnersPlugin): XP reduzido, senão a pilha vira fábrica de level up
+        if (vitimaEntity.getPersistentDataContainer().has(PILHA_DE_SPAWNER)) {
+            multiplicadorXp *= plugin.getConfig().getDouble("xp.multiplicador-spawner", 0.25);
+        }
         double xpPorDano = plugin.getConfig().getDouble("xp.xp-por-dano", 2.0);
 
         // ------------------------------------------------------------------

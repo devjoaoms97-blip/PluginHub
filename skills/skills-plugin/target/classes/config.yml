@@ -9,6 +9,8 @@ xp:
   expoente: 1.6
   # Dano contra mobs (PvE) vale essa fração do XP que valeria contra jogador (PvP)
   multiplicador-pve: 0.5
+  # Mob da pilha de um spawner (SpawnersPlugin) vale essa fração do XP de PvE.
+  multiplicador-spawner: 0.25
   # Multiplicador de XP ganho por ponto de dano causado, nas skills de arma
   xp-por-dano: 2.0
 

@@ -41,23 +41,103 @@ vip-descontos:
   ativado: true
   permissoes:
     - permissao: "vip.desconto.diamante"
-      percentual: 20
+      percentual: 12
     - permissao: "vip.desconto.ouro"
-      percentual: 15
+      percentual: 9
     - permissao: "vip.desconto.prata"
-      percentual: 10
+      percentual: 6
     - permissao: "vip.desconto.bronze"
-      percentual: 5
+      percentual: 3
 
 # Categorias fixas do menu da loja, na ordem em que aparecem ("Nome:ÍCONE"). Aparecem mesmo
 # vazias; as categorias que só existem nos itens cadastrados vão depois, com o ícone do 1º item.
 categorias:
   - "Minérios:DIAMOND"
   - "Blocos:STONE_BRICKS"
+  - "Madeiras:OAK_LOG"
   - "Farm:WHEAT"
   - "Drops:BONE"
-  - "Madeiras:OAK_LOG"
-  - "Diversos:CHEST"
+  - "Natureza:OAK_SAPLING"
+  - "Alquimia:BREWING_STAND"
+
+# ---------------------------------------------------------------------------------------------
+# Loja Oficial (presencial). Os jogadores compram e vendem com os vendedores do prédio a leste do
+# spawn; /shop, /buy e /sell de qualquer lugar ficam pra staff (permissão shop.comandos). O que se
+# minera nas minas é vendido na hora, pra todos (venda automática). O catálogo (itens.yml) sai do
+# tools/economia/loja.py, que confere se nenhum preço abre brecha antes de gravar.
+# ---------------------------------------------------------------------------------------------
+
+# Bônus na VENDA por VIP (vale o maior), por cima do bônus do rank: na venda automática da mina e
+# nos vendedores. LISTA de propósito (chave com ponto viraria seção). Com +3/6/9/12%, o Diamante
+# chega ao último rank em ~96 h e quem não é VIP em ~150 h (simulação de 2026-10-24).
+vip-bonus-venda:
+  ativado: true
+  permissoes:
+    - permissao: "vip.desconto.diamante"
+      percentual: 12
+    - permissao: "vip.desconto.ouro"
+      percentual: 9
+    - permissao: "vip.desconto.prata"
+      percentual: 6
+    - permissao: "vip.desconto.bronze"
+      percentual: 3
+
+trava-venda:
+  # Vendendo do inventário, uma unidade nunca rende mais que essa % do MENOR preço de compra do
+  # item (com o maior desconto de VIP). Fecha o "compra barato e vende caro" com o bônus do rank,
+  # do prestígio, do VIP e do evento somados (até x8,96). A venda automática da mina não tem trava:
+  # o minério nem vira item.
+  percentual-da-compra: 90
+
+# Os vendedores (um por categoria). A staff põe cada um com /shop admin npc <id>; a estrutura
+# "loja" já põe todos. skin: "textura:<hash>" (textures.minecraft.net) ou o nick de um jogador.
+# Com "comando" no lugar de "categoria", o vendedor abre esse comando em nome do jogador (balcões
+# de outros plugins, como o dos spawners).
+vendedores:
+  minerador:
+    categoria: "Minérios"
+    nome: "&b&l⛏ Minerador"
+    descricao: "&7Minérios, lingotes e gemas"
+    skin: "textura:3fc4500195594a77146a6e0cf0caf4c56a6a4280f6a7ec7c2204858682727f87"
+  construtor:
+    categoria: "Blocos"
+    nome: "&6&l🧱 Construtor"
+    descricao: "&7Pedras, tijolos, vidro, concreto e lã"
+    skin: "textura:76c2c5a010614493a9cfc642fd84be421fad13178b71759021b0449c0fa45145"
+  lenhador:
+    categoria: "Madeiras"
+    nome: "&c&l🪓 Lenhador"
+    descricao: "&7Toras e tábuas de todas as árvores"
+    skin: "textura:cf42050f47e492cd14967d14e976417086a62b1ba1af81654f60d3f6539afb6d"
+  fazendeiro:
+    categoria: "Farm"
+    nome: "&e&l🌾 Fazendeiro"
+    descricao: "&7Compra e vende colheita e comida"
+    skin: "textura:2d60f9159fb24fbdcc2229bb8ddc01aab31cc8ccb7c8984d0e5e7dccfdbc0a51"
+  cacador:
+    categoria: "Drops"
+    nome: "&4&l🏹 Caçador"
+    descricao: "&7Compra e vende drops de mob"
+    skin: "textura:9dde918a9cb7a2a84d1a942e65ed5689597de1104656e427a89689614ddea944"
+  jardineiro:
+    categoria: "Natureza"
+    nome: "&a&l🌸 Jardineiro"
+    descricao: "&7Mudas, flores, terra e plantas"
+    skin: "textura:7a8ab2267ae443e83b05e3a8d67b8b760adfaad335c9047338c0e1774a65c372"
+  spawners:
+    comando: "spawners loja"
+    nome: "&8&l🐷 Domador"
+    descricao: "&7Spawners pro seu terreno"
+    skin: "textura:c5d0b90b535a137cd899f021d62b22ac26c8648ddc629d82ba590b9c7032cb08"
+  alquimista:
+    categoria: "Alquimia"
+    nome: "&d&l⚗ Alquimista"
+    descricao: "&7Poções, redstone, nether e end"
+    skin: "textura:defd6156fb3dd71e8b0600b7865205387d8897e9410bf715078bf600966e9951"
+
+mensagens:
+  # Quem não é da staff e usa /shop.
+  loja-presencial: "&eA loja é presencial: vá à &6Loja Oficial&e, no portão LESTE do spawn (&f/warp loja&e)."
 
 eventos-mercado:
   # De tempos em tempos (intervalo-horas), com a chance abaixo, um item da lista fica "em alta":

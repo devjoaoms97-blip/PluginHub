@@ -105,6 +105,8 @@ public class ShopManager {
             yaml.set(caminho + ".maximo", item.getPrecoMaximo());
             yaml.set(caminho + ".passo", item.getPassoPercentual());
             yaml.set(caminho + ".preco-venda-atual", item.getPrecoVendaAtual());
+            if (!item.isCompravel()) yaml.set(caminho + ".compra", false);
+            if (!item.isVendivel()) yaml.set(caminho + ".venda", item.isVendivelNaMina() ? "so-mina" : false);
         }
         try {
             yaml.save(arquivo);
@@ -141,6 +143,10 @@ public class ShopManager {
                 if (precoAtualSalvo >= 0) {
                     item.setPrecoVendaAtual(precoAtualSalvo);
                 }
+                item.setCompravel(secao.getBoolean(chave + ".compra", true));
+                String venda = secao.getString(chave + ".venda", "true");
+                item.setVendivel(venda.equalsIgnoreCase("true"));
+                item.setVendivelNaMina(!venda.equalsIgnoreCase("false"));
                 itens.put(material, item);
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().warning("Item inválido em itens.yml: " + chave);

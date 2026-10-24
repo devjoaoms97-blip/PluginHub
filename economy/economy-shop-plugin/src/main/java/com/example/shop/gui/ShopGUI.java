@@ -69,11 +69,16 @@ public class ShopGUI {
     // Tela de itens de uma categoria (paginada)
     // ------------------------------------------------------------------
     public Inventory montarItens(String categoria, int pagina, Player jogador) {
+        return montarItens(categoria, pagina, jogador, false);
+    }
+
+    /** {@code soCategoria}: aberto por um vendedor (sem o botão de voltar pras categorias). */
+    public Inventory montarItens(String categoria, int pagina, Player jogador, boolean soCategoria) {
         List<ShopItem> todos = plugin.getShopManager().getItensDaCategoria(categoria);
         int totalPaginas = Math.max(1, (int) Math.ceil(todos.size() / (double) ITENS_POR_PAGINA));
         pagina = Math.max(0, Math.min(pagina, totalPaginas - 1));
 
-        ShopGUIHolder holder = new ShopGUIHolder(ShopGUIHolder.Tela.ITENS, categoria, pagina);
+        ShopGUIHolder holder = new ShopGUIHolder(ShopGUIHolder.Tela.ITENS, categoria, pagina, soCategoria);
         Inventory inv = Bukkit.createInventory(holder, 54, tituloItens(categoria, pagina));
         holder.setInventory(inv);
 
@@ -84,7 +89,7 @@ public class ShopGUI {
             inv.setItem(i - inicio, criarItemVisual(todos.get(i), jogador));
         }
 
-        inv.setItem(45, criarBotaoNavegacao("§a◀ Categorias", Material.CHEST));
+        if (!soCategoria) inv.setItem(45, criarBotaoNavegacao("§a◀ Categorias", Material.CHEST));
         if (pagina > 0) {
             inv.setItem(46, criarBotaoNavegacao("§ePágina anterior", Material.ARROW));
         }
@@ -97,7 +102,7 @@ public class ShopGUI {
     }
 
     private String tituloItens(String categoria, int pagina) {
-        return TITULO_CATEGORIAS + " §7- " + categoria;
+        return "§8§l" + categoria + (pagina > 0 ? " §7(" + (pagina + 1) + ")" : "");
     }
 
     private ItemStack criarItemVisual(ShopItem item, Player jogador) {
@@ -106,28 +111,35 @@ public class ShopGUI {
 
         meta.setDisplayName("§e" + nomeAmigavel(item.getMaterial()));
 
+        var precos = plugin.getPrecificacao();
         int desconto = jogador == null ? 0 : plugin.calcularDescontoVip(jogador);
-        double precoCompra = item.getPrecoBase();
-        if (desconto > 0) {
-            precoCompra = precoCompra * (1 - desconto / 100.0);
-        }
 
         List<String> lore = new ArrayList<>();
         lore.add("");
-        lore.add("§aComprar: §f" + formatar(precoCompra) + (desconto > 0 ? " §7(com " + desconto + "% de VIP)" : " §7(fixo)"));
-        if (item.getMultiplicadorEvento() > 1) {
-            lore.add("§cVender: §6" + formatar(item.getPrecoVendaComEvento()) + " §6📈 em alta (x"
-                    + String.format(Locale.ROOT, "%.1f", item.getMultiplicadorEvento()).replace('.', ',') + ")");
+        if (item.isCompravel()) {
+            double precoCompra = jogador == null ? item.getPrecoBase() : precos.precoCompra(jogador, item);
+            lore.add("§aComprar: §f" + formatar(precoCompra) + (desconto > 0 ? " §7(com " + desconto + "% de VIP)" : " §7(fixo)"));
         } else {
-            lore.add("§cVender: §f" + formatar(item.getPrecoVendaAtual()) + " §7(varia)");
+            lore.add("§8A loja não vende esse item");
         }
-        lore.add("§7  min " + formatar(item.getPrecoMinimo()) + " / max " + formatar(item.getPrecoMaximo()));
+        if (item.isVendivel()) {
+            double unidade = jogador == null ? item.getPrecoVendaComEvento() : precos.precoVendaUnitario(jogador, item, true);
+            String alta = item.getMultiplicadorEvento() > 1 ? " §6📈 em alta" : " §7(varia)";
+            lore.add("§cVender: §f" + formatar(unidade) + alta + (jogador != null ? precos.textoBonus(jogador) : ""));
+        } else if (item.isVendivelNaMina()) {
+            lore.add("§8Só vende na mina (venda automática)");
+        } else {
+            lore.add("§8A loja não compra esse item");
+        }
         lore.add("");
-        lore.add("§7Clique esquerdo: §fvender 1");
-        lore.add("§7Shift + esquerdo: §fvender tudo que você tem");
-        lore.add("§7Clique direito: §fcomprar 1");
-        lore.add("§7Shift + direito: §fcomprar 64");
-        lore.add("§7/shop historico " + item.getMaterial().name().toLowerCase(Locale.ROOT) + " §7pra ver tendência");
+        if (item.isVendivel()) {
+            lore.add("§7Clique esquerdo: §fvender 1");
+            lore.add("§7Shift + esquerdo: §fvender tudo que você tem");
+        }
+        if (item.isCompravel()) {
+            lore.add("§7Clique direito: §fcomprar 1");
+            lore.add("§7Shift + direito: §fcomprar " + item.getMaterial().getMaxStackSize());
+        }
 
         meta.setLore(lore);
         visual.setItemMeta(meta);

@@ -12,18 +12,23 @@ commands:
     usage: "Uso: /shop [historico <item>|admin ...]"
     permission: shop.usar
   buy:
-    description: Compra um item da loja pelo preço fixo.
+    description: (staff) Compra um item da loja pelo preço fixo.
     usage: "Uso: /buy <item> <quantidade>"
-    permission: shop.usar
+    permission: shop.comandos
+    permission-message: "§eA loja é presencial: vá à §6Loja Oficial§e, no portão LESTE do spawn (§f/warp loja§e)."
   sell:
-    description: Vende o item na mão (ou tudo) pro servidor.
+    description: (staff) Vende o item na mão (ou tudo) pro servidor.
     usage: "Uso: /sell [all]"
-    permission: shop.usar
+    permission: shop.comandos
+    permission-message: "§eA loja é presencial: vá à §6Loja Oficial§e, no portão LESTE do spawn (§f/warp loja§e)."
 
 permissions:
   shop.usar:
     description: Permite comprar/vender na loja do servidor.
     default: true
+  shop.comandos:
+    description: Usa /shop (menu completo), /buy e /sell de qualquer lugar. Os jogadores compram e vendem com os vendedores da Loja Oficial.
+    default: op
   shop.admin:
     description: Permite cadastrar e gerenciar itens da loja.
     default: op

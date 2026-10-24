@@ -1,0 +1,87 @@
+# Configuração do SpawnersPlugin (spawners empilhados)
+#
+# Spawner só nos mundos abaixo (o dos terrenos: cada um no seu terreno, a proteção dos terrenos cuida).
+mundos: [terrenos]
+
+# A cada quantos segundos cada spawner soma mobs na pilha dele (spawners empilhados no mesmo
+# bloco somam juntos: x10 soma 10 por ciclo).
+ciclo-segundos: 20
+
+# Só soma com algum jogador a até tantos blocos do spawner (como no vanilla).
+raio-ativacao: 16
+
+# Máximo de mobs numa pilha. Cheia, o spawner para de somar até alguém matar.
+limite-pilha: 300
+
+# Máximo de spawners empilhados num bloco.
+limite-por-bloco: 64
+
+# Os tipos à venda no balcão Spawners da Loja Oficial, na ordem do menu. entidade: o mob do
+# Minecraft; rank: o rank que libera (id do RankupPlugin). Os drops vendem no Caçador, e o preço
+# dinâmico da loja regula: o que muita gente farma vale menos. Com 1 spawner (180 mobs por hora,
+# se o jogador matar todos), o preço se paga em umas 20 h no preço de âncora dos drops.
+tipos:
+  galinha:
+    entidade: CHICKEN
+    nome: "&fGalinha"
+    preco: 5000
+    rank: campones
+  porco:
+    entidade: PIG
+    nome: "&dPorco"
+    preco: 8000
+    rank: campones
+  ovelha:
+    entidade: SHEEP
+    nome: "&fOvelha"
+    preco: 10000
+    rank: fazendeiro
+  vaca:
+    entidade: COW
+    nome: "&6Vaca"
+    preco: 14000
+    rank: fazendeiro
+  zumbi:
+    entidade: ZOMBIE
+    nome: "&2Zumbi"
+    preco: 3000
+    rank: lenhador
+  esqueleto:
+    entidade: SKELETON
+    nome: "&7Esqueleto"
+    preco: 5000
+    rank: lenhador
+  aranha:
+    entidade: SPIDER
+    nome: "&8Aranha"
+    preco: 5000
+    rank: ferreiro
+  creeper:
+    entidade: CREEPER
+    nome: "&aCreeper"
+    preco: 7000
+    rank: ferreiro
+  slime:
+    entidade: SLIME
+    nome: "&aSlime"
+    preco: 10000
+    rank: mercador
+  enderman:
+    entidade: ENDERMAN
+    nome: "&5Enderman"
+    preco: 15000
+    rank: escudeiro
+  blaze:
+    entidade: BLAZE
+    nome: "&6Blaze"
+    preco: 18000
+    rank: clerigo
+  golem:
+    entidade: IRON_GOLEM
+    nome: "&fGolem de Ferro"
+    preco: 120000
+    rank: barao
+
+integracao:
+  # Registra as compras no /pix historico (precisa do PixPlugin).
+  pix: true

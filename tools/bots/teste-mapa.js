@@ -66,13 +66,17 @@ t.rodar(async () => {
   await t.espera(800)
   t.verificar(!(await blocoE('spawn', 0, 64, 62, 'air')), 'ninguém quebra o chão do spawn')
   // o túnel do portão norte do spawn (z -20) desemboca direto na avenida das minas (z -21)
-  t.verificar(await blocoE('spawn', 0, 64, -20, 'dirt_path') && !(await blocoE('spawn', 0, 64, -21, 'air'))
+  t.verificar(await blocoE('spawn', 0, 64, -20, 'polished_andesite') && !(await blocoE('spawn', 0, 64, -21, 'air'))
     && await blocoE('spawn', 0, 65, -20, 'air') && await blocoE('spawn', 0, 65, -21, 'air'),
     'o portão do spawn está colado na avenida das minas')
   // e o portão sul (z 106) desemboca no patamar da escadaria do boss (z 107), que desce até a arena
   t.verificar(await blocoE('spawn', 0, 65, 106, 'air') && await blocoE('spawn', 0, 65, 107, 'air')
     && !(await blocoE('spawn', 0, 64, 107, 'air')) && await blocoE('spawn', 0, 33, 152, 'air'),
     'o portão sul do spawn está colado na escadaria do boss')
+  // e o portão leste (x 63) desemboca direto na porta da Loja Oficial (x 64), sem vão no meio
+  t.verificar(await blocoE('spawn', 63, 65, 43, 'air') && await blocoE('spawn', 64, 65, 43, 'air')
+    && await blocoE('spawn', 64, 64, 43, 'polished_andesite') && !(await blocoE('spawn', 64, 64, 30, 'air')),
+    'o portão leste do spawn está colado na porta da loja')
   await t.capturar(bot, () => bot.chat('/warp arenas'), 2000)
   t.verificar(await pisar(bot, 'arenas', 0, 5, 'spawn'), 'o portal do saguão das arenas volta pro spawn')
 

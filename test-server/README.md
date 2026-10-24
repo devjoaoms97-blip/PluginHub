@@ -37,9 +37,28 @@ Pra atualizar a versão do Paper ou de um plugin de fora, troque a URL e o sha25
 | `backup.bat` | Backup na hora, com o servidor ligado ou desligado. |
 | `restaurar.bat` | Lista os backups e restaura o escolhido. Rode com o servidor desligado. |
 | `agendar-backup.bat` | Liga o backup automático a cada 2 h (`-Horas 1` muda o intervalo e `-Remover` desliga). |
+| `abrir-porta.bat` / `fechar-porta.bat` | Deixa um amigo de fora de casa entrar, ou volta a fechar. Veja [Jogar com amigos de fora](#jogar-com-amigos-de-fora). |
 | `configurar-mundos.bat` | Com o servidor ligado, cria os mundos do rankup (`spawn`, `arenas`, `terrenos` e `recursos`) e aplica as regras de cada um (PvP, mobs, dia fixo). Pode rodar de novo: mundo que existe não é recriado. Depois, o `tools/bots/montar-mapa.js` monta o mapa funcional neles (veja o README dos bots). |
 
 Entre em `localhost` pelo Minecraft. Na primeira vez, rode `op <seu nick>` e `eco give <nick> 100000` no console. O `online-mode=false` deixa entrar com vários nicks no mesmo PC, pra testar com 2 ou 3 jogadores.
+
+## Jogar com amigos de fora
+
+A conexão de casa usa CGNAT, então redirecionar porta no roteador não funciona. O acesso de fora passa por um túnel do [playit.gg](https://playit.gg). O servidor continua escutando só em `127.0.0.1`, e o túnel fica **desligado** por padrão.
+
+**Uma vez só:**
+1. Instale o playit pelo `.msi` das [releases oficiais](https://github.com/playit-cloud/playit-agent/releases). Ele cria o serviço `playitd`, com início manual.
+2. Num terminal de administrador, rode `playit setup` e abra o link que aparece para vincular o agente à sua conta.
+3. Em [playit.gg/account/tunnels](https://playit.gg/account/tunnels), crie um túnel **Minecraft Java** apontando para `127.0.0.1:25565`. O endereço do túnel (tipo `xxx.joinmc.link`) é fixo: é ele que você passa para os amigos.
+4. Com o servidor ligado, rode `whitelist add <nick>` no console para você e para cada amigo.
+
+**No dia a dia:**
+- `abrir-porta.bat` liga a whitelist e depois o serviço do playit. O Windows pede confirmação de administrador.
+- `fechar-porta.bat` desliga o serviço e depois a whitelist, para os bots de teste voltarem a entrar.
+
+Por que a whitelist: com `online-mode=false` não existe login, então qualquer pessoa entraria com o nick de um OP. Mesmo com a whitelist, quem souber o nick de alguém liberado consegue entrar no lugar dele. Por isso o túnel só fica ligado enquanto vocês estiverem jogando.
+
+O ícone do playit na bandeja (que abre com o Windows) não liga o túnel sozinho, só pelo menu "Start Background Service". Não troque o serviço `playitd` para início automático.
 
 ## Backup
 

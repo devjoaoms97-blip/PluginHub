@@ -8,6 +8,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Leaves;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.block.structure.Mirror;
+import org.bukkit.block.structure.StructureRotation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +29,8 @@ import static com.example.estruturas.estrutura.Planta.laje;
  * arquibancada e muralha externa — nada escalável), com fonte e pavilhão no centro onde o jogador
  * nasce, quatro avenidas, cerejeiras com bancos e barracas de loja (NPC atrás do balcão).
  *
- * Duas saídas, e só elas: o portão ao NORTE (letreiro "MINAS" por dentro e "SPAWN" por fora), com o
+ * Três saídas: o portão LESTE (letreiro "LOJA") leva à Loja Oficial (estrutura "loja"), do lado de
+ * fora da muralha. E as duas de sempre: o portão ao NORTE (letreiro "MINAS" por dentro e "SPAWN" por fora), com o
  * túnel atravessando a muralha direto pra avenida das minas, e o portão ao SUL, igual e espelhado
  * (letreiro "BOSS"), que leva à arena do boss. As duas encostam na face de fora dos portões
  * (|z| = 63): o spawn não escreve nada além disso, pra não apagar as vizinhas.
@@ -179,6 +181,10 @@ public class ArenaSpringColiseu implements Estrutura {
         // o portão do boss é o das minas espelhado no eixo z, com os letreiros reescritos (espelhados, sairiam ao contrário)
         gerarPortao(new EspelhoZ(p));
         letreirosDoPortaoSul(p);
+        // o da loja é o das minas girado 90° (norte vira leste), com o letreiro "LOJA" por dentro
+        RotacaoLeste leste = new RotacaoLeste(p);
+        gerarPortao(leste);
+        letreirosDoPortaoLeste(leste);
         for (int k = 0; k < 4; k++) gerarQuadrante(p, k);
         gerarBarracas(p);
         gerarFimDasAvenidas(p);
@@ -269,9 +275,43 @@ public class ArenaSpringColiseu implements Estrutura {
 
     // ------------------------------------------------------------------ base
 
-    /** A área de fora de um dos dois portões (norte e sul, espelhados). */
+    /** A área de fora de um dos portões (norte e sul, espelhados, e o leste, girado). */
     private static boolean naAreaDoPortao(int x, int z) {
-        return Math.abs(x) <= 18 && Math.abs(z) >= 48 && Math.abs(z) <= -Z_FIM_CAMINHO;
+        boolean norteSul = Math.abs(x) <= 18 && Math.abs(z) >= 48 && Math.abs(z) <= -Z_FIM_CAMINHO;
+        boolean leste = Math.abs(z) <= 18 && x >= 48 && x <= -Z_FIM_CAMINHO;
+        return norteSul || leste;
+    }
+
+    /**
+     * Planta girada 90° no sentido horário (visto de cima): o que é escrito "ao norte" (z negativo)
+     * sai a leste (x positivo), com a orientação dos blocos girada junto.
+     */
+    private static final class RotacaoLeste extends Planta {
+        private final Planta destino;
+
+        RotacaoLeste(Planta destino) {
+            this.destino = destino;
+        }
+
+        @Override
+        public void set(int x, int y, int z, BlockData dados) {
+            BlockData girado = dados.clone();
+            girado.rotate(StructureRotation.CLOCKWISE_90);
+            destino.set(-z, y, x, girado);
+        }
+
+        @Override
+        public Material get(int x, int y, int z) {
+            return destino.get(-z, y, x);
+        }
+    }
+
+    /** "LOJA" lido de dentro e "SPAWN" lido de quem volta da loja (na planta girada, igual ao norte). */
+    private void letreirosDoPortaoLeste(Planta p) {
+        painel(p, Z_FACE_INT);
+        escrever(p, "LOJA", -7, 1, 16, Z_FACE_INT);
+        painel(p, Z_FACE_EXT);
+        escrever(p, "SPAWN", 11, -1, 16, Z_FACE_EXT);
     }
 
     /** Planta que grava tudo espelhado no eixo z (norte vira sul), com a orientação dos blocos espelhada junto. */
@@ -445,7 +485,12 @@ public class ArenaSpringColiseu implements Estrutura {
                         m = mancha[3] == 0 ? Material.MOSS_BLOCK : Material.COARSE_DIRT;
                     }
                 }
-                if (r >= R_PISO - 1) m = pedra(x, 0, z);
+                // nas avenidas com portão (minas, boss e loja) o calçamento vai direto até a boca do
+                // túnel, sem o anel de terra batida e a borda da praça cruzando no meio
+                boolean avenidaComPortao = (Math.abs(x) <= MEIA_AVENIDA && Math.abs(z) > MEIA_AVENIDA)
+                        || (Math.abs(z) <= MEIA_AVENIDA && x > MEIA_AVENIDA);
+                if (avenidaComPortao && r >= R_ANEL_C_INI) m = calcamento(x, z);
+                else if (r >= R_PISO - 1) m = pedra(x, 0, z);
                 else if (r >= R_ANEL_C_INI && r < R_ANEL_C_FIM) {
                     m = Math.floorMod(x * 7 + z * 13, 9) == 0 ? Material.MOSSY_COBBLESTONE : Material.DIRT_PATH;
                 } else if (r < R_ANEL_A) {
@@ -467,6 +512,12 @@ public class ArenaSpringColiseu implements Estrutura {
     }
 
     /** Calçamento das avenidas: andesito polido, bordas de tijolo e faixas lisas a cada 6. */
+    /** O mesmo calçamento das avenidas, no túnel (x é a largura, z o comprimento). */
+    private static Material calcamentoDoTunel(int x, int z) {
+        if (Math.abs(x) == MEIO_TUNEL) return PEDRA;
+        return Math.floorMod(z, 6) == 0 ? FAIXA : CALCADA;
+    }
+
     private static Material calcamento(int x, int z) {
         int t = Math.abs(x) <= MEIA_AVENIDA && Math.abs(z) > MEIA_AVENIDA ? x : z;
         int a = Math.abs(x) <= MEIA_AVENIDA && Math.abs(z) > MEIA_AVENIDA ? z : x;
@@ -580,7 +631,7 @@ public class ArenaSpringColiseu implements Estrutura {
         for (int z = Z_FACE_INT - 1; z >= Z_FACE_EXT; z--) {
             for (int x = -MEIO_TUNEL; x <= MEIO_TUNEL; x++) {
                 p.set(x, -1, z, Material.DIRT);
-                p.set(x, 0, z, Math.abs(x) <= 1 ? Material.DIRT_PATH : CALCADA);
+                p.set(x, 0, z, calcamentoDoTunel(x, z));
                 int topo = Math.abs(x) <= 1 ? 9 : (Math.abs(x) == 2 ? 8 : 7);
                 for (int y = 1; y <= topo; y++) p.set(x, y, z, Material.AIR);
                 p.set(x, topo + 1, z, PEDRA);
@@ -599,7 +650,7 @@ public class ArenaSpringColiseu implements Estrutura {
         // Boca do túnel nos dois lados (z = -44 por dentro, z = -63 por fora): chão e abertura.
         for (int x = -MEIO_TUNEL; x <= MEIO_TUNEL; x++) {
             for (int z : new int[]{Z_FACE_INT}) {
-                p.set(x, 0, z, Math.abs(x) <= 1 ? Material.DIRT_PATH : CALCADA);
+                p.set(x, 0, z, calcamentoDoTunel(x, z));
                 int topo = Math.abs(x) <= 1 ? 9 : (Math.abs(x) == 2 ? 8 : 7);
                 for (int y = 1; y <= topo; y++) p.set(x, y, z, Material.AIR);
             }
@@ -645,16 +696,18 @@ public class ArenaSpringColiseu implements Estrutura {
         }
     }
 
-    private static final Map<Character, String[]> FONTE = Map.of(
-            'M', new String[]{"X...X", "XX.XX", "X.X.X", "X...X", "X...X"},
-            'I', new String[]{"XXX", ".X.", ".X.", ".X.", "XXX"},
-            'N', new String[]{"X..X", "XX.X", "X.XX", "X..X", "X..X"},
-            'A', new String[]{".X.", "X.X", "XXX", "X.X", "X.X"},
-            'S', new String[]{"XXX", "X..", "XXX", "..X", "XXX"},
-            'P', new String[]{"XXX", "X.X", "XXX", "X..", "X.."},
-            'W', new String[]{"X...X", "X...X", "X.X.X", "XX.XX", "X...X"},
-            'B', new String[]{"XX.", "X.X", "XX.", "X.X", "XX."},
-            'O', new String[]{"XXX", "X.X", "X.X", "X.X", "XXX"}
+    private static final Map<Character, String[]> FONTE = Map.ofEntries(
+            Map.entry('M', new String[]{"X...X", "XX.XX", "X.X.X", "X...X", "X...X"}),
+            Map.entry('I', new String[]{"XXX", ".X.", ".X.", ".X.", "XXX"}),
+            Map.entry('N', new String[]{"X..X", "XX.X", "X.XX", "X..X", "X..X"}),
+            Map.entry('A', new String[]{".X.", "X.X", "XXX", "X.X", "X.X"}),
+            Map.entry('S', new String[]{"XXX", "X..", "XXX", "..X", "XXX"}),
+            Map.entry('P', new String[]{"XXX", "X.X", "XXX", "X..", "X.."}),
+            Map.entry('W', new String[]{"X...X", "X...X", "X.X.X", "XX.XX", "X...X"}),
+            Map.entry('B', new String[]{"XX.", "X.X", "XX.", "X.X", "XX."}),
+            Map.entry('O', new String[]{"XXX", "X.X", "X.X", "X.X", "XXX"}),
+            Map.entry('L', new String[]{"X..", "X..", "X..", "X..", "XXX"}),
+            Map.entry('J', new String[]{"..X", "..X", "..X", "X.X", "XXX"})
     );
 
     /** Escreve em pedra luminosa; {@code passo} = +1/-1 conforme a direita de quem lê. */
@@ -960,7 +1013,7 @@ public class ArenaSpringColiseu implements Estrutura {
 
     /** Nas avenidas sem portão (leste e oeste): canteiro de azaleia e flores encostado na parede. */
     private void gerarFimDasAvenidas(Planta p) {
-        for (int k = 1; k < 4; k += 2) { // k = 2 é a avenida sul, que tem o portão do boss
+        for (int k = 3; k < 4; k += 2) { // só a oeste: a norte, a sul e a leste têm portão (minas, boss e loja)
             Quadrante q = new Quadrante(p, k);
             // No referencial do NE girado: a avenida "norte" girada k vezes vira leste/sul/oeste.
             for (int a = 42; a <= 44; a++) {

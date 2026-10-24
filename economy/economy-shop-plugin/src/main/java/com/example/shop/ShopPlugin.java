@@ -32,6 +32,8 @@ public class ShopPlugin extends JavaPlugin {
     private PriceHistoryManager priceHistoryManager;
     private VendasDiariasManager vendasDiariasManager;
     private AutoVenda autoVenda;
+    private com.example.shop.manager.Precificacao precificacao;
+    private com.example.shop.manager.VendedoresManager vendedores;
     private PixIntegration pixIntegration;
     private MissoesIntegration missoesIntegration;
     private RankupIntegration rankupIntegration;
@@ -53,6 +55,11 @@ public class ShopPlugin extends JavaPlugin {
         this.priceHistoryManager = new PriceHistoryManager(this);
         this.vendasDiariasManager = new VendasDiariasManager(this);
         this.autoVenda = new AutoVenda(this);
+        this.precificacao = new com.example.shop.manager.Precificacao(this);
+        this.vendedores = new com.example.shop.manager.VendedoresManager(this);
+        getServer().getPluginManager().registerEvents(vendedores, this);
+        vendedores.carregarTodos();
+        getServer().getScheduler().runTaskTimer(this, vendedores::conferir, 100L, 100L);
         this.pixIntegration = new PixIntegration(this);
         this.missoesIntegration = new MissoesIntegration(this);
         this.rankupIntegration = new RankupIntegration(this);
@@ -99,6 +106,9 @@ public class ShopPlugin extends JavaPlugin {
         // vendas-diarias.yml é só estatística (não é editado à mão), então esse pode.
         if (vendasDiariasManager != null) {
             vendasDiariasManager.salvar();
+        }
+        if (vendedores != null) {
+            vendedores.removerTodos();
         }
         getLogger().info("EconomyShopPlugin desativado!");
     }
@@ -153,6 +163,14 @@ public class ShopPlugin extends JavaPlugin {
             }
         }
         return maiorDesconto;
+    }
+
+    public com.example.shop.manager.Precificacao getPrecificacao() {
+        return precificacao;
+    }
+
+    public com.example.shop.manager.VendedoresManager getVendedores() {
+        return vendedores;
     }
 
     public Economy getEconomy() {

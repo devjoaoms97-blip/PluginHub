@@ -45,16 +45,17 @@ public class ShopGUIListener implements Listener {
             jogador.closeInventory();
             return;
         }
-        if (clicado.getType() == Material.CHEST && event.getSlot() == 45) {
+        if (event.getClickedInventory() != event.getView().getTopInventory()) return;
+        if (clicado.getType() == Material.CHEST && event.getSlot() == 45 && !holder.isSoCategoria()) {
             jogador.openInventory(plugin.getShopGUI().montarCategorias());
             return;
         }
         if (clicado.getType() == Material.ARROW && event.getSlot() == 46) {
-            jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina() - 1, jogador));
+            jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina() - 1, jogador, holder.isSoCategoria()));
             return;
         }
         if (clicado.getType() == Material.ARROW && event.getSlot() == 52) {
-            jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina() + 1, jogador));
+            jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina() + 1, jogador, holder.isSoCategoria()));
             return;
         }
 
@@ -62,18 +63,24 @@ public class ShopGUIListener implements Listener {
         if (item == null) return;
 
         ClickType tipo = event.getClick();
-        if (tipo == ClickType.LEFT) {
+        boolean vender = tipo == ClickType.LEFT || tipo == ClickType.SHIFT_LEFT;
+        boolean comprar = tipo == ClickType.RIGHT || tipo == ClickType.SHIFT_RIGHT;
+        if (vender && !item.isVendivel()) {
+            jogador.sendMessage("§cA loja não compra esse item.");
+        } else if (comprar && !item.isCompravel()) {
+            jogador.sendMessage("§cA loja não vende esse item.");
+        } else if (tipo == ClickType.LEFT) {
             venderQuantidade(jogador, item, 1);
         } else if (tipo == ClickType.SHIFT_LEFT) {
             venderTudoDoTipo(jogador, item);
         } else if (tipo == ClickType.RIGHT) {
             comprarQuantidade(jogador, item, 1);
         } else if (tipo == ClickType.SHIFT_RIGHT) {
-            comprarQuantidade(jogador, item, 64);
+            comprarQuantidade(jogador, item, item.getMaterial().getMaxStackSize());
         }
 
         // Reabre a GUI atualizada com o preço já ajustado
-        jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina(), jogador));
+        jogador.openInventory(plugin.getShopGUI().montarItens(holder.getCategoria(), holder.getPagina(), jogador, holder.isSoCategoria()));
     }
 
     private void venderQuantidade(Player jogador, ShopItem item, int quantidade) {
@@ -84,27 +91,15 @@ public class ShopGUIListener implements Listener {
             return;
         }
 
-        double totalBruto = 0;
-        for (int i = 0; i < aVender; i++) {
-            totalBruto += item.venderUnidade();
-        }
-        plugin.getVendasDiariasManager().registrar(item.getMaterial(), aVender, totalBruto);
-
-        removerDoInventario(jogador, item.getMaterial(), aVender);
-
-        double bonus = plugin.getRankupIntegration().multiplicador(jogador);
-        totalBruto *= bonus;
-        double imposto = plugin.getConfig().getDouble("imposto.percentual-venda", 2.0);
-        double totalLiquido = totalBruto * (1 - imposto / 100.0);
-
-        plugin.getEconomy().depositPlayer(jogador, totalLiquido);
+        var venda = plugin.getPrecificacao().vender(jogador, item, aVender, true);
+        if (venda.quantidade() <= 0) return;
+        removerDoInventario(jogador, item.getMaterial(), venda.quantidade());
         plugin.getShopManager().salvar();
-        plugin.getPixIntegration().registrarTransacao(jogador, totalLiquido, true, "Venda na loja");
-        plugin.getMissoesIntegration().vendeu(jogador, item.getMaterial(), aVender);
+        plugin.getPixIntegration().registrarTransacao(jogador, venda.liquido(), true, "Venda na loja");
 
-        jogador.sendMessage("§aVendeu §f" + aVender + "x " + item.getMaterial().name()
-                + " §apor §f" + formatar(totalLiquido) + " §7(imposto: " + formatar(totalBruto - totalLiquido) + ")"
-                + RankupIntegration.textoBonus(bonus));
+        jogador.sendMessage("§aVendeu §f" + venda.quantidade() + "x " + nomeAmigavel(item.getMaterial())
+                + " §apor §f" + formatar(venda.liquido()) + " §7(imposto: " + formatar(venda.imposto()) + ")"
+                + plugin.getPrecificacao().textoBonus(jogador));
     }
 
     private void venderTudoDoTipo(Player jogador, ShopItem item) {
@@ -118,12 +113,8 @@ public class ShopGUIListener implements Listener {
 
     private void comprarQuantidade(Player jogador, ShopItem item, int quantidade) {
         Economy econ = plugin.getEconomy();
-        double custoTotal = item.getPrecoBase() * quantidade;
-
+        double custoTotal = plugin.getPrecificacao().precoCompra(jogador, item) * quantidade;
         int descontoPercentual = plugin.calcularDescontoVip(jogador);
-        if (descontoPercentual > 0) {
-            custoTotal = custoTotal * (1 - descontoPercentual / 100.0);
-        }
 
         if (!econ.has(jogador, custoTotal)) {
             jogador.sendMessage("§cSaldo insuficiente. Custo: §f" + formatar(custoTotal));
@@ -139,7 +130,7 @@ public class ShopGUIListener implements Listener {
         plugin.getPixIntegration().registrarTransacao(jogador, custoTotal, false, "Compra na loja");
         plugin.getMissoesIntegration().comprou(jogador, item.getMaterial(), quantidade);
 
-        jogador.sendMessage("§aComprou §f" + quantidade + "x " + item.getMaterial().name()
+        jogador.sendMessage("§aComprou §f" + quantidade + "x " + nomeAmigavel(item.getMaterial())
                 + " §apor §f" + formatar(custoTotal)
                 + (descontoPercentual > 0 ? " §7(desconto de VIP: " + descontoPercentual + "%)" : "")
                 + "§a.");
@@ -166,6 +157,10 @@ public class ShopGUIListener implements Listener {
             stack.setAmount(stack.getAmount() - remover);
             restante -= remover;
         }
+    }
+
+    private static String nomeAmigavel(Material material) {
+        return material.name().toLowerCase(Locale.ROOT).replace('_', ' ');
     }
 
     private String formatar(double valor) {

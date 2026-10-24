@@ -1,7 +1,6 @@
 package com.example.rankup;
 
 import com.example.rankup.util.MissoesIntegration;
-import com.example.rankup.command.AutoVendaCommand;
 import com.example.rankup.command.MinaCommand;
 import com.example.rankup.command.PrestigioCommand;
 import com.example.rankup.command.RanksCommand;
@@ -83,7 +82,6 @@ public class RankupPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         ColetaMinaListener coleta = new ColetaMinaListener(this);
         getServer().getPluginManager().registerEvents(coleta, this);
-        getCommand("autovenda").setExecutor(new AutoVendaCommand(coleta));
 
         getServer().getScheduler().runTaskTimer(this, () -> {
             minaManager.tick();

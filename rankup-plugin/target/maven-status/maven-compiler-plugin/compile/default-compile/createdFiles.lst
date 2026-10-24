@@ -20,5 +20,4 @@ com\example\rankup\manager\MinaManager$1.class
 com\example\rankup\manager\RankManager.class
 com\example\rankup\command\MinaCommand.class
 com\example\rankup\listener\MinaListener.class
-com\example\rankup\command\AutoVendaCommand.class
 com\example\rankup\util\PixIntegration.class

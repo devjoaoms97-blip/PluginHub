@@ -50,7 +50,7 @@ public class BuyCommand implements CommandExecutor, TabCompleter {
         }
 
         ShopItem item = plugin.getShopManager().getItem(material);
-        if (item == null) {
+        if (item == null || !item.isCompravel()) {
             jogador.sendMessage("§cEsse item não está à venda na loja.");
             return true;
         }
@@ -69,12 +69,8 @@ public class BuyCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        double custoTotal = item.getPrecoBase() * quantidade;
-
+        double custoTotal = plugin.getPrecificacao().precoCompra(jogador, item) * quantidade;
         int descontoPercentual = plugin.calcularDescontoVip(jogador);
-        if (descontoPercentual > 0) {
-            custoTotal = custoTotal * (1 - descontoPercentual / 100.0);
-        }
 
         Economy econ = plugin.getEconomy();
 

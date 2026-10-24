@@ -2,7 +2,6 @@ package com.example.rankup.listener;
 
 import com.example.rankup.RankupPlugin;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,45 +10,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Coleta do que se minera dentro de uma mina, pra todos os jogadores: o drop vai direto pro
- * inventário e a experiência direto pro jogador, sem entidades no chão (menos lag com muita gente
- * minerando). Só cai no chão o que não coube no inventário.
- * <p>
- * Venda automática (benefício de VIP, permissão vip.perk.autovenda): antes de ir pro inventário,
- * o drop é vendido na hora pela loja; o que a loja não compra vai pro inventário. O jogador
- * desliga e liga com /autovenda; a escolha fica gravada no próprio jogador
- * (PersistentDataContainer), sem arquivo.
+ * Coleta do que se minera dentro de uma mina, pra todos os jogadores: o drop é vendido na hora pela
+ * loja (preço dinâmico, bônus do rank e do VIP, imposto), e o dinheiro aparece na barra de ação.
+ * O minério da mina nunca vira item: não dá pra guardar diamante da mina, craftar blocos nem revender
+ * na loja. O que a loja não compra vai direto pro inventário, e a experiência vai direto pro jogador
+ * (sem entidades no chão: menos lag com muita gente minerando). Só cai no chão o que não coube.
  */
 public class ColetaMinaListener implements Listener {
 
-    public static final String PERMISSAO_AUTOVENDA = "vip.perk.autovenda";
-
     private final RankupPlugin plugin;
-    private final NamespacedKey chaveDesligada;
 
     public ColetaMinaListener(RankupPlugin plugin) {
         this.plugin = plugin;
-        this.chaveDesligada = new NamespacedKey(plugin, "autovenda-desligada");
-    }
-
-    public boolean autoVendaLigada(Player jogador) {
-        return !jogador.getPersistentDataContainer().has(chaveDesligada, PersistentDataType.BYTE);
-    }
-
-    /** Alterna a venda automática e retorna o novo estado (true = ligada). */
-    public boolean alternarAutoVenda(Player jogador) {
-        if (autoVendaLigada(jogador)) {
-            jogador.getPersistentDataContainer().set(chaveDesligada, PersistentDataType.BYTE, (byte) 1);
-            return false;
-        }
-        jogador.getPersistentDataContainer().remove(chaveDesligada);
-        return true;
     }
 
     /** Missão de minerar numa mina: todo bloco quebrado dentro dela conta (com ou sem XP). */
@@ -72,14 +49,12 @@ public class ColetaMinaListener implements Listener {
     public void aoDropar(BlockDropItemEvent evento) {
         Player jogador = evento.getPlayer();
         if (plugin.getMinaManager().getMinaEm(evento.getBlock().getLocation()) == null) return;
-        boolean vender = jogador.hasPermission(PERMISSAO_AUTOVENDA) && autoVendaLigada(jogador);
-
         // tirar o Item da lista impede que ele apareça no mundo
         boolean sobrou = false;
         Iterator<Item> itens = evento.getItems().iterator();
         while (itens.hasNext()) {
             Item item = itens.next();
-            if (vender && plugin.getLojaIntegration().vender(jogador, item.getItemStack())) {
+            if (plugin.getLojaIntegration().vender(jogador, item.getItemStack())) {
                 itens.remove();
                 continue;
             }
@@ -93,7 +68,7 @@ public class ColetaMinaListener implements Listener {
         }
         if (sobrou) {
             jogador.sendActionBar(LegacyComponentSerializer.legacySection().deserialize(
-                    "§cInventário cheio! §7Venda com §f/sell" + (jogador.hasPermission(PERMISSAO_AUTOVENDA) ? " §7ou ligue o §f/autovenda" : "")));
+                    "§cInventário cheio! §7O que a loja não compra está caindo no chão."));
         }
     }
 }

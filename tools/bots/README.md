@@ -63,7 +63,7 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | Script | O que confere |
 |---|---|
 | `teste-mapa.js` | Jogador novo nasce na fonte do spawn, `/warp` e `/spawn`, painel "Como começar" (um só, sem hologramas espalhados), poços das minas cheios (e a pedreira minerável, se já foi criada), chão do spawn protegido, caminho do portão colado na avenida das minas, portal de volta do saguão das arenas, 32 barracas com holograma e o NPC de quem aluga, 4 arenas de X1 (3 simples e a axepvp) e a do Gladiador prontas |
-| `teste-coleta.js` | O minerado vai pro inventário, sem itens nem orbes no chão. Com o inventário cheio, só a sobra cai, com o aviso "Inventário cheio" |
+| `teste-coleta.js` | Venda automática na mina pra quem não é VIP: o que se quebra vira dinheiro na hora, com o "+R$" na barra, sem nada no inventário nem no chão |
 | `teste-combate.js` | Velocidade de ataque, dois golpes seguidos com o dano inteiro, tempo entre golpes (no padrão o 2º golpe em 0,15 s não conta; com 0 conta), bloqueio com a espada tirando metade do dano, sem bloqueio da espada com escudo na outra mão golpe com a espada da segunda mão, espada e machado alternados contando os dois golpes em 0,15 s, a mesma mão não, e soco com a segunda mão vazia |
 | `teste-rankup-extras.js` | Menu do `/ranks` (subir clicando), menu do `/mina` (ir clicando), holograma em cima da mina, rank na tab, prestígio só no último rank, volta pro primeiro com ✦ na tab e no chat |
 | `teste-pix-agendado.js` | Primeiro pagamento na hora com a taxa, quem recebe vê o agendamento, o próximo sai sozinho com quem recebe offline, sem saldo avisa e tenta de novo, cancelar tira da lista |
@@ -79,6 +79,8 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-vip.js` | Pix com 80% de desconto na taxa, missão diária extra, bônus de ativação sem o dinheiro por nível das skills, kit mensal encantado e com cooldown, venda automática e `/autovenda` |
 | `teste-novidades.js` | `/skills top`, XP em dobro pela staff, evento de mercado (anúncio, `/shop evento`, venda), chave Pix (cadastro, nome de outro jogador recusado, pagar pela chave), título ao receber, taxa no extrato, `/pix admin log`, cheque nominal e cooldown, `/vip setwarp <tier>`, preço mínimo do `/vip vender`, `/boss proximo` e ItemCleaner (item perto do jogador fica, orbe longe some) |
 | `teste-oficinas.js` | As 4 oficinas da mina: Ferreiro repara e cobra, Picareteiro vende, Sábio vende XP, Bruxa abre a mesa no nível 30 com o lápis dela (encanta sem lápis, e o lápis não vai pro inventário), e as linhas da scoreboard lateral (`/placar ver`) |
+| `teste-loja.js` | Loja Oficial: os 7 vendedores colocados, `/shop` e `/sell` fechados pros jogadores, `/warp loja`, vender e comprar no menu do fazendeiro, 12% de desconto do VIP Diamante e a trava da venda (último rank + VIP: o diamante não passa de 90% do menor preço de compra) |
+| `teste-spawners.js` | Spawners: o Domador da loja vende, no spawn não entra, no terreno entra, empilha clicando (x2), a pilha de mobs aparece em cima (x2), matar tira um (x1) e derruba o drop, e quebrar devolve os spawners |
 
 O `teste-vip.js` e o `teste-terrenos.js` usam jogadores novos a cada execução (`Vip`, `Ter` ou `Viz` + um código): o kit mensal e o bônus de ativação só valem uma vez por jogador, e cada um só compra um terreno. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.
 

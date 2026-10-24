@@ -60,80 +60,46 @@ public class SellCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        int quantidade = itemNaMao.getAmount();
-        double totalBruto = venderUnidades(item, quantidade);
-        itemNaMao.setAmount(0);
-
-        creditarEAvisar(jogador, item.getMaterial(), quantidade, totalBruto);
+        if (!item.isVendivel()) {
+            jogador.sendMessage("§cA loja não compra esse item.");
+            return;
+        }
+        var venda = plugin.getPrecificacao().vender(jogador, item, itemNaMao.getAmount(), true);
+        if (venda.quantidade() <= 0) {
+            jogador.sendMessage("§cLimite de hoje desse item atingido.");
+            return;
+        }
+        itemNaMao.setAmount(itemNaMao.getAmount() - venda.quantidade());
+        avisar(jogador, venda.quantidade(), venda.liquido(), venda.imposto());
     }
 
     private void venderTudoDoInventario(Player jogador) {
-        double totalBrutoGeral = 0;
+        double liquido = 0;
+        double imposto = 0;
         int itensGerais = 0;
-        Map<Material, Integer> vendidos = new EnumMap<>(Material.class);
-
         for (ItemStack stack : jogador.getInventory().getContents()) {
             if (stack == null || stack.getType().isAir()) continue;
-
             ShopItem item = plugin.getShopManager().getItem(stack.getType());
-            if (item == null) continue;
-
-            int quantidade = stack.getAmount();
-            double total = venderUnidades(item, quantidade);
-
-            totalBrutoGeral += total;
-            itensGerais += quantidade;
-            vendidos.merge(stack.getType(), quantidade, Integer::sum);
-            stack.setAmount(0);
+            if (item == null || !item.isVendivel()) continue;
+            var venda = plugin.getPrecificacao().vender(jogador, item, stack.getAmount(), true);
+            stack.setAmount(stack.getAmount() - venda.quantidade());
+            liquido += venda.liquido();
+            imposto += venda.imposto();
+            itensGerais += venda.quantidade();
         }
 
         if (itensGerais == 0) {
-            jogador.sendMessage("§cVocê não tem nenhum item que a loja compra.");
+            jogador.sendMessage("§cVocê não tem nenhum item que a loja compra (ou já bateu o limite de hoje).");
             return;
         }
+        avisar(jogador, itensGerais, liquido, imposto);
+    }
 
-        double bonus = plugin.getRankupIntegration().multiplicador(jogador);
-        totalBrutoGeral *= bonus;
-        double imposto = plugin.getConfig().getDouble("imposto.percentual-venda", 2.0);
-        double totalLiquido = totalBrutoGeral * (1 - imposto / 100.0);
-
-        plugin.getEconomy().depositPlayer(jogador, totalLiquido);
+    private void avisar(Player jogador, int quantidade, double liquido, double imposto) {
         plugin.getShopManager().salvar();
-        plugin.getPixIntegration().registrarTransacao(jogador, totalLiquido, true, "Venda na loja (lote)");
-        vendidos.forEach((material, quantidade) -> plugin.getMissoesIntegration().vendeu(jogador, material, quantidade));
-
-        jogador.sendMessage("§aVocê vendeu §f" + itensGerais + " itens §apor um total de §f" + formatar(totalLiquido)
-                + " §7(imposto: " + formatar(totalBrutoGeral - totalLiquido) + ")" + RankupIntegration.textoBonus(bonus));
-    }
-
-    /** Vende N unidades de um item, empurrando o preço pra baixo unidade por unidade, e retorna o total bruto. */
-    private double venderUnidades(ShopItem item, int quantidade) {
-        double total = 0;
-        for (int i = 0; i < quantidade; i++) {
-            total += item.venderUnidade();
-        }
-        plugin.getVendasDiariasManager().registrar(item.getMaterial(), quantidade, total);
-        return total;
-    }
-
-    private void creditarEAvisar(Player jogador, Material material, int quantidade, double totalBruto) {
-        double bonus = plugin.getRankupIntegration().multiplicador(jogador);
-        totalBruto *= bonus;
-        double imposto = plugin.getConfig().getDouble("imposto.percentual-venda", 2.0);
-        double totalLiquido = totalBruto * (1 - imposto / 100.0);
-
-        plugin.getEconomy().depositPlayer(jogador, totalLiquido);
-        plugin.getShopManager().salvar();
-        plugin.getPixIntegration().registrarTransacao(jogador, totalLiquido, true, "Venda na loja");
-        plugin.getMissoesIntegration().vendeu(jogador, material, quantidade);
-
-        jogador.sendMessage("§aVocê vendeu §f" + quantidade + "x " + nomeAmigavel(material)
-                + " §apor §f" + formatar(totalLiquido) + " §7(imposto: " + formatar(totalBruto - totalLiquido) + ")"
-                + RankupIntegration.textoBonus(bonus));
-    }
-
-    private String nomeAmigavel(Material material) {
-        return material.name().toLowerCase(Locale.ROOT).replace('_', ' ');
+        plugin.getPixIntegration().registrarTransacao(jogador, liquido, true, "Venda na loja");
+        jogador.sendMessage("§aVocê vendeu §f" + quantidade + " itens §apor um total de §f" + formatar(liquido)
+                + " §7(imposto: " + formatar(imposto) + ")" + plugin.getPrecificacao().textoBonus(jogador));
     }
 
     private String formatar(double valor) {

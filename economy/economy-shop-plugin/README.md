@@ -2,6 +2,34 @@
 
 Loja do servidor com preço de venda dinâmico (oferta e demanda), categorias, histórico de preços, imposto sobre vendas, e integração com o extrato do Pix.
 
+## Loja Oficial (presencial)
+
+A loja é um prédio: a **Loja Oficial**, do lado de fora do portão LESTE do spawn (`/warp loja`, estrutura `loja` do EstruturasPlugin). Dentro, sete vendedores (NPCs com skin temática), um por categoria: **Minerador** (minérios), **Construtor** (blocos), **Lenhador** (madeiras), **Fazendeiro** (farm e comida), **Caçador** (drops de mob), **Jardineiro** (natureza) e **Alquimista** (poções, redstone, nether e end). Clique direito abre o menu só daquela categoria, onde se compra e vende.
+
+- **Na mina, tudo vira dinheiro na hora** (venda automática, pra todos): o que se quebra dentro de uma mina do RankupPlugin é vendido pela loja, com o bônus do rank e do VIP, e o dinheiro aparece na barra de ação.
+- **Comandos:** `/shop` (menu completo), `/buy` e `/sell` de qualquer lugar são só da staff (`shop.comandos`). O jogador que usa `/shop` recebe o aviso pra ir à Loja Oficial. **Nunca dê `essentials.sell` nem `essentials.worth`** aos jogadores: o `/sell` do Essentials vende pela tabela `worth.yml` dele e passaria por cima de tudo isso.
+- **VIP:** compra com 3/6/9/12% de desconto (`vip-descontos`) e vende com 3/6/9/12% a mais (`vip-bonus-venda`), pelas permissões `vip.desconto.<tier>`. Na simulação, o Diamante chega ao último rank em ~96 h e quem não é VIP em ~150 h.
+- **Sem limite de quantidade:** o preço dinâmico regula. O que muita gente vende cai de preço sozinho, então farm AFK é bem-vinda.
+- **Trava** (`trava-venda.percentual-da-compra`, 90%): vendendo do inventário, uma unidade nunca rende mais que 90% do menor preço de compra possível (com o maior desconto de VIP). Sem isso, um VIP no último rank, com prestígio e evento de mercado (até ×8,96 na venda), comprava e revendia com lucro. A venda automática da mina não tem trava: o minério nem vira item.
+- **Itens:** cada item pode ter `compra: false` (a loja não vende) e `venda: false` (os vendedores não compram) ou `venda: so-mina` (só a venda automática da mina vende).
+
+### O catálogo (`tools/economia/loja.py`)
+
+O `itens.yml` sai do script, que confere se nenhum preço abre brecha antes de gravar: compra sempre acima da venda no pior caso, e nenhum lucro comprando ingredientes, craftando, fundindo, cortando ou quebrando o bloco e vendendo o resultado (receitas do Minecraft pelo minecraft-data). São 356 itens em 7 categorias; os vendedores compram 96 (minérios, toras, farm e drops), e o resto (blocos, tábuas, natureza, alquimia) só a loja vende, tirando dinheiro de circulação. Os itens da mina mantêm os preços que a simulação de 150 h usa.
+
+```
+python tools/economia/loja.py                          # confere
+python tools/economia/loja.py --gravar --servidor C:\mc-teste   # confere e grava
+```
+
+### Vendedores
+
+| Comando | Ação |
+|---|---|
+| `/shop admin npc <id> [mundo x y z yaw]` | Põe o vendedor (onde você está, sem coordenadas). Os ids e as categorias ficam em `vendedores` no config |
+| `/shop admin npc remover <id>` | Tira o vendedor |
+| `/shop admin npc lista` | Lista os vendedores colocados |
+
 ## Como o preço funciona
 
 - **Compra** (jogador compra do servidor): sempre o **preço base fixo** — nunca muda.
@@ -15,11 +43,11 @@ Loja do servidor com preço de venda dinâmico (oferta e demanda), categorias, h
 
 | Comando | Ação |
 |---|---|
-| `/shop` | Abre a loja (agora com tela de categorias) |
+| `/shop` | (staff) Abre a loja completa, com as categorias; pros jogadores, avisa pra ir à Loja Oficial |
 | `/shop historico <item>` | Mostra o gráfico de tendência (sparkline) das últimas 24h |
-| `/buy <item> <quantidade>` | Compra pelo preço fixo |
-| `/sell` | Vende o item na mão |
-| `/sell all` | Vende tudo do inventário que a loja compra |
+| `/buy <item> <quantidade>` | (staff) Compra pelo preço fixo |
+| `/sell` | (staff) Vende o item na mão |
+| `/sell all` | (staff) Vende tudo do inventário que a loja compra |
 | `/shop admin additem <categoria> <base> <margem%> <min> <max> <passo%>` | (staff) Cadastra o item na mão |
 | `/shop admin removeitem` | (staff) Remove o item na mão |
 | `/shop admin resetprice` | (staff) Reseta o preço de venda do item na mão |
@@ -72,11 +100,11 @@ A staff põe um item em alta na hora com `/shop admin evento <item> <multiplicad
 
 ## Bônus do rank (RankupPlugin)
 
-Se o RankupPlugin estiver instalado, toda venda (`/sell`, `/sell all` e o menu) é multiplicada pelo bônus do rank do jogador (`multiplicador-venda` no config do Rankup). Com 1.25, ele recebe 25% a mais. O bônus entra antes do imposto, e a mensagem de venda mostra quanto foi. A integração é por reflexão: sem o RankupPlugin, nada muda.
+Se o RankupPlugin estiver instalado, toda venda (os vendedores, a venda automática da mina e o `/sell` da staff) é multiplicada pelo bônus do rank do jogador (`multiplicador-venda` no config do Rankup). Com 1.25, ele recebe 25% a mais. O bônus entra antes do imposto, e a mensagem de venda mostra quanto foi. A integração é por reflexão: sem o RankupPlugin, nada muda.
 
 ## Integração com as missões (MissoesPlugin)
 
-Se o MissoesPlugin estiver instalado, toda venda pra loja (`/sell`, `/sell all` e o menu) conta pra missão de vender. As compras também são avisadas, pra que revender no mesmo dia o que acabou de comprar não conte. A integração é por reflexão, como a do Pix: sem o MissoesPlugin, nada muda.
+Se o MissoesPlugin estiver instalado, toda venda pra loja (os vendedores e a venda automática da mina) conta pra missão de vender. As compras também são avisadas, pra que revender no mesmo dia o que acabou de comprar não conte. A integração é por reflexão, como a do Pix: sem o MissoesPlugin, nada muda.
 
 ## Requisitos
 

@@ -23,6 +23,15 @@ public class ShopItem {
     private double precoVendaAtual;
     /** Multiplicador do evento de mercado em cima do preço de venda (1 = sem evento). */
     private double multiplicadorEvento = 1;
+    /** A loja vende esse item pro jogador ("compra: false" no itens.yml desliga). */
+    private boolean compravel = true;
+    /** A loja compra esse item do INVENTÁRIO do jogador (pelos vendedores). */
+    private boolean vendivel = true;
+    /**
+     * A venda automática da mina vende esse item. "venda: so-mina" no itens.yml: só a mina vende
+     * (o minério nunca vira item na mão de ninguém); "venda: false": ninguém vende.
+     */
+    private boolean vendivelNaMina = true;
 
     public ShopItem(Material material, String categoria, double precoBase, double margemPercentual,
                      double precoMinimo, double precoMaximo, double passoPercentual) {
@@ -91,6 +100,30 @@ public class ShopItem {
 
     public double getPrecoVendaAtual() {
         return precoVendaAtual;
+    }
+
+    public boolean isCompravel() {
+        return compravel;
+    }
+
+    public void setCompravel(boolean compravel) {
+        this.compravel = compravel;
+    }
+
+    public boolean isVendivel() {
+        return vendivel;
+    }
+
+    public void setVendivel(boolean vendivel) {
+        this.vendivel = vendivel;
+    }
+
+    public boolean isVendivelNaMina() {
+        return vendivelNaMina;
+    }
+
+    public void setVendivelNaMina(boolean vendivelNaMina) {
+        this.vendivelNaMina = vendivelNaMina;
     }
 
     public double getMultiplicadorEvento() {

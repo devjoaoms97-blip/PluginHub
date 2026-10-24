@@ -1,6 +1,6 @@
 // Benefícios do VIP Diamante, com um jogador novo a cada execução (o kit mensal e o bônus de
 // ativação só valem uma vez por jogador): Pix com desconto, missão extra, bônus de ativação sem o
-// dinheiro por nível das skills, kit mensal encantado, venda automática e /autovenda.
+// dinheiro por nível das skills, kit mensal encantado e a venda automática da mina com o bônus de VIP.
 // Uso: node teste-vip.js [mina]   (padrão: pedreira)
 const t = require('./lib')
 
@@ -60,16 +60,10 @@ t.rodar(async () => {
   const antesVenda = dinheiro(await t.console(`balance ${nome}`))
   msgs = await t.capturar(bot, () => t.minerar(bot, mina, 6))
   const depoisVenda = dinheiro(await t.console(`balance ${nome}`))
-  t.verificar(msgs.some(m => m.includes('venda automática')), 'vendeu na hora (barra)', msgs.find(m => m.includes('venda automática')))
+  t.verificar(msgs.some(m => m.includes('+R$')), 'vendeu na hora (barra)', msgs.find(m => m.includes('+R$')))
   t.verificar(depoisVenda > antesVenda, 'o saldo subiu', `${antesVenda} → ${depoisVenda}`)
   t.verificar(Object.keys(t.inventario(bot)).length === 1 && t.itensNoChao(bot).length === 0, 'nada no inventário nem no chão',
     JSON.stringify(t.inventario(bot)))
-
-  msgs = await t.capturar(bot, () => bot.chat('/autovenda'))
-  t.verificar(msgs.some(m => m.includes('desligada')), '/autovenda desliga')
-  await t.irParaMina(nome, mina) // da calçada a mão alcança poucos blocos: enche de novo
-  await t.minerar(bot, mina, 4)
-  t.verificar(Object.keys(t.inventario(bot)).length > 1, 'desligada, o minério vai pro inventário', JSON.stringify(t.inventario(bot)))
 
   await t.console(`vip remove ${nome}`)
   await t.console(`minecraft:clear ${nome}`)

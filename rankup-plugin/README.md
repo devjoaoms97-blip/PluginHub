@@ -14,7 +14,6 @@ Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro �
 | `/ranks <jogador>` | todos | Rank de outro jogador |
 | `/mina` | todos | Abre o menu das minas: rank, blocos, tempo até o reset e quanto já foi minerado (clicar teleporta). `/mina lista` mostra no chat |
 | `/mina <id>` | todos | Teleporta pra mina, se você tiver o rank |
-| `/autovenda` | VIP (`vip.perk.autovenda`) | Liga ou desliga a venda automática do que você minera |
 | `/prestigio [confirmar]` | todos | No último rank, volta pro primeiro com um nível de prestígio |
 | `/ranks admin set <jogador> <rank>` | staff | Muda o rank de alguém (roda os `comandos-ao-subir`) |
 | `/ranks admin reload` | staff | Recarrega o config (ranks e preços) |
@@ -51,9 +50,7 @@ No reset, quem está dentro (ou em cima) vai pro ponto de teleporte da mina, e n
 
 **Proteção do mundo.** Em `protecao.mundos`, liste os mundos em que, **fora das minas**, ninguém quebra nem coloca blocos. É o normal num mundo de rankup, em que só as minas são mineráveis.
 
-**Coleta direta.** Dentro de uma mina, o que você minera vai direto pro inventário, e a experiência direto pra você (com o Remendo consertando a ferramenta, como o orbe faria). Vale para todos os jogadores e não deixa itens nem orbes no chão, o que também reduz o lag. Só cai no chão o que não couber no inventário, com o aviso "Inventário cheio!" na barra acima dele.
-
-**Venda automática (VIP).** Quem tem `vip.perk.autovenda` (VIP Prata, Ouro e Diamante) vende na hora tudo o que minera dentro de uma mina, e o dinheiro aparece na barra acima do inventário. Vale o mesmo que o `/sell`, com o preço dinâmico, o bônus do rank e o imposto. O que a loja não compra vai pro inventário. O `/autovenda` desliga e liga; a escolha fica gravada no jogador. No painel, aparece como "Venda automática (VIP)".
+**Venda automática (pra todos).** Dentro de uma mina, o que você quebra é vendido na hora pela loja (preço dinâmico, bônus do rank e do VIP, imposto), e o dinheiro aparece na barra acima do inventário. O que a loja não compra vai direto pro inventário, e a experiência vai direto pra você (com o Remendo consertando a ferramenta, como o orbe faria). Não sobram itens nem orbes no chão, o que também reduz o lag. Só cai no chão o que não couber no inventário. No painel, aparece como "Venda automática (minas)".
 
 **Chat.** O rank aparece antes do nome e convive com as tags do clã e do VIP: `[Fazendeiro] [ABC] [VIP Ouro] Nome: mensagem`.
 

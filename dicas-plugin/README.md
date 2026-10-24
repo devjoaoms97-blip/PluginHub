@@ -45,7 +45,7 @@ O `tools/bots/montar-mapa.js construir dicas` cria 12 NPCs pelo spawn, com 4 fal
 | Onde | NPC | Assunto |
 |---|---|---|
 | Em volta da fonte | Velho Minerador, Dona Cida (a Mercadora), Veterano Bartolomeu, Zé (o Guia) | minas e rank; barracas e Pix; boss; diária, X1, Gladiador, terreno e recursos |
-| Portão das minas | Guarda do Portão, Dona Neusa (a Ranzinza) | `/mina` e `/autovenda`; `/rankup max`, `/prestigio` e `/missoes` |
+| Portão das minas | Guarda do Portão, Dona Neusa (a Ranzinza) | `/mina` e a venda automática das minas; `/rankup max`, `/prestigio` e `/missoes` |
 | Portão do boss | Sentinela do Portão | horários do boss, campeão e perda de itens |
 | Fim das avenidas leste e oeste | Leiloeiro Matias, Mestre de Armas Duda | leilão das barracas ★ e renovação; combate, `/skills` e `/bounty` |
 | Jardins | Banqueira Rosa, Escriba dos Clãs, Seu Juca do Terreno | `/pix`, `/cheque` e `/shop`; `/cla` e `/cc`; `/terreno` e `/recursos` |

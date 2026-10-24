@@ -6,6 +6,7 @@
 //
 //   node montar-mapa.js construir [partes...]   (servidor LIGADO) sem partes = minas spawn boss dicas arenas marcar
 //     minas      os 12 poços (cheios de pedra) e a Avenida das Minas (EstruturasPlugin) em volta, com as oficinas
+//     loja       só a Loja Oficial (portão leste do spawn): prédio, 7 vendedores, placas e quadros
 //     oficinas   só as 4 barraquinhas de serviço na entrada da avenida (OficinasPlugin: Ferreiro, Bruxa...)
 //     boss       a arena do boss ("toxica"), ao sul do spawn, colada no portão "BOSS"
 //     dicas      os 12 NPCs de dicas pelo spawn (DicasPlugin), com as falas
@@ -226,7 +227,8 @@ const TUTORIAL = { pos: [-43, 0], altura: 2.2, linhas: [
   ['', null],
   ['1. Minere: portão MINAS, ao norte  (/mina)', 'white'],
   ['    Na entrada: Ferreiro, Bruxa, Picareteiro e Sábio', 'gray'],
-  ['2. Venda o que minerou: /sell all', 'white'],
+  ['2. Na mina, o que você quebra já vira dinheiro', 'white'],
+  ['    Loja Oficial: portão LESTE  (/warp loja)', 'gray'],
   ['3. Suba de rank: /rankup  (/ranks mostra todos)', 'white'],
   ['4. Todo dia: /diaria e /missoes', 'white'],
   ['5. Comércio: barracas pelo spawn, clique no vendedor', 'white'],
@@ -265,8 +267,22 @@ async function construirSpawn() {
   const W = 'spawn'
   console.log('\n== Spawn (EstruturasPlugin: spring) ==')
   await estruturaNoSpawn('spring')
+  // a loja encosta no portão leste do spawn: refaz depois dele
+  await construirLoja()
 
   await construirTutorial()
+}
+
+/**
+ * A Loja Oficial (EstruturasPlugin "loja"), do lado de fora do portão leste do spawn: o prédio, os 7
+ * vendedores do EconomyShopPlugin, as placas dos balcões e os quadros.
+ */
+async function construirLoja() {
+  console.log('\n== Loja Oficial (EstruturasPlugin: loja) ==')
+  await t.console('execute in minecraft:spawn run forceload add 60 10 128 76')
+  await t.espera(2000)
+  await estrutura('loja', 'spawn', [SPAWN.x, SPAWN.z])
+  await t.console('execute in minecraft:spawn run forceload remove 60 10 128 76')
 }
 
 async function construirArenas() {
@@ -295,7 +311,7 @@ async function construirArenas() {
 const DICAS = [
   { id: 'minerador', nome: '&6Velho Minerador', pos: [-6, -6], falas: [
     '&fAs minas ficam depois do portão &bMINAS&f, ao norte. Use &e/mina&f pra ver as que o seu rank libera.',
-    '&fMinerou? Vende! &e/sell all&f vende tudo, e &e/rankup&f te leva pro próximo rank. Eu levei 40 anos pra deixar de ser Camponês...',
+    '&fNa mina, tudo o que você quebra vira dinheiro na hora! O resto se vende na &6Loja Oficial&f (&e/warp loja&f). E &e/rankup&f te leva pro próximo rank. Eu levei 40 anos pra deixar de ser Camponês...',
     '&fCuidado na mina de &bdiamante&f: meu sobrinho entrou lá com uma picareta de madeira e saiu com uma de diamante. E sem a dignidade.',
     '&fA mina se enche de novo sozinha de tempos em tempos. Tá vazia? Espere um pouco, ou vá incomodar outra mina.',
   ] },
@@ -321,7 +337,7 @@ const DICAS = [
     '&fDaqui pra frente é a &bAvenida das Minas&f. Cada mina tem um holograma com o rank, o que tem nela e quando enche de novo.',
     '&fSó minera quem tem o rank da mina. Não adianta me olhar assim, a regra não é minha.',
     '&f&e/mina&f abre o menu das minas: clicou, foi. Bem mais rápido que andar, mas você perde a paisagem.',
-    '&fVIP Prata pra cima vende na hora o que minera. Liga e desliga com &e/autovenda&f.',
+    '&fNas minas, o que você quebra é vendido na hora. VIP ainda ganha de 3% a 12% a mais em toda venda.',
   ] },
   { id: 'ranzinza', nome: '&8Dona Neusa, a Ranzinza', pos: [-6, -38], virado: 'centro', falas: [
     '&fNo meu tempo não tinha &e/rankup max&f. A gente subia um rank por vez e ainda agradecia!',
@@ -410,6 +426,7 @@ async function marcarComBot() {
     // mercado: na avenida leste do spawn, entre as barracas
     ['minas', 'spawn', 0.5, -24.5, 180], ['mercado', 'spawn', SPAWN.x + 16.5, SPAWN.z + 0.5, -90],
     ['arenas', 'arenas', 0.5, 0.5, 180], ['terrenos', 'terrenos', 34.5, 34.5, 0],
+    ['loja', 'spawn', 67.5, SPAWN.z + 0.5, -90], // logo depois da porta da Loja Oficial, olhando pro salão
     ['boss', 'spawn', BOSS.centro[0] + 0.5, BOSS.centro[1] - 42.5, 0, BOSS.chao + 1], // logo depois do túnel da tóxica, olhando pro centro
     ['plateia-x1', 'arenas', AXE.plateia[0], AXE.plateia[2], AXE.plateia[3], AXE.plateia[1]],
     ['plateia-gladiador', 'arenas', GLAD.plateia[0], GLAD.plateia[2], GLAD.plateia[3], GLAD.plateia[1]],
@@ -417,8 +434,8 @@ async function marcarComBot() {
     await ir(mundo, x, y, z, yaw)
     await comando(`/setwarp ${nome}`)
   }
-  // a loja e os portais do spawn antigo não existem mais (o spawn só tem a saída pras minas)
-  for (const nome of ['loja', 'portais']) await t.console(`delwarp ${nome}`)
+  // os portais do spawn antigo não existem mais
+  await t.console('delwarp portais')
   await t.console('deop BotStaff')
   await t.console('gamemode survival BotStaff')
   await ir('spawn', SPAWN.x + 0.5, CHAO + 1, SPAWN.z + 0.5, 180)
@@ -508,7 +525,7 @@ if (fase === 'cadastrar') {
 } else if (fase === 'construir' || fase === 'marcar') {
   const partes = {
     'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
-    boss: construirBoss, oficinas: construirOficinas, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, marcar: marcarComBot,
+    boss: construirBoss, oficinas: construirOficinas, loja: construirLoja, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, marcar: marcarComBot,
   }
   // "marcar" sozinho era o atalho antigo pra só a parte do bot
   const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)
@@ -523,6 +540,6 @@ if (fase === 'cadastrar') {
     await t.terminar()
   })
 } else {
-  console.log('Uso: node montar-mapa.js construir [minas|oficinas|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
+  console.log('Uso: node montar-mapa.js construir [minas|oficinas|loja|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
     + '\n     node montar-mapa.js cadastrar [--minas]   (servidor desligado)')
 }

@@ -27,7 +27,9 @@ MINAS = Path(__file__).with_name("minas-planejadas.yml")
 
 # Jogador da meta de 150 h: não-VIP, 3 por mina, picareta de diamante com Eficiência III e
 # Fortuna III (dá pra encantar na mesa). Os VIPs Ouro e Diamante ganham Fortuna IV e V no kit mensal.
-REFERENCIA = dict(jogadores=3, fortuna=3, eficiencia=3, utilizacao=0.5)
+REFERENCIA = dict(jogadores=3, fortuna=3, eficiencia=3, utilizacao=0.5, bonus_vip=0.0)
+# Bônus de venda do VIP (vip-bonus-venda no config da loja): vale na venda automática da mina.
+BONUS_VIP = {"bronze": 0.03, "prata": 0.06, "ouro": 0.09, "diamante": 0.12}
 
 # bloco: (dureza, item que dropa, quantidade média sem fortuna, como a fortuna age)
 # fortuna "minerio" = fórmula vanilla dos minérios; "soma" = +nível/2 (redstone); None = não age
@@ -120,7 +122,8 @@ def renda_por_hora(mina, multiplicador, itens, loja, cenario):
         preco, _ = preco_equilibrio(itens[item], por_min * cenario.jogadores, loja)
         renda += por_min * 60 * preco
     imposto = loja["imposto"]["percentual-venda"] / 100
-    return renda * multiplicador * (1 - imposto), sem_preco, blocos_por_min * 60
+    bonus_vip = getattr(cenario, "bonus_vip", 0.0)
+    return renda * multiplicador * (1 + bonus_vip) * (1 - imposto), sem_preco, blocos_por_min * 60
 
 
 def simular(ranks, itens, loja, minas, cenario, precos=None):
@@ -188,7 +191,7 @@ def main():
     if args.jogadores or args.fortuna is not None:
         cenarios = [(f"{args.jogadores or 1} jogador(es) por mina, fortuna {args.fortuna or 0}",
                      argparse.Namespace(jogadores=args.jogadores or 1, fortuna=args.fortuna or 0,
-                                        eficiencia=args.eficiencia, utilizacao=args.utilizacao))]
+                                        eficiencia=args.eficiencia, utilizacao=args.utilizacao, bonus_vip=0.0))]
     else:
         ref = dict(REFERENCIA, eficiencia=args.eficiencia, utilizacao=args.utilizacao)
         cenarios = [
@@ -196,8 +199,14 @@ def main():
             ("Sem Fortuna", argparse.Namespace(**dict(ref, fortuna=0))),
             ("Sozinho na mina, Fortuna III", argparse.Namespace(**dict(ref, jogadores=1))),
             ("10 por mina, Fortuna III", argparse.Namespace(**dict(ref, jogadores=10))),
-            ("VIP Ouro: Fortuna IV, Eficiência V", argparse.Namespace(**dict(ref, fortuna=4, eficiencia=5))),
-            ("VIP Diamante: Fortuna V, Eficiência V", argparse.Namespace(**dict(ref, fortuna=5, eficiencia=5))),
+            ("VIP Bronze: Fortuna III, Eficiência III, venda +3%",
+             argparse.Namespace(**dict(ref, bonus_vip=BONUS_VIP["bronze"]))),
+            ("VIP Prata: Fortuna III, Eficiência IV, venda +6%",
+             argparse.Namespace(**dict(ref, eficiencia=4, bonus_vip=BONUS_VIP["prata"]))),
+            ("VIP Ouro: Fortuna IV, Eficiência V, venda +9%",
+             argparse.Namespace(**dict(ref, fortuna=4, eficiencia=5, bonus_vip=BONUS_VIP["ouro"]))),
+            ("VIP Diamante: Fortuna V, Eficiência V, venda +12%",
+             argparse.Namespace(**dict(ref, fortuna=5, eficiencia=5, bonus_vip=BONUS_VIP["diamante"]))),
         ]
 
     print(f"Eficiência {args.eficiencia}, utilização {args.utilizacao:.0%}, "

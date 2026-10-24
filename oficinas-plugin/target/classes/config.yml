@@ -18,7 +18,7 @@ tipos:
   sabio:
     nome: "&d&l📖 Sábio"
     descricao: "&7Clique: comprar XP"
-    skin: "textura:c1a5fab3ccb91fa2364378f64a99b1037e1fc9698c9df525ba3a1f6b9c7c8b42"   # sábio de barba branca""
+    skin: "textura:c1a5fab3ccb91fa2364378f64a99b1037e1fc9698c9df525ba3a1f6b9c7c8b42"   # sábio de barba branca
 
 ferreiro:
   # Preço de reparar um item do totalmente gasto até novo, pelo material: vale a primeira chave
@@ -93,13 +93,13 @@ sabio:
 # permissões (as mesmas do desconto da loja). LISTA de propósito: chave com ponto viraria seção.
 vip-descontos:
   - permissao: "vip.desconto.diamante"
-    percentual: 20
+    percentual: 12
   - permissao: "vip.desconto.ouro"
-    percentual: 15
+    percentual: 9
   - permissao: "vip.desconto.prata"
-    percentual: 10
+    percentual: 6
   - permissao: "vip.desconto.bronze"
-    percentual: 5
+    percentual: 3
 
 integracao:
   # Registra os pagamentos no /pix historico (precisa do PixPlugin).

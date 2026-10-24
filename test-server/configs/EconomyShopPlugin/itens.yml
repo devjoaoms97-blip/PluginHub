@@ -1,6 +1,3 @@
-# Itens da loja pras minas do rankup (servidor de teste). O montar.bat só copia se a loja
-# ainda não tiver um itens.yml. Venda = preço de referência; compra = 2x (margem de 50%).
-# passo 0.01 = cada unidade vendida baixa 0,01% o preço (volta 2% por minuto pro de referência).
 itens:
   COBBLESTONE:
     categoria: Minérios
@@ -156,3 +153,2601 @@ itens:
     minimo: 400.0
     maximo: 1000
     passo: 0.01
+  IRON_INGOT:
+    categoria: Minérios
+    preco-base: 18.0
+    margem: 60.0
+    minimo: 1.8
+    maximo: 7.2
+    passo: 0.5
+  GOLD_INGOT:
+    categoria: Minérios
+    preco-base: 30.0
+    margem: 60.0
+    minimo: 3.0
+    maximo: 12.0
+    passo: 0.5
+  COPPER_INGOT:
+    categoria: Minérios
+    preco-base: 6.5
+    margem: 60.0
+    minimo: 0.65
+    maximo: 2.6
+    passo: 0.5
+  IRON_NUGGET:
+    categoria: Minérios
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  CHARCOAL:
+    categoria: Minérios
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  NETHERITE_SCRAP:
+    categoria: Minérios
+    preco-base: 1050.0
+    margem: 60.0
+    minimo: 105.0
+    maximo: 420.0
+    passo: 0.5
+  NETHERITE_INGOT:
+    categoria: Minérios
+    preco-base: 4500.0
+    margem: 60.0
+    minimo: 450.0
+    maximo: 1800.0
+    passo: 0.5
+  COAL_BLOCK:
+    categoria: Minérios
+    preco-base: 38.0
+    margem: 60.0
+    minimo: 3.8
+    maximo: 15.2
+    passo: 0.5
+  REDSTONE_BLOCK:
+    categoria: Minérios
+    preco-base: 56.0
+    margem: 60.0
+    minimo: 5.6
+    maximo: 22.4
+    passo: 0.5
+  LAPIS_BLOCK:
+    categoria: Minérios
+    preco-base: 75.0
+    margem: 60.0
+    minimo: 7.5
+    maximo: 30.0
+    passo: 0.5
+  COPPER_BLOCK:
+    categoria: Minérios
+    preco-base: 60.0
+    margem: 60.0
+    minimo: 6.0
+    maximo: 24.0
+    passo: 0.5
+  RAW_IRON_BLOCK:
+    categoria: Minérios
+    preco-base: 150.0
+    margem: 60.0
+    minimo: 15.0
+    maximo: 60.0
+    passo: 0.5
+  RAW_GOLD_BLOCK:
+    categoria: Minérios
+    preco-base: 280.0
+    margem: 60.0
+    minimo: 28.0
+    maximo: 112.0
+    passo: 0.5
+  RAW_COPPER_BLOCK:
+    categoria: Minérios
+    preco-base: 56.0
+    margem: 60.0
+    minimo: 5.6
+    maximo: 22.4
+    passo: 0.5
+  QUARTZ_BLOCK:
+    categoria: Minérios
+    preco-base: 82.0
+    margem: 60.0
+    minimo: 8.2
+    maximo: 32.8
+    passo: 0.5
+  AMETHYST_CLUSTER:
+    categoria: Minérios
+    preco-base: 160.0
+    margem: 60.0
+    minimo: 16.0
+    maximo: 64.0
+    passo: 0.5
+  STONE:
+    categoria: Blocos
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  SMOOTH_STONE:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  STONE_BRICKS:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  MOSSY_STONE_BRICKS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  CRACKED_STONE_BRICKS:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  CHISELED_STONE_BRICKS:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  MOSSY_COBBLESTONE:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  DEEPSLATE:
+    categoria: Blocos
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  POLISHED_DEEPSLATE:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  DEEPSLATE_BRICKS:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  DEEPSLATE_TILES:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  CHISELED_DEEPSLATE:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  ANDESITE:
+    categoria: Blocos
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  POLISHED_ANDESITE:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  DIORITE:
+    categoria: Blocos
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  POLISHED_DIORITE:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  GRANITE:
+    categoria: Blocos
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  POLISHED_GRANITE:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  TUFF:
+    categoria: Blocos
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  TUFF_BRICKS:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  CALCITE:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  SAND:
+    categoria: Blocos
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  RED_SAND:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  GRAVEL:
+    categoria: Blocos
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  SANDSTONE:
+    categoria: Blocos
+    preco-base: 6.5
+    margem: 50.0
+    minimo: 0.65
+    maximo: 3.25
+    passo: 1.0
+    venda: false
+  SMOOTH_SANDSTONE:
+    categoria: Blocos
+    preco-base: 7.0
+    margem: 50.0
+    minimo: 0.7
+    maximo: 3.5
+    passo: 1.0
+    venda: false
+  CUT_SANDSTONE:
+    categoria: Blocos
+    preco-base: 7.0
+    margem: 50.0
+    minimo: 0.7
+    maximo: 3.5
+    passo: 1.0
+    venda: false
+  RED_SANDSTONE:
+    categoria: Blocos
+    preco-base: 8.5
+    margem: 50.0
+    minimo: 0.85
+    maximo: 4.25
+    passo: 1.0
+    venda: false
+  GLASS:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  GLASS_PANE:
+    categoria: Blocos
+    preco-base: 1.0
+    margem: 50.0
+    minimo: 0.1
+    maximo: 0.5
+    passo: 1.0
+    venda: false
+  BRICKS:
+    categoria: Blocos
+    preco-base: 10.0
+    margem: 50.0
+    minimo: 1.0
+    maximo: 5.0
+    passo: 1.0
+    venda: false
+  MUD_BRICKS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  PACKED_MUD:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  MUD:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  CLAY:
+    categoria: Blocos
+    preco-base: 8.0
+    margem: 50.0
+    minimo: 0.8
+    maximo: 4.0
+    passo: 1.0
+    venda: false
+  BLACKSTONE:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  POLISHED_BLACKSTONE_BRICKS:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  BASALT:
+    categoria: Blocos
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  POLISHED_BASALT:
+    categoria: Blocos
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  NETHER_BRICKS:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  RED_NETHER_BRICKS:
+    categoria: Blocos
+    preco-base: 12.0
+    margem: 50.0
+    minimo: 1.2
+    maximo: 6.0
+    passo: 1.0
+    venda: false
+  END_STONE:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  END_STONE_BRICKS:
+    categoria: Blocos
+    preco-base: 3.5
+    margem: 50.0
+    minimo: 0.35
+    maximo: 1.75
+    passo: 1.0
+    venda: false
+  PURPUR_BLOCK:
+    categoria: Blocos
+    preco-base: 8.0
+    margem: 50.0
+    minimo: 0.8
+    maximo: 4.0
+    passo: 1.0
+    venda: false
+  OBSIDIAN:
+    categoria: Blocos
+    preco-base: 30.0
+    margem: 50.0
+    minimo: 3.0
+    maximo: 15.0
+    passo: 1.0
+    venda: false
+  CRYING_OBSIDIAN:
+    categoria: Blocos
+    preco-base: 40.0
+    margem: 50.0
+    minimo: 4.0
+    maximo: 20.0
+    passo: 1.0
+    venda: false
+  QUARTZ_BRICKS:
+    categoria: Blocos
+    preco-base: 85.0
+    margem: 50.0
+    minimo: 8.5
+    maximo: 42.5
+    passo: 1.0
+    venda: false
+  SMOOTH_QUARTZ:
+    categoria: Blocos
+    preco-base: 85.0
+    margem: 50.0
+    minimo: 8.5
+    maximo: 42.5
+    passo: 1.0
+    venda: false
+  PRISMARINE:
+    categoria: Blocos
+    preco-base: 17.0
+    margem: 50.0
+    minimo: 1.7
+    maximo: 8.5
+    passo: 1.0
+    venda: false
+  PRISMARINE_BRICKS:
+    categoria: Blocos
+    preco-base: 38.0
+    margem: 50.0
+    minimo: 3.8
+    maximo: 19.0
+    passo: 1.0
+    venda: false
+  DARK_PRISMARINE:
+    categoria: Blocos
+    preco-base: 36.0
+    margem: 50.0
+    minimo: 3.6
+    maximo: 18.0
+    passo: 1.0
+    venda: false
+  SEA_LANTERN:
+    categoria: Blocos
+    preco-base: 50.0
+    margem: 50.0
+    minimo: 5.0
+    maximo: 25.0
+    passo: 1.0
+    venda: false
+  SNOW_BLOCK:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  ICE:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  PACKED_ICE:
+    categoria: Blocos
+    preco-base: 30.0
+    margem: 50.0
+    minimo: 3.0
+    maximo: 15.0
+    passo: 1.0
+    venda: false
+  DRIPSTONE_BLOCK:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  WHITE_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  WHITE_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  WHITE_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  WHITE_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  LIGHT_GRAY_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  LIGHT_GRAY_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  LIGHT_GRAY_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  LIGHT_GRAY_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  GRAY_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  GRAY_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  GRAY_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  GRAY_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  BLACK_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  BLACK_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  BLACK_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  BLACK_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  BROWN_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  BROWN_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  BROWN_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  BROWN_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  RED_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  RED_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  RED_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  RED_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  ORANGE_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  ORANGE_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  ORANGE_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  ORANGE_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  YELLOW_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  YELLOW_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  YELLOW_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  YELLOW_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  LIME_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  LIME_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  LIME_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  LIME_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  GREEN_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  GREEN_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  GREEN_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  GREEN_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  CYAN_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  CYAN_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  CYAN_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  CYAN_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  LIGHT_BLUE_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  LIGHT_BLUE_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  LIGHT_BLUE_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  LIGHT_BLUE_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  BLUE_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  BLUE_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  BLUE_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  BLUE_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  PURPLE_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  PURPLE_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  PURPLE_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  PURPLE_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  MAGENTA_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  MAGENTA_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  MAGENTA_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  MAGENTA_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  PINK_CONCRETE:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  PINK_TERRACOTTA:
+    categoria: Blocos
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  PINK_WOOL:
+    categoria: Blocos
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  PINK_STAINED_GLASS:
+    categoria: Blocos
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  OAK_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  SPRUCE_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  BIRCH_LOG:
+    categoria: Madeiras
+    preco-base: 7.0
+    margem: 60.0
+    minimo: 0.7
+    maximo: 2.8
+    passo: 0.5
+  BIRCH_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  JUNGLE_LOG:
+    categoria: Madeiras
+    preco-base: 7.0
+    margem: 60.0
+    minimo: 0.7
+    maximo: 2.8
+    passo: 0.5
+  JUNGLE_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  ACACIA_LOG:
+    categoria: Madeiras
+    preco-base: 7.0
+    margem: 60.0
+    minimo: 0.7
+    maximo: 2.8
+    passo: 0.5
+  ACACIA_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  DARK_OAK_LOG:
+    categoria: Madeiras
+    preco-base: 7.0
+    margem: 60.0
+    minimo: 0.7
+    maximo: 2.8
+    passo: 0.5
+  DARK_OAK_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  MANGROVE_LOG:
+    categoria: Madeiras
+    preco-base: 7.0
+    margem: 60.0
+    minimo: 0.7
+    maximo: 2.8
+    passo: 0.5
+  MANGROVE_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  CHERRY_LOG:
+    categoria: Madeiras
+    preco-base: 7.0
+    margem: 60.0
+    minimo: 0.7
+    maximo: 2.8
+    passo: 0.5
+  CHERRY_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  PALE_OAK_LOG:
+    categoria: Madeiras
+    preco-base: 7.0
+    margem: 60.0
+    minimo: 0.7
+    maximo: 2.8
+    passo: 0.5
+  PALE_OAK_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  CRIMSON_STEM:
+    categoria: Madeiras
+    preco-base: 8.0
+    margem: 60.0
+    minimo: 0.8
+    maximo: 3.2
+    passo: 0.5
+  WARPED_STEM:
+    categoria: Madeiras
+    preco-base: 8.0
+    margem: 60.0
+    minimo: 0.8
+    maximo: 3.2
+    passo: 0.5
+  CRIMSON_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.2
+    margem: 50.0
+    minimo: 0.22
+    maximo: 1.1
+    passo: 1.0
+    venda: false
+  WARPED_PLANKS:
+    categoria: Madeiras
+    preco-base: 2.2
+    margem: 50.0
+    minimo: 0.22
+    maximo: 1.1
+    passo: 1.0
+    venda: false
+  BAMBOO_BLOCK:
+    categoria: Madeiras
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  BAMBOO_PLANKS:
+    categoria: Madeiras
+    preco-base: 1.6
+    margem: 50.0
+    minimo: 0.16
+    maximo: 0.8
+    passo: 1.0
+    venda: false
+  STICK:
+    categoria: Madeiras
+    preco-base: 1.0
+    margem: 50.0
+    minimo: 0.1
+    maximo: 0.5
+    passo: 1.0
+    venda: false
+  WHEAT:
+    categoria: Farm
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  CARROT:
+    categoria: Farm
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  POTATO:
+    categoria: Farm
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  BEETROOT:
+    categoria: Farm
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  PUMPKIN:
+    categoria: Farm
+    preco-base: 6.0
+    margem: 60.0
+    minimo: 0.6
+    maximo: 2.4
+    passo: 0.5
+  MELON_SLICE:
+    categoria: Farm
+    preco-base: 1.0
+    margem: 60.0
+    minimo: 0.1
+    maximo: 0.4
+    passo: 0.5
+  SUGAR_CANE:
+    categoria: Farm
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  CACTUS:
+    categoria: Farm
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  COCOA_BEANS:
+    categoria: Farm
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  SWEET_BERRIES:
+    categoria: Farm
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  GLOW_BERRIES:
+    categoria: Farm
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  APPLE:
+    categoria: Farm
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  EGG:
+    categoria: Farm
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  HONEYCOMB:
+    categoria: Farm
+    preco-base: 8.0
+    margem: 60.0
+    minimo: 0.8
+    maximo: 3.2
+    passo: 0.5
+  HONEY_BOTTLE:
+    categoria: Farm
+    preco-base: 8.0
+    margem: 60.0
+    minimo: 0.8
+    maximo: 3.2
+    passo: 0.5
+  NETHER_WART:
+    categoria: Farm
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  BROWN_MUSHROOM:
+    categoria: Farm
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  RED_MUSHROOM:
+    categoria: Farm
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  BAMBOO:
+    categoria: Farm
+    preco-base: 1.0
+    margem: 60.0
+    minimo: 0.1
+    maximo: 0.4
+    passo: 0.5
+  KELP:
+    categoria: Farm
+    preco-base: 1.0
+    margem: 60.0
+    minimo: 0.1
+    maximo: 0.4
+    passo: 0.5
+  CHORUS_FRUIT:
+    categoria: Farm
+    preco-base: 5.0
+    margem: 60.0
+    minimo: 0.5
+    maximo: 2.0
+    passo: 0.5
+  WHEAT_SEEDS:
+    categoria: Farm
+    preco-base: 0.5
+    margem: 50.0
+    minimo: 0.05
+    maximo: 0.25
+    passo: 1.0
+    venda: false
+  BEETROOT_SEEDS:
+    categoria: Farm
+    preco-base: 0.5
+    margem: 50.0
+    minimo: 0.05
+    maximo: 0.25
+    passo: 1.0
+    venda: false
+  MELON_SEEDS:
+    categoria: Farm
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  PUMPKIN_SEEDS:
+    categoria: Farm
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  BREAD:
+    categoria: Farm
+    preco-base: 13.0
+    margem: 50.0
+    minimo: 1.3
+    maximo: 6.5
+    passo: 1.0
+    venda: false
+  BAKED_POTATO:
+    categoria: Farm
+    preco-base: 3.5
+    margem: 50.0
+    minimo: 0.35
+    maximo: 1.75
+    passo: 1.0
+    venda: false
+  COOKIE:
+    categoria: Farm
+    preco-base: 2.5
+    margem: 50.0
+    minimo: 0.25
+    maximo: 1.25
+    passo: 1.0
+    venda: false
+  PUMPKIN_PIE:
+    categoria: Farm
+    preco-base: 9.0
+    margem: 50.0
+    minimo: 0.9
+    maximo: 4.5
+    passo: 1.0
+    venda: false
+  GOLDEN_CARROT:
+    categoria: Farm
+    preco-base: 30.0
+    margem: 50.0
+    minimo: 3.0
+    maximo: 15.0
+    passo: 1.0
+    venda: false
+  HAY_BLOCK:
+    categoria: Farm
+    preco-base: 38.0
+    margem: 50.0
+    minimo: 3.8
+    maximo: 19.0
+    passo: 1.0
+    venda: false
+  MELON:
+    categoria: Farm
+    preco-base: 9.5
+    margem: 50.0
+    minimo: 0.95
+    maximo: 4.75
+    passo: 1.0
+    venda: false
+  SUGAR:
+    categoria: Farm
+    preco-base: 2.2
+    margem: 50.0
+    minimo: 0.22
+    maximo: 1.1
+    passo: 1.0
+    venda: false
+  DRIED_KELP:
+    categoria: Farm
+    preco-base: 1.2
+    margem: 50.0
+    minimo: 0.12
+    maximo: 0.6
+    passo: 1.0
+    venda: false
+  COOKED_BEEF:
+    categoria: Farm
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  COOKED_PORKCHOP:
+    categoria: Farm
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  COOKED_CHICKEN:
+    categoria: Farm
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  COOKED_MUTTON:
+    categoria: Farm
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  COOKED_COD:
+    categoria: Farm
+    preco-base: 3.5
+    margem: 50.0
+    minimo: 0.35
+    maximo: 1.75
+    passo: 1.0
+    venda: false
+  COOKED_SALMON:
+    categoria: Farm
+    preco-base: 4.5
+    margem: 50.0
+    minimo: 0.45
+    maximo: 2.25
+    passo: 1.0
+    venda: false
+  CAKE:
+    categoria: Farm
+    preco-base: 40.0
+    margem: 50.0
+    minimo: 4.0
+    maximo: 20.0
+    passo: 1.0
+    venda: false
+  BONE_MEAL:
+    categoria: Farm
+    preco-base: 0.8
+    margem: 50.0
+    minimo: 0.08
+    maximo: 0.4
+    passo: 1.0
+    venda: false
+  ROTTEN_FLESH:
+    categoria: Drops
+    preco-base: 1.0
+    margem: 60.0
+    minimo: 0.1
+    maximo: 0.4
+    passo: 0.5
+  BONE:
+    categoria: Drops
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  STRING:
+    categoria: Drops
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  GUNPOWDER:
+    categoria: Drops
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  SPIDER_EYE:
+    categoria: Drops
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  ENDER_PEARL:
+    categoria: Drops
+    preco-base: 15.0
+    margem: 60.0
+    minimo: 1.5
+    maximo: 6.0
+    passo: 0.5
+  BLAZE_ROD:
+    categoria: Drops
+    preco-base: 20.0
+    margem: 60.0
+    minimo: 2.0
+    maximo: 8.0
+    passo: 0.5
+  SLIME_BALL:
+    categoria: Drops
+    preco-base: 6.0
+    margem: 60.0
+    minimo: 0.6
+    maximo: 2.4
+    passo: 0.5
+  LEATHER:
+    categoria: Drops
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  FEATHER:
+    categoria: Drops
+    preco-base: 1.5
+    margem: 60.0
+    minimo: 0.15
+    maximo: 0.6
+    passo: 0.5
+  INK_SAC:
+    categoria: Drops
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  GLOW_INK_SAC:
+    categoria: Drops
+    preco-base: 6.0
+    margem: 60.0
+    minimo: 0.6
+    maximo: 2.4
+    passo: 0.5
+  PHANTOM_MEMBRANE:
+    categoria: Drops
+    preco-base: 15.0
+    margem: 60.0
+    minimo: 1.5
+    maximo: 6.0
+    passo: 0.5
+  GHAST_TEAR:
+    categoria: Drops
+    preco-base: 40.0
+    margem: 60.0
+    minimo: 4.0
+    maximo: 16.0
+    passo: 0.5
+  MAGMA_CREAM:
+    categoria: Drops
+    preco-base: 10.0
+    margem: 60.0
+    minimo: 1.0
+    maximo: 4.0
+    passo: 0.5
+  PRISMARINE_SHARD:
+    categoria: Drops
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  PRISMARINE_CRYSTALS:
+    categoria: Drops
+    preco-base: 5.0
+    margem: 60.0
+    minimo: 0.5
+    maximo: 2.0
+    passo: 0.5
+  RABBIT_HIDE:
+    categoria: Drops
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  RABBIT_FOOT:
+    categoria: Drops
+    preco-base: 15.0
+    margem: 60.0
+    minimo: 1.5
+    maximo: 6.0
+    passo: 0.5
+  BEEF:
+    categoria: Drops
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  PORKCHOP:
+    categoria: Drops
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  CHICKEN:
+    categoria: Drops
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  MUTTON:
+    categoria: Drops
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  RABBIT:
+    categoria: Drops
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  COD:
+    categoria: Drops
+    preco-base: 2.0
+    margem: 60.0
+    minimo: 0.2
+    maximo: 0.8
+    passo: 0.5
+  SALMON:
+    categoria: Drops
+    preco-base: 3.0
+    margem: 60.0
+    minimo: 0.3
+    maximo: 1.2
+    passo: 0.5
+  ARROW:
+    categoria: Drops
+    preco-base: 1.0
+    margem: 60.0
+    minimo: 0.1
+    maximo: 0.4
+    passo: 0.5
+  BREEZE_ROD:
+    categoria: Drops
+    preco-base: 25.0
+    margem: 60.0
+    minimo: 2.5
+    maximo: 10.0
+    passo: 0.5
+  SHULKER_SHELL:
+    categoria: Drops
+    preco-base: 300.0
+    margem: 50.0
+    minimo: 30.0
+    maximo: 150.0
+    passo: 1.0
+    venda: false
+  TURTLE_SCUTE:
+    categoria: Drops
+    preco-base: 60.0
+    margem: 50.0
+    minimo: 6.0
+    maximo: 30.0
+    passo: 1.0
+    venda: false
+  NAUTILUS_SHELL:
+    categoria: Drops
+    preco-base: 80.0
+    margem: 50.0
+    minimo: 8.0
+    maximo: 40.0
+    passo: 1.0
+    venda: false
+  TOTEM_OF_UNDYING:
+    categoria: Drops
+    preco-base: 2500.0
+    margem: 50.0
+    minimo: 250.0
+    maximo: 1250.0
+    passo: 1.0
+    venda: false
+  OAK_SAPLING:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  OAK_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  SPRUCE_SAPLING:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  SPRUCE_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  BIRCH_SAPLING:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  BIRCH_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  JUNGLE_SAPLING:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  JUNGLE_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  ACACIA_SAPLING:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  ACACIA_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  DARK_OAK_SAPLING:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  DARK_OAK_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  MANGROVE_PROPAGULE:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  MANGROVE_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  CHERRY_SAPLING:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  CHERRY_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  PALE_OAK_SAPLING:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  DANDELION:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  POPPY:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  BLUE_ORCHID:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  ALLIUM:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  AZURE_BLUET:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  RED_TULIP:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  ORANGE_TULIP:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  WHITE_TULIP:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  PINK_TULIP:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  OXEYE_DAISY:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  CORNFLOWER:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  LILY_OF_THE_VALLEY:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  TORCHFLOWER:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  SUNFLOWER:
+    categoria: Natureza
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  LILAC:
+    categoria: Natureza
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  ROSE_BUSH:
+    categoria: Natureza
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  PEONY:
+    categoria: Natureza
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  DIRT:
+    categoria: Natureza
+    preco-base: 0.5
+    margem: 50.0
+    minimo: 0.05
+    maximo: 0.25
+    passo: 1.0
+    venda: false
+  COARSE_DIRT:
+    categoria: Natureza
+    preco-base: 0.6
+    margem: 50.0
+    minimo: 0.06
+    maximo: 0.3
+    passo: 1.0
+    venda: false
+  ROOTED_DIRT:
+    categoria: Natureza
+    preco-base: 1.0
+    margem: 50.0
+    minimo: 0.1
+    maximo: 0.5
+    passo: 1.0
+    venda: false
+  GRASS_BLOCK:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  PODZOL:
+    categoria: Natureza
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  MYCELIUM:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  MOSS_BLOCK:
+    categoria: Natureza
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  MOSS_CARPET:
+    categoria: Natureza
+    preco-base: 2.1
+    margem: 50.0
+    minimo: 0.21
+    maximo: 1.05
+    passo: 1.0
+    venda: false
+  AZALEA:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  FLOWERING_AZALEA:
+    categoria: Natureza
+    preco-base: 6.0
+    margem: 50.0
+    minimo: 0.6
+    maximo: 3.0
+    passo: 1.0
+    venda: false
+  AZALEA_LEAVES:
+    categoria: Natureza
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  FLOWERING_AZALEA_LEAVES:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  VINE:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  LILY_PAD:
+    categoria: Natureza
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  DEAD_BUSH:
+    categoria: Natureza
+    preco-base: 1.0
+    margem: 50.0
+    minimo: 0.1
+    maximo: 0.5
+    passo: 1.0
+    venda: false
+  FERN:
+    categoria: Natureza
+    preco-base: 1.0
+    margem: 50.0
+    minimo: 0.1
+    maximo: 0.5
+    passo: 1.0
+    venda: false
+  SHORT_GRASS:
+    categoria: Natureza
+    preco-base: 1.0
+    margem: 50.0
+    minimo: 0.1
+    maximo: 0.5
+    passo: 1.0
+    venda: false
+  PINK_PETALS:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  GLOW_LICHEN:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  SPORE_BLOSSOM:
+    categoria: Natureza
+    preco-base: 30.0
+    margem: 50.0
+    minimo: 3.0
+    maximo: 15.0
+    passo: 1.0
+    venda: false
+  BIG_DRIPLEAF:
+    categoria: Natureza
+    preco-base: 5.0
+    margem: 50.0
+    minimo: 0.5
+    maximo: 2.5
+    passo: 1.0
+    venda: false
+  HANGING_ROOTS:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  POINTED_DRIPSTONE:
+    categoria: Natureza
+    preco-base: 1.0
+    margem: 50.0
+    minimo: 0.1
+    maximo: 0.5
+    passo: 1.0
+    venda: false
+  SEA_PICKLE:
+    categoria: Natureza
+    preco-base: 3.0
+    margem: 50.0
+    minimo: 0.3
+    maximo: 1.5
+    passo: 1.0
+    venda: false
+  FLINT:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  CLAY_BALL:
+    categoria: Natureza
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  SNOWBALL:
+    categoria: Natureza
+    preco-base: 0.75
+    margem: 50.0
+    minimo: 0.075
+    maximo: 0.375
+    passo: 1.0
+    venda: false
+  GLOWSTONE_DUST:
+    categoria: Alquimia
+    preco-base: 4.0
+    margem: 50.0
+    minimo: 0.4
+    maximo: 2.0
+    passo: 1.0
+    venda: false
+  GLOWSTONE:
+    categoria: Alquimia
+    preco-base: 17.0
+    margem: 50.0
+    minimo: 1.7
+    maximo: 8.5
+    passo: 1.0
+    venda: false
+  BLAZE_POWDER:
+    categoria: Alquimia
+    preco-base: 10.0
+    margem: 50.0
+    minimo: 1.0
+    maximo: 5.0
+    passo: 1.0
+    venda: false
+  FERMENTED_SPIDER_EYE:
+    categoria: Alquimia
+    preco-base: 7.5
+    margem: 50.0
+    minimo: 0.75
+    maximo: 3.75
+    passo: 1.0
+    venda: false
+  GLISTERING_MELON_SLICE:
+    categoria: Alquimia
+    preco-base: 26.0
+    margem: 50.0
+    minimo: 2.6
+    maximo: 13.0
+    passo: 1.0
+    venda: false
+  ENDER_EYE:
+    categoria: Alquimia
+    preco-base: 26.0
+    margem: 50.0
+    minimo: 2.6
+    maximo: 13.0
+    passo: 1.0
+    venda: false
+  BREWING_STAND:
+    categoria: Alquimia
+    preco-base: 25.0
+    margem: 50.0
+    minimo: 2.5
+    maximo: 12.5
+    passo: 1.0
+    venda: false
+  CAULDRON:
+    categoria: Alquimia
+    preco-base: 130.0
+    margem: 50.0
+    minimo: 13.0
+    maximo: 65.0
+    passo: 1.0
+    venda: false
+  REDSTONE_TORCH:
+    categoria: Alquimia
+    preco-base: 7.0
+    margem: 50.0
+    minimo: 0.7
+    maximo: 3.5
+    passo: 1.0
+    venda: false
+  REPEATER:
+    categoria: Alquimia
+    preco-base: 26.0
+    margem: 50.0
+    minimo: 2.6
+    maximo: 13.0
+    passo: 1.0
+    venda: false
+  COMPARATOR:
+    categoria: Alquimia
+    preco-base: 48.0
+    margem: 50.0
+    minimo: 4.8
+    maximo: 24.0
+    passo: 1.0
+    venda: false
+  PISTON:
+    categoria: Alquimia
+    preco-base: 36.0
+    margem: 50.0
+    minimo: 3.6
+    maximo: 18.0
+    passo: 1.0
+    venda: false
+  STICKY_PISTON:
+    categoria: Alquimia
+    preco-base: 44.0
+    margem: 50.0
+    minimo: 4.4
+    maximo: 22.0
+    passo: 1.0
+    venda: false
+  OBSERVER:
+    categoria: Alquimia
+    preco-base: 40.0
+    margem: 50.0
+    minimo: 4.0
+    maximo: 20.0
+    passo: 1.0
+    venda: false
+  HOPPER:
+    categoria: Alquimia
+    preco-base: 110.0
+    margem: 50.0
+    minimo: 11.0
+    maximo: 55.0
+    passo: 1.0
+    venda: false
+  DROPPER:
+    categoria: Alquimia
+    preco-base: 14.0
+    margem: 50.0
+    minimo: 1.4
+    maximo: 7.0
+    passo: 1.0
+    venda: false
+  DISPENSER:
+    categoria: Alquimia
+    preco-base: 24.0
+    margem: 50.0
+    minimo: 2.4
+    maximo: 12.0
+    passo: 1.0
+    venda: false
+  LEVER:
+    categoria: Alquimia
+    preco-base: 2.0
+    margem: 50.0
+    minimo: 0.2
+    maximo: 1.0
+    passo: 1.0
+    venda: false
+  STONE_BUTTON:
+    categoria: Alquimia
+    preco-base: 1.6
+    margem: 50.0
+    minimo: 0.16
+    maximo: 0.8
+    passo: 1.0
+    venda: false
+  NOTE_BLOCK:
+    categoria: Alquimia
+    preco-base: 23.0
+    margem: 50.0
+    minimo: 2.3
+    maximo: 11.5
+    passo: 1.0
+    venda: false
+  TARGET:
+    categoria: Alquimia
+    preco-base: 63.0
+    margem: 50.0
+    minimo: 6.3
+    maximo: 31.5
+    passo: 1.0
+    venda: false
+  RAIL:
+    categoria: Alquimia
+    preco-base: 7.0
+    margem: 50.0
+    minimo: 0.7
+    maximo: 3.5
+    passo: 1.0
+    venda: false
+  POWERED_RAIL:
+    categoria: Alquimia
+    preco-base: 35.0
+    margem: 50.0
+    minimo: 3.5
+    maximo: 17.5
+    passo: 1.0
+    venda: false
+  DAYLIGHT_DETECTOR:
+    categoria: Alquimia
+    preco-base: 72.0
+    margem: 50.0
+    minimo: 7.2
+    maximo: 36.0
+    passo: 1.0
+    venda: false
+  BOOK:
+    categoria: Alquimia
+    preco-base: 10.0
+    margem: 50.0
+    minimo: 1.0
+    maximo: 5.0
+    passo: 1.0
+    venda: false
+  PAPER:
+    categoria: Alquimia
+    preco-base: 2.2
+    margem: 50.0
+    minimo: 0.22
+    maximo: 1.1
+    passo: 1.0
+    venda: false
+  BOOKSHELF:
+    categoria: Alquimia
+    preco-base: 45.0
+    margem: 50.0
+    minimo: 4.5
+    maximo: 22.5
+    passo: 1.0
+    venda: false
+  EXPERIENCE_BOTTLE:
+    categoria: Alquimia
+    preco-base: 30.0
+    margem: 50.0
+    minimo: 3.0
+    maximo: 15.0
+    passo: 1.0
+    venda: false
+  LANTERN:
+    categoria: Alquimia
+    preco-base: 6.0
+    margem: 50.0
+    minimo: 0.6
+    maximo: 3.0
+    passo: 1.0
+    venda: false
+  SOUL_LANTERN:
+    categoria: Alquimia
+    preco-base: 6.0
+    margem: 50.0
+    minimo: 0.6
+    maximo: 3.0
+    passo: 1.0
+    venda: false
+  TORCH:
+    categoria: Alquimia
+    preco-base: 1.3
+    margem: 50.0
+    minimo: 0.13
+    maximo: 0.65
+    passo: 1.0
+    venda: false
+  SOUL_TORCH:
+    categoria: Alquimia
+    preco-base: 1.5
+    margem: 50.0
+    minimo: 0.15
+    maximo: 0.75
+    passo: 1.0
+    venda: false
+  CHEST:
+    categoria: Alquimia
+    preco-base: 17.0
+    margem: 50.0
+    minimo: 1.7
+    maximo: 8.5
+    passo: 1.0
+    venda: false
+  BARREL:
+    categoria: Alquimia
+    preco-base: 15.0
+    margem: 50.0
+    minimo: 1.5
+    maximo: 7.5
+    passo: 1.0
+    venda: false
+  CRAFTING_TABLE:
+    categoria: Alquimia
+    preco-base: 8.5
+    margem: 50.0
+    minimo: 0.85
+    maximo: 4.25
+    passo: 1.0
+    venda: false
+  FURNACE:
+    categoria: Alquimia
+    preco-base: 8.5
+    margem: 50.0
+    minimo: 0.85
+    maximo: 4.25
+    passo: 1.0
+    venda: false
+  ANVIL:
+    categoria: Alquimia
+    preco-base: 560.0
+    margem: 50.0
+    minimo: 56.0
+    maximo: 280.0
+    passo: 1.0
+    venda: false
+  END_ROD:
+    categoria: Alquimia
+    preco-base: 30.0
+    margem: 50.0
+    minimo: 3.0
+    maximo: 15.0
+    passo: 1.0
+    venda: false
+  RESPAWN_ANCHOR:
+    categoria: Alquimia
+    preco-base: 400.0
+    margem: 50.0
+    minimo: 40.0
+    maximo: 200.0
+    passo: 1.0
+    venda: false

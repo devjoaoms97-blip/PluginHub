@@ -151,7 +151,6 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_prata permission set vip.perk.fly true
 /lp group vip_prata permission set vip.desconto.prata true
 /lp group vip_prata permission set vip.xp.prata true
-/lp group vip_prata permission set vip.perk.autovenda true
 /lp group vip_prata permission set vip.terrenos.prata true
 
 /lp creategroup vip_ouro
@@ -164,7 +163,6 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_ouro permission set vip.perk.warp true
 /lp group vip_ouro permission set vip.desconto.ouro true
 /lp group vip_ouro permission set vip.xp.ouro true
-/lp group vip_ouro permission set vip.perk.autovenda true
 /lp group vip_ouro permission set vip.missao.extra true
 /lp group vip_ouro permission set vip.terrenos.ouro true
 
@@ -178,7 +176,6 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_diamante permission set vip.perk.warp true
 /lp group vip_diamante permission set vip.desconto.diamante true
 /lp group vip_diamante permission set vip.xp.diamante true
-/lp group vip_diamante permission set vip.perk.autovenda true
 /lp group vip_diamante permission set vip.missao.extra true
 /lp group vip_diamante permission set vip.terrenos.diamante true
 ```
@@ -209,8 +206,9 @@ Vá até o local desejado e anote as coordenadas (`F3`), depois edite `warp-vip.
 | Bônus de ativação: XP em cada skill | 500 | 1.500 | 3.000 | 5.000 |
 | XP a mais nas skills (enquanto ativo) | +10% | +20% | +30% | +50% |
 | Desconto na taxa do Pix | 20% | 40% | 60% | 80% |
-| Desconto na loja e no aluguel de barraca | 5% | 10% | 15% | 20% |
-| Venda automática ao minerar (`/autovenda`) | — | ✔ | ✔ | ✔ |
+| Desconto na compra (Loja Oficial e oficinas da mina) | 3% | 6% | 9% | 12% |
+| A mais na venda (venda automática da mina e vendedores da loja) | +3% | +6% | +9% | +12% |
+| Desconto no aluguel de barraca | 5% | 10% | 15% | 20% |
 | Missão diária extra | — | — | ✔ | ✔ |
 | Terrenos (`/terreno`) | 1 | 2 | 2 | 3 |
 

@@ -5,6 +5,7 @@ Dois scripts em Python pra calibrar e acompanhar a economia do rankup. Precisam 
 | Arquivo | Pra quê |
 |---|---|
 | `simular.py` | Antes de ter jogadores: quantas horas leva cada rank, com os preços e as minas atuais |
+| `loja.py` | O catálogo da Loja Oficial: gera o `itens.yml` e confere se nenhum preço abre brecha (comprar e revender, craftar, fundir, quebrar o bloco). Veja o README da loja |
 | `minas-planejadas.yml` | As minas que a simulação usa. Monte as minas no jogo com essas composições |
 | `analisar.py` | Com o servidor rodando: resumo da semana a partir dos dados que os plugins gravam |
 
@@ -39,12 +40,12 @@ Ela lê os ranks do `rankup-plugin/src/main/resources/config.yml`, os preços da
 | Não-VIP sem Fortuna | ~200 h |
 | Sozinho na mina, Fortuna III | ~128 h |
 | 10 por mina, Fortuna III | ~209 h |
-| VIP Bronze (Fortuna III, Eficiência III) | ~150 h |
-| VIP Prata (Fortuna III, Eficiência IV) | ~131 h |
-| VIP Ouro (Fortuna IV, Eficiência V) | ~112 h |
-| VIP Diamante (Fortuna V, Eficiência V) | ~107 h |
+| VIP Bronze (Fortuna III, Eficiência III, venda +3%) | ~146 h |
+| VIP Prata (Fortuna III, Eficiência IV, venda +6%) | ~124 h |
+| VIP Ouro (Fortuna IV, Eficiência V, venda +9%) | ~103 h |
+| VIP Diamante (Fortuna V, Eficiência V, venda +12%) | ~96 h |
 
-A diferença entre "sozinho" e "10 por mina" é a loja dinâmica: quanto mais gente vende o mesmo minério, mais o preço cai. Nos VIPs, a Eficiência pesa quase tanto quanto a Fortuna, porque é ela que faz quebrar mais blocos por hora.
+A diferença entre "sozinho" e "10 por mina" é a loja dinâmica: quanto mais gente vende o mesmo minério, mais o preço cai. O bônus de venda do VIP (`vip-bonus-venda` na loja) vale na venda automática da mina. Nos VIPs, a Eficiência pesa quase tanto quanto a Fortuna, porque é ela que faz quebrar mais blocos por hora.
 
 **Quando rodar de novo:** sempre que mudar o preço de um rank, a composição de uma mina ou o preço de um item da loja. Se a mina usar um bloco novo, ele precisa entrar na tabela `BLOCOS` do `simular.py` (dureza e o que ele dropa).
 

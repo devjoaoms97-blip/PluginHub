@@ -2,7 +2,6 @@ name: vip_diamante
 permissions:
 - vip.desconto.diamante
 - vip.missao.extra
-- vip.perk.autovenda
 - vip.perk.feed
 - vip.perk.fly
 - vip.perk.heal

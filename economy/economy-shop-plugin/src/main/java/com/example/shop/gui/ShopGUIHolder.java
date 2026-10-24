@@ -13,12 +13,23 @@ public class ShopGUIHolder implements InventoryHolder {
     private final Tela tela;
     private final String categoria; // null quando tela == CATEGORIAS
     private final int pagina;
+    /** Aberto por um vendedor: só a categoria dele, sem o botão de voltar pras categorias. */
+    private final boolean soCategoria;
     private Inventory inventory;
 
     public ShopGUIHolder(Tela tela, String categoria, int pagina) {
+        this(tela, categoria, pagina, false);
+    }
+
+    public ShopGUIHolder(Tela tela, String categoria, int pagina, boolean soCategoria) {
         this.tela = tela;
         this.categoria = categoria;
         this.pagina = pagina;
+        this.soCategoria = soCategoria;
+    }
+
+    public boolean isSoCategoria() {
+        return soCategoria;
     }
 
     @Override

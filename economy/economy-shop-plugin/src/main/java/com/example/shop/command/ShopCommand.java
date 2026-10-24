@@ -44,6 +44,12 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§cSomente jogadores podem abrir a loja.");
             return true;
         }
+        if (!jogador.hasPermission("shop.comandos")) {
+            // a loja é presencial: compra e venda com os vendedores da Loja Oficial
+            jogador.sendMessage(plugin.getConfig().getString("mensagens.loja-presencial",
+                    "§eA loja é presencial: vá à §6Loja Oficial§e, no portão LESTE do spawn (§f/warp loja§e).").replace('&', '§'));
+            return true;
+        }
         jogador.openInventory(plugin.getShopGUI().montarCategorias());
         return true;
     }
@@ -110,6 +116,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             case "resetprice" -> tratarResetprice(sender);
             case "list" -> tratarList(sender, args);
             case "evento" -> tratarEventoAdmin(sender, args);
+            case "npc" -> tratarNpc(sender, args);
             case "reload" -> {
                 plugin.reloadConfig();
                 plugin.getShopManager().recarregar();
@@ -118,6 +125,47 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             default -> enviarAjudaAdmin(sender);
         }
         return true;
+    }
+
+    /** /shop admin npc <id> [mundo x y z yaw] | /shop admin npc remover <id> | /shop admin npc lista */
+    private void tratarNpc(CommandSender sender, String[] args) {
+        var vendedores = plugin.getVendedores();
+        if (args.length >= 3 && args[2].equalsIgnoreCase("lista")) {
+            sender.sendMessage("§e§l--- Vendedores ---");
+            vendedores.getLugares().forEach((id, l) -> sender.sendMessage("§f" + id + " §7(" + vendedores.categoriaDe(id) + ") em §f"
+                    + l.mundo() + " " + (int) Math.floor(l.x()) + " " + (int) Math.floor(l.y()) + " " + (int) Math.floor(l.z())));
+            return;
+        }
+        if (args.length >= 4 && args[2].equalsIgnoreCase("remover")) {
+            sender.sendMessage(vendedores.remover(args[3]) ? "§aVendedor removido." : "§cEsse vendedor não está colocado.");
+            return;
+        }
+        if (args.length < 3 || !vendedores.existeNoConfig(args[2])) {
+            sender.sendMessage("§cUso: §f/shop admin npc <id> [mundo x y z yaw] §7| §fremover <id> §7| §flista");
+            sender.sendMessage("§7Ids (seção vendedores do config): §f"
+                    + String.join(", ", plugin.getConfig().getConfigurationSection("vendedores") == null ? java.util.Set.of()
+                    : plugin.getConfig().getConfigurationSection("vendedores").getKeys(false)));
+            return;
+        }
+        org.bukkit.Location local;
+        if (args.length >= 7) {
+            org.bukkit.World w = org.bukkit.Bukkit.getWorld(args[3]);
+            Double x = parseDouble(args[4], sender), y = parseDouble(args[5], sender), z = parseDouble(args[6], sender);
+            Double yaw = args.length >= 8 ? parseDouble(args[7], sender) : Double.valueOf(0);
+            if (w == null || x == null || y == null || z == null || yaw == null) {
+                sender.sendMessage("§cMundo ou coordenadas inválidos.");
+                return;
+            }
+            local = new org.bukkit.Location(w, x, y, z, yaw.floatValue(), 0);
+        } else if (sender instanceof Player p) {
+            local = p.getLocation();
+            local.setPitch(0);
+        } else {
+            sender.sendMessage("§cDo console, passe o mundo e as coordenadas.");
+            return;
+        }
+        vendedores.colocar(args[2], local);
+        sender.sendMessage("§aVendedor §f" + args[2].toLowerCase(Locale.ROOT) + " §a(" + vendedores.categoriaDe(args[2].toLowerCase(Locale.ROOT)) + ") colocado.");
     }
 
     /** /shop evento: o evento de mercado de agora. */
@@ -325,6 +373,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/shop admin list piso §7- lista só os itens travados no preço mínimo");
         sender.sendMessage("§f/shop admin reload §7- recarrega o config.yml");
         sender.sendMessage("§f/shop admin evento <item> <mult> <horas> §7- põe um item em alta agora (§fparar§7 encerra)");
+        sender.sendMessage("§f/shop admin npc <id> [mundo x y z yaw] §7- põe o vendedor (§fremover <id>§7, §flista§7)");
         sender.sendMessage("§f/shop evento §7- mostra o item em alta");
         sender.sendMessage("§f/shop historico <item> §7- mostra o gráfico de tendência das últimas 24h");
     }
@@ -339,7 +388,7 @@ public class ShopCommand implements CommandExecutor, TabCompleter {
             return opcoes;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
-            return List.of("additem", "removeitem", "resetprice", "list", "reload", "evento");
+            return List.of("additem", "removeitem", "resetprice", "list", "reload", "evento", "npc");
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("additem")) {
             return plugin.getShopManager().getCategorias();

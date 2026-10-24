@@ -1,0 +1,18 @@
+name: SpawnersPlugin
+version: '1.0.0'
+main: com.example.spawners.SpawnersPlugin
+api-version: '26.2'
+author: Você
+description: Spawners empilhados nos terrenos, com os mobs numa pilha só que o jogador mata na espada.
+softdepend: [Vault, RankupPlugin, PixPlugin, TerrenosPlugin]
+
+commands:
+  spawners:
+    description: Loja de spawners e comandos da staff.
+    usage: "Uso: /spawners loja"
+    aliases: [spawner]
+
+permissions:
+  spawners.admin:
+    description: Dá spawners, lista os colocados e mexe em qualquer um.
+    default: op

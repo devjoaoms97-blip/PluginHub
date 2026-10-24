@@ -123,7 +123,7 @@ Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), c
 - [x] Rank na tab, junto com o clã e o VIP.
 - [ ] Encantamentos de picareta comprados com coins ou com uma moeda própria (explosão, mais fortuna, venda automática). 🔴
 - [x] Coleta direta nas minas pra todos: drops e XP vão pro jogador, sem itens no chão.
-- [x] Venda automática ao minerar como benefício de VIP (`/autovenda`, Prata pra cima).
+- [x] Venda automática ao minerar, pra todos (2026-10-24; antes era benefício de VIP com `/autovenda`).
 - [x] Menu (GUI) no `/ranks` e no `/mina`.
 - [x] Missão de subir de rank e missões por mina.
 - [ ] Mina privada do clã ou do VIP. 🟡
@@ -166,6 +166,7 @@ Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo en
 - [ ] Conferir no jogo a animação da espada bloqueando. 🟢
 - [x] **Corrigido (2026-10-24):** com espada na principal, o botão direito num inimigo bloqueava em vez de bater com a segunda mão (o cliente nunca manda o clique da segunda mão quando a principal "faz algo").
 - [ ] Calibrar o tempo entre golpes jogando (o dano por segundo muda com ele). 🟢
+- [ ] **Besta numa mão e espada na outra**: dá pra carregar e atirar com a besta enquanto bate com a espada. Decidir a regra (ex: carregar ou atirar com a besta trava o golpe da outra mão por um tempo, ou a besta só carrega/atira com a outra mão vazia) e testar com bot. 🟢
 
 ### Ponte com o Discord ✅ v1 (`discord-plugin`)
 Os outros plugins mandam os anúncios para o DiscordPlugin, e cada categoria vai para o seu webhook ou para o padrão. Já ligados: Boss (aparecimento e morte com o ranking), Gladiador (abertura e resultado), leilões (terrenos e barracas especiais), VIP ativado (categoria `vip`), Pix alto (categoria `pix`, a partir de `discord.pix-suspeito-valor` no PixPlugin; de preferência num canal da staff) e barraca alugada ou liberada (categoria `barracas`). O Bounty continua com o webhook próprio.
@@ -193,6 +194,28 @@ Quatro barraquinhas temáticas na praça de entrada da Avenida das Minas (estrut
 ### Placar lateral ✅ v1 (`placar-plugin`)
 Scoreboard no canto da tela com saldo, rank, barra até o próximo rank, clã, missões do dia, próximo boss e jogadores online. Linhas no config, com placeholders; `/placar` liga e desliga.
 - [ ] Linha com a skill em uso e o XP dela (ver SkillsPlugin). 🟡
+
+### Loja Oficial ✅ v1 (`economy-shop-plugin` + estrutura `loja`)
+Prédio fechado colado no portão LESTE do spawn (`/warp loja`), com dez balcões, cinco de cada lado: sete vendedores temáticos, um por categoria (minerador, construtor, lenhador, fazendeiro, caçador, jardineiro, alquimista), o Domador (spawners) e dois reservados (máquinas e PvP). Comprar e vender é só com eles; `/shop`, `/buy` e `/sell` ficaram pra staff. Nas minas, tudo o que se quebra vira dinheiro na hora, pra todos. VIP compra com 3/6/9/12% de desconto e vende com 3/6/9/12% a mais. Sem limite de quantidade: o preço dinâmico regula, e farm AFK é bem-vinda. Uma trava (90% do menor preço de compra) impede comprar e revender com lucro. Catálogo de 356 itens gerado e conferido pelo `tools/economia/loja.py` (nenhuma brecha com craft, fundição ou quebra de bloco).
+- [ ] Ajustar preços com o `analisar.py` depois de alguns dias com jogadores. 🟡
+
+### Spawners ✅ v1 (`spawners-plugin`)
+Spawners empilhados nos terrenos, comprados no balcão Spawners da Loja Oficial (12 tipos, cada um liberado num rank). Iguais no mesmo bloco se somam, e os mobs se juntam numa pilha só em cima do spawner, que o jogador mata na espada. Os drops vendem no Caçador. As skills dão 25% do XP em mob de pilha, e as missões não contam.
+- [ ] **Matador automático** (melhoria do spawner, pra farm AFK): mata a pilha sozinho de tempos em tempos e guarda os drops num baú. 🟡
+- [ ] Ver no `analisar.py` quanto os spawners rendem de verdade e calibrar os preços. 🟡
+
+### Máquinas e produtos (próximo; decidido em 2026-10-24)
+Máquina colocada no terreno que, com **combustível comprado na loja**, fabrica um **produto** (item que não existe no vanilla) a cada tanto tempo. O vendedor do balcão Máquinas compra os produtos por preço dinâmico. Níveis e melhorias (velocidade, estoque, qualidade) comprados com dinheiro.
+- [ ] **Textura própria do servidor** pros produtos e pras máquinas: resource pack com as texturas criadas pra combinar com o servidor (cores e estilo do spawn), baixado pelo jogador ao entrar.
+- [ ] Os produtos com ID próprio marcado no item (não dá pra falsificar nem vender como item vanilla).
+- [ ] Cadeias de produção (a saída de uma máquina é entrada de outra). 🟡
+- [ ] Balcão **PvP** da loja: armaduras, poções, armas. 🟡
+
+### Áreas fechadas (na fila, pedido de 2026-10-24)
+Ninguém sai da área de um evento ou de uma área fechada por fora do caminho: nem quem participa, nem quem assiste.
+- [ ] Bloquear **pérola do fim**, **elytra** (planar e foguete), **`/fly` do VIP** e afins (tridente com Correnteza, `/back`, `/tpa`, `/home`...) no spawn, nas minas, na arena do boss, no Gladiador, no X1, na Loja Oficial etc.
+- [ ] Valer pros participantes e pros espectadores (plateia do X1 e do Gladiador).
+- [ ] Uma lista de regiões no config de um plugin só (provavelmente um "AreasPlugin" ou dentro do EstruturasPlugin), com o que cada região bloqueia.
 
 ---
 
