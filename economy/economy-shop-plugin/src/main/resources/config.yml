@@ -129,6 +129,11 @@ vendedores:
     nome: "&8&l🐷 Domador"
     descricao: "&7Spawners pro seu terreno"
     skin: "textura:c5d0b90b535a137cd899f021d62b22ac26c8648ddc629d82ba590b9c7032cb08"
+  maquinas:
+    comando: "maquinas loja"
+    nome: "&7&l⚙ Maquinista"
+    descricao: "&7Máquinas, combustível e produtos"
+    skin: "textura:915055afd5d3aa0bcb7f06ff76c4350b92dbf1e81ebcd26caacb04462e51859c"
   alquimista:
     categoria: "Alquimia"
     nome: "&d&l⚗ Alquimista"

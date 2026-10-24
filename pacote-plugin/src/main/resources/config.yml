@@ -1,0 +1,16 @@
+# Configuração do PacotePlugin (resource pack do servidor)
+#
+# Porta do HTTP embutido que serve o pacote.zip.
+porta: 8765
+
+# Endereço que os JOGADORES usam pra baixar o pacote. Vazio = http://localhost:<porta>/pacote.zip,
+# que só funciona pra quem joga na mesma máquina do servidor (teste). No servidor de verdade:
+# http://<ip ou domínio do servidor>:<porta>/pacote.zip, com a porta liberada no firewall.
+url-publica: ""
+
+# Obrigatório: quem recusa o pacote é desconectado. Sem ele, as máquinas e os produtos aparecem
+# com a textura de "faltando" (xadrez roxo e preto).
+obrigatorio: true
+
+# Texto da tela que pergunta se o jogador aceita o pacote ('&' pras cores).
+mensagem: "&6Texturas do servidor &7(máquinas, produtos e mais)"

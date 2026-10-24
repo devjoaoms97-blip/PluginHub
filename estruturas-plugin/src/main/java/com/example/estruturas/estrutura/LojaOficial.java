@@ -71,7 +71,7 @@ public class LojaOficial implements Estrutura {
             new Balcao("alquimista", 1, 95, 104, Material.PURPLE_WOOL, Material.MAGENTA_WOOL),
             new Balcao("minerador", -1, 108, 117, Material.CYAN_WOOL, Material.LIGHT_BLUE_WOOL),
             new Balcao("spawners", -1, 121, 130, Material.BLACK_WOOL, Material.GRAY_WOOL),
-            new Balcao("maquinas", 1, 108, 117, Material.LIGHT_GRAY_WOOL, Material.ORANGE_WOOL, true),
+            new Balcao("maquinas", 1, 108, 117, Material.LIGHT_GRAY_WOOL, Material.ORANGE_WOOL),
             new Balcao("pvp", 1, 121, 130, Material.RED_WOOL, Material.BLACK_WOOL, true));
 
     private Planta p;
@@ -354,7 +354,19 @@ public class LojaOficial implements Estrutura {
                 bset(b, z, 1, 5, Material.COBWEB);
                 bset(b, z, 1, 4, Material.BONE_BLOCK);
             }
-            case "maquinas", "pvp" -> {
+            case "maquinas" -> {
+                // oficina: pistões, observadores, funis, correntes e uma bigorna
+                for (int ao = a; ao <= z; ao++) {
+                    bset(b, ao, 1, 7, Math.floorMod(ao, 2) == 0 ? Material.WAXED_COPPER_BLOCK : Material.POLISHED_DEEPSLATE);
+                    bset(b, ao, 2, 7, Math.floorMod(ao, 3) == 0 ? Material.OBSERVER : Material.PISTON);
+                    bset(b, ao, 3, 7, Material.WAXED_CUT_COPPER);
+                }
+                bset(b, a, 1, 5, Material.CRAFTER);
+                bset(b, a, 1, 4, Material.HOPPER);
+                bset(b, z, 1, 5, direcional(Material.ANVIL, BlockFace.NORTH));
+                bset(b, z, 1, 4, Material.BLAST_FURNACE);
+            }
+            case "pvp" -> {
                 // reservado: só a vitrine lisa, esperando o que vai ser vendido ali
                 for (int ao = a; ao <= z; ao++) {
                     for (int y = 1; y <= 3; y++) bset(b, ao, y, 7, y == 2 ? b.toldo() : Material.STRIPPED_SPRUCE_WOOD);
@@ -489,7 +501,7 @@ public class LojaOficial implements Estrutura {
                 "jardineiro", "\"🌸 JARDINEIRO\",color:\"green\"", "fazendeiro", "\"🌾 FAZENDEIRO\",color:\"yellow\"",
                 "cacador", "\"🏹 CAÇADOR\",color:\"dark_red\"", "alquimista", "\"⚗ ALQUIMISTA\",color:\"light_purple\"",
                 "minerador", "\"⛏ MINERADOR\",color:\"aqua\"", "spawners", "\"🐷 SPAWNERS\",color:\"dark_aqua\"",
-                "maquinas", "\"⚙ MÁQUINAS (em breve)\",color:\"gray\"", "pvp", "\"⚔ PVP (em breve)\",color:\"gray\"");
+                "maquinas", "\"⚙ MÁQUINAS\",color:\"gold\"", "pvp", "\"⚔ PVP (em breve)\",color:\"gray\"");
         for (Balcao b : BALCOES) {
             double nx, nz, tx, tz;
             int yaw;

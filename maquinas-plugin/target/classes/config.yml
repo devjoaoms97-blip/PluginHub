@@ -1,0 +1,121 @@
+# Configuração do MaquinasPlugin
+#
+# Máquina só nos mundos abaixo (o dos terrenos: cada um no seu).
+mundos: [terrenos]
+
+# Máquinas por jogador (vale o maior: o da lista de VIP ou este).
+limite-por-jogador: 4
+limite-vip:
+  - permissao: "vip.desconto.diamante"
+    limite: 7
+  - permissao: "vip.desconto.ouro"
+    limite: 6
+  - permissao: "vip.desconto.prata"
+    limite: 5
+  - permissao: "vip.desconto.bronze"
+    limite: 5
+
+# Tanque de cada máquina, em Células de Combustível.
+tanque: 64
+# Estoque de produtos: base, e quanto cada nível de melhoria de estoque soma. Com 96, a máquina
+# mais rápida enche em ~1h36: ela recompensa quem passa pra coletar, não quem some por dias.
+estoque-base: 96
+estoque-por-nivel: 64
+# Cada nível de velocidade tira essa % do tempo por produto (nível 5 com 5%: 25% menos tempo, 1,33x
+# mais produtos). Com o limite de máquinas, tudo no máximo fica perto de ~55% da mina sem VIP e ~95%
+# no VIP Diamante (tools/economia/maquinas.py): a mina continua sendo a renda principal.
+velocidade-por-nivel: 5
+nivel-maximo: 5
+# Melhoria custa: preço da máquina × este fator × (nível atual + 1). O dinheiro sai de circulação.
+custo-melhoria: 0.3
+
+combustivel:
+  nome: "&6Célula de Combustível"
+  preco: 25
+
+# Venda dos produtos: igual à loja. Cada unidade vendida baixa o preço em "passo"% (até o mínimo) e
+# ele volta pra âncora com o tempo. A venda tem o bônus do rank e o do VIP abaixo, menos o imposto.
+imposto-venda: 2
+regeneracao:
+  intervalo-segundos: 60
+  fator: 0.02
+vip-bonus-venda:
+  - permissao: "vip.desconto.diamante"
+    percentual: 12
+  - permissao: "vip.desconto.ouro"
+    percentual: 9
+  - permissao: "vip.desconto.prata"
+    percentual: 6
+  - permissao: "vip.desconto.bronze"
+    percentual: 3
+
+# Os produtos (o id é o nome da textura no resource pack: servidor:<id>).
+produtos:
+  tecido_fino:
+    nome: "&cTecido Fino"
+    ancora: 16
+    minimo: 3
+    passo: 0.2
+  barra_de_aco:
+    nome: "&7Barra de Aço"
+    ancora: 42
+    minimo: 8
+    passo: 0.2
+  essencia_destilada:
+    nome: "&dEssência Destilada"
+    ancora: 100
+    minimo: 20
+    passo: 0.2
+  gema_lapidada:
+    nome: "&5Gema Lapidada"
+    ancora: 280
+    minimo: 56
+    passo: 0.2
+  cristal_de_energia:
+    nome: "&bCristal de Energia"
+    ancora: 1850
+    minimo: 370
+    passo: 0.2
+
+# As máquinas (o id é o modelo no resource pack: servidor:maquina_<id>), na ordem da loja.
+# Calibradas pelo tools/economia/maquinas.py: cada máquina rende ~10% da mina no rank em que libera
+# (no preço de âncora, já tirando o combustível) e se paga em umas 20 h de produção.
+maquinas:
+  tear:
+    nome: "&cTear"
+    produto: tecido_fino
+    intervalo-segundos: 60
+    combustivel-por-produto: 0.25
+    preco: 12000
+    rank: fazendeiro
+  forja:
+    nome: "&7Forja"
+    produto: barra_de_aco
+    intervalo-segundos: 60
+    combustivel-por-produto: 0.5
+    preco: 35000
+    rank: ferreiro
+  destilaria:
+    nome: "&dDestilaria"
+    produto: essencia_destilada
+    intervalo-segundos: 90
+    combustivel-por-produto: 1
+    preco: 60000
+    rank: mercador
+  lapidadora:
+    nome: "&5Lapidadora"
+    produto: gema_lapidada
+    intervalo-segundos: 120
+    combustivel-por-produto: 2
+    preco: 140000
+    rank: clerigo
+  reator:
+    nome: "&bReator Arcano"
+    produto: cristal_de_energia
+    intervalo-segundos: 180
+    combustivel-por-produto: 4
+    preco: 700000
+    rank: conde
+
+integracao:
+  pix: true

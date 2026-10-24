@@ -81,6 +81,7 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-oficinas.js` | As 4 oficinas da mina: Ferreiro repara e cobra, Picareteiro vende, Sábio vende XP, Bruxa abre a mesa no nível 30 com o lápis dela (encanta sem lápis, e o lápis não vai pro inventário), e as linhas da scoreboard lateral (`/placar ver`) |
 | `teste-loja.js` | Loja Oficial: os 7 vendedores colocados, `/shop` e `/sell` fechados pros jogadores, `/warp loja`, vender e comprar no menu do fazendeiro, 12% de desconto do VIP Diamante e a trava da venda (último rank + VIP: o diamante não passa de 90% do menor preço de compra) |
 | `teste-spawners.js` | Spawners: o Domador da loja vende, no spawn não entra, no terreno entra, empilha clicando (x2), a pilha de mobs aparece em cima (x2), matar tira um (x1) e derruba o drop, e quebrar devolve os spawners |
+| `teste-maquinas.js` | Máquinas: o pacote de texturas é servido, o Maquinista vende o Tear e as Células, a máquina entra no terreno desenhada pelo modelo do pacote, abastece, faz 30 Tecidos em 30 minutos (`/maquinas acelerar`), coleta, vende no balcão e recolhe |
 
 O `teste-vip.js` e o `teste-terrenos.js` usam jogadores novos a cada execução (`Vip`, `Ter` ou `Viz` + um código): o kit mensal e o bônus de ativação só valem uma vez por jogador, e cada um só compra um terreno. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.
 

@@ -92,12 +92,18 @@ t.rodar(async () => {
     'e derrubou carne de porco', JSON.stringify(t.itensNoChao(bot)).slice(0, 80))
 
   console.log('\n== Quebrar devolve ==')
+  // pode haver spawners de outros jogadores no servidor: confere que a conta caiu em um
+  const colocados = async () => Number((t.semCor(await t.console('spawners lista')).match(/colocados: (\d+)/) || [, -1])[1])
+  const antesDeQuebrar = await colocados()
   await bot.dig(bot.blockAt(lugar), true).catch(() => {})
   await t.espera(1500)
   // os spawners caem no chão do bloco quebrado (o item é o mesmo da loja, com o tipo marcado)
   const noChao = t.itensNoChao(bot).filter(n => String(n).startsWith('spawner'))
-  const lista2 = t.semCor(await t.console('spawners lista'))
-  t.verificar(noChao.some(n => String(n) === 'spawnerx2') && lista2.includes('colocados: 0'), 'quebrar devolve os 2 spawners', `${noChao} | ${lista2.slice(0, 40)}`)
+  const depois = await colocados()
+  // caem no chão, e o bot do lado às vezes já pega: vale no chão ou no inventário
+  const naMao = Number(((await t.console(`minecraft:clear ${nome} spawner 0`)).match(/Found (\d+)/) || [, 0])[1])
+  t.verificar((noChao.some(n => String(n) === 'spawnerx2') || naMao === 2) && depois === antesDeQuebrar - 1, 'quebrar devolve os 2 spawners',
+    `chão ${noChao} | inventário ${naMao} | colocados ${antesDeQuebrar} → ${depois}`)
 
   await t.capturar(bot, () => bot.chat('/terreno abandonar confirmar'), 1500)
   await t.console(`minecraft:clear ${nome}`)

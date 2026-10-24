@@ -1,0 +1,18 @@
+name: MaquinasPlugin
+version: '1.0.0'
+main: com.example.maquinas.MaquinasPlugin
+api-version: '26.2'
+author: Você
+description: Máquinas nos terrenos que fabricam produtos (texturas próprias) com Células de Combustível.
+softdepend: [Vault, RankupPlugin, PixPlugin, PacotePlugin]
+
+commands:
+  maquinas:
+    description: Loja das máquinas e comandos da staff.
+    usage: "Uso: /maquinas loja"
+    aliases: [maquina]
+
+permissions:
+  maquinas.admin:
+    description: Dá máquinas e produtos, lista as colocadas e abre qualquer uma.
+    default: op

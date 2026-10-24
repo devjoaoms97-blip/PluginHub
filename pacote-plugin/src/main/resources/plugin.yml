@@ -1,0 +1,12 @@
+name: PacotePlugin
+version: '1.0.0'
+main: com.example.pacote.PacotePlugin
+api-version: '26.2'
+author: Você
+description: Resource pack do servidor (texturas próprias), servido por HTTP embutido e mandado ao entrar.
+
+commands:
+  pacote:
+    description: Manda o pacote de texturas de novo.
+    usage: "Uso: /pacote"
+    aliases: [texturas]

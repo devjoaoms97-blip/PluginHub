@@ -196,7 +196,7 @@ Scoreboard no canto da tela com saldo, rank, barra até o próximo rank, clã, m
 - [ ] Linha com a skill em uso e o XP dela (ver SkillsPlugin). 🟡
 
 ### Loja Oficial ✅ v1 (`economy-shop-plugin` + estrutura `loja`)
-Prédio fechado colado no portão LESTE do spawn (`/warp loja`), com dez balcões, cinco de cada lado: sete vendedores temáticos, um por categoria (minerador, construtor, lenhador, fazendeiro, caçador, jardineiro, alquimista), o Domador (spawners) e dois reservados (máquinas e PvP). Comprar e vender é só com eles; `/shop`, `/buy` e `/sell` ficaram pra staff. Nas minas, tudo o que se quebra vira dinheiro na hora, pra todos. VIP compra com 3/6/9/12% de desconto e vende com 3/6/9/12% a mais. Sem limite de quantidade: o preço dinâmico regula, e farm AFK é bem-vinda. Uma trava (90% do menor preço de compra) impede comprar e revender com lucro. Catálogo de 356 itens gerado e conferido pelo `tools/economia/loja.py` (nenhuma brecha com craft, fundição ou quebra de bloco).
+Prédio fechado colado no portão LESTE do spawn (`/warp loja`), com dez balcões, cinco de cada lado: sete vendedores temáticos, um por categoria (minerador, construtor, lenhador, fazendeiro, caçador, jardineiro, alquimista), o Domador (spawners), o Maquinista (máquinas) e um reservado (PvP). Comprar e vender é só com eles; `/shop`, `/buy` e `/sell` ficaram pra staff. Nas minas, tudo o que se quebra vira dinheiro na hora, pra todos. VIP compra com 3/6/9/12% de desconto e vende com 3/6/9/12% a mais. Sem limite de quantidade: o preço dinâmico regula, e farm AFK é bem-vinda. Uma trava (90% do menor preço de compra) impede comprar e revender com lucro. Catálogo de 356 itens gerado e conferido pelo `tools/economia/loja.py` (nenhuma brecha com craft, fundição ou quebra de bloco).
 - [ ] Ajustar preços com o `analisar.py` depois de alguns dias com jogadores. 🟡
 
 ### Spawners ✅ v1 (`spawners-plugin`)
@@ -204,11 +204,12 @@ Spawners empilhados nos terrenos, comprados no balcão Spawners da Loja Oficial 
 - [ ] **Matador automático** (melhoria do spawner, pra farm AFK): mata a pilha sozinho de tempos em tempos e guarda os drops num baú. 🟡
 - [ ] Ver no `analisar.py` quanto os spawners rendem de verdade e calibrar os preços. 🟡
 
-### Máquinas e produtos (próximo; decidido em 2026-10-24)
-Máquina colocada no terreno que, com **combustível comprado na loja**, fabrica um **produto** (item que não existe no vanilla) a cada tanto tempo. O vendedor do balcão Máquinas compra os produtos por preço dinâmico. Níveis e melhorias (velocidade, estoque, qualidade) comprados com dinheiro.
-- [ ] **Textura própria do servidor** pros produtos e pras máquinas: resource pack com as texturas criadas pra combinar com o servidor (cores e estilo do spawn), baixado pelo jogador ao entrar.
-- [ ] Os produtos com ID próprio marcado no item (não dá pra falsificar nem vender como item vanilla).
+### Máquinas e produtos ✅ v1 (`maquinas-plugin` + `pacote-plugin`)
+Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcano), cada uma liberada num rank, que com **Células de Combustível** compradas na loja fabricam **produtos** (Tecido Fino, Barra de Aço, Essência Destilada, Gema Lapidada e Cristal de Energia). Produzem pelo relógio, mesmo offline, até encher o estoque (uma a duas horas). Melhorias de velocidade (5% por nível) e estoque, e até 4 máquinas por jogador (VIP até 7). O Maquinista (balcão Máquinas) vende as máquinas e o combustível e compra os produtos por preço dinâmico, com o bônus do rank e do VIP. Cada máquina rende ~10% da mina do rank dela (`tools/economia/maquinas.py`).
+- [x] **Textura própria do servidor**: resource pack servido pelo PacotePlugin (HTTP embutido, mandado ao entrar), com as texturas geradas pelo `tools/pacote/gerar.py` no estilo do spawn.
+- [x] Produtos com ID próprio marcado no item (não dá pra falsificar, não entram em receita).
 - [ ] Cadeias de produção (a saída de uma máquina é entrada de outra). 🟡
+- [ ] `url-publica` do pacote no servidor de verdade (endereço e porta liberada). 🟢
 - [ ] Balcão **PvP** da loja: armaduras, poções, armas. 🟡
 
 ### Áreas fechadas (na fila, pedido de 2026-10-24)

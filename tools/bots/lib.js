@@ -52,6 +52,8 @@ function criarBot(nome) {
       const m = semCor(textos.join(''))
       bot.mensagens.push('[barra] ' + m); console.log(`  [barra ${nome}] ${m}`)
     })
+    // o PacotePlugin manda o resource pack (obrigatório): o bot aceita, senão é desconectado
+    bot.on('resourcePack', () => { try { bot.acceptResourcePack() } catch {} })
     bot.on('kicked', r => console.log(`  [${nome} kickado] ${JSON.stringify(r)}`))
     bot.on('error', e => console.log(`  [${nome} erro] ${e.message}`))
     bot.once('spawn', async () => { await espera(1500); ok(bot) })
