@@ -186,13 +186,31 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
                 resetManager.cancelarMarcado();
                 sender.sendMessage("§aReset marcado cancelado. §7O automático continua: §f/recursos info");
             }
+            case "levar" -> {
+                // pro portal do spawn: um bloco de comando roda "recursos admin levar @p[distance=..2]"
+                if (args.length < 3) {
+                    sender.sendMessage("§cUso: §f/recursos admin levar <jogador|seletor>");
+                    return;
+                }
+                List<Player> alvos;
+                try {
+                    alvos = Bukkit.selectEntities(sender, args[2]).stream().filter(e -> e instanceof Player).map(e -> (Player) e).toList();
+                } catch (IllegalArgumentException e) {
+                    sender.sendMessage("§cJogador ou seletor inválido: §f" + args[2]);
+                    return;
+                }
+                for (Player alvo : alvos) {
+                    ultimoTeleporte.remove(alvo.getUniqueId());
+                    ir(alvo);
+                }
+            }
             case "reload" -> {
                 reloadConfig();
                 World mundo = getMundo();
                 if (mundo != null) resetManager.aplicarBorda(mundo);
                 sender.sendMessage("§aConfig recarregado e borda reaplicada.");
             }
-            default -> sender.sendMessage("§cUso: §f/recursos admin resetar [minutos|agora] §7| §fcancelar §7| §freload");
+            default -> sender.sendMessage("§cUso: §f/recursos admin resetar [minutos|agora] §7| §fcancelar §7| §flevar <jogador> §7| §freload");
         }
     }
 
@@ -206,7 +224,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> opcoes = args.length == 1 ? (sender.hasPermission("recursos.admin") ? List.of("ir", "info", "admin") : List.of("ir", "info"))
-                : args.length == 2 && args[0].equalsIgnoreCase("admin") ? List.of("resetar", "cancelar", "reload")
+                : args.length == 2 && args[0].equalsIgnoreCase("admin") ? List.of("resetar", "cancelar", "levar", "reload")
                 : args.length == 3 && args[1].equalsIgnoreCase("resetar") ? List.of("agora", "5", "30") : List.of();
         String prefixo = args[args.length - 1].toLowerCase(Locale.ROOT);
         return opcoes.stream().filter(o -> o.startsWith(prefixo)).toList();

@@ -20,6 +20,7 @@ Mundo de recursos: minérios, árvores, mobs, pesca e PvP. O `/recursos` leva a 
 | `/recursos info` | Data do próximo reset |
 | `/recursos admin resetar [minutos\|agora]` | Marca um reset (padrão: em 5 min, com os avisos) ou reseta na hora |
 | `/recursos admin cancelar` | Cancela o reset marcado (o automático continua) |
+| `/recursos admin levar <jogador\|seletor>` | Leva o jogador (ou `@p[distance=..2]`, num bloco de comando) pra um ponto aleatório seguro. É o que o portal do spawn usa |
 | `/recursos admin reload` | Recarrega o config e reaplica a borda |
 
 `recursos.admin` (op) também ignora a espera do `/recursos`.
@@ -34,7 +35,7 @@ reset:
   hora: "05:00"
   avisos-minutos: [60, 30, 10, 5, 1]
 saida:
-  mundo: ""          # vazio = mundo principal; com o mapa novo, "spawn"
+  mundo: ""          # vazio = mundo principal; com o mapa funcional, "spawn"
 borda:
   tamanho: 6000      # 0 = sem borda
   centro-x: 0
