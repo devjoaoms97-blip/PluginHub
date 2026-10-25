@@ -20,11 +20,11 @@ Todos os comandos, de jogador e de staff, entram por `/vip <ação>` — não te
 | `/vip kitmensal` | quem tem VIP | Resgata o equipamento encantado do seu tier (armadura, armas e ferramentas), uma vez a cada 30 dias |
 | `/vip particula <tipo\|off>` | quem tem VIP | Escolhe o efeito de partícula que te segue |
 | `/vip warp` | quem tem VIP | Teleporta pra área exclusiva de VIP |
-| `/vip add <jogador> <tier> <dias>` | staff | Concede/renova VIP direto (sem passar por código) |
+| `/vip add <jogador> <tier>` | staff | Concede/renova VIP direto por 30 dias (sem passar por código) |
 | `/vip remove <jogador>` | staff | Remove o VIP na hora |
 | `/vip check <jogador>` | staff | Vê o VIP de outro jogador |
 | `/vip list` | staff | Lista todos os VIPs ativos |
-| `/vip gerarcodigo <tier> <dias> [usos] [validade-dias]` | staff | Gera um código pra lojinha entregar ao comprador (validade opcional, veja abaixo) |
+| `/vip gerarcodigo <tier> [usos] [validade-dias]` | staff | Gera um código de 30 dias pra lojinha entregar ao comprador (validade opcional, veja abaixo) |
 | `/vip codigos` | staff | Lista códigos ativos ainda não resgatados |
 | `/vip revogarcodigo <codigo>` | staff | Invalida um código antes de ser usado |
 | `/vip reload` | staff | Recarrega o `config.yml` |
@@ -40,7 +40,7 @@ jogador compra no Discord/site
         │
         ▼
 staff confirma o pagamento e roda:
-   /vip gerarcodigo ouro 30
+   /vip gerarcodigo ouro
         │
         ▼
 plugin responde com um código:  VIP-4K7XQ2MN
@@ -60,14 +60,14 @@ VIP Ouro por 30 dias ativado na conta dele
 
 ### Hoje (Discord): 100% manual, já funciona
 
-Sem precisar de nenhuma integração nova — depois que confirmar o Pix/pagamento no Discord, a staff só roda `/vip gerarcodigo <tier> <dias>` no servidor (ou via console) e cola o código na DM do comprador.
+Sem precisar de nenhuma integração nova — depois que confirmar o Pix/pagamento no Discord, a staff só roda `/vip gerarcodigo <tier>` no servidor (ou via console) e cola o código na DM do comprador.
 
 ### No futuro (site): mesma base, só automatiza quem aperta o botão
 
 Quando o site da loja existir, ele não precisa de nenhuma API nova no plugin — a forma mais simples e mais usada por lojas de Minecraft é o próprio site rodar o mesmo comando via **RCON** (protocolo de comando remoto que praticamente todo servidor Minecraft já expõe) assim que o pagamento for aprovado:
 
 ```
-rcon> vip gerarcodigo ouro 30
+rcon> vip gerarcodigo ouro
 ```
 
 E aí devolve o código gerado pro comprador na tela de confirmação da compra (ou por e-mail). Isso significa que **o plugin já está pronto pro site sem precisar mexer em mais nada aqui** — o trabalho todo do "futuro site" fica do lado do site (processar pagamento + falar RCON), não do plugin.
@@ -76,7 +76,7 @@ Se um dia vocês quiserem os dois lados conversando sem depender de RCON (ex: o 
 
 ### Detalhes do código
 - 8 caracteres (`VIP-XXXXXXXX`), sem `0/O/1/I/L` pra evitar erro de leitura/digitação ao repassar pro comprador.
-- Por padrão cada código vale **1 uso**; `/vip gerarcodigo ouro 30 5` gera um código reutilizável 5 vezes (ex: promoção "5 primeiros a resgatar ganham Ouro").
+- Por padrão cada código vale **1 uso**; `/vip gerarcodigo ouro 5` gera um código reutilizável 5 vezes (ex: promoção "5 primeiros a resgatar ganham Ouro").
 - `/vip resgatar` aceita o código com ou sem o prefixo `VIP-`.
 - Códigos ficam salvos em `codigos.yml` (sobrevivem a reinício do servidor) até serem totalmente usados, revogados com `/vip revogarcodigo` ou **vencerem o prazo de resgate**.
 
@@ -88,9 +88,9 @@ codigos:
   validade-padrao-dias: 0   # 0 = não expira (padrão)
 ```
 
-- `/vip gerarcodigo ouro 30` usa o prazo padrão do `config.yml`.
-- `/vip gerarcodigo ouro 30 1 7` dá 7 dias pra resgatar (o 5º argumento vale mais que o padrão). Com `0` nesse argumento, o código não expira.
-- O prazo é só pra **resgatar**. Depois de resgatado, o VIP dura os `<dias>` normais.
+- `/vip gerarcodigo ouro` usa o prazo padrão do `config.yml`.
+- `/vip gerarcodigo ouro 1 7` dá 7 dias pra resgatar (o 4º argumento vale mais que o padrão). Com `0` nesse argumento, o código não expira.
+- O prazo é só pra **resgatar**. Depois de resgatado, o VIP dura os 30 dias normais.
 - `/vip codigos` e a mensagem do `gerarcodigo` mostram até quando cada código vale.
 - Códigos gerados antes dessa opção existir continuam **sem prazo**, então nenhum código já vendido vence de surpresa.
 - Quando um código à venda vence, ele sai da revenda sem avisar o vendedor.
@@ -189,7 +189,7 @@ Vá até o local desejado e anote as coordenadas (`F3`), depois edite `warp-vip.
 
 ### 4. Testar o fluxo completo
 ```
-/vip gerarcodigo diamante 30
+/vip gerarcodigo diamante
 /vip resgatar VIP-XXXXXXXX   (logado com outro jogador, ou o mesmo mesmo)
 /vip check
 /vip fly
@@ -252,7 +252,7 @@ Quando um VIP é ativado, com `/vip add` ou `/vip resgatar`, o jogador recebe:
 - **Dinheiro:** uma porcentagem do preço do **próximo rank** dele no RankupPlugin. Quem está no Rei recebe a porcentagem do preço do próprio Rei. Por ser proporcional, o bônus pesa o mesmo no começo e no fim do jogo: o Diamante ganha sempre meio rank.
 - **XP em todas as 13 skills.** Os níveis sobem normalmente, mas **sem o dinheiro por nível** das skills, e o chat mostra um resumo só ("Suas skills subiram 40 níveis no total"). Sem isso, um jogador novo subiria muitos níveis baratos de uma vez: nos testes, 10.000 XP no Diamante pagavam R$ 25 mil, quinze vezes o bônus em dinheiro. O bônus contínuo de XP do VIP não se soma a esse XP. Se o jogador estiver offline (num `/vip add`, por exemplo), recebe quando entrar.
 
-Tudo é **proporcional aos dias**: um código de 7 dias dá 7/30 do bônus, e um de 60 dias dá o dobro. Assim, comprar vários códigos curtos não rende mais que um longo.
+Todo VIP dura **30 dias** (fixo no plugin, `VipManager.DIAS_VIP`), seja por `/vip add` ou por código, então o bônus é sempre o cheio.
 
 ```yaml
 bonus-ativacao:
@@ -307,6 +307,6 @@ O `.jar` sai em `target/VipPlugin.jar`.
 3. **Cooldowns de heal/feed/kit/kit mensal ficam salvos em `cooldowns.yml`**, então reiniciar o servidor não dá um uso grátis pra ninguém. Registros que já passaram do maior cooldown configurado são descartados ao salvar, pro arquivo não crescer pra sempre.
 4. **`/vip kit` e `/vip kitmensal` sempre entregam o kit inteiro do tier atual** — não acumulam nem somam kits de tiers anteriores. O cooldown do kit mensal é por jogador, não por tier: quem resgata no Bronze e sobe pro Diamante no mesmo mês espera o mês acabar.
 5. **A validade do código vem desligada** (`codigos.validade-padrao-dias: 0`). Por padrão, um código só some quando é totalmente usado ou revogado. Ligue no `config.yml` se quiser um prazo pra resgatar (veja "Validade do código").
-6. **A integração com o site é via RCON, ainda não construída** — quando o site existir de verdade, ele precisa só rodar `vip gerarcodigo <tier> <dias>` via RCON depois de confirmar o pagamento. Nenhuma mudança no plugin é necessária pra isso funcionar; se quiser, mais pra frente, uma API HTTP própria em vez de RCON, é um projeto à parte.
+6. **A integração com o site é via RCON, ainda não construída** — quando o site existir de verdade, ele precisa só rodar `vip gerarcodigo <tier>` via RCON depois de confirmar o pagamento. Nenhuma mudança no plugin é necessária pra isso funcionar; se quiser, mais pra frente, uma API HTTP própria em vez de RCON, é um projeto à parte.
 7. **Um jogador só pode ter um código à venda por vez** — checado explicitamente (`buscarCodigoDeVenda`), não uma consequência de outra coisa. Se quiser permitir múltiplas vendas simultâneas, é só tirar essa checagem.
 8. **Não tem preço mínimo/máximo pra `/vip vender`** — um jogador pode colocar por 1 coin ou 1 milhão, a critério dele. Se quiser limites (ex: não deixar vender por menos que X% do preço de tabela do tier), dá pra adicionar uma checagem usando `desconto-loja-percentual` ou um novo campo de "preço sugerido" por tier.

@@ -56,19 +56,19 @@ public class CodeManager {
      * Código grátis gerado pela staff (compra confirmada fora do jogo). {@code validadeDias}
      * é o prazo pra ser resgatado — 0 = não expira.
      */
-    public VipCode gerar(VipTier tier, int dias, int usos, String criadoPor, int validadeDias) {
+    public VipCode gerar(VipTier tier, int usos, String criadoPor, int validadeDias) {
         long expiraEm = validadeDias > 0 ? System.currentTimeMillis() + validadeDias * 86_400_000L : 0;
-        return criarESalvar(tier, dias, usos, criadoPor, 0.0, null, expiraEm);
+        return criarESalvar(tier, usos, criadoPor, 0.0, null, expiraEm);
     }
 
-    private VipCode criarESalvar(VipTier tier, int dias, int usos, String criadoPor, double preco, UUID vendedorId,
+    private VipCode criarESalvar(VipTier tier, int usos, String criadoPor, double preco, UUID vendedorId,
                                  long expiraEm) {
         String codigo;
         do {
             codigo = sortearCodigo();
         } while (codigos.containsKey(codigo));
 
-        VipCode novo = new VipCode(codigo, tier, dias, usos, System.currentTimeMillis(), criadoPor, preco, vendedorId,
+        VipCode novo = new VipCode(codigo, tier, usos, System.currentTimeMillis(), criadoPor, preco, vendedorId,
                 expiraEm);
         codigos.put(codigo, novo);
         salvar();
@@ -89,7 +89,7 @@ public class CodeManager {
             return null;
         }
 
-        VipCode atualizado = new VipCode(atual.getCodigo(), atual.getTier(), atual.getDias(), atual.getUsosRestantes(),
+        VipCode atualizado = new VipCode(atual.getCodigo(), atual.getTier(), atual.getUsosRestantes(),
                 atual.getCriadoEm(), atual.getCriadoPor(), preco, vendedorId, atual.getExpiraEm());
         codigos.put(chave, atualizado);
         salvar();
@@ -116,7 +116,7 @@ public class CodeManager {
      */
     private void avisarVendedor(VipCode code) {
         String msg = "§cSeu código §fVIP-" + code.getCodigo() + " §c(" + plugin.getNomeExibicao(code.getTier())
-                + "§c, " + code.getDias() + " dias) que estava à venda venceu sem ser comprado e foi apagado.";
+                + "§c) que estava à venda venceu sem ser comprado e foi apagado.";
         org.bukkit.entity.Player vendedor = org.bukkit.Bukkit.getPlayer(code.getVendedorId());
         if (vendedor != null) {
             vendedor.sendMessage(msg);
@@ -180,7 +180,7 @@ public class CodeManager {
         }
 
         VipCode atual = codigos.get(chave);
-        VipCode revertido = new VipCode(atual.getCodigo(), atual.getTier(), atual.getDias(), atual.getUsosRestantes(),
+        VipCode revertido = new VipCode(atual.getCodigo(), atual.getTier(), atual.getUsosRestantes(),
                 atual.getCriadoEm(), atual.getCriadoPor(), 0.0, null, atual.getExpiraEm());
         codigos.put(chave, revertido);
         salvar();
@@ -251,7 +251,6 @@ public class CodeManager {
                 plugin.getLogger().warning("Tier inválido em codigos.yml pro código " + codigo + ", ignorando.");
                 continue;
             }
-            int dias = secao.getInt(codigo + ".dias");
             int usos = secao.getInt(codigo + ".usos-restantes", 1);
             long criadoEm = secao.getLong(codigo + ".criado-em");
             String criadoPor = secao.getString(codigo + ".criado-por", "desconhecido");
@@ -268,7 +267,7 @@ public class CodeManager {
                 }
             }
 
-            codigos.put(codigo, new VipCode(codigo, tier, dias, usos, criadoEm, criadoPor, preco, vendedorId, expiraEm));
+            codigos.put(codigo, new VipCode(codigo, tier, usos, criadoEm, criadoPor, preco, vendedorId, expiraEm));
         }
     }
 
@@ -278,7 +277,6 @@ public class CodeManager {
             VipCode code = entrada.getValue();
             String base = "codigos." + entrada.getKey();
             yaml.set(base + ".tier", code.getTier().name());
-            yaml.set(base + ".dias", code.getDias());
             yaml.set(base + ".usos-restantes", code.getUsosRestantes());
             yaml.set(base + ".criado-em", code.getCriadoEm());
             yaml.set(base + ".criado-por", code.getCriadoPor());

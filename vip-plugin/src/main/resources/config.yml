@@ -37,7 +37,7 @@ tiers:
       - "SHIELD:1:unbreaking=3"
       - "GOLDEN_APPLE:8"
     cooldown-kit-mensal-dias: 30
-    # Ao ativar o VIP (/vip add, /vip resgatar), proporcional aos dias (7 dias = 7/30 disto).
+    # Ao ativar o VIP (/vip add, /vip resgatar). Todo VIP dura 30 dias.
     # O XP sobe os níveis das skills sem pagar o dinheiro por nível delas.
     bonus-ativacao:
       dinheiro-percentual-proximo-rank: 10
@@ -69,7 +69,7 @@ tiers:
       - "GOLDEN_APPLE:16"
       - "ENDER_PEARL:16"
     cooldown-kit-mensal-dias: 30
-    # Ao ativar o VIP (/vip add, /vip resgatar), proporcional aos dias (7 dias = 7/30 disto)
+    # Ao ativar o VIP (/vip add, /vip resgatar). Todo VIP dura 30 dias
     bonus-ativacao:
       dinheiro-percentual-proximo-rank: 20
       xp-por-skill: 1500
@@ -104,7 +104,7 @@ tiers:
       - "TOTEM_OF_UNDYING:2"
       - "ENDER_PEARL:16"
     cooldown-kit-mensal-dias: 30
-    # Ao ativar o VIP (/vip add, /vip resgatar), proporcional aos dias (7 dias = 7/30 disto)
+    # Ao ativar o VIP (/vip add, /vip resgatar). Todo VIP dura 30 dias
     bonus-ativacao:
       dinheiro-percentual-proximo-rank: 35
       xp-por-skill: 3000
@@ -143,7 +143,7 @@ tiers:
       - "ENDER_PEARL:16"
       - "FIREWORK_ROCKET:64"
     cooldown-kit-mensal-dias: 30
-    # Ao ativar o VIP (/vip add, /vip resgatar), proporcional aos dias (7 dias = 7/30 disto)
+    # Ao ativar o VIP (/vip add, /vip resgatar). Todo VIP dura 30 dias
     bonus-ativacao:
       dinheiro-percentual-proximo-rank: 50
       xp-por-skill: 5000
@@ -177,7 +177,7 @@ verificacao-expiracao-minutos: 5
 codigos:
   # Prazo padrão (em dias) pra um código gerado com /vip gerarcodigo ser resgatado. Passou
   # disso sem ninguém resgatar, o código some (mesmo se estiver à venda). 0 = não expira.
-  # Dá pra sobrescrever por código: /vip gerarcodigo <tier> <dias> [usos] [validade-dias].
+  # Dá pra sobrescrever por código: /vip gerarcodigo <tier> [usos] [validade-dias].
   # Códigos gerados antes dessa opção existir continuam sem prazo.
   validade-padrao-dias: 0
 

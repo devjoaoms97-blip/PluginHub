@@ -27,7 +27,7 @@ t.rodar(async () => {
 
   console.log('\n== Ativação do VIP Diamante (30 dias) ==')
   const antes = dinheiro(await t.console(`balance ${nome}`))
-  msgs = await t.capturar(bot, () => t.console(`vip add ${nome} diamante 30`), 3000)
+  msgs = await t.capturar(bot, () => t.console(`vip add ${nome} diamante`), 3000)
   const depois = dinheiro(await t.console(`balance ${nome}`))
   const bonus = msgs.find(m => m.startsWith('Bônus de ativação'))
   t.verificar(!!bonus, 'mensagem do bônus de ativação', bonus)

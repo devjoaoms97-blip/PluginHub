@@ -1,6 +1,7 @@
 package com.example.vip.command;
 
 import com.example.vip.VipPlugin;
+import com.example.vip.manager.VipManager;
 import com.example.vip.model.VipAtivo;
 import com.example.vip.model.VipCode;
 import com.example.vip.model.VipTier;
@@ -110,8 +111,8 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§cVocê não tem permissão pra gerenciar VIPs.");
             return;
         }
-        if (args.length < 4) {
-            sender.sendMessage("§cUso: §f/vip add <jogador> <bronze|prata|ouro|diamante> <dias>");
+        if (args.length < 3) {
+            sender.sendMessage("§cUso: §f/vip add <jogador> <bronze|prata|ouro|diamante>");
             return;
         }
 
@@ -122,19 +123,14 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        Integer dias = lerInteiroPositivo(sender, args[3], "Dias");
-        if (dias == null) {
-            return;
-        }
-
-        String dataFormatada = plugin.getVipManager().adicionar(alvo.getUniqueId(), tier, dias);
+        String dataFormatada = plugin.getVipManager().adicionar(alvo.getUniqueId(), tier);
         String nomeAlvo = alvo.getName() != null ? alvo.getName() : args[1];
 
         sender.sendMessage("§a" + nomeAlvo + " agora tem VIP " + plugin.getNomeExibicao(tier)
                 + " §aaté §f" + dataFormatada + "§a.");
 
         avisarConcessao(alvo, tier, dataFormatada);
-        plugin.getBonusAtivacao().conceder(alvo, tier, dias);
+        plugin.getBonusAtivacao().conceder(alvo, tier);
     }
 
     private void tratarRemove(CommandSender sender, String[] args) {
@@ -236,13 +232,13 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             processarPagamentoRevenda(player, code);
         }
 
-        String dataFormatada = plugin.getVipManager().adicionar(player.getUniqueId(), code.getTier(), code.getDias());
+        String dataFormatada = plugin.getVipManager().adicionar(player.getUniqueId(), code.getTier());
         player.sendMessage("§aCódigo resgatado! Você recebeu VIP " + plugin.getNomeExibicao(code.getTier())
-                + " §apor §f" + code.getDias() + " dias§a, válido até §f" + dataFormatada + "§a.");
+                + " §apor §f" + VipManager.DIAS_VIP + " dias§a, válido até §f" + dataFormatada + "§a.");
         plugin.refrescarTagJogador(player);
-        plugin.getBonusAtivacao().conceder(player, code.getTier(), code.getDias());
+        plugin.getBonusAtivacao().conceder(player, code.getTier());
         plugin.getDiscord().enviar("vip", "💎 " + player.getName() + " ativou VIP "
-                + org.bukkit.ChatColor.stripColor(plugin.getNomeExibicao(code.getTier())) + " por " + code.getDias() + " dias"
+                + org.bukkit.ChatColor.stripColor(plugin.getNomeExibicao(code.getTier())) + " por " + VipManager.DIAS_VIP + " dias"
                 + (code.getPreco() > 0 ? " (comprado de outro jogador)" : "") + "!");
     }
 
@@ -328,7 +324,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         }
 
         player.sendMessage("§aCódigo §fVIP-" + code.getCodigo() + " §a(" + plugin.getNomeExibicao(code.getTier())
-                + " §a, " + code.getDias() + " dias) colocado à venda por §f" + formatarCoins(preco) + "§a.");
+                + " §a, " + VipManager.DIAS_VIP + " dias) colocado à venda por §f" + formatarCoins(preco) + "§a.");
         player.sendMessage("§7Mudou de ideia? §f/vip cancelarvenda");
 
         anunciarVenda(player, code);
@@ -352,7 +348,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         Component mensagem = Component.text(vendedor.getName() + " está vendendo VIP ")
                 .color(NamedTextColor.AQUA)
                 .append(tagTier)
-                .append(Component.text(" (" + code.getDias() + " dias) por " + formatarCoins(code.getPreco()) + ":  ")
+                .append(Component.text(" (" + VipManager.DIAS_VIP + " dias) por " + formatarCoins(code.getPreco()) + ":  ")
                         .color(NamedTextColor.AQUA))
                 .append(botao);
 
@@ -384,8 +380,8 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§cVocê não tem permissão.");
             return;
         }
-        if (args.length < 3) {
-            sender.sendMessage("§cUso: §f/vip gerarcodigo <tier> <dias> [usos] [validade-dias]");
+        if (args.length < 2) {
+            sender.sendMessage("§cUso: §f/vip gerarcodigo <tier> [usos] [validade-dias]");
             return;
         }
 
@@ -395,14 +391,9 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        Integer dias = lerInteiroPositivo(sender, args[2], "Dias");
-        if (dias == null) {
-            return;
-        }
-
         int usos = 1;
-        if (args.length >= 4) {
-            Integer usosLidos = lerInteiroPositivo(sender, args[3], "Usos");
+        if (args.length >= 3) {
+            Integer usosLidos = lerInteiroPositivo(sender, args[2], "Usos");
             if (usosLidos == null) {
                 return;
             }
@@ -411,9 +402,9 @@ public class VipCommand implements CommandExecutor, TabCompleter {
 
         // Prazo pra resgatar: argumento explícito (0 = não expira) ou o padrão do config.yml
         int validadeDias = Math.max(0, plugin.getConfig().getInt("codigos.validade-padrao-dias", 0));
-        if (args.length >= 5) {
+        if (args.length >= 4) {
             try {
-                validadeDias = Integer.parseInt(args[4]);
+                validadeDias = Integer.parseInt(args[3]);
             } catch (NumberFormatException e) {
                 validadeDias = -1;
             }
@@ -424,10 +415,10 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         }
 
         String criadoPor = sender instanceof Player p ? p.getName() : "console";
-        VipCode code = plugin.getCodeManager().gerar(tier, dias, usos, criadoPor, validadeDias);
+        VipCode code = plugin.getCodeManager().gerar(tier, usos, criadoPor, validadeDias);
 
         sender.sendMessage("§aCódigo gerado: §f§lVIP-" + code.getCodigo());
-        sender.sendMessage("§7" + plugin.getNomeExibicao(tier) + " §7por §f" + dias + " dias"
+        sender.sendMessage("§7" + plugin.getNomeExibicao(tier) + " §7por §f" + VipManager.DIAS_VIP + " dias"
                 + (usos > 1 ? " §7(" + usos + " usos)" : "")
                 + " §7— peça pro jogador rodar §f/vip resgatar VIP-" + code.getCodigo());
         sender.sendMessage("§7Validade pra resgatar: §f" + descreverValidade(code));
@@ -457,7 +448,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
                     ? "§7venda de §f" + code.getCriadoPor() + " §7por §f" + formatarCoins(code.getPreco())
                     : "§7gerado por §f" + code.getCriadoPor();
             sender.sendMessage("§fVIP-" + code.getCodigo() + " §7- " + plugin.getNomeExibicao(code.getTier())
-                    + " §7por §f" + code.getDias() + "d §7(" + origem + "§7, " + code.getUsosRestantes() + " usos restantes, "
+                    + " §7(" + origem + "§7, " + code.getUsosRestantes() + " usos restantes, "
                     + descreverValidade(code) + ")");
         }
     }
@@ -595,11 +586,11 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/vip particula <tipo|off> §7- escolhe a partícula que te segue");
         if (sender.hasPermission("vip.admin")) {
             sender.sendMessage("§7--- Staff ---");
-            sender.sendMessage("§f/vip add <jogador> <tier> <dias> §7- concede/renova VIP direto");
+            sender.sendMessage("§f/vip add <jogador> <tier> §7- concede/renova VIP direto por " + VipManager.DIAS_VIP + " dias");
             sender.sendMessage("§f/vip remove <jogador> §7- remove o VIP");
             sender.sendMessage("§f/vip check <jogador> §7- vê o VIP de outro jogador");
             sender.sendMessage("§f/vip list §7- lista todos os VIPs ativos");
-            sender.sendMessage("§f/vip gerarcodigo <tier> <dias> [usos] [validade-dias] §7- gera um código pra lojinha entregar");
+            sender.sendMessage("§f/vip gerarcodigo <tier> [usos] [validade-dias] §7- gera um código pra lojinha entregar");
             sender.sendMessage("§f/vip codigos §7- lista códigos ativos ainda não resgatados");
             sender.sendMessage("§f/vip revogarcodigo <codigo> §7- invalida um código antes de ser usado");
             sender.sendMessage("§f/vip setwarp [tier] §7- marca a área VIP (de todos, ou só de um tier) onde você está");
@@ -630,9 +621,6 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         if (args.length == 3 && sub.equals("add")) {
             return nomesTiers();
         }
-        if (args.length == 4 && sub.equals("add")) {
-            return List.of("7", "15", "30", "60");
-        }
         if (args.length == 2 && sub.equals("setwarp")) {
             return nomesTiers();
         }
@@ -643,12 +631,9 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             return List.of("100", "500", "1000");
         }
         if (args.length == 3 && sub.equals("gerarcodigo")) {
-            return List.of("7", "15", "30", "60");
-        }
-        if (args.length == 4 && sub.equals("gerarcodigo")) {
             return List.of("1", "5", "10");
         }
-        if (args.length == 5 && sub.equals("gerarcodigo")) {
+        if (args.length == 4 && sub.equals("gerarcodigo")) {
             return List.of("0", "7", "30", "90");
         }
         if (args.length == 2 && sub.equals("revogarcodigo") && sender.hasPermission("vip.admin")) {

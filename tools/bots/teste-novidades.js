@@ -65,7 +65,7 @@ t.rodar(async () => {
   console.log('\n== VIP ==')
   msgs = await t.capturar(a, () => a.chat('/vip setwarp diamante'))
   t.verificar(msgs.some(m => m.includes('marcado aqui')), '/vip setwarp diamante', msgs[0])
-  const codigo = (await t.console('vip gerarcodigo bronze 3')).match(/VIP-([A-Z0-9-]+)/)?.[1]
+  const codigo = (await t.console('vip gerarcodigo bronze')).match(/VIP-([A-Z0-9-]+)/)?.[1]
   msgs = await t.capturar(a, () => a.chat(`/vip vender 1 ${codigo}`))
   t.verificar(msgs.some(m => m.includes('preço mínimo')), 'preço mínimo na revenda', `${codigo} ${msgs[0]}`)
   if (codigo) await t.console(`vip revogarcodigo ${codigo}`)

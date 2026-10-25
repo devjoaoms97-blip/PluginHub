@@ -22,8 +22,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * Bônus de quando um VIP é ativado ({@code /vip add} ou {@code /vip resgatar}), proporcional aos
- * dias (um código de 7 dias dá 7/30 do bônus de 30, pra comprar códigos curtos não render mais):
+ * Bônus de quando um VIP é ativado ({@code /vip add} ou {@code /vip resgatar}). Todo VIP dura
+ * {@link VipManager#DIAS_VIP} dias, então o bônus é sempre o cheio:
  * <ul>
  *   <li>dinheiro: uma % do preço do próximo rank do jogador (RankupPlugin). Assim o bônus pesa o
  *   mesmo no começo e no fim do jogo, e nunca passa de uma fração de rank por mês;</li>
@@ -46,18 +46,17 @@ public class BonusAtivacao implements Listener {
         carregar();
     }
 
-    public void conceder(OfflinePlayer jogador, VipTier tier, int dias) {
-        double fator = dias / 30.0;
+    public void conceder(OfflinePlayer jogador, VipTier tier) {
         String base = "tiers." + tier.name() + ".bonus-ativacao.";
 
         double percentual = plugin.getConfig().getDouble(base + "dinheiro-percentual-proximo-rank", 0);
         double preco = precoProximoRank(jogador.getUniqueId());
-        double dinheiro = preco * percentual / 100.0 * fator;
+        double dinheiro = preco * percentual / 100.0;
         if (dinheiro > 0 && plugin.getEconomy() != null) {
             plugin.getEconomy().depositPlayer(jogador, dinheiro);
         }
 
-        double xp = plugin.getConfig().getDouble(base + "xp-por-skill", 0) * fator;
+        double xp = plugin.getConfig().getDouble(base + "xp-por-skill", 0);
         Player online = jogador.getPlayer();
         int niveis = 0;
         if (xp > 0) {
@@ -73,8 +72,7 @@ public class BonusAtivacao implements Listener {
             online.sendMessage("§6§lBônus de ativação: "
                     + (dinheiro > 0 ? "§f" + formatar(dinheiro) + " §6" : "")
                     + (dinheiro > 0 && xp > 0 ? "e " : "")
-                    + (xp > 0 ? String.format(Locale.forLanguageTag("pt-BR"), "§f+%,.0f XP §6em todas as skills", xp) : "")
-                    + (fator != 1 ? " §7(" + dias + " de 30 dias)" : ""));
+                    + (xp > 0 ? String.format(Locale.forLanguageTag("pt-BR"), "§f+%,.0f XP §6em todas as skills", xp) : ""));
             avisarNiveis(online, niveis);
         }
     }

@@ -39,6 +39,9 @@ public class VipManager {
     private final Map<UUID, VipAtivo> ativos = new HashMap<>();
     private LuckPerms luckPerms;
 
+    /** Todo VIP ativado (por /vip add ou por código) dura sempre esse tanto. */
+    public static final int DIAS_VIP = 30;
+
     public VipManager(VipPlugin plugin) {
         this.plugin = plugin;
         this.arquivo = new File(plugin.getDataFolder(), "vips.yml");
@@ -64,11 +67,11 @@ public class VipManager {
     // ---------------------------------------------------------------------
 
     /**
-     * Concede (ou renova/troca) um VIP pra um jogador, por {@code dias} a partir de agora.
+     * Concede (ou renova/troca) um VIP pra um jogador, por {@link #DIAS_VIP} dias a partir de agora.
      * Se o jogador já tinha um tier diferente, o grupo antigo é removido do LuckPerms antes
      * de aplicar o novo. Retorna a data de expiração já formatada, pra mensagens de chat.
      */
-    public String adicionar(UUID jogadorId, VipTier tier, int dias) {
+    public String adicionar(UUID jogadorId, VipTier tier) {
         if (luckPerms == null) {
             conectarLuckPerms();
         }
@@ -78,7 +81,7 @@ public class VipManager {
             removerGrupo(jogadorId, atual.tier());
         }
 
-        long expiraEm = System.currentTimeMillis() + (dias * 24L * 60 * 60 * 1000);
+        long expiraEm = System.currentTimeMillis() + (DIAS_VIP * 24L * 60 * 60 * 1000);
         ativos.put(jogadorId, new VipAtivo(jogadorId, tier, expiraEm));
 
         if (luckPerms != null) {

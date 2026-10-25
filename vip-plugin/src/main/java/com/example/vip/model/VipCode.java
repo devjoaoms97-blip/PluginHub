@@ -20,7 +20,6 @@ public class VipCode {
 
     private final String codigo;
     private final VipTier tier;
-    private final int dias;
     private int usosRestantes;
     private final long criadoEm;
     private final String criadoPor;
@@ -28,11 +27,10 @@ public class VipCode {
     private final UUID vendedorId;
     private final long expiraEm; // 0 = não expira
 
-    public VipCode(String codigo, VipTier tier, int dias, int usosRestantes, long criadoEm, String criadoPor,
+    public VipCode(String codigo, VipTier tier, int usosRestantes, long criadoEm, String criadoPor,
                    double preco, UUID vendedorId, long expiraEm) {
         this.codigo = codigo;
         this.tier = tier;
-        this.dias = dias;
         this.usosRestantes = usosRestantes;
         this.criadoEm = criadoEm;
         this.criadoPor = criadoPor;
@@ -47,10 +45,6 @@ public class VipCode {
 
     public VipTier getTier() {
         return tier;
-    }
-
-    public int getDias() {
-        return dias;
     }
 
     public int getUsosRestantes() {
