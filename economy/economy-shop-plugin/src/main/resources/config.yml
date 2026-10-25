@@ -143,6 +143,12 @@ vendedores:
 mensagens:
   # Quem não é da staff e usa /shop.
   loja-presencial: "&eA loja é presencial: vá à &6Loja Oficial&e, no portão LESTE do spawn (&f/warp loja&e)."
+  # Quem tenta trocar com um villager (ver bloquear-trocas-villager).
+  trocas-villager: "&cAs trocas com villager estão desligadas: compre e venda na &6Loja Oficial &c(&f/warp loja&c)."
+
+# Ninguém troca com villager nem com o vendedor ambulante, no servidor todo: esmeralda por item
+# passaria por fora da loja e dos preços dinâmicos.
+bloquear-trocas-villager: true
 
 eventos-mercado:
   # De tempos em tempos (intervalo-horas), com a chance abaixo, um item da lista fica "em alta":

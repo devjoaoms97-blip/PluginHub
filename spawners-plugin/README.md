@@ -7,8 +7,9 @@ Spawners empilhados nos terrenos: outra fonte de renda além da mina.
 - **Compra:** no balcão **Spawners** da Loja Oficial (o vendedor "Domador" abre o `/spawners loja`). Cada tipo libera num rank e tem preço fixo; o dinheiro sai de circulação.
 - **Onde:** só no mundo dos terrenos (`mundos` no config). A proteção dos terrenos cuida de quem pode colocar e quebrar; fora dele, o spawner não entra.
 - **Empilhar:** com outro spawner igual na mão, clique direito no spawner (shift empilha a mão inteira), até `limite-por-bloco` (64). Só o dono empilha.
-- **A pilha de mobs:** a cada `ciclo-segundos` (20), cada spawner com algum jogador a até `raio-ativacao` (16) blocos soma tantos mobs quanto spawners empilhados, numa entidade só em cima do bloco ("x37 Zumbi"), até `limite-pilha` (300). A pilha não anda, não ataca, não queima no sol, não some e só toma dano de jogador.
-- **Abate:** cada morte derruba os drops de um mob (com Pilhagem) e a pilha volta com um a menos. Os drops vendem no **Caçador**, e o preço dinâmico regula: o que muita gente farma vale menos.
+- **A pilha de mobs:** a cada `ciclo-segundos` (20), cada spawner com algum jogador a até `raio-ativacao` (16) blocos soma tantos mobs quanto spawners empilhados, numa entidade só ("x37 Zumbi"), até `limite-pilha` (300). Ela nasce num lugar livre em cima ou em volta do spawner (nunca dentro de bloco) e é um mob normal: anda, a água arrasta, ataca, queima no sol e toma dano de tudo, então dá pra montar farm. Só não some de longe, não pega item, não deixa cair o equipamento e o creeper não explode (levaria a pilha toda sem drop).
+- **Abate:** a morte, por jogador ou não, vale pela pilha inteira: derruba os drops (com Pilhagem) e o XP de cada mob da pilha de uma vez, e o spawner começa uma pilha nova no ciclo seguinte. Os drops vendem no **Caçador**, e o preço dinâmico regula: o que muita gente farma vale menos.
+- **Pilha que volta com o chunk:** se o spawner já começou outra enquanto ela estava descarregada, as duas viram uma só.
 - **Quebrar:** devolve todos os spawners do bloco (em itens de até 64), sem precisar de Toque Suave.
 - **Explosão** não quebra spawner.
 
@@ -17,7 +18,7 @@ O bloco mostra o mob girando, mas o spawn do vanilla fica desligado: quem gera �
 ## Integrações
 
 - **Missões:** o mob da pilha nasce com o motivo "spawner", e as missões de matar não contam mob de spawner.
-- **Skills:** bater em mob de pilha dá `xp.multiplicador-spawner` (25%) do XP de PvE, senão a pilha virava fábrica de level up (cada nível paga dinheiro). A marca é a chave `spawnersplugin:pilha` na entidade.
+- **Skills:** bater em mob de pilha dá `xp.multiplicador-spawner` (25%) do XP de PvE, e só pelo dano do golpe: matar a pilha toda não dá o XP de cada mob dela. Senão a pilha virava fábrica de level up (cada nível paga dinheiro). A marca é a chave `spawnersplugin:pilha` na entidade.
 - **Rankup:** o rank que libera cada tipo (por reflexão).
 - **Pix:** a compra aparece no `/pix historico`.
 

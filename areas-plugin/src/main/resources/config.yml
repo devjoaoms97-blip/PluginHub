@@ -16,6 +16,8 @@ areas:
 
 # O que fica proibido dentro delas. Os admins (permissão areas.ignorar) e quem está no criativo passam.
 bloquear:
+  construir: true          # quebrar e colocar blocos, balde, fogo, pisotear plantação, moldura, quadro e suporte
+                           # de armadura; explosão não abre buraco. As minas do RankupPlugin ficam de fora
   perola: true             # pérola do fim (jogar lá dentro, ou cair lá dentro vindo de fora)
   elytra: true             # planar (quem entra planando cai, sem dano)
   voo: true                # /fly do VIP (quem entra voando cai, sem dano)

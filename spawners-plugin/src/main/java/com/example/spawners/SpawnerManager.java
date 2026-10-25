@@ -15,7 +15,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.entity.Zombie;
@@ -27,14 +26,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityCombustEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.EntitiesLoadEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -55,10 +53,14 @@ import java.util.logging.Level;
  *   <li><b>Spawner</b>: bloco de spawner no mundo (o mob gira dentro, só enfeite: o spawn do vanilla é
  *       cancelado). Guardado em spawners.yml com o tipo, quantos estão empilhados e o dono.</li>
  *   <li><b>Pilha</b>: a cada ciclo, cada spawner com jogador por perto soma {@code quantidade} mobs na
- *       pilha dele, uma entidade só em cima do bloco ("x37 Zumbi"), até {@code limite-pilha}. A pilha
- *       não anda, não ataca, não queima, não some e só toma dano de jogador.</li>
- *   <li><b>Abate</b>: cada morte derruba os drops de um mob (com Pilhagem) e a pilha volta com um a
- *       menos. O mob nasce com o motivo "spawner": as missões não contam, e as skills dão menos XP.</li>
+ *       pilha dele, uma entidade só ("x37 Zumbi"), até {@code limite-pilha}. Nasce num lugar livre em
+ *       cima ou em volta do spawner e é um mob normal: anda, a água arrasta, ataca, queima e toma
+ *       dano de tudo. Só não some de longe, não pega item e o creeper não explode (levaria a pilha
+ *       inteira sem drop nenhum).</li>
+ *   <li><b>Abate</b>: a morte (do jogador ou não) derruba os drops e o XP de todos os mobs da pilha de
+ *       uma vez, e o spawner começa uma pilha nova no ciclo seguinte. O mob nasce com o motivo
+ *       "spawner": as missões não contam, e as skills dão XP só pelo dano do golpe (com o multiplicador
+ *       de pilha).</li>
  * </ul>
  */
 public class SpawnerManager implements Listener {
@@ -283,6 +285,7 @@ public class SpawnerManager implements Listener {
             if (pilha == null) {
                 criarPilha(c, tipo, Math.min(limite, c.quantidade));
             } else {
+                acordar(pilha);
                 int atual = contar(pilha);
                 if (atual >= limite) continue;
                 definirContagem(pilha, tipo, Math.min(limite, atual + c.quantidade));
@@ -297,7 +300,7 @@ public class SpawnerManager implements Listener {
     }
 
     private void criarPilha(Colocado c, SpawnersPlugin.Tipo tipo, int contagem) {
-        Location onde = c.bloco().add(0.5, 1, 0.5);
+        Location onde = lugarParaNascer(c.bloco());
         Class<? extends Entity> classe = tipo.entidade().getEntityClass();
         if (classe == null) return;
         // motivo "spawner": as missões de matar não contam mob de spawner
@@ -307,12 +310,50 @@ public class SpawnerManager implements Listener {
         porPilha.put(c.pilha, c);
     }
 
+    /**
+     * Onde a pilha nasce: em cima do spawner, se couber o mob ali, senão o lugar livre mais perto em
+     * volta dele (chão firme e dois blocos de espaço), pra não nascer dentro de bloco.
+     */
+    private static Location lugarParaNascer(Location spawner) {
+        Location melhor = null;
+        double menor = Double.MAX_VALUE;
+        for (int dy = 1; dy >= -1; dy--) {
+            for (int dx = -2; dx <= 2; dx++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    if (dx == 0 && dz == 0 && dy != 1) continue; // o próprio spawner
+                    Block pe = spawner.getBlock().getRelative(dx, dy, dz);
+                    if (!livre(pe) || !livre(pe.getRelative(0, 1, 0)) || !pe.getRelative(0, -1, 0).getType().isSolid()) continue;
+                    double distancia = dx * dx + dz * dz + (dy == 1 ? 0 : 0.5);
+                    if (distancia < menor) {
+                        menor = distancia;
+                        melhor = pe.getLocation().add(0.5, 0, 0.5);
+                    }
+                }
+            }
+        }
+        return melhor != null ? melhor : spawner.clone().add(0.5, 1, 0.5);
+    }
+
+    /** As pilhas das versões antigas nasciam sem IA (paradas, sem gravidade): passam a ser mob normal. */
+    private static void acordar(LivingEntity pilha) {
+        if (pilha instanceof Mob mob && !mob.hasAI()) mob.setAI(true);
+    }
+
+    private static boolean livre(Block b) {
+        return b.isPassable() && !b.isLiquid();
+    }
+
     private void prepararMob(Entity e, Colocado c, SpawnersPlugin.Tipo tipo, int contagem) {
         if (e instanceof Mob mob) {
-            mob.setAI(false);
             mob.setRemoveWhenFarAway(false);
             mob.setCanPickupItems(false);
-            if (mob.getEquipment() != null) mob.getEquipment().clear();
+            EntityEquipment equipamento = mob.getEquipment();
+            if (equipamento != null) {
+                // o equipamento fica (o esqueleto atira), mas não cai: na pilha toda viraria uma pilha de arcos
+                for (EquipmentSlot slot : EquipmentSlot.values()) {
+                    if (mob.canUseEquipmentSlot(slot)) equipamento.setDropChance(slot, 0f);
+                }
+            }
         }
         if (e instanceof Zombie z) z.setAdult();
         if (e instanceof Slime s) s.setSize(1); // pequeno: não se divide ao morrer
@@ -334,7 +375,7 @@ public class SpawnerManager implements Listener {
     }
 
     // ---------------------------------------------------------------------
-    // A pilha: só o jogador mata, e cada morte é um mob
+    // A pilha: um mob normal, e a morte vale por todos
     // ---------------------------------------------------------------------
 
     private Colocado colocadoDaPilha(Entity e) {
@@ -353,41 +394,67 @@ public class SpawnerManager implements Listener {
         return null;
     }
 
+    /** O creeper da pilha chia, mas não explode: a explosão some com a pilha inteira, sem drop nenhum. */
+    @EventHandler(ignoreCancelled = true)
+    public void aoArmarExplosao(ExplosionPrimeEvent evento) {
+        if (evento.getEntity().getPersistentDataContainer().has(chavePilha)) evento.setCancelled(true);
+    }
+
+    /** A morte vale pela pilha toda: os drops (já com Pilhagem) e o XP de um mob, vezes a contagem. */
     @EventHandler(priority = EventPriority.HIGH)
-    public void aoTomarDano(EntityDamageEvent evento) {
-        if (!evento.getEntity().getPersistentDataContainer().has(chavePilha)) return;
-        if (evento instanceof EntityDamageByEntityEvent porEntidade) {
-            Entity causa = porEntidade.getDamager();
-            if (causa instanceof Projectile proj && proj.getShooter() instanceof Entity atirador) causa = atirador;
-            if (causa instanceof Player) return;
-        }
-        evento.setCancelled(true); // fogo, queda, sufocar, mob, explosão: nada mata a pilha
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void aoQueimar(EntityCombustEvent evento) {
-        if (evento.getEntity().getPersistentDataContainer().has(chavePilha)) evento.setCancelled(true);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void aoMirar(EntityTargetEvent evento) {
-        if (evento.getEntity().getPersistentDataContainer().has(chavePilha)) evento.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
     public void aoMorrer(EntityDeathEvent evento) {
         LivingEntity morto = evento.getEntity();
+        if (!morto.getPersistentDataContainer().has(chavePilha, PersistentDataType.INTEGER)) return;
+        int contagem = contar(morto);
         Colocado c = colocadoDaPilha(morto);
-        if (c == null) return;
-        porPilha.remove(morto.getUniqueId());
-        int resta = contar(morto) - 1;
-        c.pilha = null;
-        SpawnersPlugin.Tipo tipo = plugin.tipo(c.tipo);
-        if (resta > 0 && tipo != null && porLugar.containsValue(c)) {
-            // a pilha volta no mesmo lugar com um a menos (os drops de um mob já caíram)
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                if (porLugar.containsValue(c) && pilhaDe(c) == null) criarPilha(c, tipo, resta);
-            });
+        if (c != null) {
+            porPilha.remove(morto.getUniqueId());
+            c.pilha = null; // o próximo ciclo começa uma pilha nova
+        }
+        if (contagem <= 1) return;
+        List<ItemStack> todos = new ArrayList<>();
+        for (ItemStack drop : evento.getDrops()) {
+            if (drop == null || drop.getType().isAir()) continue;
+            long total = (long) drop.getAmount() * contagem;
+            while (total > 0) {
+                ItemStack parte = drop.clone();
+                parte.setAmount((int) Math.min(total, drop.getMaxStackSize()));
+                total -= parte.getAmount();
+                todos.add(parte);
+            }
+        }
+        evento.getDrops().clear();
+        evento.getDrops().addAll(todos);
+        evento.setDroppedExp((int) Math.min(Integer.MAX_VALUE, (long) evento.getDroppedExp() * contagem));
+    }
+
+    /**
+     * A pilha volta com o chunk (depois de um reinício, ou de andar pra um chunk que descarregou). Se
+     * o spawner já começou outra nesse meio tempo, as duas viram uma só.
+     */
+    @EventHandler
+    public void aoCarregarEntidades(EntitiesLoadEvent evento) {
+        int limite = Math.max(1, plugin.getConfig().getInt("limite-pilha", 300));
+        for (Entity e : evento.getEntities()) {
+            if (!(e instanceof LivingEntity vivo) || !e.getPersistentDataContainer().has(chavePilha, PersistentDataType.INTEGER)) continue;
+            acordar(vivo);
+            Colocado c = porPilha.get(e.getUniqueId());
+            if (c != null) continue;
+            String id = e.getPersistentDataContainer().get(chaveSpawner, PersistentDataType.STRING);
+            for (Colocado x : porLugar.values()) {
+                if (!x.id.equals(id)) continue;
+                LivingEntity atual = pilhaDe(x);
+                SpawnersPlugin.Tipo tipo = plugin.tipo(x.tipo);
+                if (atual != null && !atual.getUniqueId().equals(e.getUniqueId()) && tipo != null) {
+                    definirContagem(atual, tipo, Math.min(limite, contar(atual) + contar(e)));
+                    e.remove();
+                } else {
+                    if (x.pilha != null) porPilha.remove(x.pilha);
+                    x.pilha = e.getUniqueId();
+                    porPilha.put(x.pilha, x);
+                }
+                break;
+            }
         }
     }
 

@@ -16,6 +16,9 @@ grade:
   rua: 5
   # Altura (y) do chão.
   altura-chao: 64
+  # Altura (y) da camada de bedrock do fundo: ninguém cava abaixo dela. Os chunks que já existem
+  # ganham a camada sozinhos quando carregam.
+  fundo: 0
   # Até quantos terrenos a partir do centro, em cada direção (50 = 101 x 101 terrenos).
   raio-maximo: 50
   # Bioma do mundo inteiro: define a cor da grama e se chove ou neva (plains: grama verde, chuva).

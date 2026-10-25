@@ -6,22 +6,43 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.WindCharge;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +53,9 @@ import java.util.UUID;
  * Áreas fechadas: lugares de onde só se sai pelo caminho (portões, portais, /spawn), pra quem joga e
  * pra quem assiste. Lá dentro não dá pra voar (/fly do VIP), planar de elytra, jogar pérola do fim,
  * usar tridente com Correnteza, comer fruta do coro nem carga de vento. Quem entra voando cai, sem
- * dano de queda. Os admins ({@code areas.ignorar}) e quem está no criativo passam. No modo
+ * dano de queda. Também não dá pra quebrar nem colocar blocos (fora das minas do RankupPlugin), usar
+ * balde, pôr fogo, pisotear plantação nem mexer em moldura, quadro e suporte de armadura; explosão
+ * não abre buraco. Os admins ({@code areas.ignorar}) e quem está no criativo passam. No modo
  * espectador o jogo sempre voa e atravessa parede: quem assiste duelo assim fica preso pelo DueloPlugin
  * (raio em volta da arena, sem comandos nem teleporte).
  * <p>
@@ -52,6 +75,9 @@ public class AreasPlugin extends JavaPlugin implements Listener {
 
     private final List<Area> areas = new ArrayList<>();
     private final Map<UUID, Long> ultimoAviso = new HashMap<>();
+    /** RankupPlugin.getMinaManager() e MinaManager.getMinaEm(Location), achados por reflexão. */
+    private Method getMinaManager, getMinaEm;
+    private boolean avisouFalhaRankup;
 
     @Override
     public void onEnable() {
@@ -181,6 +207,152 @@ public class AreasPlugin extends JavaPlugin implements Listener {
         if (p.getAllowFlight() && bloqueia("voo") && areaEm(p.getLocation()) != null && !p.hasPermission("areas.ignorar")) {
             evento.setCancelled(true);
         }
+    }
+
+    // ---------------------------------------------------------------------
+    // Construção: ninguém quebra nem coloca nada (as minas do RankupPlugin ficam de fora)
+    // ---------------------------------------------------------------------
+
+    /** O lugar está dentro de uma mina do RankupPlugin? Lá quem cuida das regras é ele. */
+    private boolean emMina(Location l) {
+        Plugin rankup = getServer().getPluginManager().getPlugin("RankupPlugin");
+        if (rankup == null || !rankup.isEnabled()) return false;
+        try {
+            if (getMinaManager == null) getMinaManager = rankup.getClass().getMethod("getMinaManager");
+            Object minas = getMinaManager.invoke(rankup);
+            if (getMinaEm == null) getMinaEm = minas.getClass().getMethod("getMinaEm", Location.class);
+            return getMinaEm.invoke(minas, l) != null;
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            if (!avisouFalhaRankup) {
+                getLogger().warning("Não foi possível consultar as minas no RankupPlugin (versão antiga?): " + e.getMessage());
+                avisouFalhaRankup = true;
+            }
+            return false;
+        }
+    }
+
+    /** Lugar protegido contra o que não vem de jogador (explosão, fogo que espalha, mob): numa área, fora das minas. */
+    private boolean protegido(Location onde) {
+        return bloqueia("construir") && areaEm(onde) != null && !emMina(onde);
+    }
+
+    /** Barra o jogador de mexer aqui? Admin e criativo passam. */
+    private boolean barraConstrucao(Player p, Location onde) {
+        return !p.hasPermission("areas.ignorar") && p.getGameMode() != GameMode.CREATIVE && protegido(onde);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoQuebrar(BlockBreakEvent evento) {
+        if (barraConstrucao(evento.getPlayer(), evento.getBlock().getLocation())) {
+            evento.setCancelled(true);
+            avisar(evento.getPlayer(), "quebrar blocos");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoColocar(BlockPlaceEvent evento) {
+        if (barraConstrucao(evento.getPlayer(), evento.getBlock().getLocation())) {
+            evento.setCancelled(true);
+            avisar(evento.getPlayer(), "colocar blocos");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoEsvaziarBalde(PlayerBucketEmptyEvent evento) {
+        if (barraConstrucao(evento.getPlayer(), evento.getBlock().getLocation())) {
+            evento.setCancelled(true);
+            avisar(evento.getPlayer(), "usar balde");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoEncherBalde(PlayerBucketFillEvent evento) {
+        if (barraConstrucao(evento.getPlayer(), evento.getBlock().getLocation())) {
+            evento.setCancelled(true);
+            avisar(evento.getPlayer(), "usar balde");
+        }
+    }
+
+    /** Fogo: o de isqueiro e carga de fogo, e o que se espalha sozinho. */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoPegarFogo(BlockIgniteEvent evento) {
+        Location onde = evento.getBlock().getLocation();
+        Player p = evento.getPlayer();
+        if (p != null ? barraConstrucao(p, onde) : protegido(onde)) {
+            evento.setCancelled(true);
+            if (p != null) avisar(p, "pôr fogo");
+        }
+    }
+
+    /** Pisotear plantação (pulando em cima). */
+    @EventHandler(priority = EventPriority.LOW)
+    public void aoPisar(PlayerInteractEvent evento) {
+        Block bloco = evento.getClickedBlock();
+        if (evento.getAction() != Action.PHYSICAL || bloco == null || bloco.getType() != Material.FARMLAND) return;
+        if (barraConstrucao(evento.getPlayer(), bloco.getLocation())) evento.setCancelled(true);
+    }
+
+    /** Mob que mexe em bloco (enderman pegando, plantação pisoteada, ravager...). */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoMobMexer(EntityChangeBlockEvent evento) {
+        if (evento.getEntity() instanceof FallingBlock) return; // areia e cascalho caindo
+        Location onde = evento.getBlock().getLocation();
+        if (evento.getEntity() instanceof Player p ? barraConstrucao(p, onde) : protegido(onde)) evento.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoExplodirEntidade(EntityExplodeEvent evento) {
+        evento.blockList().removeIf(b -> protegido(b.getLocation()));
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoExplodirBloco(BlockExplodeEvent evento) {
+        evento.blockList().removeIf(b -> protegido(b.getLocation()));
+    }
+
+    /** Moldura e quadro: nem pôr, nem quebrar, nem girar ou tirar o item. */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoPendurar(HangingPlaceEvent evento) {
+        if (evento.getPlayer() != null && barraConstrucao(evento.getPlayer(), evento.getEntity().getLocation())) {
+            evento.setCancelled(true);
+            avisar(evento.getPlayer(), "colocar blocos");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoQuebrarPendurado(HangingBreakByEntityEvent evento) {
+        Player p = jogadorDe(evento.getRemover());
+        Location onde = evento.getEntity().getLocation();
+        // sem jogador (explosão, mob, flecha de esqueleto): também não quebra
+        if (p != null ? barraConstrucao(p, onde) : protegido(onde)) evento.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoMexerEmEntidade(PlayerInteractEntityEvent evento) {
+        Entity alvo = evento.getRightClicked();
+        if ((alvo instanceof Hanging || alvo instanceof ArmorStand) && barraConstrucao(evento.getPlayer(), alvo.getLocation())) {
+            evento.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoMexerNoSuporte(PlayerArmorStandManipulateEvent evento) {
+        if (barraConstrucao(evento.getPlayer(), evento.getRightClicked().getLocation())) evento.setCancelled(true);
+    }
+
+    /** Bater na moldura (tira o item) ou no suporte de armadura (quebra). */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoBaterEmDecoracao(EntityDamageByEntityEvent evento) {
+        Entity alvo = evento.getEntity();
+        if (!(alvo instanceof Hanging) && !(alvo instanceof ArmorStand)) return;
+        Player p = jogadorDe(evento.getDamager());
+        if (p != null ? barraConstrucao(p, alvo.getLocation()) : protegido(alvo.getLocation())) evento.setCancelled(true);
+    }
+
+    private static Player jogadorDe(Entity causa) {
+        if (causa instanceof Player p) return p;
+        if (causa instanceof Projectile proj && proj.getShooter() instanceof Player p) return p;
+        return null;
     }
 
     @Override

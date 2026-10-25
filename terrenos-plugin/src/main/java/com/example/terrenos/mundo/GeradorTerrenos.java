@@ -50,7 +50,7 @@ public class GeradorTerrenos extends ChunkGenerator {
         for (int dx = 0; dx < 16; dx++) {
             for (int dz = 0; dz < 16; dz++) {
                 int x = chunkX * 16 + dx, z = chunkZ * 16 + dz;
-                for (int y = minY; y <= topo; y++) {
+                for (int y = g.fundo(minY); y <= topo; y++) {
                     dados.setBlock(dx, y, dz, g.blocoEm(x, y, z, minY));
                 }
             }

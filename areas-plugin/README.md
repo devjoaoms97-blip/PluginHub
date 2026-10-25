@@ -14,6 +14,7 @@ Dentro de uma área fechada:
 | Tridente com Correnteza | Não carrega |
 | Fruta do coro | Não teleporta |
 | Carga de vento | Não sai e não é gasta |
+| Construção | Ninguém quebra nem coloca bloco, usa balde, põe fogo, pisoteia plantação nem mexe em moldura, quadro e suporte de armadura. Explosão, fogo que espalha e mob (enderman) também não mexem em nada. As minas do RankupPlugin ficam de fora: lá quem cuida é ele |
 
 Cada um liga e desliga em `bloquear`. Os admins (`areas.ignorar`) e quem está no criativo passam. Os jogadores que assistem (plateia do X1 e do Gladiador) seguem as mesmas regras de quem joga.
 

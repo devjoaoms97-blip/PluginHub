@@ -13,7 +13,7 @@ tipos:
     skin: "textura:19c5d75f9426d887b817d2b8d191788450d0e7ee7e00541b6ad879da84995f32"   # bruxa de cabelo roxo
   picareteiro:
     nome: "&b&l⛏ Picareteiro"
-    descricao: "&7Clique: comprar picaretas"
+    descricao: "&7Clique: comprar picaretas e machados"
     skin: "textura:1c440eac8bd5308c32cf982c3b9c3c9b49d345db6483ed44784fd2d94fca322e"   # minerador de capacete
   armeiro:
     nome: "&4&l⚔ Armeiro"
@@ -56,11 +56,11 @@ bruxa:
   taxa: 0
 
 picareteiro:
-  # O que ele vende, na ordem do menu. encantamentos: id do Minecraft (efficiency, unbreaking,
-  # fortune, silk_touch, mending...) → nível.
+  # O que ele vende (picaretas e machados), na ordem do menu. preco: 0 = de graça. encantamentos:
+  # id do Minecraft (efficiency, unbreaking, fortune, silk_touch, mending...) → nível.
   itens:
     - material: STONE_PICKAXE
-      preco: 50
+      preco: 0   # de graça: as de pedra são pra quem está começando
     - material: IRON_PICKAXE
       preco: 300
     - material: DIAMOND_PICKAXE
@@ -85,6 +85,25 @@ picareteiro:
       nome: "&5&lPicareta Lendária"
       preco: 120000
       encantamentos: {efficiency: 5, unbreaking: 3, fortune: 3, mending: 1}
+    # Machados, pra mina do bosque (Fortuna não muda nada em tora, então não entra)
+    - material: STONE_AXE
+      preco: 0   # de graça, como a picareta de pedra
+    - material: IRON_AXE
+      preco: 300
+    - material: DIAMOND_AXE
+      preco: 700
+    - material: IRON_AXE
+      nome: "&fMachado de Ferro &7(Eficiência III)"
+      preco: 1200
+      encantamentos: {efficiency: 3, unbreaking: 2}
+    - material: DIAMOND_AXE
+      nome: "&bMachado do Lenhador"
+      preco: 4500
+      encantamentos: {efficiency: 4, unbreaking: 3}
+    - material: NETHERITE_AXE
+      nome: "&5&lMachado Lendário"
+      preco: 90000
+      encantamentos: {efficiency: 5, unbreaking: 3, mending: 1}
 
 # Balcão PvP da Loja Oficial: armaduras e armas SEM encantamento (o jogador encanta na Bruxa), mais
 # escudo, flechas e poções. Só compra (nada disso volta pra loja). Preço pelo material: couro 4,

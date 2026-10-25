@@ -17,15 +17,18 @@ public final class Grade {
     private final int tamanho;
     private final int rua;
     private final int alturaChao;
+    private final int fundo;
     private final Material chao;
     private final Material terra;
     private final Material calcamento;
     private final Material borda;
 
-    public Grade(int tamanho, int rua, int alturaChao, Material chao, Material terra, Material calcamento, Material borda) {
+    public Grade(int tamanho, int rua, int alturaChao, int fundo, Material chao, Material terra, Material calcamento, Material borda) {
         this.tamanho = Math.max(4, tamanho);
         this.rua = Math.max(3, rua);
         this.alturaChao = alturaChao;
+        // sempre abaixo da pedra que fica embaixo da terra
+        this.fundo = Math.min(fundo, alturaChao - 6);
         this.chao = chao;
         this.terra = terra;
         this.calcamento = calcamento;
@@ -42,6 +45,11 @@ public final class Grade {
 
     public int getAlturaChao() {
         return alturaChao;
+    }
+
+    /** Altura da camada de bedrock do fundo (nunca abaixo do fundo do mundo). Abaixo dela é só ar. */
+    public int fundo(int minY) {
+        return Math.max(minY, fundo);
     }
 
     /** Posição dentro da célula (0..celula-1), também pra coordenada negativa. */
@@ -81,12 +89,14 @@ public final class Grade {
     }
 
     /**
-     * Bloco gerado nessa posição. O fundo do mundo (y == minY) é bedrock, pedra até 5 abaixo do
-     * chão, terra até o chão, e no chão a grama (terreno) ou o calçamento (rua). Um bloco acima
-     * do chão vai a laje da borda.
+     * Bloco gerado nessa posição. O fundo ({@link #fundo}) é bedrock, com ar embaixo, pedra até 5
+     * abaixo do chão, terra até o chão, e no chão a grama (terreno) ou o calçamento (rua). Um bloco
+     * acima do chão vai a laje da borda.
      */
     public Material blocoEm(int x, int y, int z, int minY) {
-        if (y == minY) return Material.BEDROCK;
+        int base = fundo(minY);
+        if (y < base) return Material.AIR;
+        if (y == base) return Material.BEDROCK;
         if (y > alturaChao + 1) return Material.AIR;
         boolean terreno = dentroDoTerreno(x) && dentroDoTerreno(z);
         if (y == alturaChao + 1) return !terreno && ehBorda(x, z) ? borda : Material.AIR;

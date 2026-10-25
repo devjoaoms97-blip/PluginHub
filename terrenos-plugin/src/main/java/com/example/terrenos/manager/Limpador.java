@@ -60,11 +60,12 @@ public class Limpador {
         }
         Grade g = plugin.getGrade();
         int minX = g.minX(tarefa.id()), minZ = g.minZ(tarefa.id()), t = g.getTamanho();
-        int minY = mundo.getMinHeight(), maxY = mundo.getMaxHeight() - 1;
+        // abaixo do fundo de bedrock ninguém chega: não precisa limpar
+        int minY = mundo.getMinHeight(), maxY = mundo.getMaxHeight() - 1, base = g.fundo(minY);
         for (int n = 0; n < COLUNAS_POR_TICK && tarefa.proximaColuna()[0] < t; n++) {
             int x = minX + tarefa.proximaColuna()[0]++;
             for (int z = minZ; z < minZ + t; z++) {
-                for (int y = minY; y <= maxY; y++) {
+                for (int y = base; y <= maxY; y++) {
                     Material certo = g.blocoEm(x, y, z, minY);
                     Block bloco = mundo.getBlockAt(x, y, z);
                     if (bloco.getType() != certo) bloco.setType(certo, false);

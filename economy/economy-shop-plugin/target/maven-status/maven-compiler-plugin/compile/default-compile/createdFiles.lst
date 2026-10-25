@@ -15,6 +15,7 @@ com\example\shop\manager\PriceHistoryManager.class
 com\example\shop\manager\PriceHistoryManager$Ponto.class
 com\example\shop\manager\ShopManager.class
 com\example\shop\manager\Precificacao.class
+com\example\shop\manager\TrocasVillager.class
 com\example\shop\util\PixIntegration.class
 com\example\shop\manager\Precificacao$Venda.class
 com\example\shop\command\ShopCommand.class

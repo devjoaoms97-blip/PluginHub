@@ -141,6 +141,8 @@ Terrenos de 32x32 num mundo em grade gerado pelo plugin, comprados por R$ 50.000
 **Próximos passos**
 - [x] Holograma na entrada do terreno, com o dono, "À venda" ou o leilão. Antes era uma placa.
 - [ ] Juntar terrenos vizinhos do mesmo dono. 🟡
+- [x] Fundo de bedrock em y = 0 (2026-10-25), também nos chunks que já existiam.
+- [x] Holograma do terreno em leilão mostra quantos itens estão guardados lá dentro (2026-10-25).
 - [x] Permissões separadas para os amigos (construir, baús, usar).
 - [x] Missão de pagar o imposto ou de construir no terreno.
 
@@ -190,6 +192,7 @@ NPCs pelo spawn que falam ao receber um clique direito: o balão cresce, escreve
 Quatro barraquinhas temáticas na praça de entrada da Avenida das Minas (estrutura `oficinas`), cada uma com um NPC de serviço: **Ferreiro** (repara os itens por uma taxa pelo desgaste, material e encantamentos), **Bruxa** (mesa de encantamento sempre no nível 30, com a câmara de estantes escondida embaixo da barraca), **Picareteiro** (picaretas prontas, encantadas ou não) e **Sábio** (níveis de XP). A bruxa põe o lápis; cada NPC tem skin temática. Desconto de VIP e registro no `/pix historico`.
 - [ ] Mais oficinas no fundo da avenida (ex: vendedor de comida, troca de minério por fragmento). 🟡
 - [ ] Missões nas oficinas (reparar, encantar). 🟡
+- [x] Machados no Picareteiro, pra mina do bosque (2026-10-25).
 
 ### Placar lateral ✅ v1 (`placar-plugin`)
 Scoreboard no canto da tela com saldo, rank, barra até o próximo rank, clã, missões do dia, próximo boss e jogadores online. Linhas no config, com placeholders; `/placar` liga e desliga.
@@ -201,7 +204,8 @@ Prédio fechado colado no portão LESTE do spawn (`/warp loja`), com dez balcõe
 
 ### Spawners ✅ v1 (`spawners-plugin`)
 Spawners empilhados nos terrenos, comprados no balcão Spawners da Loja Oficial (12 tipos, cada um liberado num rank). Iguais no mesmo bloco se somam, e os mobs se juntam numa pilha só em cima do spawner, que o jogador mata na espada. Os drops vendem no Caçador. As skills dão 25% do XP em mob de pilha, e as missões não contam.
-- [ ] Ver no `analisar.py` quanto os spawners rendem de verdade e calibrar os preços. 🟡
+- [x] A pilha é um mob normal (anda, a água arrasta, ataca) e nasce em lugar livre, e um abate mata a pilha toda, com os drops e o XP de todos (2026-10-25). O XP de skill continua só pelo dano do golpe.
+- [ ] Ver no `analisar.py` quanto os spawners rendem de verdade e calibrar os preços (agora com a pilha morrendo de uma vez e farms possíveis). 🟡
 
 ### Máquinas e produtos ✅ v1 (`maquinas-plugin` + `pacote-plugin`)
 Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcano), cada uma liberada num rank, que com **Células de Combustível** compradas na loja fabricam **produtos** (Tecido Fino, Barra de Aço, Essência Destilada, Gema Lapidada e Cristal de Energia). Produzem pelo relógio, mesmo offline, até encher o estoque (uma a duas horas). Melhorias de velocidade (5% por nível) e estoque, e até 4 máquinas por jogador (VIP até 7). O Maquinista (balcão Máquinas) vende as máquinas e o combustível e compra os produtos por preço dinâmico, com o bônus do rank e do VIP. Cada máquina rende ~10% da mina do rank dela (`tools/economia/maquinas.py`).
@@ -213,6 +217,7 @@ Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcan
 
 ### Áreas fechadas ✅ v1 (`areas-plugin`)
 Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gladiador e plateias) por fora do caminho, nem quem joga, nem quem assiste: lá dentro não dá pra voar (`/fly` do VIP), planar de elytra, jogar pérola do fim, usar tridente com Correnteza, fruta do coro nem carga de vento. Quem entra voando ou planando cai, sem dano. Os admins e o criativo passam. As áreas ficam no config (mundo inteiro ou caixa).
+- [x] **Sem construção** (2026-10-25): ninguém quebra nem coloca bloco no spawn, na loja, na arena do boss e nas arenas de X1 e Gladiador (balde, fogo, molduras e explosão também). As minas ficam de fora.
 - [ ] Comandos de teleporte de jogador pra jogador (`/tpa`, `/back`, `/home`) dentro das arenas de evento, se aparecerem: hoje os plugins de evento já barram comandos de quem participa. 🟡
 
 ---
@@ -239,6 +244,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 ### 🛒 EconomyShopPlugin
 - [x] **Eventos de mercado**: um item sorteado tem o preço multiplicado por algumas horas ("alta do diamante"), com anúncio no chat. A cada `intervalo-horas`, com uma chance, por `duracao-horas`; a staff liga com `/shop admin evento <item> <mult> <horas>`, e `/shop evento` mostra o item em alta.
 - [x] **Venda em massa**: `/sell all` (e `/sell` vende o item da mão).
+- [x] **Sem troca com villager** (2026-10-25), no servidor todo: esmeralda passaria por fora da loja.
 - [x] **Categorias fixas**: uma lista definida no config em vez de texto livre, pra evitar "Minerio" e "Minerios" separados. `categorias` no config ("Nome:ÍCONE"), na ordem do menu.
 
 ### 💸 PixPlugin

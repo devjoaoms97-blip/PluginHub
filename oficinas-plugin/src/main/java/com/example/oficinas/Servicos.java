@@ -233,10 +233,10 @@ public class Servicos implements Listener {
             ItemMeta meta = ic.getItemMeta();
             List<String> lore = meta.hasLore() && meta.getLore() != null ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
             lore.add("");
-            lore.add("§7Preço: §a" + plugin.dinheiro(preco));
-            String desc = descontoLinha(jogador);
+            lore.add("§7Preço: §a" + (preco <= 0 ? "Grátis" : plugin.dinheiro(preco)));
+            String desc = preco <= 0 ? "" : descontoLinha(jogador);
             if (!desc.isEmpty()) lore.add(desc);
-            lore.add("§eClique pra comprar");
+            lore.add(preco <= 0 ? "§eClique pra pegar" : "§eClique pra comprar");
             meta.setLore(lore);
             ic.setItemMeta(meta);
             menu.inventario.setItem(i, ic);
@@ -257,7 +257,7 @@ public class Servicos implements Listener {
         entregar(jogador, produto);
         jogador.playSound(jogador.getLocation(), Sound.ENTITY_VILLAGER_YES, 0.8f, 1f);
         jogador.sendMessage((menu.tipo == Oficina.Tipo.ARMEIRO ? "§a⚔ " : "§a⛏ ") + "Você comprou §f" + nome(produto)
-                + " §apor §f" + plugin.dinheiro(preco) + "§a.");
+                + (preco <= 0 ? " §ade graça." : " §apor §f" + plugin.dinheiro(preco) + "§a."));
     }
 
     /** Monta o item de uma entrada do config: material, quantidade, nome, encantamentos e poção. */
@@ -393,6 +393,7 @@ public class Servicos implements Listener {
     }
 
     private boolean cobrar(Player jogador, double valor, String tipo) {
+        if (valor <= 0) return true; // de graça (as ferramentas de pedra pra quem está começando): nada no extrato
         Economy econ = plugin.getEconomy();
         if (econ == null) {
             jogador.sendMessage("§cA economia está indisponível no momento.");

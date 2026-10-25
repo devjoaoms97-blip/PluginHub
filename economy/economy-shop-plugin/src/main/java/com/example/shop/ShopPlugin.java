@@ -77,6 +77,7 @@ public class ShopPlugin extends JavaPlugin {
         getCommand("sell").setTabCompleter(sellCommand);
 
         getServer().getPluginManager().registerEvents(new ShopGUIListener(this), this);
+        getServer().getPluginManager().registerEvents(new com.example.shop.manager.TrocasVillager(this), this);
 
         int intervaloRegenSegundos = getConfig().getInt("regeneracao.intervalo-segundos", 60);
         long intervaloRegenTicks = intervaloRegenSegundos * 20L;

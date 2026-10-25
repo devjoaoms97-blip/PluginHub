@@ -6,6 +6,7 @@ import com.example.terrenos.listener.ProtecaoListener;
 import com.example.terrenos.manager.Hologramas;
 import com.example.terrenos.manager.Limpador;
 import com.example.terrenos.manager.TerrenoManager;
+import com.example.terrenos.mundo.FundoDeBedrock;
 import com.example.terrenos.mundo.GeradorTerrenos;
 import com.example.terrenos.mundo.Grade;
 import com.example.terrenos.util.DiscordIntegration;
@@ -66,6 +67,9 @@ public class TerrenosPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new JogadorListener(this), this);
         getServer().getPluginManager().registerEvents(hologramas, this);
         getServer().getScheduler().runTask(this, hologramas::carregarTodos);
+        FundoDeBedrock fundo = new FundoDeBedrock(this);
+        getServer().getPluginManager().registerEvents(fundo, this);
+        getServer().getScheduler().runTask(this, fundo::conferirCarregados);
 
         getServer().getScheduler().runTaskTimer(this, terrenoManager::tick, 20L, 20L);
         getServer().getScheduler().runTaskTimer(this, limpador::tick, 1L, 1L);
@@ -106,6 +110,7 @@ public class TerrenosPlugin extends JavaPlugin {
                 getConfig().getInt("grade.tamanho", 32),
                 getConfig().getInt("grade.rua", 5),
                 getConfig().getInt("grade.altura-chao", 64),
+                getConfig().getInt("grade.fundo", 0),
                 material("grade.blocos.chao", Material.GRASS_BLOCK),
                 material("grade.blocos.terra", Material.DIRT),
                 material("grade.blocos.calcamento", Material.STONE_BRICKS),
