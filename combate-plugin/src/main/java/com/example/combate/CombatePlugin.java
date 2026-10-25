@@ -40,6 +40,9 @@ public class CombatePlugin extends JavaPlugin {
             duasMaos = new DuasMaos(this);
             getServer().getPluginManager().registerEvents(duasMaos, this);
         }
+        if (getConfig().getBoolean("arma-de-longe.ativado", true)) {
+            getServer().getPluginManager().registerEvents(new ArmaDeLonge(this), this);
+        }
     }
 
     /** O golpe em andamento é o da segunda mão (DuasMaos). */

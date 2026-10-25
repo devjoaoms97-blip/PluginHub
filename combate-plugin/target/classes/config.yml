@@ -36,3 +36,12 @@ duas-maos:
   armas: [_SWORD, _AXE]
   # Com a segunda mão vazia, o botão direito no inimigo é um soco.
   soco: true
+
+arma-de-longe:
+  # Carregar a besta (ou puxar o arco) trava a espada: enquanto carrega, e por um tempo depois de
+  # disparar, nenhum golpe corpo a corpo conta (espada, machado ou soco, de qualquer mão). Bater e
+  # depois carregar continua livre. Sem isso, com a besta numa mão e a espada na outra, dava pra
+  # carregar, bater e disparar no mesmo combo.
+  ativado: true
+  armas: [BOW, CROSSBOW]
+  trava-depois-de-disparar-ms: 500

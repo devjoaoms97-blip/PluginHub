@@ -72,7 +72,7 @@ public class LojaOficial implements Estrutura {
             new Balcao("minerador", -1, 108, 117, Material.CYAN_WOOL, Material.LIGHT_BLUE_WOOL),
             new Balcao("spawners", -1, 121, 130, Material.BLACK_WOOL, Material.GRAY_WOOL),
             new Balcao("maquinas", 1, 108, 117, Material.LIGHT_GRAY_WOOL, Material.ORANGE_WOOL),
-            new Balcao("pvp", 1, 121, 130, Material.RED_WOOL, Material.BLACK_WOOL, true));
+            new Balcao("pvp", 1, 121, 130, Material.RED_WOOL, Material.BLACK_WOOL));
 
     private Planta p;
 
@@ -367,10 +367,16 @@ public class LojaOficial implements Estrutura {
                 bset(b, z, 1, 4, Material.BLAST_FURNACE);
             }
             case "pvp" -> {
-                // reservado: só a vitrine lisa, esperando o que vai ser vendido ali
+                // arsenal: suportes de armadura nos quadros, alvo, barris e uma bigorna
                 for (int ao = a; ao <= z; ao++) {
-                    for (int y = 1; y <= 3; y++) bset(b, ao, y, 7, y == 2 ? b.toldo() : Material.STRIPPED_SPRUCE_WOOD);
+                    bset(b, ao, 1, 7, Material.POLISHED_BLACKSTONE_BRICKS);
+                    bset(b, ao, 2, 7, Math.floorMod(ao, 2) == 0 ? Material.RED_NETHER_BRICKS : Material.TARGET);
+                    bset(b, ao, 3, 7, Material.POLISHED_BLACKSTONE_BRICKS);
                 }
+                bset(b, a, 1, 5, direcional(Material.ANVIL, BlockFace.NORTH));
+                bset(b, a, 1, 4, Material.GRINDSTONE);
+                bset(b, z, 1, 5, Material.BREWING_STAND);
+                bset(b, z, 1, 4, Material.BARREL);
             }
             default -> { // minerador
                 Material[] minerios = {Material.COAL_ORE, Material.IRON_ORE, Material.COPPER_ORE, Material.GOLD_ORE, Material.REDSTONE_ORE,
@@ -495,13 +501,13 @@ public class LojaOficial implements Estrutura {
                 "jardineiro", new String[]{"poppy", "oak_sapling"}, "fazendeiro", new String[]{"wheat", "carrot"},
                 "cacador", new String[]{"bone", "bow"}, "alquimista", new String[]{"brewing_stand", "redstone"},
                 "minerador", new String[]{"diamond", "iron_pickaxe"}, "spawners", new String[]{"spawner", "pig_spawn_egg"},
-                "maquinas", new String[]{"piston", "observer"}, "pvp", new String[]{"diamond_sword", "golden_apple"});
+                "maquinas", new String[]{"piston", "observer"}, "pvp", new String[]{"diamond_sword", "shield"});
         Map<String, String> titulos = Map.of(
                 "construtor", "\"🧱 CONSTRUTOR\",color:\"gold\"", "lenhador", "\"🪓 LENHADOR\",color:\"red\"",
                 "jardineiro", "\"🌸 JARDINEIRO\",color:\"green\"", "fazendeiro", "\"🌾 FAZENDEIRO\",color:\"yellow\"",
                 "cacador", "\"🏹 CAÇADOR\",color:\"dark_red\"", "alquimista", "\"⚗ ALQUIMISTA\",color:\"light_purple\"",
                 "minerador", "\"⛏ MINERADOR\",color:\"aqua\"", "spawners", "\"🐷 SPAWNERS\",color:\"dark_aqua\"",
-                "maquinas", "\"⚙ MÁQUINAS\",color:\"gold\"", "pvp", "\"⚔ PVP (em breve)\",color:\"gray\"");
+                "maquinas", "\"⚙ MÁQUINAS\",color:\"gold\"", "pvp", "\"⚔ PVP\",color:\"red\"");
         for (Balcao b : BALCOES) {
             double nx, nz, tx, tz;
             int yaw;
@@ -519,7 +525,12 @@ public class LojaOficial implements Estrutura {
                 tz = oz + b.lado() * 11 + 0.5;
                 yaw = b.lado() < 0 ? 0 : 180;
             }
-            if (!b.reservado()) c.add("shop admin npc " + b.id() + " " + mundo + " " + nx + " " + yPe + " " + nz + " " + yaw);
+            if (b.id().equals("pvp")) {
+                // o vendedor de PvP é o Armeiro do OficinasPlugin (lista de itens com encantamento e poção)
+                c.add("oficina criar pvp armeiro " + mundo + " " + nx + " " + yPe + " " + nz + " " + yaw);
+            } else if (!b.reservado()) {
+                c.add("shop admin npc " + b.id() + " " + mundo + " " + nx + " " + yPe + " " + nz + " " + yaw);
+            }
             c.add(em + "summon minecraft:text_display " + tx + " " + (oy + 6.6) + " " + tz + " {Tags:[\"loja\"],billboard:\"center\","
                     + "shadow:1b,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],"
                     + "scale:[1.4f,1.4f,1.4f]},text:{text:" + titulos.get(b.id()) + ",bold:1b}}");

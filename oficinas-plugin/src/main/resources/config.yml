@@ -15,6 +15,10 @@ tipos:
     nome: "&b&l⛏ Picareteiro"
     descricao: "&7Clique: comprar picaretas"
     skin: "textura:1c440eac8bd5308c32cf982c3b9c3c9b49d345db6483ed44784fd2d94fca322e"   # minerador de capacete
+  armeiro:
+    nome: "&4&l⚔ Armeiro"
+    descricao: "&7Clique: armaduras, armas e poções"
+    skin: "textura:716c2da12d4482f34db58fb872ca25ff682001064dc50b504d099bc2256afb09"   # cavaleiro de tabardo vinho
   sabio:
     nome: "&d&l📖 Sábio"
     descricao: "&7Clique: comprar XP"
@@ -81,6 +85,63 @@ picareteiro:
       nome: "&5&lPicareta Lendária"
       preco: 120000
       encantamentos: {efficiency: 5, unbreaking: 3, fortune: 3, mending: 1}
+
+# Balcão PvP da Loja Oficial: armaduras e armas SEM encantamento (o jogador encanta na Bruxa), mais
+# escudo, flechas e poções. Só compra (nada disso volta pra loja). Preço pelo material: couro 4,
+# lingote de ferro 18, de ouro 30, diamante 120; a peça de netherita é a de diamante mais um lingote
+# de netherita (R$ 4.500). pocao: o tipo do Minecraft (strong_healing, strength, long_swiftness...).
+armeiro:
+  itens:
+    - {material: LEATHER_HELMET, preco: 25}
+    - {material: LEATHER_CHESTPLATE, preco: 40}
+    - {material: LEATHER_LEGGINGS, preco: 35}
+    - {material: LEATHER_BOOTS, preco: 20}
+    - {material: CHAINMAIL_HELMET, preco: 80}
+    - {material: CHAINMAIL_CHESTPLATE, preco: 130}
+    - {material: CHAINMAIL_LEGGINGS, preco: 115}
+    - {material: CHAINMAIL_BOOTS, preco: 65}
+    - {material: GOLDEN_HELMET, preco: 160}
+    - {material: GOLDEN_CHESTPLATE, preco: 260}
+    - {material: GOLDEN_LEGGINGS, preco: 230}
+    - {material: GOLDEN_BOOTS, preco: 130}
+    - {material: IRON_HELMET, preco: 110}
+    - {material: IRON_CHESTPLATE, preco: 170}
+    - {material: IRON_LEGGINGS, preco: 150}
+    - {material: IRON_BOOTS, preco: 90}
+    - {material: DIAMOND_HELMET, preco: 700}
+    - {material: DIAMOND_CHESTPLATE, preco: 1100}
+    - {material: DIAMOND_LEGGINGS, preco: 1000}
+    - {material: DIAMOND_BOOTS, preco: 560}
+    - {material: NETHERITE_HELMET, preco: 5300}
+    - {material: NETHERITE_CHESTPLATE, preco: 5700}
+    - {material: NETHERITE_LEGGINGS, preco: 5600}
+    - {material: NETHERITE_BOOTS, preco: 5200}
+    - {material: WOODEN_SWORD, preco: 5}
+    - {material: STONE_SWORD, preco: 5}
+    - {material: GOLDEN_SWORD, preco: 70}
+    - {material: IRON_SWORD, preco: 60}
+    - {material: DIAMOND_SWORD, preco: 300}
+    - {material: NETHERITE_SWORD, preco: 4900}
+    - {material: WOODEN_AXE, preco: 8}
+    - {material: STONE_AXE, preco: 6}
+    - {material: GOLDEN_AXE, preco: 100}
+    - {material: IRON_AXE, preco: 60}
+    - {material: DIAMOND_AXE, preco: 400}
+    - {material: NETHERITE_AXE, preco: 5000}
+    - {material: BOW, preco: 80}
+    - {material: CROSSBOW, preco: 120}
+    - {material: TRIDENT, preco: 1500}
+    - {material: SHIELD, preco: 60}
+    - {material: ARROW, quantidade: 64, preco: 64}
+    - {material: SPECTRAL_ARROW, quantidade: 16, preco: 80}
+    - {material: SPLASH_POTION, nome: "&dPoção de Cura II", preco: 150, pocao: strong_healing}
+    - {material: POTION, nome: "&dPoção de Força II", preco: 250, pocao: strong_strength}
+    - {material: POTION, nome: "&dPoção de Velocidade II", preco: 150, pocao: strong_swiftness}
+    - {material: POTION, nome: "&dPoção de Regeneração II", preco: 250, pocao: strong_regeneration}
+    - {material: POTION, nome: "&dPoção de Resistência ao Fogo", preco: 200, pocao: long_fire_resistance}
+    - {material: SPLASH_POTION, nome: "&dPoção de Dano II", preco: 250, pocao: strong_harming}
+    - {material: SPLASH_POTION, nome: "&dPoção de Veneno", preco: 150, pocao: poison}
+    - {material: SPLASH_POTION, nome: "&dPoção de Lentidão", preco: 150, pocao: slowness}
 
 sabio:
   # Preço de cada ponto de XP (do nível 0 ao 30 são 1.395 pontos: R$ 2.790 com 2,0).

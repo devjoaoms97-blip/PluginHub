@@ -19,8 +19,10 @@ public class Oficina {
         BRUXA,
         /** Vende picaretas (e outras ferramentas) prontas, encantadas ou não. */
         PICARETEIRO,
-        /** Vende níveis de XP e lápis-lazúli pra encantar. */
-        SABIO;
+        /** Vende níveis de XP. */
+        SABIO,
+        /** Vende itens de PvP: armaduras, armas e poções (balcão PvP da Loja Oficial). */
+        ARMEIRO;
 
         public String chave() {
             return name().toLowerCase(Locale.ROOT);

@@ -1,6 +1,7 @@
 com\example\combate\CombatePlugin.class
 com\example\combate\SemRecarga.class
 com\example\combate\DuasMaos.class
+com\example\combate\ArmaDeLonge.class
 com\example\combate\CombateCommand.class
 com\example\combate\BloqueioEspada.class
 com\example\combate\Invulnerabilidade.class

@@ -96,7 +96,7 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
                 // teste da staff: abre o serviço sem precisar do NPC
                 Oficina.Tipo tipo = args.length < 2 ? null : Oficina.Tipo.de(args[1]);
                 if (!(sender instanceof Player p) || tipo == null) {
-                    sender.sendMessage("§cUso: §f/oficina abrir <ferreiro|bruxa|picareteiro|sabio>");
+                    sender.sendMessage("§cUso: §f/oficina abrir <ferreiro|bruxa|picareteiro|sabio|armeiro>");
                     return true;
                 }
                 servicos.abrir(p, tipo);
@@ -109,7 +109,7 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
             default -> {
                 sender.sendMessage("§e§l--- Oficinas ---");
                 sender.sendMessage("§f/oficina criar <id> <tipo> [mundo x y z yaw] §7- põe o NPC (onde você está, sem coordenadas)");
-                sender.sendMessage("§7  tipos: ferreiro, bruxa, picareteiro, sabio");
+                sender.sendMessage("§7  tipos: ferreiro, bruxa, picareteiro, sabio, armeiro");
                 sender.sendMessage("§f/oficina mesa [mundo x y z] §7- onde fica a mesa de encantamento da bruxa");
                 sender.sendMessage("§f/oficina remover <id> §7| §f/oficina lista §7| §f/oficina abrir <tipo> §7| §f/oficina reload");
             }
@@ -120,7 +120,7 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
     private void criar(CommandSender sender, String[] args) {
         Oficina.Tipo tipo = args.length < 3 ? null : Oficina.Tipo.de(args[2]);
         if (tipo == null) {
-            sender.sendMessage("§cUso: §f/oficina criar <id> <ferreiro|bruxa|picareteiro|sabio> [mundo x y z yaw]");
+            sender.sendMessage("§cUso: §f/oficina criar <id> <ferreiro|bruxa|picareteiro|sabio|armeiro> [mundo x y z yaw]");
             return;
         }
         Location local;

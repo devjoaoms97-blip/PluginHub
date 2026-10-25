@@ -8,12 +8,13 @@ NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma
 | ⛏ **Picareteiro** | Pinho, mostruário de minérios, barris e picaretas nos quadros (leste, x 21..29) | Vende as ferramentas da lista do config, encantadas ou não |
 | ✦ **Bruxa** | Carvalho escuro, estantes, vitral roxo, caldeirão, velas e ametista (oeste, x -18..-10) | Abre uma mesa de encantamento com o poder máximo (nível 30). O lápis é por conta dela: o espaço vem cheio e travado, e o jogador só gasta o XP |
 | 📖 **Sábio** | Estantes, quartzo e lápis (oeste, x -29..-21) | Vende níveis de XP |
+| ⚔ **Armeiro** | Balcão PvP da **Loja Oficial** (não fica na mina) | Vende todas as armaduras (couro, cota de malha, ouro, ferro, diamante e netherita) e armas (espadas e machados de madeira a netherita, arco, besta e tridente), **sem encantamento** (encanta-se na Bruxa), mais escudo, flechas e poções (`armeiro.itens`, com `pocao:` pro tipo da poção). Só compra: nada disso volta pra loja |
 
 ## Preços
 
 - **Reparo**: `preco-cheio` do material (a primeira chave que aparece no nome do item, ex: `DIAMOND`) × fração gasta × (1 + 12% por nível de encantamento). Uma picareta de diamante Eficiência V, Inquebrável III e Fortuna III pela metade custa 250 × 0,5 × 2,32 = R$ 290. Item inquebrável não aparece.
 - **XP**: o custo em pontos de XP do vanilla vezes `sabio.preco-por-ponto` (do 0 ao 30 são 1.395 pontos). Ninguém compra além de `sabio.nivel-maximo`.
-- **Picareteiro**: preço fixo por item em `picareteiro.itens` (material, nome, quantidade e encantamentos pelo id do Minecraft).
+- **Picareteiro** e **Armeiro**: preço fixo por item em `picareteiro.itens` e `armeiro.itens` (material, nome, quantidade, encantamentos e, nas poções, `pocao` com o tipo do Minecraft, como `strong_healing`).
 - **Bruxa**: `bruxa.taxa` por abrir (0 = de graça).
 
 Todos têm o desconto de VIP (`vip-descontos`, as mesmas permissões da loja) e aparecem no `/pix historico`.

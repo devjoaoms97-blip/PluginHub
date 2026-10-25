@@ -1,0 +1,27 @@
+# Configuração do AreasPlugin (áreas fechadas)
+#
+# Lugares de onde só se sai pelo caminho (portões, portais, /spawn), pra quem joga e pra quem assiste.
+# Cada área é um mundo inteiro, ou uma caixa nele com "min" e "max" ([x, y, z]):
+#   exemplo:
+#     mundo: recursos
+#     min: [-50, 0, -50]
+#     max: [50, 320, 50]
+areas:
+  # O mundo "spawn" inteiro: o spawn, a avenida das minas, a arena do boss e a Loja Oficial.
+  spawn:
+    mundo: spawn
+  # O mundo "arenas" inteiro: o saguão, o X1, o Gladiador e as plateias.
+  arenas:
+    mundo: arenas
+
+# O que fica proibido dentro delas. Os admins (permissão areas.ignorar) e quem está no criativo passam.
+bloquear:
+  perola: true             # pérola do fim (jogar lá dentro, ou cair lá dentro vindo de fora)
+  elytra: true             # planar (quem entra planando cai, sem dano)
+  voo: true                # /fly do VIP (quem entra voando cai, sem dano)
+  tridente-correnteza: true
+  fruta-do-coro: true
+  carga-de-vento: true
+
+# %coisa% vira o que foi barrado ("voar", "usar pérola do fim"...).
+mensagem: "&cAqui não dá pra %coisa%: saia pelos portões."

@@ -166,7 +166,7 @@ Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo en
 - [ ] Conferir no jogo a animação da espada bloqueando. 🟢
 - [x] **Corrigido (2026-10-24):** com espada na principal, o botão direito num inimigo bloqueava em vez de bater com a segunda mão (o cliente nunca manda o clique da segunda mão quando a principal "faz algo").
 - [ ] Calibrar o tempo entre golpes jogando (o dano por segundo muda com ele). 🟢
-- [ ] **Besta numa mão e espada na outra**: dá pra carregar e atirar com a besta enquanto bate com a espada. Decidir a regra (ex: carregar ou atirar com a besta trava o golpe da outra mão por um tempo, ou a besta só carrega/atira com a outra mão vazia) e testar com bot. 🟢
+- [x] **Besta numa mão e espada na outra** (2026-10-24): carregar trava a espada (besta e arco). Enquanto a besta carrega (ou o arco é puxado), e por 0,5 s depois de disparar, nenhum golpe corpo a corpo conta, de qualquer mão. Bater e depois carregar continua livre.
 
 ### Ponte com o Discord ✅ v1 (`discord-plugin`)
 Os outros plugins mandam os anúncios para o DiscordPlugin, e cada categoria vai para o seu webhook ou para o padrão. Já ligados: Boss (aparecimento e morte com o ranking), Gladiador (abertura e resultado), leilões (terrenos e barracas especiais), VIP ativado (categoria `vip`), Pix alto (categoria `pix`, a partir de `discord.pix-suspeito-valor` no PixPlugin; de preferência num canal da staff) e barraca alugada ou liberada (categoria `barracas`). O Bounty continua com o webhook próprio.
@@ -196,12 +196,11 @@ Scoreboard no canto da tela com saldo, rank, barra até o próximo rank, clã, m
 - [ ] Linha com a skill em uso e o XP dela (ver SkillsPlugin). 🟡
 
 ### Loja Oficial ✅ v1 (`economy-shop-plugin` + estrutura `loja`)
-Prédio fechado colado no portão LESTE do spawn (`/warp loja`), com dez balcões, cinco de cada lado: sete vendedores temáticos, um por categoria (minerador, construtor, lenhador, fazendeiro, caçador, jardineiro, alquimista), o Domador (spawners), o Maquinista (máquinas) e um reservado (PvP). Comprar e vender é só com eles; `/shop`, `/buy` e `/sell` ficaram pra staff. Nas minas, tudo o que se quebra vira dinheiro na hora, pra todos. VIP compra com 3/6/9/12% de desconto e vende com 3/6/9/12% a mais. Sem limite de quantidade: o preço dinâmico regula, e farm AFK é bem-vinda. Uma trava (90% do menor preço de compra) impede comprar e revender com lucro. Catálogo de 356 itens gerado e conferido pelo `tools/economia/loja.py` (nenhuma brecha com craft, fundição ou quebra de bloco).
+Prédio fechado colado no portão LESTE do spawn (`/warp loja`), com dez balcões, cinco de cada lado: sete vendedores temáticos, um por categoria (minerador, construtor, lenhador, fazendeiro, caçador, jardineiro, alquimista), o Domador (spawners), o Maquinista (máquinas) e o Armeiro (PvP). Comprar e vender é só com eles; `/shop`, `/buy` e `/sell` ficaram pra staff. Nas minas, tudo o que se quebra vira dinheiro na hora, pra todos. VIP compra com 3/6/9/12% de desconto e vende com 3/6/9/12% a mais. Sem limite de quantidade: o preço dinâmico regula, e farm AFK é bem-vinda. Uma trava (90% do menor preço de compra) impede comprar e revender com lucro. Catálogo de 356 itens gerado e conferido pelo `tools/economia/loja.py` (nenhuma brecha com craft, fundição ou quebra de bloco).
 - [ ] Ajustar preços com o `analisar.py` depois de alguns dias com jogadores. 🟡
 
 ### Spawners ✅ v1 (`spawners-plugin`)
 Spawners empilhados nos terrenos, comprados no balcão Spawners da Loja Oficial (12 tipos, cada um liberado num rank). Iguais no mesmo bloco se somam, e os mobs se juntam numa pilha só em cima do spawner, que o jogador mata na espada. Os drops vendem no Caçador. As skills dão 25% do XP em mob de pilha, e as missões não contam.
-- [ ] **Matador automático** (melhoria do spawner, pra farm AFK): mata a pilha sozinho de tempos em tempos e guarda os drops num baú. 🟡
 - [ ] Ver no `analisar.py` quanto os spawners rendem de verdade e calibrar os preços. 🟡
 
 ### Máquinas e produtos ✅ v1 (`maquinas-plugin` + `pacote-plugin`)
@@ -210,13 +209,11 @@ Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcan
 - [x] Produtos com ID próprio marcado no item (não dá pra falsificar, não entram em receita).
 - [ ] Cadeias de produção (a saída de uma máquina é entrada de outra). 🟡
 - [ ] `url-publica` do pacote no servidor de verdade (endereço e porta liberada). 🟢
-- [ ] Balcão **PvP** da loja: armaduras, poções, armas. 🟡
+- [x] Balcão **PvP** da loja: o Armeiro (OficinasPlugin) vende todas as armaduras e armas sem encantamento (couro a netherita), escudo, flechas e poções. Só compra.
 
-### Áreas fechadas (na fila, pedido de 2026-10-24)
-Ninguém sai da área de um evento ou de uma área fechada por fora do caminho: nem quem participa, nem quem assiste.
-- [ ] Bloquear **pérola do fim**, **elytra** (planar e foguete), **`/fly` do VIP** e afins (tridente com Correnteza, `/back`, `/tpa`, `/home`...) no spawn, nas minas, na arena do boss, no Gladiador, no X1, na Loja Oficial etc.
-- [ ] Valer pros participantes e pros espectadores (plateia do X1 e do Gladiador).
-- [ ] Uma lista de regiões no config de um plugin só (provavelmente um "AreasPlugin" ou dentro do EstruturasPlugin), com o que cada região bloqueia.
+### Áreas fechadas ✅ v1 (`areas-plugin`)
+Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gladiador e plateias) por fora do caminho, nem quem joga, nem quem assiste: lá dentro não dá pra voar (`/fly` do VIP), planar de elytra, jogar pérola do fim, usar tridente com Correnteza, fruta do coro nem carga de vento. Quem entra voando ou planando cai, sem dano. Os admins e o criativo passam. As áreas ficam no config (mundo inteiro ou caixa).
+- [ ] Comandos de teleporte de jogador pra jogador (`/tpa`, `/back`, `/home`) dentro das arenas de evento, se aparecerem: hoje os plugins de evento já barram comandos de quem participa. 🟡
 
 ---
 

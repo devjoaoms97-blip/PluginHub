@@ -75,7 +75,8 @@ public class Servicos implements Listener {
         switch (tipo) {
             case FERREIRO -> abrirFerreiro(jogador);
             case BRUXA -> abrirBruxa(jogador);
-            case PICARETEIRO -> abrirPicareteiro(jogador);
+            case PICARETEIRO -> abrirLista(jogador, Oficina.Tipo.PICARETEIRO);
+            case ARMEIRO -> abrirLista(jogador, Oficina.Tipo.ARMEIRO);
             case SABIO -> abrirSabio(jogador);
         }
     }
@@ -209,11 +210,22 @@ public class Servicos implements Listener {
     // Picareteiro e Sábio: listas de produtos
     // ---------------------------------------------------------------------
 
-    private void abrirPicareteiro(Player jogador) {
-        Menu menu = new Menu(Oficina.Tipo.PICARETEIRO);
-        menu.inventario = Bukkit.createInventory(menu, 27, "§8⛏ Picareteiro");
-        List<Map<?, ?>> itens = plugin.getConfig().getMapList("picareteiro.itens");
-        for (int i = 0; i < itens.size() && i < 26; i++) {
+    /** A lista do config de cada vendedor de itens prontos ("picareteiro.itens", "armeiro.itens"). */
+    private static String chaveLista(Oficina.Tipo tipo) {
+        return tipo.chave() + ".itens";
+    }
+
+    private static String titulo(Oficina.Tipo tipo) {
+        return tipo == Oficina.Tipo.ARMEIRO ? "§8⚔ Armeiro" : "§8⛏ Picareteiro";
+    }
+
+    /** Picareteiro e Armeiro: a lista do config, um item por slot; clique compra. */
+    private void abrirLista(Player jogador, Oficina.Tipo tipo) {
+        Menu menu = new Menu(tipo);
+        List<Map<?, ?>> itens = plugin.getConfig().getMapList(chaveLista(tipo));
+        int linhas = Math.max(1, Math.min(6, (itens.size() + 8) / 9));
+        menu.inventario = Bukkit.createInventory(menu, linhas * 9, titulo(tipo));
+        for (int i = 0; i < itens.size() && i < linhas * 9; i++) {
             ItemStack produto = produto(itens.get(i));
             if (produto == null) continue;
             double preco = precoComDesconto(jogador, numero(itens.get(i).get("preco")));
@@ -233,20 +245,22 @@ public class Servicos implements Listener {
         jogador.openInventory(menu.inventario);
     }
 
-    private void cliquePicareteiro(Player jogador, Menu menu, int slot) {
+    private void cliqueLista(Player jogador, Menu menu, int slot) {
         Integer indice = menu.slotParaIndice.get(slot);
         if (indice == null) return;
-        Map<?, ?> dados = plugin.getConfig().getMapList("picareteiro.itens").get(indice);
+        Map<?, ?> dados = plugin.getConfig().getMapList(chaveLista(menu.tipo)).get(indice);
         ItemStack produto = produto(dados);
         if (produto == null) return;
         double preco = precoComDesconto(jogador, numero(dados.get("preco")));
-        if (!cobrar(jogador, preco, "Compra no Picareteiro")) return;
+        String quem = menu.tipo == Oficina.Tipo.ARMEIRO ? "Armeiro" : "Picareteiro";
+        if (!cobrar(jogador, preco, "Compra no " + quem)) return;
         entregar(jogador, produto);
         jogador.playSound(jogador.getLocation(), Sound.ENTITY_VILLAGER_YES, 0.8f, 1f);
-        jogador.sendMessage("§a⛏ Você comprou §f" + nome(produto) + " §apor §f" + plugin.dinheiro(preco) + "§a.");
+        jogador.sendMessage((menu.tipo == Oficina.Tipo.ARMEIRO ? "§a⚔ " : "§a⛏ ") + "Você comprou §f" + nome(produto)
+                + " §apor §f" + plugin.dinheiro(preco) + "§a.");
     }
 
-    /** Monta o item de uma entrada do config: material, nome, encantamentos. */
+    /** Monta o item de uma entrada do config: material, quantidade, nome, encantamentos e poção. */
     private ItemStack produto(Map<?, ?> dados) {
         Material material = Material.matchMaterial(String.valueOf(dados.get("material")));
         if (material == null || material.isAir()) return null;
@@ -254,6 +268,11 @@ public class Servicos implements Listener {
         ItemStack item = new ItemStack(material, Math.max(1, quantidade));
         ItemMeta meta = item.getItemMeta();
         if (dados.get("nome") instanceof String nome) meta.setDisplayName(plugin.cores(nome));
+        // poção (normal, de arremesso ou persistente) e flecha com efeito: o tipo do Minecraft
+        if (dados.get("pocao") instanceof String pocao && meta instanceof org.bukkit.inventory.meta.PotionMeta pm) {
+            org.bukkit.potion.PotionType tipo = Registry.POTION.get(NamespacedKey.minecraft(pocao.toLowerCase(Locale.ROOT)));
+            if (tipo != null) pm.setBasePotionType(tipo);
+        }
         if (dados.get("encantamentos") instanceof Map<?, ?> encs) {
             for (Map.Entry<?, ?> e : encs.entrySet()) {
                 Enchantment ench = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(String.valueOf(e.getKey()).toLowerCase(Locale.ROOT)));
@@ -334,7 +353,7 @@ public class Servicos implements Listener {
         }
         switch (menu.tipo) {
             case FERREIRO -> cliqueFerreiro(jogador, menu, slot);
-            case PICARETEIRO -> cliquePicareteiro(jogador, menu, slot);
+            case PICARETEIRO, ARMEIRO -> cliqueLista(jogador, menu, slot);
             case SABIO -> cliqueSabio(jogador, menu, slot);
             default -> { }
         }

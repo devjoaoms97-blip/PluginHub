@@ -8,6 +8,7 @@ Combate no estilo da 1.8, só no que foi escolhido. Vale no servidor todo.
 | Tempo entre golpes | **Configurável e separado por mão.** O padrão é o do jogo (0,5 s) para cada mão: quem alterna as duas mãos bate duas vezes mais. Dá para diminuir até 0, quando todo clique conta |
 | Bloqueio com a espada | **Volta.** Segurar o botão direito com a espada reduz o dano pela metade, de qualquer lado. Só vale **sem escudo na segunda mão**; com escudo, quem bloqueia é o escudo |
 | Duas mãos | **Novo.** O botão direito num inimigo bate com a segunda mão: espada, machado ou soco (mão vazia). Cada mão pode ter uma arma diferente, e cada golpe usa a skill da arma daquela mão |
+| Besta ou arco com espada | **Carregar trava a espada.** Enquanto a besta carrega (ou o arco é puxado), e por 0,5 s depois de disparar, nenhum golpe corpo a corpo conta, de qualquer mão. Bater e depois carregar continua livre |
 | Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado | Como no jogo atual |
 
 ## Como funciona

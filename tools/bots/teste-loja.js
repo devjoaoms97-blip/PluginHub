@@ -98,6 +98,21 @@ t.rodar(async () => {
     bot.closeWindow(bot.currentWindow)
   }
 
+  console.log('\n== Armeiro (balcão PvP) ==')
+  const ARMEIRO = new Vec3(125.5, 65, Z + 14.5)
+  await t.console(`minecraft:clear ${nome}`)
+  janela = await abrir(bot, ARMEIRO, new Vec3(125.5, 65, Z + 11.5), 0)
+  const slotForca = janela ? slotDe(janela, 'potion') : -1
+  t.verificar(slotForca >= 0 && slotDe(janela, 'diamond_chestplate') >= 0, 'o Armeiro abre a lista de PvP (armaduras, armas e poções)',
+    janela ? janela.slots.slice(0, 6).map(s => s?.name).join(',') : 'não abriu')
+  if (slotForca >= 0) {
+    await bot.clickWindow(slotForca, 0, 0)
+    await t.espera(1200)
+    bot.closeWindow(bot.currentWindow)
+    const pocao = await t.console(`data get entity ${nome} Inventory[{id:"minecraft:potion"}].components."minecraft:potion_contents"`)
+    t.verificar(/strong_strength/.test(pocao), 'comprou a Poção de Força II, com o efeito certo', pocao.slice(0, 100))
+  }
+
   await t.console(`lp user ${nome} permission unset vip.desconto.diamante`)
   await t.console(`ranks admin set ${nome} campones`)
   await t.console(`minecraft:clear ${nome}`)

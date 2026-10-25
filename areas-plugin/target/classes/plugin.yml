@@ -1,0 +1,21 @@
+name: AreasPlugin
+version: '1.0.0'
+main: com.example.areas.AreasPlugin
+api-version: '26.2'
+author: Você
+description: Áreas fechadas (spawn, minas, loja, arenas) sem voo, elytra, pérola do fim e afins.
+
+commands:
+  areas:
+    description: Lista as áreas fechadas (staff).
+    usage: "Uso: /areas [reload]"
+    permission: areas.admin
+    permission-message: "§cVocê não tem permissão."
+
+permissions:
+  areas.ignorar:
+    description: Voa, plana e usa pérola dentro das áreas fechadas (staff).
+    default: op
+  areas.admin:
+    description: Lista e recarrega as áreas.
+    default: op
