@@ -3,23 +3,26 @@ version: '1.0.0'
 main: com.example.cheque.ChequePlugin
 api-version: '26.2'
 author: Você
-description: Transforma papel em cheques resgatáveis por dinheiro (via Vault).
-softdepend: [Vault]
+description: Cheques emitidos numa folha de cheque e depositados no Bancário (via Vault).
+softdepend: [Vault, PixPlugin]
 
 commands:
   cheque:
-    description: Transforma o papel que você segura em um cheque.
-    usage: "Uso correto: /cheque <valor> [jogador]"
+    description: Transforma a folha de cheque que você segura em um cheque.
+    usage: "Uso correto: /cheque <valor> [jogador] | /cheque cancelar [id]"
     permission: cheque.criar
     permission-message: "§cVocê não tem permissão para criar cheques."
 
 permissions:
   cheque.criar:
-    description: Permite criar cheques a partir de papel.
-    default: op
+    description: Permite emitir cheques (com uma folha de cheque na mão).
+    default: true
   cheque.limite.ignorar:
     description: Emite cheques sem o valor máximo nem o intervalo entre emissões.
     default: false
+  cheque.admin:
+    description: Cancela qualquer cheque, inclusive pelo ID (/cheque cancelar <id>).
+    default: op
   cheque.resgatar:
-    description: Permite resgatar cheques.
+    description: Permite depositar cheques no Bancário.
     default: true

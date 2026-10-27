@@ -118,6 +118,16 @@ minas:
     # Altura acima do ponto de teleporte, em blocos.
     altura: 2.5
 
+# Fragmento Arcano: cai de qualquer bloco quebrado numa mina, com essa chance, e vai pro
+# inventário. O Cambista (OficinasPlugin) troca por Eficiência e Fortuna acima do máximo, então é
+# raro de propósito: um jogador quebra uns 3.000 a 5.000 blocos por hora, e 0.00025 (1 em 4.000) dá
+# cerca de 1 por hora de mina.
+fragmentos:
+  ativado: true
+  chance-por-bloco: 0.00025
+  nome: "&d✦ Fragmento Arcano"
+  mensagem: "&d&l✦ &dVocê achou um &fFragmento Arcano&d! &7Troque com o Cambista, no fundo da avenida."
+
 protecao:
   # Mundos onde, FORA das minas, ninguém quebra nem coloca blocos (exceto quem tem rankup.admin).
   # Ex: [world] num mundo de rankup em que só as minas são mineráveis. Vazio = sem proteção.

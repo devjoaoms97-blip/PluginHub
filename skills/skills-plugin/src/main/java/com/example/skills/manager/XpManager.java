@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class XpManager {
 
@@ -15,6 +17,9 @@ public class XpManager {
     private final SkillDataManager dataManager;
     private final RewardManager rewardManager;
     private final LevelFormula formula;
+    /** A última skill de arma que cada jogador usou num golpe, e quando (pro placar). */
+    private final Map<UUID, Skill> ultimaSkill = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> ultimaSkillEm = new ConcurrentHashMap<>();
 
     public XpManager(SkillsPlugin plugin, SkillDataManager dataManager, RewardManager rewardManager) {
         this.plugin = plugin;
@@ -32,6 +37,24 @@ public class XpManager {
         // o XP em dobro (ou o multiplicador do evento) vale por cima do bônus do VIP
         double multiplicador = (1 + bonusVipPercentual(jogador) / 100.0) * plugin.getEventoXp().multiplicador();
         adicionar(jogador, skill, quantidade * multiplicador, true);
+    }
+
+    /** Chamado a cada golpe com arma: é a skill "em uso" que o placar mostra. */
+    public void marcarEmUso(UUID jogadorId, Skill skill) {
+        ultimaSkill.put(jogadorId, skill);
+        ultimaSkillEm.put(jogadorId, System.currentTimeMillis());
+    }
+
+    /** A última skill de arma que o jogador usou nos últimos {@code segundos}, ou null. */
+    public Skill ultimaSkill(UUID jogadorId, long segundos) {
+        Long em = ultimaSkillEm.get(jogadorId);
+        if (em == null || System.currentTimeMillis() - em > segundos * 1000) return null;
+        return ultimaSkill.get(jogadorId);
+    }
+
+    public void esquecer(UUID jogadorId) {
+        ultimaSkill.remove(jogadorId);
+        ultimaSkillEm.remove(jogadorId);
     }
 
     /**

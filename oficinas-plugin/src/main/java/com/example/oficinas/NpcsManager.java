@@ -65,10 +65,10 @@ public class NpcsManager implements Listener {
     }
 
     /** Cria (ou move, se o id já existe) a oficina e põe o NPC. */
-    public Oficina criar(String id, Oficina.Tipo tipo, Location local) {
+    public Oficina criar(String id, Oficina.Tipo tipo, String alvo, Location local) {
         Oficina antiga = oficinas.remove(id.toLowerCase(Locale.ROOT));
         if (antiga != null) tirar(antiga);
-        Oficina o = new Oficina(id.toLowerCase(Locale.ROOT), tipo, local.getWorld().getName(),
+        Oficina o = new Oficina(id.toLowerCase(Locale.ROOT), tipo, alvo, local.getWorld().getName(),
                 local.getX(), local.getY(), local.getZ(), local.getYaw());
         oficinas.put(o.getId(), o);
         salvar();
@@ -101,8 +101,10 @@ public class NpcsManager implements Listener {
             e.setGravity(false);
             e.setSilent(true);
             e.setCustomNameVisible(true);
-            e.customName(LEGADO.deserialize(plugin.getConfig().getString(base + "nome", o.getTipo().chave())));
-            e.setDescription(LEGADO.deserialize(plugin.getConfig().getString(base + "descricao", "&7Clique")));
+            // {mina}: o id da mina do guia, com a primeira letra maiúscula
+            String alvo = o.getAlvo() == null ? "" : o.getAlvo().substring(0, 1).toUpperCase(Locale.ROOT) + o.getAlvo().substring(1);
+            e.customName(LEGADO.deserialize(plugin.getConfig().getString(base + "nome", o.getTipo().chave()).replace("{mina}", alvo)));
+            e.setDescription(LEGADO.deserialize(plugin.getConfig().getString(base + "descricao", "&7Clique").replace("{mina}", alvo)));
             if (!skin.isBlank()) e.setProfile(perfil(skin));
             e.getPersistentDataContainer().set(chave, PersistentDataType.STRING, o.getId());
         });
@@ -187,7 +189,7 @@ public class NpcsManager implements Listener {
                 plugin.getLogger().warning("Oficina inválida ignorada em oficinas.yml: " + id);
                 continue;
             }
-            oficinas.put(id, new Oficina(id, tipo, s.getString("mundo", "world"),
+            oficinas.put(id, new Oficina(id, tipo, s.getString("alvo"), s.getString("mundo", "world"),
                     s.getDouble("x"), s.getDouble("y"), s.getDouble("z"), (float) s.getDouble("yaw")));
         }
     }
@@ -197,6 +199,7 @@ public class NpcsManager implements Listener {
         for (Oficina o : oficinas.values()) {
             String base = "oficinas." + o.getId();
             yaml.set(base + ".tipo", o.getTipo().chave());
+            if (o.getAlvo() != null) yaml.set(base + ".alvo", o.getAlvo());
             yaml.set(base + ".mundo", o.getMundo());
             yaml.set(base + ".x", o.getX());
             yaml.set(base + ".y", o.getY());

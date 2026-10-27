@@ -10,6 +10,8 @@ Próximo: Lenhador
  ■■■■■■■■■■ 64%
 Clã: [ABC]
 Missões hoje: 2/3
+Skill: Espadas nv 23
+ ■■■■■■■■■■ 45%
 Próximo boss: sáb 21:00
 Online: 12/100
 ```
@@ -36,6 +38,8 @@ Permissão da staff: `placar.admin` (padrão: op).
 | `{progresso}` | Barra de 10 blocos e a %: saldo / preço do próximo rank | RankupPlugin (`precoProximoRank`) |
 | `{cla}` | Tag do clã, ou `textos.sem-cla` | ClasPlugin (`tagDoCla`) |
 | `{missoes}` | Diárias concluídas / total (verde com ✔ quando terminou) | MissoesPlugin (`missoesDoDia`) |
+| `{skill}` | Skill treinada no último minuto (ou a da arma na mão), com o prestígio e o nível, ou `textos.sem-skill` | SkillsPlugin (`textoSkillEmUso`) |
+| `{skill-progresso}` | Barra de 10 blocos e a % até o próximo nível dessa skill | SkillsPlugin (`progressoSkillEmUso`) |
 | `{boss}` | "AGORA!" com o boss vivo, ou o próximo horário da agenda | BossPlugin (`textoProximoBoss`) |
 | `{online}` / `{max}` | Jogadores online / máximo | servidor |
 | `{jogador}` | Nome do jogador | servidor |

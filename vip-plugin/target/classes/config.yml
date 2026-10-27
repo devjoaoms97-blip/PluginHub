@@ -10,7 +10,7 @@
 # máximo normal: fortune=5 dá Fortuna V. O "kit" sai a cada cooldown-kit-horas (/vip kit) e o
 # "kit-mensal", com as ferramentas, a cada cooldown-kit-mensal-dias (/vip kitmensal).
 # Fortuna acima de III acelera o rankup: veja tools/economia no repositório antes de mudar.
-# Armas e armaduras também passam do máximo normal (Afiação VII, Saque VII, Força VII no
+# Armas e armaduras também passam do máximo normal (Afiação VII, Força VII no
 # Diamante, diminuindo nos outros). A Proteção para de fazer diferença no V: 4 peças com
 # Proteção V já dão o limite do Minecraft (80% menos dano).
 tiers:
@@ -93,7 +93,7 @@ tiers:
       - "NETHERITE_CHESTPLATE:1:protection=6,unbreaking=3,mending=1"
       - "NETHERITE_LEGGINGS:1:protection=6,unbreaking=3,mending=1"
       - "NETHERITE_BOOTS:1:protection=6,feather_falling=4,unbreaking=3,mending=1"
-      - "NETHERITE_SWORD:1:sharpness=6,looting=6,unbreaking=3,mending=1"
+      - "NETHERITE_SWORD:1:sharpness=6,unbreaking=3,mending=1"
       - "BOW:1:power=6,infinity=1,unbreaking=3,mending=1"
       - "ARROW:1"
       - "SHIELD:1:unbreaking=3"
@@ -128,7 +128,7 @@ tiers:
       - "NETHERITE_CHESTPLATE:1:protection=7,unbreaking=3,mending=1"
       - "NETHERITE_LEGGINGS:1:protection=7,unbreaking=3,mending=1"
       - "NETHERITE_BOOTS:1:protection=7,feather_falling=4,unbreaking=3,mending=1"
-      - "NETHERITE_SWORD:1:sharpness=7,looting=7,unbreaking=3,mending=1,fire_aspect=2"
+      - "NETHERITE_SWORD:1:sharpness=7,unbreaking=3,mending=1,fire_aspect=2"
       - "BOW:1:power=7,infinity=1,unbreaking=3,mending=1,flame=1"
       - "ARROW:1"
       - "SHIELD:1:unbreaking=3"
@@ -149,6 +149,11 @@ tiers:
       xp-por-skill: 5000
     cooldown-heal-minutos: 5
     cooldown-feed-minutos: 0
+
+# Tag do VIP no chat e na tab: true usa o prefixo do grupo no LuckPerms (/lp group vip_ouro meta
+# setprefix "&6[Ouro] "), pra configurar num lugar só. O grupo sem prefixo usa o nome-exibicao de
+# cada tier acima, que também aparece nas mensagens (kit, ativação...). false = sempre o nome-exibicao.
+tag-do-luckperms: true
 
 # Liga/desliga cada perk globalmente, independente de permissão. Útil pra desativar um perk
 # temporariamente (ex: manutenção) sem mexer nos grupos do LuckPerms.

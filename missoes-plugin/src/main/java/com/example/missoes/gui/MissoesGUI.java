@@ -131,6 +131,8 @@ public class MissoesGUI implements Listener {
             case SUBIR_RANK -> Material.GOLDEN_HELMET;
             case MINERAR_MINA -> Material.DIAMOND_PICKAXE;
             case PAGAR_IMPOSTO -> Material.GOLD_INGOT;
+            case REPARAR -> Material.ANVIL;
+            case ENCANTAR -> Material.ENCHANTING_TABLE;
         };
     }
 

@@ -1,6 +1,7 @@
 com\example\skills\skill\Skill.class
 com\example\skills\gui\SkillsGUI.class
 com\example\skills\manager\CombatTagManager.class
+com\example\skills\manager\ParryManager.class
 com\example\skills\listener\StunListener.class
 com\example\skills\manager\RewardManager$2.class
 com\example\skills\manager\SangramentoManager$1.class

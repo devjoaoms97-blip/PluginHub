@@ -34,8 +34,12 @@ public class BossDeathListener implements Listener {
         event.getDrops().clear();
         event.setDroppedExp(0);
 
-        for (ItemStack item : plugin.getLootManager().sortearLootChao()) {
-            event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), item);
+        // o elite rola o loot do chão mais vezes
+        int rolagens = plugin.getBossManager().multiplicadorRecompensas() > 1 ? Math.max(1, plugin.getConfig().getInt("elite.rolagens-loot", 2)) : 1;
+        for (int r = 0; r < rolagens; r++) {
+            for (ItemStack item : plugin.getLootManager().sortearLootChao()) {
+                event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), item);
+            }
         }
 
         Player matador = event.getEntity().getKiller();

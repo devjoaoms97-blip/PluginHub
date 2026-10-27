@@ -30,7 +30,8 @@ Sistema de skills de combate estilo RPG, com 11 skills, progressão por nível, 
 |---|---|
 | `/skills` | Abre o menu visual (GUI) com todas as skills e barras de progresso |
 | `/skills ver` | Mostra um resumo rápido no chat |
-| `/skills top [skill]` | Top 10 de uma skill (nível e XP), ou da soma dos níveis de todas. Funciona no console |
+| `/skills top [skill]` | Top 10 de uma skill (prestígio, nível e XP), ou da soma de todas. Funciona no console |
+| `/skills prestigio <skill> [confirmar]` | No nível 50, volta a skill pro nível 1 em troca de um prestígio (veja abaixo) |
 | `/skills admin xpdobro <multiplicador> <horas>` | (staff) Liga o XP extra agora; `parar` desliga |
 | `/skills admin setlevel <jogador> <skill> <nível>` | (staff) Define manualmente o nível de uma skill de um jogador. Requer permissão `skills.admin` (padrão: op) |
 
@@ -43,6 +44,20 @@ Ao usar `setlevel`, o XP acumulado daquela skill é zerado (já que o "degrau" m
 Quem tem VIP ganha XP a mais em todas as skills: +10% no Bronze, +20% no Prata, +30% no Ouro e +50% no Diamante. O bônus vem por permissão (`vip.xp.<tier>`, dada pelos grupos do LuckPerms), configurado em `vip-bonus-xp`. Vale o maior que o jogador tiver, e vale também para o XP das missões.
 
 **XP de bônus.** O bônus de ativação do VIP dá XP pelo `adicionarXpBonus`: sobe os níveis, mas não paga o `recompensa.dinheiro-por-nivel` nem manda o "SKILL UP" de cada nível, e não recebe o bônus de XP do VIP por cima.
+
+## Prestígio
+
+No nível máximo, `/skills prestigio <skill>` explica o que acontece, e `/skills prestigio <skill> confirmar` volta a skill pro nível 1 com o XP zerado e dá um prestígio nela. Cada prestígio deixa **tudo o que a skill dá** (bônus de dano, redução, chances de efeito e de crítico) `prestigio.bonus-por-prestigio` mais forte (10% por padrão), até `prestigio.maximo` (5). Ou seja: logo depois do reset a skill fica mais fraca, e no 50 de novo ela passa do que era.
+
+O prestígio aparece como **✦N** no menu, no `/skills ver`, no `/skills top` (que ordena por prestígio antes do nível) e no placar. O servidor todo é avisado no chat. Fica salvo no `playerdata` (`<skill>.prestigio`).
+
+## Escudo Perfeito (parry)
+
+Levantar o escudo no máximo `parry.janela-ticks` (6 ticks, 0,3 s) antes de um golpe corpo a corpo **anula o dano todo** e atordoa quem bateu por `parry.atordoar-segundos` (1 s): o jogador não anda e nenhum golpe corpo a corpo dele conta; o mob leva Lentidão forte e também não acerta. A janela ganha +1 tick a cada 10 níveis de Bloqueio. Dá XP de Bloqueio (`parry.xp-bloqueio`). Depois de um parry, o próximo só vale depois de `parry.recarga-segundos` (3 s), pra subir e descer o escudo sem parar não virar imunidade. Boss não fica atordoado (o dano é anulado igual). Só vale com escudo, não com o bloqueio da espada do CombatePlugin.
+
+## Skill em uso (pro placar)
+
+O PlacarPlugin mostra a skill em uso pelos métodos `textoSkillEmUso(UUID)` e `progressoSkillEmUso(UUID)`: é a skill da arma do último golpe no último minuto ou, sem nenhum, a da arma na mão (mão vazia sem luta recente não mostra nada).
 
 ## XP em dobro e efeito do level up
 
@@ -92,7 +107,7 @@ Bônus de dano "normais" (Espadas, Machado, Arqueiro, Lanceiro, Marreteiro, Trid
 
 ## ⚠️ Simplificações técnicas (importante entender)
 
-1. **Sangramento não credita o atacante na morte**: o dano do sangramento é aplicado via `vitima.damage(dano)` **sem** referência ao atacante, de propósito — isso evita que cada tique de sangramento dispare o `CombatListener` de novo (o que causaria um loop de procs/XP a cada segundo). O efeito colateral é que, se alguém morrer *só* pelo sangramento (sem mais nenhum hit direto), a mensagem de morte do jogo pode não creditar quem aplicou o efeito.
+1. **Sangramento e o crédito do abate**: o dano do sangramento é aplicado via `vitima.damage(dano)` **sem** referência ao atacante, de propósito — isso evita que cada tique de sangramento dispare o `CombatListener` de novo (o que causaria um loop de procs/XP a cada segundo). Pra quem aplicou levar o abate (Bounty, clãs, missões, Gladiador), cada tique marca o atacante como o último jogador que bateu na vítima (`setKiller`). Se o atacante sair do servidor, os tiques seguintes não marcam ninguém.
 
 2. **Indicador visual do Sangramento**: como não é um `PotionEffect` de verdade (não aparece nos ícones padrão do inventário), mostro uma mensagem na action bar da vítima ("❤ Sangrando (Xs)") e partículas vermelhas visíveis pra quem estiver por perto, a cada segundo que o efeito estiver ativo.
 
@@ -105,10 +120,3 @@ Bônus de dano "normais" (Espadas, Machado, Arqueiro, Lanceiro, Marreteiro, Trid
 3. **Ordem de aplicação de dano**: aplico os modificadores (bônus de arma, crítico da skill, esquiva, bloqueio, defesa) diretamente em `event.setDamage()`, sem usar o sistema interno de `DamageModifier` do Bukkit (que separa dano base/armadura/encantamento/etc). Isso é mais simples de manter e funciona bem na prática, mas significa que os bônus das skills se aplicam **depois** da armadura/encantamentos vanilla já terem sido calculados pelo jogo.
 
 4. **Tridente**: o dano de arma normal continua igual; o "empurrão" é um efeito adicional na mesma skill, não uma skill nova.
-
-## Ideias para expandir
-
-- Efeito visual diferente pra cada tipo de level up (ex: partícula própria por skill)
-- Prestígio: ao chegar no nível 50, permitir "resetar" a skill em troca de um bônus permanente extra
-- Scoreboard/placar lateral mostrando XP da skill que está sendo usada no momento
-- Skill de "Escudo Perfeito" (parry): se o bloqueio acontecer no exato milissegundo do golpe, anula 100% do dano e atordoa o atacante

@@ -28,6 +28,7 @@ node teste-vip.js           # benefícios do VIP Diamante
 node teste-terrenos.js      # terrenos e leilão de imóvel (precisa do mundo terrenos)
 node montar-mapa.js construir # monta o mapa funcional (servidor ligado; veja abaixo)
 node teste-mapa.js          # o mapa: chegada na fonte, /spawn e warps, minas, proteção, portões colados e cadastros
+node teste-warp-mobs.js     # warp mobs: as estátuas geram mobs, limite, nada sai do salão e a reposição
 node teste-dicas.js         # NPCs de dicas: balão animado, próxima fala, some sozinho, não toma dano
 node teste-duelo.js         # X1 com aposta (precisa das arenas)
 node teste-gladiador.js     # Gladiador individual e por clã (precisa das arenas)
@@ -40,12 +41,13 @@ node teste-pix-agendado.js  # Pix agendado: primeiro pagamento, vencimento, falt
 node teste-discord.js       # ponte com o Discord (um servidor HTTP local faz o papel do Discord)
 node teste-diaria.js        # recompensa diária e a sequência de dias
 node teste-gladiador-borda.js # borda do Gladiador fechando (muda o config por alguns segundos)
+node teste-foco.js          # Bancário e cheque, Cambista, Compactador, guia de mina, achados, /tpa nas arenas, prestígio, parry e Boss elite
 ```
 ### Mapa funcional (`montar-mapa.js`)
 
 Monta o spawn (a estrutura `spring` do EstruturasPlugin, que já cadastra as barracas) e o resto do que faz o servidor funcionar (minas, arenas, hologramas e warps). Pode rodar de novo: refaz igual. Não precisa rodar a cada vez que o servidor liga: o mundo fica salvo. Só rode de novo pra refazer o mapa.
 
-1. `node montar-mapa.js construir [partes]`, com o servidor **ligado** (partes: `minas`, `spawn`, `barracas`, `boss`, `dicas`, `arenas`, `marcar` e, só na troca do mapa antigo, `limpar-antigo`; sem partes, faz `minas spawn boss dicas arenas marcar`): limpa o spawn antigo (praça, mercado, loja e portais), constrói o spawn novo pelo console (`/estrutura construir spring spawn 0 65 50`), que cadastra as 32 barracas, e monta as minas, as arenas e os hologramas. Também define o spawn dos jogadores na fonte (`/setspawn`), os warps (`minas`, `mercado`, `arenas`, `terrenos`, `boss`), o local do boss e o `/spawn` e o `/warp` liberados pro grupo `default` no LuckPerms.
+1. `node montar-mapa.js construir [partes]`, com o servidor **ligado** (partes: `minas`, `spawn`, `mobs`, `barracas`, `boss`, `dicas`, `arenas`, `marcar` e, só na troca do mapa antigo, `limpar-antigo`; sem partes, faz `minas spawn boss dicas arenas marcar`): limpa o spawn antigo (praça, mercado, loja e portais), constrói o spawn novo pelo console (`/estrutura construir spring spawn 0 65 50`), que cadastra as 32 barracas, e monta as minas, as arenas e os hologramas. Também define o spawn dos jogadores na fonte (`/setspawn`), os warps (`minas`, `mercado`, `arenas`, `terrenos`, `boss`), o local do boss e o `/spawn` e o `/warp` liberados pro grupo `default` no LuckPerms.
 2. `node montar-mapa.js cadastrar`, com o servidor **desligado**: grava as 3 arenas de X1 e a do Gladiador, e ajusta os configs (proteção do mundo `spawn` no Rankup, saída do mundo de recursos e warp VIP).
 3. Os 12 poços das minas ficam cheios de pedra e sem mina cadastrada: a staff cria cada uma com `/mina admin pos1`, `pos2` e `criar`. Com `cadastrar --minas`, as 12 já entram prontas (de `tools/economia/minas-planejadas.yml`) e se enchem ao ligar. Os testes de mina (`teste-coleta`, `teste-vip`, `teste-rankup-extras` e `teste-mapa`) precisam da `pedreira`.
 
@@ -76,10 +78,12 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução. No fim, devolve os 16 pontos de entrada oficiais do coliseu |
 | `teste-farm-arenas.js` | Num duelo entre clãs diferentes, com recompensa na cabeça de quem perde: o Bounty não paga (e a recompensa continua), e o placar de abates do clã não muda |
 | `teste-terrenos.js` | Compra, borda da grade, holograma da entrada (à venda, dono, leilão), amigo só com baús, proteção (vizinho, rua, amigo), imposto, confisco por imposto atrasado, leilão de imóvel (dívida do dono antigo, lance superado e devolvido, vencedor leva o que tem dentro) e leilão sem lances |
+| `teste-foco.js` | Bancário (folha de cheque, cheque só com a folha e saindo do saldo, clique direito manda ao Bancário, depósito com 1% de taxa, cancelar devolve), Cambista (só os encantamentos que servem no item, Eficiência VI por 15 fragmentos, Saque a partir do IV na espada), Compactador, guia da pedreira, achados e perdidos (jogado, limpo, recuperado por R$ 100), `/tpa` barrado nas arenas, prestígio de skill com a skill da mão no placar, parry com escudo (no mundo de recursos, que tem PvP) e Boss elite. Precisa do `montar-mapa.js construir oficinas banco` |
 | `teste-vip.js` | Pix com 80% de desconto na taxa, missão diária extra, bônus de ativação sem o dinheiro por nível das skills, kit mensal encantado e com cooldown, venda automática e `/autovenda` |
 | `teste-novidades.js` | `/skills top`, XP em dobro pela staff, evento de mercado (anúncio, `/shop evento`, venda), chave Pix (cadastro, nome de outro jogador recusado, pagar pela chave), título ao receber, taxa no extrato, `/pix admin log`, cheque nominal e cooldown, `/vip setwarp <tier>`, preço mínimo do `/vip vender`, `/boss proximo` e ItemCleaner (item perto do jogador fica, orbe longe some) |
 | `teste-oficinas.js` | As 4 oficinas da mina: Ferreiro repara e cobra, Picareteiro vende, Sábio vende XP, Bruxa abre a mesa no nível 30 com o lápis dela (encanta sem lápis, e o lápis não vai pro inventário), e as linhas da scoreboard lateral (`/placar ver`) |
 | `teste-loja.js` | Loja Oficial: os 7 vendedores colocados, `/shop` e `/sell` fechados pros jogadores, `/warp loja`, vender e comprar no menu do fazendeiro, 12% de desconto do VIP Diamante a trava da venda (último rank + VIP: o diamante não passa de 90% do menor preço de compra) e o Armeiro (balcão PvP) vendendo a Poção de Força II |
+| `teste-warp-mobs.js` | Warp mobs: com o jogador no salão, as estátuas perto dele ganham mobs (as do fundo só com ele lá), nenhum mob no vestíbulo nem no túnel, o zumbi não pega fogo no sol, não some de longe, morto a estátua repõe, e ninguém passa de 4 vivos |
 | `teste-spawners.js` | Spawners: o Domador da loja vende, no spawn não entra, no terreno entra, empilha clicando (x2), a pilha de mobs aparece em cima (x2), matar tira um (x1) e derruba o drop, e quebrar devolve os spawners |
 | `teste-maquinas.js` | Máquinas: o pacote de texturas é servido, o Maquinista vende o Tear e as Células, a máquina entra no terreno desenhada pelo modelo do pacote, abastece, faz 30 Tecidos em 30 minutos (`/maquinas acelerar`), coleta, vende no balcão e recolhe |
 | `teste-areas.js` | Áreas fechadas: no spawn a pérola não sai nem é gasta e o `/fly` não liga; num terreno (fora das áreas) a pérola funciona |

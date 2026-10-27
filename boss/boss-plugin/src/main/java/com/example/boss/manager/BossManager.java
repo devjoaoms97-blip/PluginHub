@@ -48,6 +48,8 @@ public class BossManager {
     private BossProfile perfilAtivo;
     private BossBar bossBar;
     private double vidaMaxima;
+    /** O boss atual é elite (raro, mais forte e com recompensa maior: veja "elite" no config). */
+    private boolean elite;
 
     private final Map<String, BossProfile> perfis = new LinkedHashMap<>();
     private final Set<FaseConfig> fasesPercentuaisDisparadas = new HashSet<>();
@@ -107,6 +109,20 @@ public class BossManager {
         return vidaMaxima;
     }
 
+    public boolean isElite() {
+        return estaAtivo() && elite;
+    }
+
+    /** Multiplicador do dano que o boss elite causa (1 no boss normal). */
+    public double multiplicadorDano() {
+        return isElite() ? Math.max(1, plugin.getConfig().getDouble("elite.multiplicador-dano", 2)) : 1;
+    }
+
+    /** Multiplicador das coins e do XP das recompensas (1 no boss normal). Lido antes do finalizar. */
+    public double multiplicadorRecompensas() {
+        return elite ? Math.max(1, plugin.getConfig().getDouble("elite.multiplicador-recompensas", 2)) : 1;
+    }
+
     // ---------------------------------------------------------------------
     // Carregamento dos perfis (um por mob configurado em "bosses:" no config.yml)
     // ---------------------------------------------------------------------
@@ -160,19 +176,30 @@ public class BossManager {
     // Início da luta
     // ---------------------------------------------------------------------
 
-    /** Inicia um boss aleatório entre os perfis NÃO especiais (usado pela agenda e por /boss start sem argumento). */
+    /**
+     * Inicia um boss aleatório entre os perfis NÃO especiais (usado pela agenda e por /boss start sem
+     * argumento). Com a chance {@code elite.chance}, ele vem elite.
+     */
     public boolean iniciarAleatorio(CommandSender iniciador) {
+        return iniciarAleatorio(iniciador, ThreadLocalRandom.current().nextDouble() < plugin.getConfig().getDouble("elite.chance", 0.1));
+    }
+
+    public boolean iniciarAleatorio(CommandSender iniciador, boolean comoElite) {
         List<BossProfile> candidatos = perfis.values().stream().filter(p -> !p.isEspecial()).toList();
         if (candidatos.isEmpty()) {
             if (iniciador != null) iniciador.sendMessage("§cNenhum boss normal configurado em 'bosses' no config.yml.");
             return false;
         }
         BossProfile escolhido = candidatos.get(ThreadLocalRandom.current().nextInt(candidatos.size()));
-        return iniciar(escolhido, iniciador);
+        return iniciar(escolhido, iniciador, comoElite);
     }
 
     /** Inicia um perfil específico pelo id (ex: "wither", pra forçar o boss especial). */
     public boolean iniciarPorId(String id, CommandSender iniciador) {
+        return iniciarPorId(id, iniciador, false);
+    }
+
+    public boolean iniciarPorId(String id, CommandSender iniciador, boolean comoElite) {
         BossProfile perfil = perfis.get(id.toLowerCase(Locale.ROOT));
         if (perfil == null) {
             if (iniciador != null) {
@@ -180,10 +207,10 @@ public class BossManager {
             }
             return false;
         }
-        return iniciar(perfil, iniciador);
+        return iniciar(perfil, iniciador, comoElite);
     }
 
-    private boolean iniciar(BossProfile perfil, CommandSender iniciador) {
+    private boolean iniciar(BossProfile perfil, CommandSender iniciador, boolean comoElite) {
         if (estaAtivo()) {
             if (iniciador != null) iniciador.sendMessage("§cJá existe um boss ativo no momento.");
             return false;
@@ -203,8 +230,17 @@ public class BossManager {
         }
 
         this.perfilAtivo = perfil;
+        this.elite = comoElite;
         bossAtivo = (LivingEntity) local.getWorld().spawnEntity(local, perfil.getMob());
         configurarAtributos(bossAtivo, perfil);
+        if (elite) {
+            // elite: mais vida e o nome com o prefixo; o dano a mais vem do BossDamageListener
+            AttributeInstance vida = bossAtivo.getAttribute(Attribute.MAX_HEALTH);
+            if (vida != null) vida.setBaseValue(vida.getBaseValue() * Math.max(1, plugin.getConfig().getDouble("elite.multiplicador-vida", 2)));
+            bossAtivo.setCustomName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("elite.prefixo-nome", "&6&l✦ ELITE ✦ "))
+                    + perfil.getNome());
+            bossAtivo.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 0, false, false));
+        }
 
         AttributeInstance vidaMaximaAttr = bossAtivo.getAttribute(Attribute.MAX_HEALTH);
         vidaMaxima = vidaMaximaAttr != null ? vidaMaximaAttr.getValue() : bossAtivo.getHealth();
@@ -273,7 +309,8 @@ public class BossManager {
     }
 
     private void criarBossBar() {
-        BarColor cor = valorEnumOuPadrao(BarColor.class, plugin.getConfig().getString("barra.cor", "RED"), BarColor.RED);
+        String corConfig = elite ? plugin.getConfig().getString("elite.barra-cor", "PURPLE") : plugin.getConfig().getString("barra.cor", "RED");
+        BarColor cor = valorEnumOuPadrao(BarColor.class, corConfig, BarColor.RED);
         BarStyle estilo = valorEnumOuPadrao(BarStyle.class, plugin.getConfig().getString("barra.estilo", "SEGMENTED_10"), BarStyle.SOLID);
 
         bossBar = Bukkit.createBossBar(bossAtivo.getCustomName(), cor, estilo);
@@ -292,8 +329,9 @@ public class BossManager {
     }
 
     private void anunciarSpawn() {
-        String mensagem = ChatColor.translateAlternateColorCodes('&',
-                plugin.getConfig().getString("mensagem-spawn", "&4&l⚠ Um chefe apareceu! Corram para enfrentá-lo!"));
+        String mensagem = ChatColor.translateAlternateColorCodes('&', elite
+                ? plugin.getConfig().getString("elite.mensagem-spawn", "&6&l✦ UM BOSS ELITE APARECEU! ✦ &eDobro de vida, dobro de dano e recompensa em dobro!")
+                : plugin.getConfig().getString("mensagem-spawn", "&4&l⚠ Um chefe apareceu! Corram para enfrentá-lo!"));
         Bukkit.broadcastMessage(mensagem);
         plugin.getDiscord().enviar("boss", mensagem);
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -563,5 +601,6 @@ public class BossManager {
         }
         bossAtivo = null;
         perfilAtivo = null;
+        elite = false;
     }
 }

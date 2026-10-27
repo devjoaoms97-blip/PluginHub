@@ -19,12 +19,14 @@ import java.util.stream.Collectors;
  *
  * Funciona com uma contagem regressiva em segundos: a cada segundo, {@link #tick()} decrementa
  * {@link #segundosRestantes}; quando bate num dos valores de {@code avisos-segundos}, avisa no
- * chat; quando chega a zero, executa a limpeza e reinicia a contagem.
+ * chat; quando chega a zero, executa a limpeza e reinicia a contagem. O item com dono vai pros
+ * achados e perdidos dele ({@link AchadosPerdidos}) em vez de sumir.
  */
 public class ItemCleanerPlugin extends JavaPlugin {
 
     private int segundosRestantes;
     private BukkitTask tarefa;
+    private AchadosPerdidos achados;
 
     @Override
     public void onEnable() {
@@ -33,6 +35,9 @@ public class ItemCleanerPlugin extends JavaPlugin {
         ItemCleanerCommand executor = new ItemCleanerCommand(this);
         getCommand("limparchao").setExecutor(executor);
         getCommand("limparchao").setTabCompleter(executor);
+        achados = new AchadosPerdidos(this);
+        getServer().getPluginManager().registerEvents(achados, this);
+        getCommand("achados").setExecutor(achados);
 
         iniciarTarefa();
 
@@ -44,6 +49,7 @@ public class ItemCleanerPlugin extends JavaPlugin {
         if (tarefa != null) {
             tarefa.cancel();
         }
+        if (achados != null) achados.salvar();
         getLogger().info("ItemCleanerPlugin desativado!");
     }
 
@@ -82,13 +88,14 @@ public class ItemCleanerPlugin extends JavaPlugin {
 
     /**
      * Remove todos os itens no chão (e os orbes de XP, se {@code limpar-orbes-xp}) que passam
-     * pelos filtros configurados (idade mínima, itens nomeados, perto de jogador, mundos alvo).
+     * pelos filtros configurados (itens nomeados, perto de jogador, mundos alvo). Não há idade
+     * mínima: o que tem dono vai pros achados e perdidos, então nada se perde de vez.
      * Retorna quantos foram removidos.
      */
     public int limparItens() {
         int removidos = 0;
+        boolean guardou = false;
         boolean ignorarNomeados = getConfig().getBoolean("ignorar-itens-nomeados", true);
-        long idadeMinimaTicks = getConfig().getInt("idade-minima-segundos", 60) * 20L;
         boolean orbes = getConfig().getBoolean("limpar-orbes-xp", true);
         double raio = getConfig().getDouble("protecao-perto-de-jogador"); // padrão do jar em configs antigos
         double raio2 = raio * raio;
@@ -97,7 +104,7 @@ public class ItemCleanerPlugin extends JavaPlugin {
             List<Player> jogadores = raio > 0 ? mundo.getPlayers() : List.of();
             for (Entity entidade : mundo.getEntities()) {
                 if (orbes && entidade instanceof ExperienceOrb orbe) {
-                    if (orbe.getTicksLived() >= idadeMinimaTicks && !pertoDeJogador(orbe, jogadores, raio2)) {
+                    if (!pertoDeJogador(orbe, jogadores, raio2)) {
                         orbe.remove();
                         removidos++;
                     }
@@ -110,17 +117,16 @@ public class ItemCleanerPlugin extends JavaPlugin {
                 if (pertoDeJogador(item, jogadores, raio2)) {
                     continue;
                 }
-                if (item.getTicksLived() < idadeMinimaTicks) {
-                    continue;
-                }
                 if (ignorarNomeados && item.getItemStack().hasItemMeta()
                         && item.getItemStack().getItemMeta().hasDisplayName()) {
                     continue;
                 }
+                guardou |= achados.guardar(item);
                 item.remove();
                 removidos++;
             }
         }
+        if (guardou) achados.salvar();
         return removidos;
     }
 

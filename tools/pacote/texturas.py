@@ -135,6 +135,25 @@ def cristal_de_energia():
     return contornar(img)
 
 
+def fragmento_arcano():
+    """Fragmento Arcano (cai raramente nas minas): lasca de cristal roxo torta, com núcleo carmesim e brilho dourado."""
+    img = nova()
+    # lasca inclinada, mais larga embaixo
+    linhas = {2: (9, 10), 3: (8, 11), 4: (8, 11), 5: (7, 11), 6: (6, 11), 7: (6, 10), 8: (5, 10), 9: (5, 10),
+              10: (4, 9), 11: (4, 9), 12: (5, 8), 13: (6, 7)}
+    for y, (a, b) in linhas.items():
+        for x in range(a, b + 1):
+            cor = ROXO[2] if x - a < (b - a + 1) / 2 else ROXO[1]
+            if x == a:
+                cor = ROXO[3]
+            img.putpixel((x, y), cor)
+    px(img, [(7, 7), (7, 8), (6, 9), (7, 9), (6, 10)], CARMESIM[2])  # núcleo
+    px(img, [(9, 3), (8, 5), (7, 6)], (250, 230, 255, 255))  # reflexo
+    px(img, [(13, 3), (3, 6), (12, 11)], OURO[3])  # faíscas
+    px(img, [(13, 2), (13, 4), (12, 3), (14, 3)], OURO[2])
+    return contornar(img)
+
+
 def celula_combustivel():
     """Célula de combustível: cilindro escuro com faixa vinho e chama laranja."""
     img = nova()
@@ -244,6 +263,7 @@ def frente_reator():
 PRODUTOS = {
     "tecido_fino": tecido_fino, "barra_de_aco": barra_de_aco, "essencia_destilada": essencia_destilada,
     "gema_lapidada": gema_lapidada, "cristal_de_energia": cristal_de_energia, "celula_combustivel": celula_combustivel,
+    "fragmento_arcano": fragmento_arcano,
 }
 FRENTES = {
     "tear": frente_tear, "forja": frente_forja, "destilaria": frente_destilaria,

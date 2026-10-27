@@ -1,25 +1,29 @@
 # ChequePlugin
 
-Plugin para Spigot/Paper (1.20.x) que transforma papel em um **cheque** resgatável por dinheiro real do servidor (via Vault).
+Cheques entre jogadores, com dinheiro de verdade do servidor (via Vault). O cheque nasce numa **folha de cheque** comprada no **Bancário** e só vira dinheiro depositado no Bancário.
 
 ## O que ele faz
 
-1. Um jogador com permissão segura **papel** na mão e digita:
-   ```
-   /cheque <valor>
-   ```
-   Exemplo: `/cheque 250` cria um cheque de R$ 250,00.
+1. O jogador compra uma **folha de cheque** em branco no Bancário (NPC do OficinasPlugin, tipo `bancario`), por `banco.preco-folha` (R$ 50).
+2. Com a folha na mão, digita `/cheque <valor> [jogador]`. Exemplo: `/cheque 250` cria um cheque de R$ 250,00.
+3. O valor sai do saldo de quem emite (sem saldo, não emite). A folha é consumida (1 unidade) e vira um item **Cheque**, com nome, dono, data de emissão e valor gravado de forma segura dentro do item (não é só texto — usa `PersistentDataContainer`, então não dá pra falsificar editando o nome/lore no bigorna). Papel comum não serve.
+4. Quem está com o cheque leva ao Bancário e clica em **Depositar cheques**: todos os cheques do inventário caem na conta de quem depositou, menos a **taxa de compensação** (`banco.taxa-deposito-percentual`, 1%, igual à do Pix, senão o cheque seria um Pix sem taxa). O depósito aparece no `/pix historico` como transação do emissor pra quem depositou. O clique direito no cheque só avisa pra levar ao Bancário.
 
-2. O papel na mão é consumido (1 unidade) e vira um item **Cheque**, com nome, dono, data de emissão e valor gravado de forma segura dentro do item (não é só texto — usa `PersistentDataContainer`, então não dá pra falsificar editando o nome/lore no bigorna).
-
-3. Qualquer jogador com o cheque em mãos pode **clicar com o botão direito** para resgatá-lo: o valor é depositado na conta dele (via Vault) e o item é consumido.
+A folha e a taxa somem da economia. `/cheque` é liberado pra todos (`cheque.criar`, padrão true).
 
 ## Cheque nominal, limites e log
 
-- `/cheque <valor> [jogador]`: com o jogador, o cheque é **nominal**. O nome vai no lore e só ele resgata.
+- `/cheque <valor> [jogador]`: com o jogador, o cheque é **nominal**. O nome vai no lore e só ele deposita (no depósito de outro, o cheque fica no inventário).
 - **Limites** (`config.yml`): `limite.valor-maximo` por cheque e `limite.cooldown-segundos` entre emissões. A permissão `cheque.limite.ignorar` pula os dois.
 - **Log**: cada emissão, resgate e recusa vira uma linha em `plugins/ChequePlugin/cheques.log`, com data, jogador, valor e o ID do cheque.
 - **Anti-cópia**: o ID de cada cheque resgatado fica em `resgatados.yml`. Um cheque com ID já resgatado (cópia de um dupe) é recusado, anulado e registrado no log.
+
+## Cancelar um cheque
+
+- `/cheque cancelar`, com o cheque na mão: anula ele (some do inventário). Vale pra quem emitiu e pra staff (`cheque.admin`).
+- `/cheque cancelar <id>`: só a staff. Anula pelo ID que aparece no lore (8 caracteres) ou pelo inteiro do `cheques.log`, mesmo com o cheque no inventário de outra pessoa. Quem tentar resgatar depois perde o cheque, e a recusa vai pro log.
+
+Ao cancelar, o valor volta pro saldo de quem emitiu (avisado no chat, se estiver online). Os cheques em aberto ficam em `emitidos.yml` (quem emitiu e o valor), e os cancelados em `cancelados.yml`. Cheques emitidos antes do valor sair do saldo não têm o que devolver nem o ID no lore: a staff cancela com o ID do log, sem devolução.
 
 ## Requisitos
 
@@ -42,8 +46,9 @@ O `.jar` final vai aparecer em `target/ChequePlugin.jar`. Copie esse arquivo par
 
 | Permissão        | Padrão | Descrição                          |
 |-------------------|--------|-------------------------------------|
-| `cheque.criar`    | op     | Permite criar cheques (`/cheque`)   |
-| `cheque.resgatar` | true   | Permite resgatar cheques (clique)   |
+| `cheque.criar`    | true   | Permite emitir cheques (`/cheque`, com a folha na mão) |
+| `cheque.resgatar` | true   | Permite depositar cheques no Bancário |
+| `cheque.admin`    | op     | Cancela qualquer cheque, inclusive pelo ID |
 
 ## Estrutura do projeto
 
@@ -59,10 +64,3 @@ cheque-plugin/
     └── resources/
         └── plugin.yml
 ```
-
-## Possíveis melhorias futuras
-
-- Cheque "nominal" (só quem foi especificado pode resgatar)
-- Cancelar/estornar um cheque emitido por engano
-- Log de cheques emitidos/resgatados em um arquivo ou banco de dados
-- Cooldown ou limite de valor máximo por cheque

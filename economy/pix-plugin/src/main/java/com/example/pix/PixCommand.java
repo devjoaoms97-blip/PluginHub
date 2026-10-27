@@ -111,8 +111,8 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         econ.withdrawPlayer(pagador, valor);
         econ.depositPlayer(alvo, valorLiquido);
         plugin.getChargeManager().registrarTransacao(pagador.getUniqueId(), alvo.getUniqueId(), valor, "Pagamento", taxa);
-        plugin.conferirSuspeito(pagador.getName(), alvo.getName(), valor, "Pagamento");
         plugin.getLimiteManager().registrarEnvio(pagador.getUniqueId(), valor);
+        plugin.conferirSuspeito(pagador.getUniqueId(), pagador.getName(), alvo.getUniqueId(), alvo.getName(), valor, "Pagamento");
 
         pagador.sendMessage(cor("§aVocê pagou §f" + formatarValor(valor) + " §apara §f" + alvo.getName()
                 + (motivo != null ? " §7(" + motivo + ")" : "")
@@ -211,8 +211,8 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         econ.depositPlayer(cobrador, valorLiquido);
         plugin.getChargeManager().removerCobranca(charge.getCobradorId(), charge.getCobradoId());
         plugin.getChargeManager().registrarTransacao(jogador.getUniqueId(), cobrador.getUniqueId(), charge.getValor(), "Cobrança aceita", taxa);
-        plugin.conferirSuspeito(jogador.getName(), cobrador.getName(), charge.getValor(), "Cobrança aceita");
         plugin.getLimiteManager().registrarEnvio(jogador.getUniqueId(), charge.getValor());
+        plugin.conferirSuspeito(jogador.getUniqueId(), jogador.getName(), cobrador.getUniqueId(), cobrador.getName(), charge.getValor(), "Cobrança aceita");
 
         jogador.sendMessage(cor("§aVocê pagou a cobrança de §f" + cobrador.getName() + " §a(§f" + formatarValor(charge.getValor()) + "§a)"
                 + (taxa > 0 ? " §7(taxa: " + formatarValor(taxa) + ")" : "")));

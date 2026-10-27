@@ -69,6 +69,25 @@ lanceiro:
   sangramento-duracao-segundos: 4
   sangramento-dano-por-tick: 2.0
 
+# Prestígio (/skills prestigio <skill>): no nível máximo, a skill volta pro 1 e cada prestígio
+# deixa tudo o que ela dá (bônus e chances) essa fração mais forte. Ex: prestígio 3 = +30%.
+prestigio:
+  maximo: 5
+  bonus-por-prestigio: 0.10
+
+# Escudo Perfeito (parry): escudo levantado no máximo janela-ticks antes de um golpe corpo a corpo
+# anula o dano e atordoa quem bateu (sem andar e sem golpe corpo a corpo). Boss não fica atordoado.
+parry:
+  ativado: true
+  # 20 ticks = 1 s. O escudo do jogo só começa a bloquear com 5 ticks levantado.
+  janela-ticks: 6
+  # +1 tick de janela a cada 10 níveis de Bloqueio
+  janela-ticks-por-10-niveis: 1
+  atordoar-segundos: 1
+  # tempo até o próximo parry valer, pra subir e descer o escudo sem parar não virar imunidade
+  recarga-segundos: 3
+  xp-bloqueio: 15
+
 marreteiro:
   chance-atordoar-por-nivel: 0.002
   atordoar-duracao-segundos: 3

@@ -44,6 +44,7 @@ public class SkillDataManager {
                 String chave = skill.getChaveConfig();
                 dados.setNivel(skill, yaml.getInt(chave + ".nivel", 1));
                 dados.setXp(skill, yaml.getDouble(chave + ".xp", 0.0));
+                dados.setPrestigio(skill, yaml.getInt(chave + ".prestigio", 0));
             }
         }
 
@@ -59,6 +60,7 @@ public class SkillDataManager {
             String chave = skill.getChaveConfig();
             yaml.set(chave + ".nivel", dados.getNivel(skill));
             yaml.set(chave + ".xp", dados.getXp(skill));
+            if (dados.getPrestigio(skill) > 0) yaml.set(chave + ".prestigio", dados.getPrestigio(skill));
         }
 
         File arquivo = new File(pastaDados, jogadorId + ".yml");

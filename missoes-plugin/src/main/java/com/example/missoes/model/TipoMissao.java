@@ -25,7 +25,11 @@ public enum TipoMissao {
     /** Minerar dentro de uma mina (RankupPlugin). Alvos: o id da mina. Conta blocos. */
     MINERAR_MINA,
     /** Pagar o imposto do terreno (TerrenosPlugin), na mão ou no automático. Conta pagamentos. */
-    PAGAR_IMPOSTO;
+    PAGAR_IMPOSTO,
+    /** Reparar itens no Ferreiro (OficinasPlugin). Alvos: materiais do item. Conta itens reparados. */
+    REPARAR,
+    /** Encantar itens na mesa da Bruxa ou no Cambista (OficinasPlugin). Alvos: materiais do item. Conta itens. */
+    ENCANTAR;
 
     public static TipoMissao de(String texto) {
         try {

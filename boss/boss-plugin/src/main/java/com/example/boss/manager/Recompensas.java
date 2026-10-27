@@ -45,15 +45,16 @@ public class Recompensas {
 
         List<Map.Entry<UUID, Double>> ranking = plugin.getBossManager().getRankingDano();
         List<Double> premios = plugin.getConfig().getDoubleList("recompensas.ranking-dano");
+        double mult = plugin.getBossManager().multiplicadorRecompensas(); // elite paga mais
         if (eco != null) {
             for (int i = 0; i < Math.min(premios.size(), ranking.size()); i++) {
-                double valor = premios.get(i);
+                double valor = premios.get(i) * mult;
                 if (valor <= 0) continue;
                 UUID id = ranking.get(i).getKey();
                 eco.depositPlayer(Bukkit.getOfflinePlayer(id), valor);
                 avisar(id, "§6⚔ §e" + (i + 1) + "º no ranking de dano: §f+" + formatar(valor) + "§e.");
             }
-            double dinheiroCampeao = plugin.getConfig().getDouble("recompensas.campeao-dinheiro", 0);
+            double dinheiroCampeao = plugin.getConfig().getDouble("recompensas.campeao-dinheiro", 0) * mult;
             if (campeao != null && dinheiroCampeao > 0) {
                 eco.depositPlayer(campeao, dinheiroCampeao);
                 campeao.sendMessage("§6★ §eRecompensa de campeão: §f+" + formatar(dinheiroCampeao) + "§e.");
@@ -87,7 +88,7 @@ public class Recompensas {
         for (Map.Entry<UUID, Double> entrada : plugin.getBossManager().getRankingDano()) {
             Player jogador = Bukkit.getPlayer(entrada.getKey());
             if (jogador == null) continue; // o XP do SkillsPlugin é por jogador online
-            double total = Math.max(minimo, Math.min(1, entrada.getValue() / vidaMaxima) * maximo);
+            double total = Math.max(minimo, Math.min(1, entrada.getValue() / vidaMaxima) * maximo) * plugin.getBossManager().multiplicadorRecompensas();
             Map<String, Double> porSkill = plugin.getBossManager().getDanoPorSkill(entrada.getKey());
             double danoComSkill = porSkill.values().stream().mapToDouble(Double::doubleValue).sum();
             if (danoComSkill <= 0) continue;

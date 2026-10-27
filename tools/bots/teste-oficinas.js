@@ -41,13 +41,11 @@ t.rodar(async () => {
   let janela = await abrir(bot, NPCS.ferreiro)
   t.verificar(!!janela && janela.slots[0]?.name === 'diamond_pickaxe', 'o ferreiro mostra a picareta gasta', janela?.title)
   if (janela) {
-    const antes = await saldo(bot.username)
-    await bot.clickWindow(0, 0, 0)
-    await t.espera(1200)
+    // o saldo não serve aqui: o reparo pode concluir a missão diária de reparar, que paga mais que ele
+    const msgs = await t.capturar(bot, () => bot.clickWindow(0, 0, 0), 1200)
     const dano = await t.console(`data get entity ${bot.username} Inventory[{id:"minecraft:diamond_pickaxe"}].components."minecraft:damage"`)
-    const depois = await saldo(bot.username)
     t.verificar(!/\d+$/.test(dano.trim()) || / 0$/.test(dano.trim()), 'a picareta saiu reparada', dano)
-    t.verificar(depois < antes, 'e o reparo foi cobrado', `${antes} → ${depois}`)
+    t.verificar(msgs.some(m => /reparou 1 item\(ns\) por R\$ [1-9]/.test(m)), 'e o reparo foi cobrado', msgs.join(' | '))
     bot.closeWindow(janela)
   }
 

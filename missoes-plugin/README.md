@@ -29,6 +29,8 @@ Aliases: `/missao`, `/quests`. Permissões: `missoes.usar` (padrão: todos) e `m
 | `subir_rank` | Sobe de rank (RankupPlugin). Só conta quando o rank sobe | — |
 | `minerar_mina` | Quebra um bloco numa mina do RankupPlugin | IDs das minas (`pedreira`, `ferro`...) |
 | `pagar_imposto` | Paga o imposto de um terreno (TerrenosPlugin) | — |
+| `reparar` | Repara itens no Ferreiro (OficinasPlugin), contando os itens | Materiais do item (`DIAMOND_PICKAXE`...) |
+| `encantar` | Encanta itens na mesa da Bruxa ou compra um encantamento no Cambista (OficinasPlugin), contando os itens | Materiais do item |
 
 Sem `alvos`, qualquer um conta. Com `rank-minimo`, a missão só é sorteada pra quem já tem acesso àquele rank (ex: a mina de diamante só pra quem chegou nela). Duas missões do mesmo tipo podem contar ao mesmo tempo: matar um zumbi conta pra "matar 20 zumbis" e pra "matar 50 mobs". Uma diária e uma semanal também contam juntas.
 

@@ -26,5 +26,6 @@ public class PlayerConnectionListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         plugin.getSkillDataManager().descarregar(event.getPlayer().getUniqueId());
         plugin.getCombatTagManager().remover(event.getPlayer().getUniqueId());
+        plugin.getXpManager().esquecer(event.getPlayer().getUniqueId());
     }
 }

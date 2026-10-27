@@ -20,6 +20,9 @@ permissions:
   pix.admin:
     description: "Permite recarregar a configuração do Pix (ex: taxa de transação) e zerar limites diários."
     default: op
+  pix.alertas:
+    description: Recebe no chat os alertas de Pix suspeito.
+    default: op
   pix.limite.ignorar:
     description: Não tem limite diário de transferência.
     default: op

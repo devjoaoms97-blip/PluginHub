@@ -24,6 +24,16 @@ Tudo o que está planejado para os plugins, num só lugar. Os READMEs de cada pl
 
 O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 
+## Foco atual (2026-10-27) — implementado, falta testar no servidor
+
+1. ~~Skills: correção do Sangramento, parry com escudo e prestígio no nível 50~~ ✅
+2. ~~Placar: linha com a skill em uso e o XP dela~~ ✅
+3. ~~NPCs: um na entrada de cada mina, com informações e teleporte~~ ✅
+4. ~~Oficinas: Compactador e Cambista (fragmentos das minas por encantamentos VI a VIII) no fundo da avenida, e missões de reparar e encantar~~ ✅
+5. ~~Boss elite, alerta de Pix suspeito, cancelar cheque, tag do VIP pelo LuckPerms, achados e perdidos do ItemCleaner e `/tpa`, `/back` e `/home` barrados nas arenas~~ ✅
+
+Tudo compila, mas nada disso foi testado com o servidor ligado. Os custos do Cambista e a chance do fragmento (1 em 4.000 blocos) são a primeira calibragem: conferir no `analisar.py` com jogadores de verdade.
+
 ## Mapa do rankup (decisões de 2026-10-23)
 
 O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividido em mundos, cada um com as próprias regras (PvP, proteção, mobs). Para isso, entram o Multiverse-Core (vários mundos) e o WorldEdit ou o FAWE (colar schematics).
@@ -43,7 +53,7 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 - **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (imposto, Pix e painel).
 - **Servidor de teste:** o `montar.bat` baixa o Multiverse e o WorldEdit, e o `configurar-mundos.bat` cria os 4 mundos.
 - **Mundo de recursos:** as missões de matar mobs, pescar, colher e cortar árvores precisam dele, porque mob de spawner não conta e o rankup protege o mundo fora das minas.
-- **NPCs**: plugin nosso, com o Mannequin do 26.2 (sem Citizens). Já existem os vendedores das barracas (skin do dono) e 12 NPCs de dicas pelo spawn (DicasPlugin), com balão de fala animado. Ainda faltam: NPC da loja (abre o `/sell` e mostra preços) e um na entrada de cada mina. 🟡
+- **NPCs**: plugin nosso, com o Mannequin do 26.2 (sem Citizens). Já existem os vendedores das barracas (skin do dono) e 12 NPCs de dicas pelo spawn (DicasPlugin), com balão de fala animado. Na entrada de cada mina, um guia (OficinasPlugin, `mina:<id>`) mostra as informações dela e leva até ela quem tem o rank ✅ (2026-10-27). O NPC da loja saiu do roadmap em 2026-10-27: a Loja Oficial já tem os vendedores.
 - **Arenas:** o X1 é o Duelo com aposta (`duelo-plugin`), e o Gladiador, o `gladiador-plugin`. A arena do boss marca o local dele sozinha ao ser construída. Hoje há uma arena de X1 só, então um duelo por vez; dá pra construir cópias da `axepvp` em outros lugares do mundo `arenas` quando precisar de mais.
 - **Itens nas arenas de PvP (X1 e Gladiador):** cada um luta com o próprio equipamento, e **quem morre perde os itens**.
 
@@ -121,7 +131,7 @@ Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), c
 - [x] Prestígio: no Rei, `/prestigio` volta pro Camponês com +10% de venda por nível (até 10) e a marca ✦ no chat e na tab.
 - [ ] Mina exclusiva de prestígio. 🟡
 - [x] Rank na tab, junto com o clã e o VIP.
-- [ ] Encantamentos de picareta comprados com coins ou com uma moeda própria (explosão, mais fortuna, venda automática). 🔴
+- [ ] Encantamentos de picareta comprados com coins ou com uma moeda própria (explosão, mais fortuna, venda automática). 🔴 (Eficiência e Fortuna acima do máximo já saem no Cambista, com o Fragmento Arcano das minas; falta a explosão.)
 - [x] Coleta direta nas minas pra todos: drops e XP vão pro jogador, sem itens no chão.
 - [x] Venda automática ao minerar, pra todos (2026-10-24; antes era benefício de VIP com `/autovenda`).
 - [x] Menu (GUI) no `/ranks` e no `/mina`.
@@ -140,7 +150,6 @@ Terrenos de 32x32 num mundo em grade gerado pelo plugin, comprados por R$ 50.000
 
 **Próximos passos**
 - [x] Holograma na entrada do terreno, com o dono, "À venda" ou o leilão. Antes era uma placa.
-- [ ] Juntar terrenos vizinhos do mesmo dono. 🟡
 - [x] Fundo de bedrock em y = 0 (2026-10-25), também nos chunks que já existiam.
 - [x] Holograma do terreno em leilão mostra quantos itens estão guardados lá dentro (2026-10-25).
 - [x] Permissões separadas para os amigos (construir, baús, usar).
@@ -182,7 +191,8 @@ Os outros plugins mandam os anúncios para o DiscordPlugin, e cada categoria vai
 Constrói estruturas de código, sem WorldEdit (`/estrutura construir <id> [mundo x y z]`, também pelo console), aos poucos pra não travar e com `/estrutura desfazer`. No fim, roda comandos de integração (cadastra as barracas, marca o local do boss). Estruturas: `spring` (spawn), `spring-barracas`, `minas`, `axepvp` (X1), `coliseu` (Gladiador) e `toxica` (boss).
 
 **Próximos passos**
-- [ ] NPC da loja e um em cada mina (ver "NPCs", no mapa). 🟡
+- [x] NPC em cada mina (2026-10-27): o guia do OficinasPlugin, posto pelo `montar-mapa.js`.
+- [x] Duas barraquinhas novas no fundo da avenida (Cambista e Compactador), na estrutura `oficinas` (2026-10-27).
 - [ ] Cópias da arena de X1, pra mais de um duelo ao mesmo tempo. 🟢
 
 ### NPCs de dicas ✅ v1 (`dicas-plugin`)
@@ -190,13 +200,14 @@ NPCs pelo spawn que falam ao receber um clique direito: o balão cresce, escreve
 
 ### Oficinas da mina ✅ v1 (`oficinas-plugin`)
 Quatro barraquinhas temáticas na praça de entrada da Avenida das Minas (estrutura `oficinas`), cada uma com um NPC de serviço: **Ferreiro** (repara os itens por uma taxa pelo desgaste, material e encantamentos), **Bruxa** (mesa de encantamento sempre no nível 30, com a câmara de estantes escondida embaixo da barraca), **Picareteiro** (picaretas prontas, encantadas ou não) e **Sábio** (níveis de XP). A bruxa põe o lápis; cada NPC tem skin temática. Desconto de VIP e registro no `/pix historico`.
-- [ ] Mais oficinas no fundo da avenida (ex: vendedor de comida, troca de minério por fragmento). 🟡
-- [ ] Missões nas oficinas (reparar, encantar). 🟡
+- [x] Mais oficinas no fundo da avenida (2026-10-27): **Compactador** (minérios e lingotes em blocos e de volta, de graça) e **Cambista**, que troca **Fragmentos Arcanos** (caem nas minas, 1 em 4.000 blocos, ~1 por hora) e coins por Eficiência, Fortuna, Afiação, Proteção e Poder VI a VIII e Saque e Inquebrável IV a VI (o Saque vai até um acima do que dá pra ter no jogo), cada um só nos itens que fazem sentido (Afiação em espada e machado, nunca em picareta ou pá). Caro de propósito: ~105 h de mina pra Eficiência VIII, ~175 h pra Fortuna VIII e ~140 h pra Saque VI, mais milhões em coins.
+- [ ] Calibrar a chance do fragmento e os custos do Cambista com jogadores de verdade (`analisar.py`). 🟡
+- [x] Missões nas oficinas (2026-10-27): tipos `reparar` (Ferreiro) e `encantar` (Bruxa e Cambista), com uma diária e uma semanal de cada.
 - [x] Machados no Picareteiro, pra mina do bosque (2026-10-25).
 
 ### Placar lateral ✅ v1 (`placar-plugin`)
 Scoreboard no canto da tela com saldo, rank, barra até o próximo rank, clã, missões do dia, próximo boss e jogadores online. Linhas no config, com placeholders; `/placar` liga e desliga.
-- [ ] Linha com a skill em uso e o XP dela (ver SkillsPlugin). 🟡
+- [x] Linha com a skill em uso e o XP dela (2026-10-27): `{skill}` e `{skill-progresso}`, a skill da arma do último golpe (ou a da mão).
 
 ### Loja Oficial ✅ v1 (`economy-shop-plugin` + estrutura `loja`)
 Prédio fechado colado no portão LESTE do spawn (`/warp loja`), com dez balcões, cinco de cada lado: sete vendedores temáticos, um por categoria (minerador, construtor, lenhador, fazendeiro, caçador, jardineiro, alquimista), o Domador (spawners), o Maquinista (máquinas) e o Armeiro (PvP). Comprar e vender é só com eles; `/shop`, `/buy` e `/sell` ficaram pra staff. Nas minas, tudo o que se quebra vira dinheiro na hora, pra todos. VIP compra com 3/6/9/12% de desconto e vende com 3/6/9/12% a mais. Sem limite de quantidade: o preço dinâmico regula, e farm AFK é bem-vinda. Uma trava (90% do menor preço de compra) impede comprar e revender com lucro. Catálogo de 356 itens gerado e conferido pelo `tools/economia/loja.py` (nenhuma brecha com craft, fundição ou quebra de bloco).
@@ -205,6 +216,7 @@ Prédio fechado colado no portão LESTE do spawn (`/warp loja`), com dez balcõe
 ### Spawners ✅ v1 (`spawners-plugin`)
 Spawners empilhados nos terrenos, comprados no balcão Spawners da Loja Oficial (12 tipos, cada um liberado num rank). Iguais no mesmo bloco se somam, e os mobs se juntam numa pilha só em cima do spawner, que o jogador mata na espada. Os drops vendem no Caçador. As skills dão 25% do XP em mob de pilha, e as missões não contam.
 - [x] A pilha é um mob normal (anda, a água arrasta, ataca) e nasce em lugar livre, e um abate mata a pilha toda, com os drops e o XP de todos (2026-10-25). O XP de skill continua só pelo dano do golpe.
+- [x] **Warp mobs** (2026-10-25): salão de estátuas a oeste do spawn (portão "MOBS", `/warp mobs`), inspirado na Craftlandia. Cada estátua gera mobs normais em volta do spawner dela (até 4), com drops, XP e XP de skill cheios; as missões não contam.
 - [ ] Ver no `analisar.py` quanto os spawners rendem de verdade e calibrar os preços (agora com a pilha morrendo de uma vez e farms possíveis). 🟡
 
 ### Máquinas e produtos ✅ v1 (`maquinas-plugin` + `pacote-plugin`)
@@ -215,10 +227,28 @@ Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcan
 - [ ] `url-publica` do pacote no servidor de verdade (endereço e porta liberada). 🟢
 - [x] Balcão **PvP** da loja: o Armeiro (OficinasPlugin) vende todas as armaduras e armas sem encantamento (couro a netherita), escudo, flechas e poções. Só compra.
 
+### Montaria no spawn (`/montaria`) 🟡
+Pedido de 2026-10-27: um comando (`/montaria` ou `/cavalo`) que dá uma montaria nas áreas sem PvP do spawn, para o jogador ir mais rápido das minas até a loja, por exemplo. A montaria some ao descer, ao sair da área ou ao entrar em combate, e não pode ser levada para as áreas de PvP.
+- [ ] Definir: montaria única para todos ou por rank/VIP (cavalo, camelo...), velocidade e se dá para usar dentro das minas.
+
+### Banco (ideias em análise, 2026-10-27)
+O Bancário começou com o cheque, mas abre espaço pra mais serviços financeiros. A regra pra todos: o painel da economia mostra mais dinheiro entrando que saindo, então o banco **não pode imprimir dinheiro**. Rendimento só vale se for pago por algo que já sai da economia (taxas), ou se for pequeno, com teto e calibrado pelo painel.
+
+| Ideia | Como seria | Efeito na economia | Risco | Esforço |
+|---|---|---|---|---|
+| **Agência no mapa** | Hoje é uma barraquinha no spawn; se os serviços crescerem, vira um prédio próprio | Nenhum | Nenhum | 🟡 |
+| **Poupança / CDB** | Deposita e trava por 7 a 30 dias; rende uma % pequena, maior quanto mais tempo travado, com teto por jogador | Cria dinheiro (o rendimento) e tira de circulação enquanto está travado | Rico fica mais rico (o Gini do painel sobe). Teto baixo e taxa decrescente por faixa resolvem | 🟡 |
+| **Empréstimo** | Pega até X% do preço do próximo rank, paga com juros em parcelas descontadas sozinhas (das vendas na mina ou do saldo) | Os juros saem da economia (sink) | Calote de quem some: exigir garantia (terreno, que vai a leilão como no imposto atrasado) e limite por rank | 🟡/🔴 |
+| **Ações de "empresas do servidor"** | Empresas ligadas a números reais (Mina de Diamante, Loja Oficial, Máquinas). O preço sobe e desce com o volume de vendas da semana, e o dividendo vem de uma parte das taxas já cobradas | Redistribui o que já é sink; não cria dinheiro se o dividendo vier das taxas | Manipulação por quem controla o volume (um jogador vendendo muito diamante). Teto de ações por jogador e preço por média de 7 dias | 🔴 |
+| **Negócios dos jogadores** | Barraca ou clã "abre capital": vende cotas e paga parte do lucro aos cotistas | Nenhum (dinheiro entre jogadores) | Golpe (abre capital e some com o dinheiro). Precisa de garantia e de regras de saída | 🔴 |
+| **Câmbio de fragmentos** | O banco compra e vende Fragmento Arcano com preço dinâmico, como a loja | Cria um preço de mercado pro fragmento | Encurta o "difícil" do Cambista se o banco vender barato: só com spread alto | 🟡 |
+
+Sugestão de ordem: 1) empréstimo com garantia, porque é sink e ajuda quem está começando; 2) poupança com teto, só depois de algumas semanas de dados do painel; 3) ações. Os negócios dos jogadores ficam por último, porque dependem de regras anti-golpe.
+
 ### Áreas fechadas ✅ v1 (`areas-plugin`)
 Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gladiador e plateias) por fora do caminho, nem quem joga, nem quem assiste: lá dentro não dá pra voar (`/fly` do VIP), planar de elytra, jogar pérola do fim, usar tridente com Correnteza, fruta do coro nem carga de vento. Quem entra voando ou planando cai, sem dano. Os admins e o criativo passam. As áreas ficam no config (mundo inteiro ou caixa).
 - [x] **Sem construção** (2026-10-25): ninguém quebra nem coloca bloco no spawn, na loja, na arena do boss e nas arenas de X1 e Gladiador (balde, fogo, molduras e explosão também). As minas ficam de fora.
-- [ ] Comandos de teleporte de jogador pra jogador (`/tpa`, `/back`, `/home`) dentro das arenas de evento, se aparecerem: hoje os plugins de evento já barram comandos de quem participa. 🟡
+- [x] Comandos de teleporte (`/tpa`, `/tpaccept`, `/back`, `/home`, `/sethome`...) barrados no mundo `arenas` (2026-10-27), e o teleporte que um deles pediu não entra lá (o `/back` pro lugar da morte, uma casa antiga). `/spawn` e `/warp` continuam.
 
 ---
 
@@ -229,17 +259,17 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **XP de skill por participar**, conforme o dano causado.
 - [x] **`/boss proximo`**: mostra quando é o próximo spawn da agenda.
 - [x] **Código de VIP pro campeão**: entrega opcional de um código de VIP de curta duração. Funciona como vitrine do VIP.
-- [ ] **Boss "elite"**: aparece raramente, com o dobro de vida e de dano e loot melhor. 🟡
+- [x] **Boss "elite"** (2026-10-27): 10% de chance a cada boss aleatório (ou `/boss start [id] elite`), com 2× de vida e de dano, recompensas em dobro e o loot do chão sorteado duas vezes.
 - [x] **Recompensa em dinheiro** pro campeão, além do item.
 
 ### ⚔️ SkillsPlugin
 - [x] **`/skills top <skill>`**: ranking global por skill.
 - [x] **Bônus sazonal**: XP em dobro configurável (por exemplo, no fim de semana), com aviso no chat. Fim de semana pelo config (`xp-dobro.dias`) ou na hora com `/skills admin xpdobro <mult> <horas>`.
 - [x] **Efeito visual no level up**, com partícula própria de cada skill.
-- [ ] **Prestígio**: no nível 50, resetar a skill em troca de um bônus permanente. 🟡
-- [ ] **Scoreboard lateral** com o XP da skill em uso. 🟡
-- [ ] **Escudo Perfeito (parry)**: bloquear no tempo exato anula o dano e atordoa o atacante. 🟡
-- [ ] **Corrigir**: morrer só por Sangramento não credita quem aplicou o efeito. 🟡
+- [x] **Prestígio** (2026-10-27): `/skills prestigio <skill>` no nível 50 volta pro 1, e cada prestígio (até 5) deixa tudo o que a skill dá 10% mais forte.
+- [x] **Scoreboard lateral** com o XP da skill em uso (2026-10-27, no PlacarPlugin).
+- [x] **Escudo Perfeito (parry)** (2026-10-27): escudo levantado até 0,3 s antes de um golpe corpo a corpo anula o dano e atordoa quem bateu por 1 s (sem andar e sem bater), com recarga de 3 s.
+- [x] **Corrigido** (2026-10-27): quem morre só de Sangramento agora dá o abate a quem aplicou (Bounty, clãs, missões, Gladiador).
 
 ### 🛒 EconomyShopPlugin
 - [x] **Eventos de mercado**: um item sorteado tem o preço multiplicado por algumas horas ("alta do diamante"), com anúncio no chat. A cada `intervalo-horas`, com uma chance, por `duracao-horas`; a staff liga com `/shop admin evento <item> <mult> <horas>`, e `/shop evento` mostra o item em alta.
@@ -248,7 +278,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Categorias fixas**: uma lista definida no config em vez de texto livre, pra evitar "Minerio" e "Minerios" separados. `categorias` no config ("Nome:ÍCONE"), na ordem do menu.
 
 ### 💸 PixPlugin
-- [ ] **Alerta de transação suspeita**: um envio grande perto do limite, ou uma conta nova recebendo de várias contas, gera aviso pra staff. Aproveita o `LimiteManager`. 🟡
+- [x] **Alerta de transação suspeita** (2026-10-27): Pix alto, envio que deixa o pagador com 90% do limite diário e conta nova (menos de 48 h) recebendo de 3 contas em 24 h avisam a staff no chat (`pix.alertas`), no Discord e no `alertas.log`.
 - [x] **`/pix chave <apelido>`**: um apelido para receber pagamentos.
 - [x] **`/pix agendar`**: pagamentos recorrentes entre jogadores. (O imposto do terreno e o aluguel das barracas já se pagam sozinhos.)
 - [x] **Som e título na tela** ao receber um pagamento ou uma cobrança.
@@ -257,7 +287,10 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 
 ### 🧾 ChequePlugin
 - [x] **Cheque nominal**: só a pessoa indicada pode resgatar.
-- [ ] **Cancelar ou estornar** um cheque emitido por engano. 🟡
+- [x] **Cancelar e estornar** um cheque emitido por engano (2026-10-27): `/cheque cancelar` com ele na mão, ou `/cheque cancelar <id>` (staff) com ele no inventário de outro. O valor volta pra quem emitiu.
+- [x] **O cheque sai do saldo de quem emite** (2026-10-27). Antes, emitir não custava nada.
+- [x] **Folha de cheque e Bancário** (2026-10-27): o cheque só nasce numa folha comprada no Bancário (NPC do OficinasPlugin) e só vira dinheiro depositado lá, com taxa de compensação igual à do Pix. Liberado pra todos os jogadores.
+- [x] Barraquinha do Bancário no spawn (2026-10-27), estrutura `banco` no quadrante nordeste, só com a folha de cheque e o depósito. Os outros serviços de banco ficam pra depois (ver "Banco", abaixo).
 - [x] **Log** de cheques emitidos e resgatados.
 - [x] **Limite de valor** por cheque, ou cooldown. Valor máximo e cooldown no config; `cheque.limite.ignorar` pula os dois. O ID resgatado não resgata de novo (segura cópia por dupe).
 
@@ -265,14 +298,15 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [ ] **Integração com o site via RCON**: o plugin já está pronto, falta construir o site. 🔴 (fora do plugin)
 - [x] **Preço mínimo e máximo** no `/vip vender`.
 - [x] **Um warp diferente para cada tier.** `/vip setwarp <tier>`; o tier sem área própria vai pra área geral.
-- [ ] **Ler a tag do prefixo do LuckPerms**, pra configurar num lugar só. 🟡
+- [x] **Saque fora do kit mensal do Ouro e do Diamante** (2026-10-27): o Cambista vende até Saque VI. Os kits ainda vão ser revistos.
+- [x] **Ler a tag do prefixo do LuckPerms** (2026-10-27): `tag-do-luckperms: true`; o grupo sem prefixo usa o `nome-exibicao`.
 - [x] **Avisar o vendedor** quando o código à venda dele vence.
 - [x] **Kit mensal** (`/vip kitmensal`): armadura, armas e ferramentas, de diamante no Bronze e de netherite nos outros, com encantamentos acima do máximo normal (nível IV no Bronze até VII no Diamante; Fortuna IV e V no Ouro e no Diamante).
 - [x] **Bônus de ativação:** dinheiro proporcional ao próximo rank (10% a 50%) e XP em todas as skills, os dois proporcionais aos dias do VIP.
 - [x] **Perks em outros plugins, por permissão:** XP a mais nas skills, desconto na taxa do Pix, missão diária extra e venda automática.
 
 ### 🧹 ItemCleaner
-- [ ] **Achados e perdidos**: os itens limpos vão pra uma caixa que dá pra recuperar pagando uma taxa. Também tira dinheiro de circulação e evita reclamação de quem perdeu item. 🟡
+- [x] **Achados e perdidos** (2026-10-27): o item com dono (jogado por ele ou do corpo dele) que a limpeza tiraria vai pro `/achados`, e cada pilha volta por R$ 100. Guarda 45 pilhas por 3 dias; nas arenas, nada vai pra caixa. Com isso, a limpeza deixou de esperar o item ter 10 s no chão.
 - [x] **Limpar orbes de XP** também.
 - [x] **Aviso da limpeza manual configurável** (hoje é fixo em 10s).
 - [x] **Não limpar itens perto de jogadores.** `protecao-perto-de-jogador` (8 blocos).
@@ -324,3 +358,5 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - **Ponte com o Discord** (`discord-plugin`) e **recompensa diária** (`diaria-plugin`).
 - **Mapa** (2026-10-24): EstruturasPlugin (spawn, Avenida das Minas, X1, coliseu e arena do boss enterrada), barracas com loja por NPC, NPCs de dicas e `montar-mapa.js` por partes. O boss não quebra mais blocos, e o mundo `spawn` passou pra dificuldade normal (sem mobs naturais), pro boss existir lá.
 - **Combate**: golpe com a segunda mão funcionando com o cliente de verdade.
+- **Foco de 2026-10-27**: Sangramento credita o abate, parry com escudo, prestígio de skill, skill em uso no placar, guia em cada mina, Fragmento Arcano nas minas, Cambista e Compactador, missões de reparar e encantar, Boss elite, alerta de Pix suspeito, cancelar cheque, tag do VIP pelo LuckPerms, achados e perdidos e teleporte por comando barrado nas arenas.
+- **Correção**: o menu da loja vendia junto qualquer item do mesmo material (o produto de máquina, que é papel, saía junto com papel comum). Agora só vende item comum, sem nome, encantamento ou marca.

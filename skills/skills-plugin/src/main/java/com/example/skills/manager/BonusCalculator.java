@@ -14,26 +14,30 @@ public class BonusCalculator {
         this.dataManager = dataManager;
     }
 
+    /**
+     * O nível da skill já com o prestígio: cada prestígio vale {@code prestigio.bonus-por-prestigio}
+     * a mais em tudo o que a skill dá (bônus e chances). É o "bônus permanente" do reset no 50.
+     */
+    private double nivelComPrestigio(java.util.UUID jogadorId, Skill skill) {
+        PlayerSkillData dados = dataManager.get(jogadorId);
+        double fator = 1 + dados.getPrestigio(skill) * plugin.getConfig().getDouble("prestigio.bonus-por-prestigio", 0.10);
+        return dados.getNivel(skill) * fator;
+    }
+
     /** Retorna a fração de bônus (ex: 0.25 = +25%) de uma skill para um jogador. */
     public double getBonus(java.util.UUID jogadorId, Skill skill) {
-        PlayerSkillData dados = dataManager.get(jogadorId);
-        int nivel = dados.getNivel(skill);
         double taxa = plugin.getConfig().getDouble("bonus-por-nivel." + skill.getChaveConfig(), 0.005);
-        return nivel * taxa;
+        return nivelComPrestigio(jogadorId, skill) * taxa;
     }
 
     public double getChanceAtordoar(java.util.UUID jogadorId) {
-        PlayerSkillData dados = dataManager.get(jogadorId);
-        int nivel = dados.getNivel(Skill.PORRADEIRO);
         double taxa = plugin.getConfig().getDouble("porradeiro.chance-atordoar-por-nivel", 0.002);
-        return nivel * taxa;
+        return nivelComPrestigio(jogadorId, Skill.PORRADEIRO) * taxa;
     }
 
     public double getChanceEmpurrao(java.util.UUID jogadorId) {
-        PlayerSkillData dados = dataManager.get(jogadorId);
-        int nivel = dados.getNivel(Skill.TRIDENTE);
         double taxa = plugin.getConfig().getDouble("tridente.chance-empurrao-por-nivel", 0.002);
-        return nivel * taxa;
+        return nivelComPrestigio(jogadorId, Skill.TRIDENTE) * taxa;
     }
 
     public double getForcaEmpurrao() {
@@ -41,25 +45,19 @@ public class BonusCalculator {
     }
 
     public double getChanceSangramento(java.util.UUID jogadorId) {
-        PlayerSkillData dados = dataManager.get(jogadorId);
-        int nivel = dados.getNivel(Skill.LANCEIRO);
         double taxa = plugin.getConfig().getDouble("lanceiro.chance-sangramento-por-nivel", 0.002);
-        return nivel * taxa;
+        return nivelComPrestigio(jogadorId, Skill.LANCEIRO) * taxa;
     }
 
     public double getChanceAtordoarMarreteiro(java.util.UUID jogadorId) {
-        PlayerSkillData dados = dataManager.get(jogadorId);
-        int nivel = dados.getNivel(Skill.MARRETEIRO);
         double taxa = plugin.getConfig().getDouble("marreteiro.chance-atordoar-por-nivel", 0.002);
-        return nivel * taxa;
+        return nivelComPrestigio(jogadorId, Skill.MARRETEIRO) * taxa;
     }
 
     /** Chance (fração) de proc-ar o Crítico da skill, baseada no nível de Crítico do jogador. */
     public double getChanceCritico(java.util.UUID jogadorId) {
-        PlayerSkillData dados = dataManager.get(jogadorId);
-        int nivel = dados.getNivel(Skill.CRITICO);
         double taxa = plugin.getConfig().getDouble("critico.chance-por-nivel", 0.002);
-        return nivel * taxa;
+        return nivelComPrestigio(jogadorId, Skill.CRITICO) * taxa;
     }
 
     /** Multiplicador de dano fixo aplicado quando o Crítico da skill proca. */

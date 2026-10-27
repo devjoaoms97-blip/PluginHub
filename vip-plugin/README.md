@@ -218,7 +218,7 @@ Os benefícios que moram em outros plugins (XP, Pix, missões, venda automática
 
 ### Kit mensal
 
-O `/vip kitmensal` entrega, uma vez a cada `cooldown-kit-mensal-dias` (30), um equipamento completo. O Bronze recebe itens de diamante, e os outros recebem netherite. O **nível** é o dos encantamentos de força, e passa do máximo normal do Minecraft: Proteção, Afiação, Saque, Força, e Densidade e Empalamento nos itens do Diamante. Os de utilidade ficam no máximo normal: Inquebrável III, Remendo (Ouro e Diamante), Infinidade, Lealdade III e Peso-pena IV.
+O `/vip kitmensal` entrega, uma vez a cada `cooldown-kit-mensal-dias` (30), um equipamento completo. O Bronze recebe itens de diamante, e os outros recebem netherite. O **nível** é o dos encantamentos de força, e passa do máximo normal do Minecraft: Proteção, Afiação, Força, e Densidade e Empalamento nos itens do Diamante. O Saque vem só no Bronze (IV) e no Prata (V): no Ouro e no Diamante ele saiu, porque o Cambista vende Saque até VI. Os de utilidade ficam no máximo normal: Inquebrável III, Remendo (Ouro e Diamante), Infinidade, Lealdade III e Peso-pena IV.
 
 | | Bronze | Prata | Ouro | Diamante |
 |---|---|---|---|---|
@@ -302,7 +302,7 @@ O `.jar` sai em `target/VipPlugin.jar`.
 
 ## ⚠️ Simplificações técnicas
 
-1. **A tag de chat/tablist é implementada aqui, não pelo LuckPerms** — o LuckPerms guarda `meta setprefix` pra você usar com outros plugins (placeholders, scoreboard, etc.), mas o VipPlugin não lê esse prefixo; ele usa o próprio campo `nome-exibicao` do `config.yml`. Isso evita uma dependência a mais (não precisa de PlaceholderAPI), mas significa que você define a tag em dois lugares. Se preferir unificar lendo o prefixo do LuckPerms direto, é só pedir.
+1. **A tag de chat/tablist vem do prefixo do LuckPerms** — com `tag-do-luckperms: true` (o padrão), o VipPlugin lê o `meta setprefix` do grupo do tier (`grupo-luckperms`) e usa como tag no chat e na tab, então ela se configura num lugar só. O grupo sem prefixo usa o `nome-exibicao` do `config.yml`, que continua sendo o nome do tier nas mensagens (kit, ativação, revenda). Quem monta o chat e a tab continua sendo o plugin: não precisa de PlaceholderAPI nem de plugin de chat. Depois de mudar um prefixo no LuckPerms, a tab de quem está online atualiza quando o jogador entrar de novo ou o rank/clã/VIP mudar.
 2. **`/vip warp` é um único ponto fixo pra todos os tiers** — não tem um warp por tier.
 3. **Cooldowns de heal/feed/kit/kit mensal ficam salvos em `cooldowns.yml`**, então reiniciar o servidor não dá um uso grátis pra ninguém. Registros que já passaram do maior cooldown configurado são descartados ao salvar, pro arquivo não crescer pra sempre.
 4. **`/vip kit` e `/vip kitmensal` sempre entregam o kit inteiro do tier atual** — não acumulam nem somam kits de tiers anteriores. O cooldown do kit mensal é por jogador, não por tier: quem resgata no Bronze e sobe pro Diamante no mesmo mês espera o mês acabar.

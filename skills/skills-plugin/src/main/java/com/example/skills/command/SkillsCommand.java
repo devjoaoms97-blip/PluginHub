@@ -46,6 +46,11 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (args.length > 0 && args[0].equalsIgnoreCase("prestigio")) {
+            tratarPrestigio(jogador, args);
+            return true;
+        }
+
         jogador.openInventory(plugin.getSkillsGUI().montar(jogador));
         return true;
     }
@@ -151,6 +156,52 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    /**
+     * /skills prestigio <skill> [confirmar]: no nível máximo, volta a skill pro nível 1 e ganha um
+     * prestígio, que aumenta tudo o que ela dá ({@code prestigio.bonus-por-prestigio} por prestígio).
+     * Sem o "confirmar", só explica o que vai acontecer, pra ninguém perder o nível sem querer.
+     */
+    private void tratarPrestigio(Player jogador, String[] args) {
+        Skill skill = args.length >= 2 ? resolverSkill(args[1]) : null;
+        if (skill == null) {
+            jogador.sendMessage("§cUso: §f/skills prestigio <skill> §7(" + nomesDasSkills() + ")");
+            return;
+        }
+        PlayerSkillData dados = plugin.getSkillDataManager().get(jogador.getUniqueId());
+        int nivelMaximo = plugin.getXpManager().getFormula().getNivelMaximo();
+        int prestigioMaximo = plugin.getConfig().getInt("prestigio.maximo", 5);
+        int prestigio = dados.getPrestigio(skill);
+        double porPrestigio = plugin.getConfig().getDouble("prestigio.bonus-por-prestigio", 0.10);
+
+        if (prestigio >= prestigioMaximo) {
+            jogador.sendMessage("§c" + skill.getNomeExibicao() + " já está no prestígio máximo (" + prestigioMaximo + ").");
+            return;
+        }
+        if (dados.getNivel(skill) < nivelMaximo) {
+            jogador.sendMessage("§cO prestígio só libera no nível " + nivelMaximo + ". §7" + skill.getNomeExibicao()
+                    + " está no nível " + dados.getNivel(skill) + ".");
+            return;
+        }
+        if (args.length < 3 || !args[2].equalsIgnoreCase("confirmar")) {
+            jogador.sendMessage("§d§l✦ Prestígio " + (prestigio + 1) + " em " + skill.getNomeExibicao());
+            jogador.sendMessage("§7A skill volta pro §fnível 1§7, e tudo o que ela dá fica §f+"
+                    + String.format(Locale.forLanguageTag("pt-BR"), "%.0f", (prestigio + 1) * porPrestigio * 100)
+                    + "%§7 mais forte pra sempre (contando os prestígios que você já tem).");
+            jogador.sendMessage("§7Pra confirmar: §f/skills prestigio " + skill.getChaveConfig() + " confirmar");
+            return;
+        }
+
+        dados.setPrestigio(skill, prestigio + 1);
+        dados.setNivel(skill, 1);
+        dados.setXp(skill, 0);
+        plugin.getSkillDataManager().salvar(jogador.getUniqueId());
+        plugin.getPassiveSkillsTask().atualizarVelocidade(jogador);
+
+        Bukkit.broadcastMessage("§d§l✦ §f" + jogador.getName() + " §dchegou ao prestígio §f" + (prestigio + 1)
+                + " §dem §f" + skill.getNomeExibicao() + "§d!");
+        jogador.playSound(jogador.getLocation(), org.bukkit.Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1.2f);
+    }
+
     /** /skills top [skill]: top 10 de uma skill, ou da soma dos níveis de todas. */
     private void mostrarTop(CommandSender sender, String[] args) {
         Skill skill = null;
@@ -168,7 +219,8 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
         for (int i = 0; i < top.size(); i++) {
             RankingSkills.Posicao p = top.get(i);
             String cor = i < cores.length ? cores[i] : "§7";
-            sender.sendMessage(cor + (i + 1) + "º §f" + p.nome() + " §7- " + (skill == null ? "§f" + p.nivel() + " níveis" : "§fnível " + p.nivel()));
+            String prestigio = p.prestigio() > 0 ? "§d✦" + p.prestigio() + " " : "";
+            sender.sendMessage(cor + (i + 1) + "º §f" + p.nome() + " §7- " + prestigio + (skill == null ? "§f" + p.nivel() + " níveis" : "§fnível " + p.nivel()));
         }
         if (skill == null) sender.sendMessage("§7Por skill: §f/skills top <skill>");
     }
@@ -231,7 +283,8 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
                 double xpNecessario = plugin.getXpManager().getFormula().xpParaProximoNivel(nivel);
                 progresso = String.format(Locale.forLanguageTag("pt-BR"), "%.0f/%.0f XP", xp, xpNecessario);
             }
-            jogador.sendMessage("§f" + skill.getNomeExibicao() + " §7- §fNível " + nivel + " §7(" + progresso + "§7)");
+            String prestigio = dados.getPrestigio(skill) > 0 ? " §d✦" + dados.getPrestigio(skill) : "";
+            jogador.sendMessage("§f" + skill.getNomeExibicao() + prestigio + " §7- §fNível " + nivel + " §7(" + progresso + "§7)");
         }
         jogador.sendMessage("§7Use §f/skills §7para abrir o menu visual.");
     }
@@ -243,10 +296,11 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             opcoes.add("ver");
             opcoes.add("top");
+            opcoes.add("prestigio");
             if (sender.hasPermission("skills.admin")) {
                 opcoes.add("admin");
             }
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("top")) {
+        } else if (args.length == 2 && (args[0].equalsIgnoreCase("top") || args[0].equalsIgnoreCase("prestigio"))) {
             for (Skill skill : Skill.values()) opcoes.add(skill.getChaveConfig());
         } else if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
             opcoes.add("setlevel");

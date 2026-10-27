@@ -32,6 +32,17 @@ public class BossDamageListener implements Listener {
         this.plugin = plugin;
     }
 
+    /** O boss elite bate mais forte: golpe, flechas da chuva, onda de choque e explosão (tudo vem do boss). */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void aoBossBater(EntityDamageByEntityEvent evento) {
+        if (!(evento.getEntity() instanceof Player)) return;
+        Entity causador = evento.getDamager();
+        if (causador instanceof Projectile projetil && projetil.getShooter() instanceof Entity atirador) causador = atirador;
+        if (causador != plugin.getBossManager().getBossAtivo()) return;
+        double multiplicador = plugin.getBossManager().multiplicadorDano();
+        if (multiplicador > 1) evento.setDamage(evento.getDamage() * multiplicador);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void aoCausarDano(EntityDamageByEntityEvent evento) {
         if (!(evento.getEntity() instanceof LivingEntity boss)) return;

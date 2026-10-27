@@ -13,16 +13,24 @@ import com.example.skills.manager.RankingSkills;
 import com.example.skills.manager.AtordoamentoManager;
 import com.example.skills.manager.BonusCalculator;
 import com.example.skills.manager.CombatTagManager;
+import com.example.skills.manager.ParryManager;
 import com.example.skills.manager.PassiveSkillsTask;
 import com.example.skills.manager.RewardManager;
 import com.example.skills.manager.SangramentoManager;
 import com.example.skills.manager.SkillDataManager;
 import com.example.skills.manager.XpManager;
+import com.example.skills.skill.PlayerSkillData;
 import com.example.skills.skill.Skill;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Locale;
+import java.util.UUID;
 
 public class SkillsPlugin extends JavaPlugin {
 
@@ -38,6 +46,7 @@ public class SkillsPlugin extends JavaPlugin {
     private AdagaUtil adagaUtil;
     private SangramentoManager sangramentoManager;
     private AtordoamentoManager atordoamentoManager;
+    private ParryManager parryManager;
     private EventoXp eventoXp;
     private RankingSkills rankingSkills;
 
@@ -61,6 +70,7 @@ public class SkillsPlugin extends JavaPlugin {
         this.adagaUtil = new AdagaUtil(this);
         this.sangramentoManager = new SangramentoManager(this);
         this.atordoamentoManager = new AtordoamentoManager(this);
+        this.parryManager = new ParryManager(this);
         this.eventoXp = new EventoXp(this);
         this.rankingSkills = new RankingSkills(this);
 
@@ -137,6 +147,58 @@ public class SkillsPlugin extends JavaPlugin {
         return economy != null;
     }
 
+    /** A skill de arma que um golpe com esse item treina, ou null (item que não é arma). */
+    public Skill skillDoItem(ItemStack item) {
+        // A Adaga é uma espada marcada — treina Crítico em vez de Espadas
+        if (adagaUtil.ehAdaga(item)) return Skill.CRITICO;
+        Material tipo = item == null ? Material.AIR : item.getType();
+        String nome = tipo.name();
+        if (tipo == Material.TRIDENT) return Skill.TRIDENTE;
+        if (tipo == Material.MACE) return Skill.MARRETEIRO;
+        if (nome.endsWith("_SWORD")) return Skill.ESPADAS;
+        if (nome.endsWith("_AXE")) return Skill.MACHADO;
+        if (nome.endsWith("_SPEAR")) return Skill.LANCEIRO;
+        if (tipo == Material.BOW || tipo == Material.CROSSBOW) return Skill.ARQUEIRO;
+        if (tipo == Material.AIR) return Skill.PORRADEIRO;
+        if (tipo == Material.SHIELD) return Skill.BLOQUEIO;
+        return null;
+    }
+
+    /**
+     * A skill "em uso", pro PlacarPlugin: a da arma do último golpe no último minuto ou, sem
+     * nenhum, a da arma na mão. Mão vazia sem luta recente não mostra nada (senão seria sempre Porradeiro).
+     */
+    private Skill skillEmUso(Player jogador) {
+        Skill recente = xpManager.ultimaSkill(jogador.getUniqueId(), 60);
+        if (recente != null) return recente;
+        if (jogador.getInventory().getItemInMainHand().getType() == Material.AIR) return null;
+        return skillDoItem(jogador.getInventory().getItemInMainHand());
+    }
+
+    /** PlacarPlugin ({skill}): "Espadas ✦2 nv 23", ou null sem skill em uso. */
+    public String textoSkillEmUso(UUID jogadorId) {
+        Player jogador = getServer().getPlayer(jogadorId);
+        Skill skill = jogador == null ? null : skillEmUso(jogador);
+        if (skill == null) return null;
+        PlayerSkillData dados = skillDataManager.get(jogadorId);
+        String prestigio = dados.getPrestigio(skill) > 0 ? " §d✦" + dados.getPrestigio(skill) : "";
+        return "§e" + skill.getNomeExibicao() + prestigio + " §7nv §f" + dados.getNivel(skill);
+    }
+
+    /** PlacarPlugin ({skill-progresso}): barra de 10 blocos até o próximo nível, com a %. */
+    public String progressoSkillEmUso(UUID jogadorId) {
+        Player jogador = getServer().getPlayer(jogadorId);
+        Skill skill = jogador == null ? null : skillEmUso(jogador);
+        if (skill == null) return null;
+        PlayerSkillData dados = skillDataManager.get(jogadorId);
+        int nivel = dados.getNivel(skill);
+        if (nivel >= xpManager.getFormula().getNivelMaximo()) return "§6✦ nível máximo";
+        double fracao = Math.max(0, Math.min(1, dados.getXp(skill) / xpManager.getFormula().xpParaProximoNivel(nivel)));
+        int cheios = (int) Math.floor(fracao * 10);
+        return "§b" + "■".repeat(cheios) + "§8" + "■".repeat(10 - cheios)
+                + String.format(Locale.forLanguageTag("pt-BR"), " §f%.0f%%", Math.floor(fracao * 100));
+    }
+
     public EventoXp getEventoXp() {
         return eventoXp;
     }
@@ -187,5 +249,9 @@ public class SkillsPlugin extends JavaPlugin {
 
     public AtordoamentoManager getAtordoamentoManager() {
         return atordoamentoManager;
+    }
+
+    public ParryManager getParryManager() {
+        return parryManager;
     }
 }

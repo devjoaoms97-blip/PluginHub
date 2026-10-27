@@ -34,6 +34,7 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -46,6 +47,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,6 +62,12 @@ import java.util.UUID;
  * (raio em volta da arena, sem comandos nem teleporte).
  * <p>
  * Cada área é um mundo inteiro ou uma caixa nele ({@code areas} no config).
+ * <p>
+ * Nas áreas de {@code teleporte-por-comando.areas} (as arenas), os comandos de teleporte entre
+ * jogadores e de casa ({@code /tpa}, {@code /tpaccept}, {@code /back}, {@code /home}, {@code /sethome}...)
+ * não funcionam lá dentro, e o teleporte que um deles acabou de pedir não leva ninguém pra lá
+ * (um {@code /back} pro lugar em que morreu na arena, uma casa antiga marcada lá). /spawn e /warp
+ * (a plateia) continuam valendo.
  */
 public class AreasPlugin extends JavaPlugin implements Listener {
 
@@ -75,6 +83,8 @@ public class AreasPlugin extends JavaPlugin implements Listener {
 
     private final List<Area> areas = new ArrayList<>();
     private final Map<UUID, Long> ultimoAviso = new HashMap<>();
+    /** Quando cada jogador usou por último um comando de teleporte da lista (o teleporte vem logo depois). */
+    private final Map<UUID, Long> comandoDeTeleporte = new HashMap<>();
     /** RankupPlugin.getMinaManager() e MinaManager.getMinaEm(Location), achados por reflexão. */
     private Method getMinaManager, getMinaEm;
     private boolean avisouFalhaRankup;
@@ -206,6 +216,49 @@ public class AreasPlugin extends JavaPlugin implements Listener {
         if (evento.getCause() != org.bukkit.event.entity.EntityDamageEvent.DamageCause.FALL || !(evento.getEntity() instanceof Player p)) return;
         if (p.getAllowFlight() && bloqueia("voo") && areaEm(p.getLocation()) != null && !p.hasPermission("areas.ignorar")) {
             evento.setCancelled(true);
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // Teleporte por comando (/tpa, /back, /home...) nas arenas
+    // ---------------------------------------------------------------------
+
+    /** Área sem teleporte por comando em que o lugar está, ou null. */
+    private Area semTeleporte(Location l) {
+        Area a = areaEm(l);
+        return a != null && getConfig().getStringList("teleporte-por-comando.areas").contains(a.nome()) ? a : null;
+    }
+
+    /** O comando (sem a barra e sem o "plugin:" na frente) é da lista de teleporte? */
+    private boolean comandoDeTeleporte(String mensagem) {
+        String rotulo = mensagem.substring(1).split(" ", 2)[0].toLowerCase(Locale.ROOT);
+        rotulo = rotulo.substring(rotulo.indexOf(':') + 1);
+        return getConfig().getStringList("teleporte-por-comando.comandos").contains(rotulo);
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoUsarComando(PlayerCommandPreprocessEvent evento) {
+        if (!comandoDeTeleporte(evento.getMessage())) return;
+        Player p = evento.getPlayer();
+        if (p.hasPermission("areas.ignorar")) return;
+        if (semTeleporte(p.getLocation()) != null) {
+            evento.setCancelled(true);
+            avisar(p, "usar esse comando de teleporte");
+            return;
+        }
+        comandoDeTeleporte.put(p.getUniqueId(), System.currentTimeMillis());
+    }
+
+    /** O teleporte que um comando da lista pediu (até 10 s antes: o /back e o /home esperam) não entra nas arenas. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void aoTeleportarPorComando(PlayerTeleportEvent evento) {
+        Player p = evento.getPlayer();
+        Long quando = comandoDeTeleporte.get(p.getUniqueId());
+        if (quando == null || System.currentTimeMillis() - quando > 10_000 || p.hasPermission("areas.ignorar")) return;
+        if (semTeleporte(evento.getTo()) != null) {
+            evento.setCancelled(true);
+            comandoDeTeleporte.remove(p.getUniqueId());
+            avisar(p, "chegar por teleporte de comando: entre pelo /warp");
         }
     }
 

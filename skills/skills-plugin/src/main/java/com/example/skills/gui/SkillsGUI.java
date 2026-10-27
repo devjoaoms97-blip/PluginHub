@@ -45,7 +45,9 @@ public class SkillsGUI {
         double xpAtual = dados.getXp(skill);
         boolean maximo = nivel >= nivelMaximo;
 
-        meta.setDisplayName("§e§l" + skill.getNomeExibicao() + " §7- §fNível " + nivel + (maximo ? " §6(MÁXIMO)" : ""));
+        int prestigio = dados.getPrestigio(skill);
+        String marca = prestigio > 0 ? " §d✦" + prestigio : "";
+        meta.setDisplayName("§e§l" + skill.getNomeExibicao() + marca + " §7- §fNível " + nivel + (maximo ? " §6(MÁXIMO)" : ""));
 
         List<String> lore = new ArrayList<>();
         lore.add("§7" + skill.getDescricaoXp());
@@ -59,6 +61,13 @@ public class SkillsGUI {
         } else {
             lore.add(barraDeProgresso(1.0));
             lore.add("§6Nível máximo atingido!");
+            if (prestigio < plugin.getConfig().getInt("prestigio.maximo", 5)) {
+                lore.add("§dPrestígio liberado: §f/skills prestigio " + skill.getChaveConfig());
+            }
+        }
+        if (prestigio > 0) {
+            lore.add("§dPrestígio " + prestigio + ": §f+" + String.format(Locale.forLanguageTag("pt-BR"), "%.0f",
+                    prestigio * plugin.getConfig().getDouble("prestigio.bonus-por-prestigio", 0.10) * 100) + "% §7em tudo o que a skill dá");
         }
 
         lore.add("");

@@ -13,6 +13,9 @@ public class ChequePlugin extends JavaPlugin {
     private NamespacedKey chequeValueKey;
     private NamespacedKey chequeIdKey;
     private NamespacedKey chequeNominalKey;
+    private NamespacedKey chequeEmissorKey;
+    private NamespacedKey folhaKey;
+    private Banco banco;
     private ChequeLog chequeLog;
 
     @Override
@@ -20,6 +23,8 @@ public class ChequePlugin extends JavaPlugin {
         this.chequeValueKey = new NamespacedKey(this, "cheque_valor");
         this.chequeIdKey = new NamespacedKey(this, "cheque_id");
         this.chequeNominalKey = new NamespacedKey(this, "cheque_nominal");
+        this.chequeEmissorKey = new NamespacedKey(this, "cheque_emissor");
+        this.folhaKey = new NamespacedKey(this, "folha");
         saveDefaultConfig();
         this.chequeLog = new ChequeLog(this);
 
@@ -31,7 +36,9 @@ public class ChequePlugin extends JavaPlugin {
         }
 
         getCommand("cheque").setExecutor(new ChequeCommand(this));
+        this.banco = new Banco(this);
         getServer().getPluginManager().registerEvents(new ChequeListener(this), this);
+        getServer().getPluginManager().registerEvents(banco, this);
 
         getLogger().info("ChequePlugin ativado!");
     }
@@ -63,6 +70,23 @@ public class ChequePlugin extends JavaPlugin {
 
     public NamespacedKey getChequeNominalKey() {
         return chequeNominalKey;
+    }
+
+    public NamespacedKey getChequeEmissorKey() {
+        return chequeEmissorKey;
+    }
+
+    public NamespacedKey getFolhaKey() {
+        return folhaKey;
+    }
+
+    public Banco getBanco() {
+        return banco;
+    }
+
+    /** API pública (OficinasPlugin, NPC Bancário, por reflexão): abre o balcão do banco. */
+    public void abrirBanco(org.bukkit.entity.Player jogador) {
+        banco.abrir(jogador);
     }
 
     public ChequeLog getChequeLog() {

@@ -177,7 +177,7 @@ public class AgendamentoManager {
         econ.depositPlayer(recebedor, a.valor - taxa);
         plugin.getChargeManager().registrarTransacao(a.pagador, a.recebedor, a.valor, "Pix agendado" + (a.motivo != null ? ": " + a.motivo : ""), taxa);
         limites.registrarEnvio(a.pagador, a.valor);
-        plugin.conferirSuspeito(a.nomePagador, a.nomeRecebedor, a.valor, "Pix agendado");
+        plugin.conferirSuspeito(a.pagador, a.nomePagador, a.recebedor, a.nomeRecebedor, a.valor, "Pix agendado");
         a.falhas = 0;
         a.proximo = Math.max(a.proximo, System.currentTimeMillis() - DIA) + (long) a.dias * DIA;
         avisar(online, "§aPix agendado #" + a.id + ": você pagou §f" + valor(a.valor) + " §apara §f" + a.nomeRecebedor

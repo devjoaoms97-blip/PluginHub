@@ -33,7 +33,7 @@ import java.util.UUID;
 
 /**
  * Scoreboard lateral ("telinha" no canto da tela) com saldo, rank e progresso até o próximo,
- * clã, missões do dia, próximo boss e jogadores online. As linhas vêm do config com
+ * clã, missões do dia, skill em uso, próximo boss e jogadores online. As linhas vêm do config com
  * placeholders; cada informação é lida dos outros plugins por reflexão (sem o plugin, a linha
  * mostra "—"). /placar liga e desliga pra quem quiser a tela limpa.
  */
@@ -198,6 +198,12 @@ public class PlacarPlugin extends JavaPlugin implements Listener {
             Object r = chamar("MissoesPlugin", "missoesDoDia", id);
             linha = linha.replace("{missoes}", r instanceof int[] m && m.length == 2
                     ? (m[0] >= m[1] && m[1] > 0 ? "&a" : "&f") + m[0] + "/" + m[1] + (m[0] >= m[1] && m[1] > 0 ? " ✔" : "") : "—");
+        }
+        if (linha.contains("{skill}")) {
+            linha = linha.replace("{skill}", texto(chamar("SkillsPlugin", "textoSkillEmUso", id), getConfig().getString("textos.sem-skill", "&7—")));
+        }
+        if (linha.contains("{skill-progresso}")) {
+            linha = linha.replace("{skill-progresso}", texto(chamar("SkillsPlugin", "progressoSkillEmUso", id), ""));
         }
         if (linha.contains("{boss}")) {
             Object b = chamarSemArgumento("BossPlugin", "textoProximoBoss");

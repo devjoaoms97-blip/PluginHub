@@ -56,6 +56,10 @@ recompensas:
 - O dinheiro vem do servidor, então entra dinheiro novo na economia. Sem o Vault, só o dinheiro fica de fora.
 - O XP é dividido entre as skills das armas que o jogador usou, na proporção do dano de cada uma. Só ganha quem está online quando o boss morre.
 
+## Boss elite
+
+A cada boss aleatório (agenda ou `/boss start` sem id), há `elite.chance` (10%) de ele vir **elite**: `elite.multiplicador-vida` (2×) de vida, `elite.multiplicador-dano` (2×) em tudo o que ele causa (golpe, flechas da chuva, onda de choque e explosão), brilho, o prefixo `elite.prefixo-nome` no nome, barra roxa e anúncio próprio (`elite.mensagem-spawn`, também no Discord). As coins do ranking e do campeão e o XP de skill por participar saem multiplicados por `elite.multiplicador-recompensas` (2×), e o loot do chão é sorteado `elite.rolagens-loot` (2) vezes. A staff força com `/boss start [id] elite`.
+
 ## Arena pronta
 
 A arena do boss pode ser construída pelo EstruturasPlugin: `/estrutura construir toxica`. Quando termina, ele já roda o `/boss setlocal` no centro dela.
@@ -165,5 +169,4 @@ O `.jar` sai em `target/BossPlugin.jar`.
 
 ## Ideias para expandir
 
-- Boss "elite" com raridade maior de vez em quando (dobro de vida/dano, loot melhor)
 - Integração com o Pix/economia: recompensa em dinheiro além do item

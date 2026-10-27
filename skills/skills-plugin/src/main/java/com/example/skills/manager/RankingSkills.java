@@ -1,7 +1,6 @@
 package com.example.skills.manager;
 
 import com.example.skills.SkillsPlugin;
-import com.example.skills.skill.PlayerSkillData;
 import com.example.skills.skill.Skill;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,12 +16,12 @@ import java.util.UUID;
 /**
  * Ranking global das skills (/skills top): lê os dados de todo mundo (o playerdata de cada um, e o
  * cache pra quem está online, que tem o valor mais novo) e ordena por nível e depois por XP. Sem
- * skill, ordena pela soma dos níveis. O resultado fica guardado por um minuto pra não ler o disco a
+ * skill, ordena pela soma dos níveis. O prestígio vem antes do nível (sem skill, a soma dos prestígios). O resultado fica guardado por um minuto pra não ler o disco a
  * cada comando.
  */
 public class RankingSkills {
 
-    public record Posicao(UUID jogador, String nome, int nivel, double xp) {}
+    public record Posicao(UUID jogador, String nome, int prestigio, int nivel, double xp) {}
 
     private static final long VALIDADE_MS = 60_000;
 
@@ -57,33 +56,30 @@ public class RankingSkills {
             } catch (IllegalArgumentException e) {
                 continue;
             }
-            int nivel;
+            Skill[] skills = skill == null ? Skill.values() : new Skill[]{skill};
+            int prestigio = 0;
+            int nivel = 0;
             double xp;
             if (Bukkit.getPlayer(id) != null) {
                 var dados = plugin.getSkillDataManager().get(id);
-                nivel = skill == null ? soma(dados) : dados.getNivel(skill);
+                for (Skill s : skills) {
+                    prestigio += dados.getPrestigio(s);
+                    nivel += dados.getNivel(s);
+                }
                 xp = skill == null ? 0 : dados.getXp(skill);
             } else {
                 YamlConfiguration yaml = YamlConfiguration.loadConfiguration(arquivo);
-                if (skill == null) {
-                    nivel = 0;
-                    for (Skill s : Skill.values()) nivel += yaml.getInt(s.getChaveConfig() + ".nivel", 1);
-                    xp = 0;
-                } else {
-                    nivel = yaml.getInt(skill.getChaveConfig() + ".nivel", 1);
-                    xp = yaml.getDouble(skill.getChaveConfig() + ".xp", 0);
+                for (Skill s : skills) {
+                    prestigio += yaml.getInt(s.getChaveConfig() + ".prestigio", 0);
+                    nivel += yaml.getInt(s.getChaveConfig() + ".nivel", 1);
                 }
+                xp = skill == null ? 0 : yaml.getDouble(skill.getChaveConfig() + ".xp", 0);
             }
             String nome = Bukkit.getOfflinePlayer(id).getName();
-            lista.add(new Posicao(id, nome != null ? nome : id.toString().substring(0, 8), nivel, xp));
+            lista.add(new Posicao(id, nome != null ? nome : id.toString().substring(0, 8), prestigio, nivel, xp));
         }
-        lista.sort(Comparator.comparingInt(Posicao::nivel).thenComparingDouble(Posicao::xp).reversed());
+        lista.sort(Comparator.comparingInt(Posicao::prestigio).thenComparingInt(Posicao::nivel)
+                .thenComparingDouble(Posicao::xp).reversed());
         return lista;
-    }
-
-    private int soma(PlayerSkillData dados) {
-        int total = 0;
-        for (Skill s : Skill.values()) total += dados.getNivel(s);
-        return total;
     }
 }

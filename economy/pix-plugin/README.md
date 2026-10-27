@@ -33,9 +33,15 @@ Quem recebe um Pix (pagamento, cobrança aceita ou agendado) ganha um título na
 
 O extrato mostra a taxa de cada transação: quem pagou vê o valor cheio, e quem recebeu vê o que entrou de fato, os dois com `[taxa R$ x]`. A staff vê o extrato de qualquer um com `/pix admin log <jogador|chave> [qtd]` (permissão `pix.admin`).
 
-### Alerta de Pix alto no Discord
+### Alerta de Pix suspeito
 
-Pix a partir de `discord.pix-suspeito-valor` (padrão R$ 100.000; 0 desliga) vai pra categoria `pix` do DiscordPlugin, pra staff conferir conta roubada ou lavagem entre contas. Vale pro pagamento, a cobrança aceita e o agendado.
+Depois de cada Pix entre jogadores (pagamento, cobrança aceita e agendado), a staff é avisada quando:
+
+- **Pix alto:** o valor é de `discord.pix-suspeito-valor` pra cima (padrão R$ 100.000; 0 desliga);
+- **Perto do limite:** o envio deixou o pagador com `alertas.perto-do-limite-percentual` (90%) do limite diário ou mais. É o jeito de esvaziar uma conta roubada sem bater no limite. Só vale com `limite.diario` ligado, e quem tem `pix.limite.ignorar` fica de fora;
+- **Conta nova recebendo de várias:** uma conta que entrou pela primeira vez há menos de `alertas.conta-nova-horas` (48 h) recebeu de `alertas.remetentes-distintos` (3) contas diferentes nas últimas 24 h. É o padrão de contas fantasma juntando dinheiro numa só.
+
+O alerta aparece no chat de quem tem `pix.alertas` (padrão: op), vai pra categoria `pix` do DiscordPlugin e fica em `plugins/PixPlugin/alertas.log`. O mesmo alerta sobre o mesmo jogador não repete por 10 minutos. Quem recebeu de quem fica só na memória: um reinício zera a contagem das 24 h.
 
 ## Taxa de transação (sinkhole)
 

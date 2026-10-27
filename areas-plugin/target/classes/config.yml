@@ -25,5 +25,14 @@ bloquear:
   fruta-do-coro: true
   carga-de-vento: true
 
+# Nas áreas listadas, os comandos abaixo não funcionam lá dentro, e o teleporte que um deles acabou
+# de pedir (até 10 s) não leva ninguém pra lá: /tpa de fora pra quem está dentro (o /tpaccept lá
+# dentro é barrado), /back pro lugar em que morreu na arena, casa antiga marcada lá. /spawn e /warp
+# (a plateia) continuam. Os nomes são sem a barra, sem o "essentials:" e com os apelidos.
+teleporte-por-comando:
+  areas: [arenas]
+  comandos: [tpa, tpahere, tpaall, tpaccept, tpyes, tpdeny, tpno, tpacancel, tpauto, tpo, tpohere, tphere, call,
+             back, return, home, homes, sethome, createhome, delhome, remhome, rmhome]
+
 # %coisa% vira o que foi barrado ("voar", "usar pérola do fim"...).
 mensagem: "&cAqui não dá pra %coisa%: saia pelos portões."

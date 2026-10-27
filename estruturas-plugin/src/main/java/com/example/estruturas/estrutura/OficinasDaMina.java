@@ -26,6 +26,11 @@ import static com.example.estruturas.estrutura.Planta.lanterna;
  *   <li>oeste, x -18..-10: <b>Bruxa</b> (carvalho escuro, vitral roxo, caldeirão, velas, ametista);</li>
  *   <li>oeste, x -29..-21: <b>Sábio</b> (estantes, lápis, quartzo, livros e frascos de XP).</li>
  * </ul>
+ * E duas no fundo da avenida, encostadas na muralha norte:
+ * <ul>
+ *   <li>leste, x 10..18: <b>Cambista</b> (purpur, ametista, vitral roxo, baús de tesouro);</li>
+ *   <li>oeste, x -18..-10: <b>Compactador</b> (aço: ferro, pistões, bigorna e blocos de minério).</li>
+ * </ul>
  * Embaixo da barraca da bruxa fica a câmara fechada com a mesa de encantamento e as estantes (o
  * poder máximo, 30), que o NPC abre de longe.
  *
@@ -36,11 +41,16 @@ public class OficinasDaMina implements Estrutura {
 
     private static final int ORIGEM_Z = -21;
 
-    // Cada barraca: fundo encostado na muralha (z -24), NPC em z -25, balcão em z -26, toldo até z -27.
-    private static final int Z_FUNDO = -24;
-    private static final int Z_NPC = -25;
-    private static final int Z_BALCAO = -26;
-    private static final int Z_TOLDO = -27;
+    // Cada barraca: fundo encostado na muralha, NPC 1 bloco à frente, balcão a 2 e toldo a 3. Na
+    // muralha sul (as 4 da entrada) o fundo é z -24 e a frente é o norte; na muralha norte (as 2 do
+    // fundo da avenida), o fundo é z -182 e a frente é o sul. ladoSul() e ladoNorte() trocam.
+    private static final int Z_SUL_FUNDO = -24;
+    private static final int Z_NORTE_FUNDO = -182;
+    private int zFundo;
+    private int zNpc;
+    private int zBalcao;
+    private int zToldo;
+    private BlockFace frente;
 
     /** Mesa da bruxa: centro da câmara (x, y relativo, z). */
     public static final int[] MESA = {-14, -3, -25};
@@ -63,11 +73,39 @@ public class OficinasDaMina implements Estrutura {
     @Override
     public void gerar(Planta planta) {
         this.p = planta;
+        ladoSul();
         ferreiro(10, 18);
         picareteiro(21, 29);
         bruxa(-18, -10);
         sabio(-29, -21);
         camaraDaBruxa();
+        ladoNorte();
+        cambista(10, 18);
+        compactador(-18, -10);
+    }
+
+    private void ladoSul() {
+        zFundo = Z_SUL_FUNDO;
+        zNpc = zFundo - 1;
+        zBalcao = zFundo - 2;
+        zToldo = zFundo - 3;
+        frente = BlockFace.NORTH;
+    }
+
+    private void ladoNorte() {
+        zFundo = Z_NORTE_FUNDO;
+        zNpc = zFundo + 1;
+        zBalcao = zFundo + 2;
+        zToldo = zFundo + 3;
+        frente = BlockFace.SOUTH;
+    }
+
+    /** z de a até b, nos dois sentidos (a barraca do norte anda pro outro lado). */
+    private static int[] faixa(int a, int b) {
+        int min = Math.min(a, b), max = Math.max(a, b);
+        int[] zs = new int[max - min + 1];
+        for (int i = 0; i < zs.length; i++) zs[i] = min + i;
+        return zs;
     }
 
     private void set(int x, int y, int z, BlockData dados) {
@@ -84,31 +122,31 @@ public class OficinasDaMina implements Estrutura {
     private int barraca(int a, int b, Tema t) {
         for (int x = a; x <= b; x++) {
             // limpa o espaço (a avenida tem canteiro e poste nessa faixa)
-            for (int z = Z_TOLDO; z <= Z_FUNDO; z++) {
+            for (int z : faixa(zToldo, zFundo)) {
                 for (int y = 1; y <= 7; y++) set(x, y, z, Material.AIR);
             }
-            for (int z = Z_BALCAO; z <= Z_FUNDO; z++) set(x, 0, z, t.piso());
-            for (int y = 1; y <= 4; y++) set(x, y, Z_FUNDO, t.parede());
+            for (int z : faixa(zBalcao, zFundo)) set(x, 0, z, t.piso());
+            for (int y = 1; y <= 4; y++) set(x, y, zFundo, t.parede());
             // teto (3 de fundo) e o toldo em escada por cima do passeio
-            for (int z = Z_BALCAO; z <= Z_FUNDO; z++) set(x, 5, z, t.teto());
-            set(x, 5, Z_TOLDO, escada(t.tetoEscada(), BlockFace.NORTH, false));
-            set(x, 6, Z_FUNDO, laje(slabDe(t.teto()), false));
+            for (int z : faixa(zBalcao, zFundo)) set(x, 5, z, t.teto());
+            set(x, 5, zToldo, escada(t.tetoEscada(), frente, false));
+            set(x, 6, zFundo, laje(slabDe(t.teto()), false));
         }
         for (int x : new int[]{a, b}) {
-            set(x, 1, Z_NPC, t.parede());
-            for (int y = 2; y <= 4; y++) set(x, y, Z_NPC, t.parede());
-            for (int y = 1; y <= 4; y++) set(x, y, Z_BALCAO, eixo(t.poste(), Axis.Y));
+            set(x, 1, zNpc, t.parede());
+            for (int y = 2; y <= 4; y++) set(x, y, zNpc, t.parede());
+            for (int y = 1; y <= 4; y++) set(x, y, zBalcao, eixo(t.poste(), Axis.Y));
         }
-        for (int x = a + 1; x <= b - 1; x++) set(x, 1, Z_BALCAO, t.balcao());
+        for (int x = a + 1; x <= b - 1; x++) set(x, 1, zBalcao, t.balcao());
         if (t.balcaoTopo() != null) {
-            for (int x = a + 1; x <= b - 1; x++) set(x, 2, Z_BALCAO, laje(t.balcaoTopo(), false));
+            for (int x = a + 1; x <= b - 1; x++) set(x, 2, zBalcao, laje(t.balcaoTopo(), false));
         }
         // abertura no meio do balcão pra ver o NPC de corpo inteiro: só a laje some
         int meio = (a + b) / 2;
-        set(meio, 2, Z_BALCAO, Material.AIR);
+        set(meio, 2, zBalcao, Material.AIR);
         // luz pendurada no teto
-        set(a + 1, 4, Z_NPC, lanterna(Material.LANTERN, true));
-        set(b - 1, 4, Z_NPC, lanterna(Material.LANTERN, true));
+        set(a + 1, 4, zNpc, lanterna(Material.LANTERN, true));
+        set(b - 1, 4, zNpc, lanterna(Material.LANTERN, true));
         return meio;
     }
 
@@ -126,24 +164,24 @@ public class OficinasDaMina implements Estrutura {
                 Material.POLISHED_BLACKSTONE_SLAB);
         int m = barraca(a, b, t);
         // fundo: alto-forno aceso e grade de ferro de janela
-        set(a + 1, 1, Z_FUNDO, aceso(direcional(Material.BLAST_FURNACE, BlockFace.SOUTH)));
-        set(a + 2, 1, Z_FUNDO, aceso(direcional(Material.FURNACE, BlockFace.SOUTH)));
+        set(a + 1, 1, zFundo, aceso(direcional(Material.BLAST_FURNACE, BlockFace.SOUTH)));
+        set(a + 2, 1, zFundo, aceso(direcional(Material.FURNACE, BlockFace.SOUTH)));
         // janela de grade atrás do NPC (os quadros ficam em m ± 2, no tijolo)
-        set(m - 1, 3, Z_FUNDO, Material.IRON_BARS);
-        set(m + 1, 3, Z_FUNDO, Material.IRON_BARS);
+        set(m - 1, 3, zFundo, Material.IRON_BARS);
+        set(m + 1, 3, zFundo, Material.IRON_BARS);
         // dentro: bigorna, rebolo e caldeirão de lava
-        set(a + 1, 1, Z_NPC, direcional(Material.ANVIL, BlockFace.EAST));
-        set(a + 2, 1, Z_NPC, Material.SMITHING_TABLE);
-        set(b - 1, 1, Z_NPC, Material.LAVA_CAULDRON);
-        set(b - 2, 1, Z_NPC, direcional(Material.GRINDSTONE, BlockFace.NORTH));
+        set(a + 1, 1, zNpc, direcional(Material.ANVIL, BlockFace.EAST));
+        set(a + 2, 1, zNpc, Material.SMITHING_TABLE);
+        set(b - 1, 1, zNpc, Material.LAVA_CAULDRON);
+        set(b - 2, 1, zNpc, direcional(Material.GRINDSTONE, BlockFace.NORTH));
         // correntes penduradas nos cantos
-        set(a + 1, 3, Z_NPC, eixo(Material.IRON_CHAIN, Axis.Y));
-        set(b - 1, 3, Z_NPC, eixo(Material.IRON_CHAIN, Axis.Y));
+        set(a + 1, 3, zNpc, eixo(Material.IRON_CHAIN, Axis.Y));
+        set(b - 1, 3, zNpc, eixo(Material.IRON_CHAIN, Axis.Y));
         // no balcão: bigorna lascada
-        set(a + 2, 2, Z_BALCAO, direcional(Material.CHIPPED_ANVIL, BlockFace.EAST));
+        set(a + 2, 2, zBalcao, direcional(Material.CHIPPED_ANVIL, BlockFace.EAST));
         // chaminé com fumaça (fogueira lá em cima, longe de quem anda)
-        for (int y = 6; y <= 7; y++) set(b - 1, y, Z_FUNDO, Material.BRICKS);
-        set(b - 1, 8, Z_FUNDO, Material.CAMPFIRE);
+        for (int y = 6; y <= 7; y++) set(b - 1, y, zFundo, Material.BRICKS);
+        set(b - 1, 8, zFundo, Material.CAMPFIRE);
     }
 
     // ------------------------------------------------------------------ Picareteiro
@@ -155,15 +193,15 @@ public class OficinasDaMina implements Estrutura {
         // mostruário de minérios na parede do fundo
         Material[] minerios = {Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.REDSTONE_ORE,
                 Material.LAPIS_ORE, Material.DIAMOND_ORE, Material.EMERALD_ORE};
-        for (int i = 0; i < minerios.length && a + 1 + i <= b - 1; i++) set(a + 1 + i, 4, Z_FUNDO, minerios[i]);
+        for (int i = 0; i < minerios.length && a + 1 + i <= b - 1; i++) set(a + 1 + i, 4, zFundo, minerios[i]);
         // barris, baú e mesa de trabalho dos lados do NPC
-        set(a + 1, 1, Z_NPC, direcional(Material.BARREL, BlockFace.UP));
-        set(a + 1, 2, Z_NPC, direcional(Material.BARREL, BlockFace.UP));
-        set(a + 2, 1, Z_NPC, Material.CRAFTING_TABLE);
-        set(b - 1, 1, Z_NPC, direcional(Material.CHEST, BlockFace.SOUTH));
-        set(b - 2, 1, Z_NPC, Material.FLETCHING_TABLE);
-        set(a + 3, 2, Z_BALCAO, Material.TORCH);
-        set(b - 3, 2, Z_BALCAO, Material.TORCH);
+        set(a + 1, 1, zNpc, direcional(Material.BARREL, BlockFace.UP));
+        set(a + 1, 2, zNpc, direcional(Material.BARREL, BlockFace.UP));
+        set(a + 2, 1, zNpc, Material.CRAFTING_TABLE);
+        set(b - 1, 1, zNpc, direcional(Material.CHEST, BlockFace.SOUTH));
+        set(b - 2, 1, zNpc, Material.FLETCHING_TABLE);
+        set(a + 3, 2, zBalcao, Material.TORCH);
+        set(b - 3, 2, zBalcao, Material.TORCH);
     }
 
     // ------------------------------------------------------------------ Bruxa
@@ -174,24 +212,24 @@ public class OficinasDaMina implements Estrutura {
         int m = barraca(a, b, t);
         // estantes e vitral roxo no fundo
         for (int x = a + 1; x <= b - 1; x++) {
-            set(x, 1, Z_FUNDO, Material.BOOKSHELF);
-            set(x, 3, Z_FUNDO, Math.abs(x - m) <= 1 ? Material.PURPLE_STAINED_GLASS : Material.BOOKSHELF);
+            set(x, 1, zFundo, Material.BOOKSHELF);
+            set(x, 3, zFundo, Math.abs(x - m) <= 1 ? Material.PURPLE_STAINED_GLASS : Material.BOOKSHELF);
         }
         // caldeirão, suporte de poções e cogumelos
-        set(a + 1, 1, Z_NPC, Material.WATER_CAULDRON);
-        set(a + 2, 1, Z_NPC, Material.BREWING_STAND);
-        set(b - 1, 1, Z_NPC, Material.POTTED_CRIMSON_FUNGUS);
-        set(b - 2, 1, Z_NPC, Material.AMETHYST_BLOCK);
-        set(b - 2, 2, Z_NPC, direcional(Material.AMETHYST_CLUSTER, BlockFace.UP));
+        set(a + 1, 1, zNpc, Material.WATER_CAULDRON);
+        set(a + 2, 1, zNpc, Material.BREWING_STAND);
+        set(b - 1, 1, zNpc, Material.POTTED_CRIMSON_FUNGUS);
+        set(b - 2, 1, zNpc, Material.AMETHYST_BLOCK);
+        set(b - 2, 2, zNpc, direcional(Material.AMETHYST_CLUSTER, BlockFace.UP));
         // teia nos cantos do teto e velas roxas acesas no balcão
-        set(a + 1, 4, Z_FUNDO + 0, Material.BOOKSHELF);
-        set(b - 1, 3, Z_NPC, Material.COBWEB);
-        set(a + 2, 2, Z_BALCAO, vela(Material.PURPLE_CANDLE, 3));
-        set(b - 2, 2, Z_BALCAO, vela(Material.BLACK_CANDLE, 2));
-        set(m + 2, 2, Z_BALCAO, Material.SKELETON_SKULL);
+        set(a + 1, 4, zFundo + 0, Material.BOOKSHELF);
+        set(b - 1, 3, zNpc, Material.COBWEB);
+        set(a + 2, 2, zBalcao, vela(Material.PURPLE_CANDLE, 3));
+        set(b - 2, 2, zBalcao, vela(Material.BLACK_CANDLE, 2));
+        set(m + 2, 2, zBalcao, Material.SKELETON_SKULL);
         // o lugar da antiga lanterna vira lanterna de alma (luz azulada)
-        set(a + 1, 4, Z_NPC, lanterna(Material.SOUL_LANTERN, true));
-        set(b - 1, 4, Z_NPC, lanterna(Material.SOUL_LANTERN, true));
+        set(a + 1, 4, zNpc, lanterna(Material.SOUL_LANTERN, true));
+        set(b - 1, 4, zNpc, lanterna(Material.SOUL_LANTERN, true));
     }
 
     /**
@@ -222,20 +260,70 @@ public class OficinasDaMina implements Estrutura {
                 Material.LAPIS_BLOCK, Material.PRISMARINE_BRICK_STAIRS, Material.QUARTZ_BRICKS, Material.QUARTZ_SLAB);
         int m = barraca(a, b, t);
         for (int x = a + 1; x <= b - 1; x++) {
-            set(x, 1, Z_FUNDO, Material.BOOKSHELF);
-            set(x, 2, Z_FUNDO, Material.BOOKSHELF);
+            set(x, 1, zFundo, Material.BOOKSHELF);
+            set(x, 2, zFundo, Material.BOOKSHELF);
         }
-        set(m, 4, Z_FUNDO, Material.LAPIS_BLOCK);
-        set(a + 1, 1, Z_NPC, direcional(Material.LECTERN, BlockFace.SOUTH));
-        set(a + 2, 1, Z_NPC, Material.LAPIS_BLOCK);
-        set(a + 2, 2, Z_NPC, direcional(Material.END_ROD, BlockFace.UP));
-        set(b - 1, 1, Z_NPC, Material.POTTED_BLUE_ORCHID);
-        set(b - 2, 1, Z_NPC, Material.LAPIS_BLOCK);
-        set(b - 2, 2, Z_NPC, direcional(Material.AMETHYST_CLUSTER, BlockFace.UP));
-        set(a + 2, 2, Z_BALCAO, vela(Material.LIGHT_BLUE_CANDLE, 2));
-        set(b - 2, 2, Z_BALCAO, vela(Material.WHITE_CANDLE, 3));
+        set(m, 4, zFundo, Material.LAPIS_BLOCK);
+        set(a + 1, 1, zNpc, direcional(Material.LECTERN, BlockFace.SOUTH));
+        set(a + 2, 1, zNpc, Material.LAPIS_BLOCK);
+        set(a + 2, 2, zNpc, direcional(Material.END_ROD, BlockFace.UP));
+        set(b - 1, 1, zNpc, Material.POTTED_BLUE_ORCHID);
+        set(b - 2, 1, zNpc, Material.LAPIS_BLOCK);
+        set(b - 2, 2, zNpc, direcional(Material.AMETHYST_CLUSTER, BlockFace.UP));
+        set(a + 2, 2, zBalcao, vela(Material.LIGHT_BLUE_CANDLE, 2));
+        set(b - 2, 2, zBalcao, vela(Material.WHITE_CANDLE, 3));
         // o teto de lápis ganha a borda de quartzo
-        for (int x = a; x <= b; x++) set(x, 6, Z_FUNDO, laje(Material.QUARTZ_SLAB, false));
+        for (int x = a; x <= b; x++) set(x, 6, zFundo, laje(Material.QUARTZ_SLAB, false));
+    }
+
+    // ------------------------------------------------------------------ Cambista (fundo, leste)
+
+    private void cambista(int a, int b) {
+        Tema t = new Tema(Material.PURPUR_BLOCK, Material.PURPUR_PILLAR, Material.STRIPPED_CHERRY_LOG,
+                Material.PURPUR_BLOCK, Material.PURPUR_STAIRS, Material.CHERRY_PLANKS, Material.CHERRY_SLAB);
+        int m = barraca(a, b, t);
+        // fundo: vitral roxo atrás do NPC e ametista nas laterais
+        for (int x = a + 1; x <= b - 1; x++) {
+            set(x, 1, zFundo, Material.AMETHYST_BLOCK);
+            set(x, 3, zFundo, Math.abs(x - m) <= 1 ? Material.MAGENTA_STAINED_GLASS : Material.PURPUR_PILLAR);
+        }
+        // dentro: baús de tesouro, mesa de ferraria e cristais
+        set(a + 1, 1, zNpc, direcional(Material.CHEST, frente));
+        set(a + 2, 1, zNpc, Material.BUDDING_AMETHYST);
+        set(a + 2, 2, zNpc, direcional(Material.AMETHYST_CLUSTER, BlockFace.UP));
+        set(b - 1, 1, zNpc, direcional(Material.ENDER_CHEST, frente));
+        set(b - 2, 1, zNpc, Material.SMITHING_TABLE);
+        set(b - 1, 3, zNpc, eixo(Material.IRON_CHAIN, Axis.Y));
+        // no balcão: cristais e velas
+        set(a + 2, 2, zBalcao, direcional(Material.LARGE_AMETHYST_BUD, BlockFace.UP));
+        set(b - 2, 2, zBalcao, vela(Material.MAGENTA_CANDLE, 3));
+        set(m + 2, 2, zBalcao, vela(Material.PURPLE_CANDLE, 2));
+        set(a + 1, 4, zNpc, lanterna(Material.SOUL_LANTERN, true));
+        set(b - 1, 4, zNpc, lanterna(Material.SOUL_LANTERN, true));
+        for (int x = a; x <= b; x++) set(x, 6, zFundo, laje(Material.PURPUR_SLAB, false));
+    }
+
+    // ------------------------------------------------------------------ Compactador (fundo, oeste)
+
+    private void compactador(int a, int b) {
+        Tema t = new Tema(Material.POLISHED_TUFF, Material.TUFF_BRICKS, Material.STRIPPED_SPRUCE_LOG,
+                Material.IRON_BLOCK, Material.TUFF_BRICK_STAIRS, Material.WAXED_CUT_COPPER, Material.WAXED_CUT_COPPER_SLAB);
+        int m = barraca(a, b, t);
+        // fundo: os blocos de minério que ele faz, em fila
+        Material[] blocos = {Material.COAL_BLOCK, Material.IRON_BLOCK, Material.COPPER_BLOCK, Material.GOLD_BLOCK,
+                Material.REDSTONE_BLOCK, Material.LAPIS_BLOCK, Material.DIAMOND_BLOCK};
+        for (int i = 0; i < blocos.length && a + 1 + i <= b - 1; i++) set(a + 1 + i, 4, zFundo, blocos[i]);
+        set(m, 3, zFundo, Material.IRON_BARS);
+        // a "prensa": pistão virado pra baixo em cima de uma bigorna, e o funil que recebe
+        set(a + 1, 1, zNpc, direcional(Material.ANVIL, BlockFace.EAST));
+        set(a + 1, 3, zNpc, direcional(Material.PISTON, BlockFace.DOWN));
+        set(a + 2, 1, zNpc, direcional(Material.HOPPER, BlockFace.DOWN));
+        set(b - 1, 1, zNpc, direcional(Material.BARREL, BlockFace.UP));
+        set(b - 2, 1, zNpc, Material.CRAFTER);
+        set(b - 1, 3, zNpc, eixo(Material.IRON_CHAIN, Axis.Y));
+        // no balcão: lingotes empilhados (pressure plate de ferro e de ouro)
+        set(a + 2, 2, zBalcao, Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+        set(b - 2, 2, zBalcao, Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
     }
 
     // ------------------------------------------------------------------ utilidades
@@ -275,6 +363,9 @@ public class OficinasDaMina implements Estrutura {
         c.add("oficina criar picareteiro picareteiro " + mundo + " 25.5 " + yPe + " -24.5 180");
         c.add("oficina criar bruxa bruxa " + mundo + " -13.5 " + yPe + " -24.5 180");
         c.add("oficina criar sabio sabio " + mundo + " -24.5 " + yPe + " -24.5 180");
+        // as duas do fundo da avenida: yaw 0, olhando pro sul (pra avenida)
+        c.add("oficina criar cambista cambista " + mundo + " 14.5 " + yPe + " -180.5 0");
+        c.add("oficina criar compactador compactador " + mundo + " -13.5 " + yPe + " -180.5 0");
         c.add("oficina mesa " + mundo + " " + MESA[0] + " " + (oy + MESA[1]) + " " + MESA[2]);
 
         String em = "execute in minecraft:" + mundo + " run ";

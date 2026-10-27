@@ -6,7 +6,7 @@ pacote-plugin/src/main/resources/pacote.zip, de onde o PacotePlugin serve pros j
     python tools/pacote/gerar.py --previa   # e uma prévia ampliada das texturas (previa.png, aqui do lado)
 
 Tudo fica no namespace "servidor":
-- itens (produtos das máquinas e a célula de combustível): assets/servidor/items/<id>.json -> modelo
+- itens (produtos das máquinas, a célula de combustível e o fragmento arcano): assets/servidor/items/<id>.json -> modelo
   item/generated com a textura 16x16 de texturas.py;
 - máquinas: bloco "orientable" (frente, lado e topo); o mesmo modelo serve pro item na mão e pro
   item display que desenha a máquina colocada no terreno.

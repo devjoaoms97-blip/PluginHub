@@ -8,7 +8,7 @@ const http = require('http')
 
 const PASTA = process.env.MC_TESTE || 'C:/mc-teste'
 const CONFIG = `${PASTA}/plugins/DiscordPlugin/config.yml`
-const PORTA = 8765
+const PORTA = 8775 // a 8765 é do PacotePlugin (resource pack)
 
 t.rodar(async () => {
   const recebidas = []

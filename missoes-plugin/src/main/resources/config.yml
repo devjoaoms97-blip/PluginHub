@@ -37,7 +37,7 @@ gui:
 # POOL DE MISSÕES
 #   id:         único, sem espaço
 #   tipo:       minerar | colher | matar | pescar | vender | dano_boss | vender_barraca | subir_rank
-#               | minerar_mina | pagar_imposto
+#               | minerar_mina | pagar_imposto | reparar | encantar
 #   alvos:      lista de materiais (minerar/colher/pescar/vender) ou tipos de mob (matar,
 #               e dano_boss: o mob do boss, ex. ZOMBIE). Sem "alvos" = qualquer um conta.
 #   rank-minimo:(opcional) só sorteia pra quem já tem esse rank do RankupPlugin (ex.: missão de
@@ -182,6 +182,20 @@ pool:
     descricao: "Minerar 500 blocos na mina de Diamante"
     coins: 6000
 
+  - id: reparar_ferreiro
+    tipo: reparar
+    quantidade: 3
+    descricao: "Reparar 3 itens no Ferreiro"
+    coins: 300
+
+  - id: encantar_bruxa
+    tipo: encantar
+    quantidade: 2
+    descricao: "Encantar 2 itens na mesa da Bruxa"
+    coins: 400
+    skill: BLOQUEIO
+    xp: 100
+
 semanais:
   ativado: true
   quantidade: 2
@@ -240,3 +254,15 @@ semanais:
       quantidade: 640
       descricao: "Vender 640 itens nas barracas"
       coins: 3000
+
+    - id: semanal_encantar
+      tipo: encantar
+      quantidade: 10
+      descricao: "Encantar 10 itens nas oficinas (Bruxa ou Cambista)"
+      coins: 2500
+
+    - id: semanal_reparar
+      tipo: reparar
+      quantidade: 15
+      descricao: "Reparar 15 itens no Ferreiro"
+      coins: 1500

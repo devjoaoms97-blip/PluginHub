@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class PixPlugin extends JavaPlugin {
 
@@ -18,16 +19,15 @@ public class PixPlugin extends JavaPlugin {
     private ChaveManager chaveManager;
 
     private final DiscordIntegration discord = new DiscordIntegration(this);
+    private final AlertaManager alertas = new AlertaManager(this, discord);
 
     /**
-     * Pix "suspeito" (valor de {@code discord.pix-suspeito-valor} pra cima) vai pro canal da staff
-     * no Discord, pra conferir se não é conta roubada sendo esvaziada ou lavagem entre contas.
+     * Pix suspeito (alto, perto do limite diário ou conta nova recebendo de várias) vai pra staff
+     * online, pro Discord e pro alertas.log: veja {@link AlertaManager}. Chamar depois de registrar o
+     * envio no limite do dia.
      */
-    public void conferirSuspeito(String de, String para, double valor, String tipo) {
-        double limiar = getConfig().getDouble("discord.pix-suspeito-valor"); // padrão do jar em configs antigos
-        if (limiar <= 0 || valor < limiar) return;
-        discord.enviar("pix", "⚠️ Pix alto: " + de + " → " + para + ": "
-                + String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", valor) + " (" + tipo + ")");
+    public void conferirSuspeito(UUID de, String nomeDe, UUID para, String nomePara, double valor, String tipo) {
+        alertas.conferir(de, nomeDe, para, nomePara, valor, tipo);
     }
 
     @Override

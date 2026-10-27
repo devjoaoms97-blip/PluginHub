@@ -1,22 +1,16 @@
 package com.example.cheque;
 
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Locale;
-
+/**
+ * O cheque não vira dinheiro com o clique direito: só depositando no Bancário ({@link Banco}).
+ * Aqui só fica o aviso pra quem tenta usar do jeito antigo.
+ */
 public class ChequeListener implements Listener {
 
     private final ChequePlugin plugin;
@@ -28,79 +22,13 @@ public class ChequeListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         // Evita disparar duas vezes (mão principal + mão secundária)
-        if (event.getHand() != EquipmentSlot.HAND) {
-            return;
-        }
-
+        if (event.getHand() != EquipmentSlot.HAND) return;
         Action action = event.getAction();
-        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
+        if (!plugin.getBanco().ehCheque(event.getItem())) return;
 
-        ItemStack item = event.getItem();
-        if (item == null || item.getType() != Material.PAPER || !item.hasItemMeta()) {
-            return;
-        }
-
-        ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer pdc = meta.getPersistentDataContainer();
-
-        if (!pdc.has(plugin.getChequeValueKey(), PersistentDataType.DOUBLE)) {
-            return; // é papel comum, não um cheque
-        }
-
-        // A partir daqui temos certeza que é um cheque válido
         event.setCancelled(true);
-
-        Player player = event.getPlayer();
-
-        if (!player.hasPermission("cheque.resgatar")) {
-            player.sendMessage(ChatColor.RED + "Você não tem permissão para resgatar cheques.");
-            return;
-        }
-
-        Economy economy = plugin.getEconomy();
-        if (economy == null) {
-            player.sendMessage(ChatColor.RED + "Não há um plugin de economia (Vault) instalado no servidor.");
-            return;
-        }
-
-        Double valor = pdc.get(plugin.getChequeValueKey(), PersistentDataType.DOUBLE);
-        if (valor == null || valor <= 0) {
-            player.sendMessage(ChatColor.RED + "Este cheque é inválido.");
-            return;
-        }
-
-        String id = pdc.get(plugin.getChequeIdKey(), PersistentDataType.STRING);
-        String nominal = pdc.get(plugin.getChequeNominalKey(), PersistentDataType.STRING);
-        if (nominal != null && !nominal.equals(player.getUniqueId().toString())) {
-            player.sendMessage(ChatColor.RED + "Este cheque é nominal: só "
-                    + org.bukkit.Bukkit.getOfflinePlayer(java.util.UUID.fromString(nominal)).getName() + " pode resgatar.");
-            return;
-        }
-        if (plugin.getChequeLog().jaResgatado(id)) {
-            plugin.getChequeLog().recusado(player.getName(), valor, id, "já resgatado");
-            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-            player.sendMessage(ChatColor.RED + "Este cheque já foi resgatado antes (cópia). Ele foi anulado.");
-            return;
-        }
-
-        economy.depositPlayer(player, valor);
-        plugin.getChequeLog().resgatado(player.getName(), valor, id);
-
-        // Consome apenas 1 unidade do cheque
-        if (item.getAmount() > 1) {
-            item.setAmount(item.getAmount() - 1);
-        } else {
-            player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-        }
-
-        player.sendMessage(ChatColor.GREEN + "Você resgatou " + ChatColor.GOLD + formatarValor(valor)
-                + ChatColor.GREEN + "! O valor foi depositado na sua conta.");
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
-    }
-
-    private String formatarValor(double valor) {
-        return String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", valor);
+        event.getPlayer().sendMessage(ChatColor.YELLOW + "Pra receber o valor, deposite o cheque com o "
+                + ChatColor.GOLD + "Bancário" + ChatColor.YELLOW + ".");
     }
 }

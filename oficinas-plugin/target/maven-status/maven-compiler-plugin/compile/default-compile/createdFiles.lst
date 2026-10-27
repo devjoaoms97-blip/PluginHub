@@ -1,8 +1,14 @@
+com\example\oficinas\Compactador$Menu.class
+com\example\oficinas\Integracoes.class
+com\example\oficinas\Oficina.class
+com\example\oficinas\Servicos$Menu.class
 com\example\oficinas\Servicos$1.class
 com\example\oficinas\Servicos.class
-com\example\oficinas\Oficina.class
+com\example\oficinas\Cambista.class
+com\example\oficinas\Compactador.class
+com\example\oficinas\Cambista$Menu.class
+com\example\oficinas\Compactador$Par.class
 com\example\oficinas\PixIntegration.class
 com\example\oficinas\NpcsManager.class
 com\example\oficinas\OficinasPlugin.class
-com\example\oficinas\Servicos$Menu.class
 com\example\oficinas\Oficina$Tipo.class

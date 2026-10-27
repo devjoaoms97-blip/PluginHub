@@ -8,7 +8,8 @@ import java.util.Locale;
 
 /**
  * Um NPC de oficina: o tipo diz o que ele faz quando o jogador clica, e o local é onde o
- * Mannequin fica (atrás do balcão da barraquinha). Nome e skin vêm do config do tipo.
+ * Mannequin fica (atrás do balcão da barraquinha). Nome e skin vêm do config do tipo. O alvo só
+ * existe no guia de mina: o id da mina do RankupPlugin.
  */
 public class Oficina {
 
@@ -22,7 +23,15 @@ public class Oficina {
         /** Vende níveis de XP. */
         SABIO,
         /** Vende itens de PvP: armaduras, armas e poções (balcão PvP da Loja Oficial). */
-        ARMEIRO;
+        ARMEIRO,
+        /** Transforma minérios e lingotes em blocos e de volta, de graça. */
+        COMPACTADOR,
+        /** Troca Fragmentos Arcanos (das minas) por encantamentos acima do máximo. */
+        CAMBISTA,
+        /** Guia na entrada de uma mina: mostra as informações dela e leva quem tem o rank. */
+        MINA,
+        /** Bancário: folha de cheque e depósito de cheques (o balcão é do ChequePlugin). */
+        BANCARIO;
 
         public String chave() {
             return name().toLowerCase(Locale.ROOT);
@@ -42,10 +51,12 @@ public class Oficina {
     private final String mundo;
     private final double x, y, z;
     private final float yaw;
+    private final String alvo;
 
-    public Oficina(String id, Tipo tipo, String mundo, double x, double y, double z, float yaw) {
+    public Oficina(String id, Tipo tipo, String alvo, String mundo, double x, double y, double z, float yaw) {
         this.id = id;
         this.tipo = tipo;
+        this.alvo = alvo;
         this.mundo = mundo;
         this.x = x;
         this.y = y;
@@ -59,6 +70,11 @@ public class Oficina {
 
     public Tipo getTipo() {
         return tipo;
+    }
+
+    /** Id da mina (guia de mina), ou null. */
+    public String getAlvo() {
+        return alvo;
     }
 
     public String getMundo() {

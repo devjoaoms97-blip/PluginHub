@@ -6,7 +6,6 @@ import com.example.skills.manager.CombatTagManager;
 import com.example.skills.manager.XpManager;
 import com.example.skills.skill.Skill;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
@@ -18,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -47,6 +45,12 @@ public class CombatListener implements Listener {
     public void onDamage(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof LivingEntity vitimaEntity)) return;
 
+        // quem levou um parry fica sem golpe corpo a corpo enquanto está atordoado
+        if (event.getDamager() instanceof LivingEntity && plugin.getParryManager().desarmado(event.getDamager().getUniqueId())) {
+            event.setCancelled(true);
+            return;
+        }
+
         Player atacante = resolverAtacante(event.getDamager());
         boolean ehPvP = (atacante != null) && (vitimaEntity instanceof Player);
         double multiplicadorXp = ehPvP
@@ -68,6 +72,7 @@ public class CombatListener implements Listener {
             if (skillArma != null) {
                 double xpArma = event.getDamage() * xpPorDano * multiplicadorXp;
                 xpManager.adicionarXp(atacante, skillArma, xpArma);
+                xpManager.marcarEmUso(atacante.getUniqueId(), skillArma);
 
                 // Crítico não tem "bônus por nível" genérico (é chance + multiplicador fixo),
                 // então só aplica o bônus percentual pras outras skills de arma.
@@ -107,7 +112,7 @@ public class CombatListener implements Listener {
                     if (ThreadLocalRandom.current().nextDouble() < chanceSangramento) {
                         double danoPorTick = plugin.getConfig().getDouble("lanceiro.sangramento-dano-por-tick", 2.0);
                         int duracao = plugin.getConfig().getInt("lanceiro.sangramento-duracao-segundos", 4);
-                        plugin.getSangramentoManager().aplicar(vitimaEntity, danoPorTick, duracao);
+                        plugin.getSangramentoManager().aplicar(vitimaEntity, atacante, danoPorTick, duracao);
                         atacante.sendMessage("§4✦ Inimigo perfurado!");
                         if (vitimaEntity instanceof Player vitimaJogador) {
                             vitimaJogador.sendMessage("§4✦ Você foi perfurado!");
@@ -149,6 +154,14 @@ public class CombatListener implements Listener {
         // ------------------------------------------------------------------
         if (vitimaEntity instanceof Player vitima) {
             combatTagManager.marcar(vitima.getUniqueId());
+
+            // Escudo Perfeito: escudo levantado bem na hora do golpe corpo a corpo anula tudo
+            if (event.getDamager() instanceof LivingEntity agressor
+                    && plugin.getParryManager().tentar(vitima, agressor, ehBossImuneAControle(agressor))) {
+                event.setCancelled(true);
+                if (atacante != null) atacante.sendMessage("§9✦ Seu ataque foi aparado!");
+                return;
+            }
 
             boolean estaMovendo = vitima.getVelocity().lengthSquared() > 0.008
                     || vitima.isSprinting()
@@ -266,22 +279,7 @@ public class CombatListener implements Listener {
 
         // Corpo a corpo: olha o item na mão do atacante
         if (causador == atacante) {
-            ItemStack itemNaMao = atacante.getInventory().getItemInMainHand();
-
-            // A Adaga é uma espada marcada — treina Crítico em vez de Espadas
-            if (plugin.getAdagaUtil().ehAdaga(itemNaMao)) {
-                return Skill.CRITICO;
-            }
-
-            Material tipo = itemNaMao.getType();
-            String nome = tipo.name();
-
-            if (tipo == Material.TRIDENT) return Skill.TRIDENTE;
-            if (tipo == Material.MACE) return Skill.MARRETEIRO;
-            if (nome.endsWith("_SWORD")) return Skill.ESPADAS;
-            if (nome.endsWith("_AXE")) return Skill.MACHADO;
-            if (nome.endsWith("_SPEAR")) return Skill.LANCEIRO;
-            if (tipo == Material.AIR) return Skill.PORRADEIRO;
+            return plugin.skillDoItem(atacante.getInventory().getItemInMainHand());
         }
 
         return null;

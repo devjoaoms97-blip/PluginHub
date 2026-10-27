@@ -22,6 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * Como não é um PotionEffect de verdade, não aparece nos ícones padrão do jogo — por
  * isso mostramos uma mensagem na action bar (pra vítima) e partículas vermelhas
  * (visíveis pra qualquer um por perto) como indicador visual do efeito ativo.
+ *
+ * A cada tique, quem aplicou o sangramento é marcado como o último jogador que bateu na
+ * vítima (setKiller). Sem isso, quem morria só do sangramento depois de 5 s sem apanhar
+ * morria "sozinho", e o abate não contava pro Bounty, pros clãs, pras missões nem pro Gladiador.
  */
 public class SangramentoManager {
 
@@ -32,8 +36,9 @@ public class SangramentoManager {
         this.plugin = plugin;
     }
 
-    public void aplicar(LivingEntity vitima, double danoPorTick, int duracaoSegundos) {
+    public void aplicar(LivingEntity vitima, Player atacante, double danoPorTick, int duracaoSegundos) {
         UUID id = vitima.getUniqueId();
+        UUID atacanteId = atacante.getUniqueId();
 
         BukkitTask existente = tarefasAtivas.remove(id);
         if (existente != null) {
@@ -72,8 +77,12 @@ public class SangramentoManager {
                         new Particle.DustOptions(Color.fromRGB(139, 0, 0), 1.2f)
                 );
 
-                // Sem referência ao atacante de propósito: evita disparar o CombatListener
-                // de novo (o que causaria um loop de procs/XP a cada tique de sangramento).
+                // O dano vai sem o atacante de propósito: com ele, o CombatListener rodaria de
+                // novo a cada tique (loop de procs e XP). O crédito do abate vem pelo setKiller.
+                Player atacanteOnline = plugin.getServer().getPlayer(atacanteId);
+                if (atacanteOnline != null && atacanteOnline != vitima) {
+                    vitima.setKiller(atacanteOnline);
+                }
                 vitima.damage(danoPorTick);
 
                 tiquesRestantes[0]--;

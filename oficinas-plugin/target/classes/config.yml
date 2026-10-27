@@ -23,6 +23,24 @@ tipos:
     nome: "&d&l📖 Sábio"
     descricao: "&7Clique: comprar XP"
     skin: "textura:c1a5fab3ccb91fa2364378f64a99b1037e1fc9698c9df525ba3a1f6b9c7c8b42"   # sábio de barba branca
+  compactador:
+    nome: "&7&l▣ Compactador"
+    descricao: "&7Clique: minérios em blocos e de volta"
+    skin: "textura:1c440eac8bd5308c32cf982c3b9c3c9b49d345db6483ed44784fd2d94fca322e"   # a do minerador, até ter uma própria
+  cambista:
+    nome: "&d&l✦ Cambista"
+    descricao: "&7Clique: fragmentos por encantamentos raros"
+    skin: "textura:19c5d75f9426d887b817d2b8d191788450d0e7ee7e00541b6ad879da84995f32"   # a da bruxa, até ter uma própria
+  # Folha de cheque e depósito de cheques (o balcão é do ChequePlugin).
+  bancario:
+    nome: "&6&l🏦 Bancário"
+    descricao: "&7Clique: folha de cheque e depósito"
+    skin: "textura:716c2da12d4482f34db58fb872ca25ff682001064dc50b504d099bc2256afb09"   # a do armeiro, até ter uma própria
+  # Guia na entrada de cada mina ({mina} vira o id da mina). Um por mina: /oficina criar <id> mina:<id da mina>
+  mina:
+    nome: "&e&l⛏ Mina {mina}"
+    descricao: "&7Clique: informações e entrada"
+    skin: "textura:1c440eac8bd5308c32cf982c3b9c3c9b49d345db6483ed44784fd2d94fca322e"   # minerador de capacete
 
 ferreiro:
   # Preço de reparar um item do totalmente gasto até novo, pelo material: vale a primeira chave
@@ -168,6 +186,91 @@ sabio:
   pacotes-niveis: [1, 5, 10, 30]
   # Ninguém compra além desse nível.
   nivel-maximo: 50
+
+# Compactador: cada item vira o bloco com "quantidade" dele, e o bloco volta. De graça. Só mexe
+# em item comum (sem nome, encantamento ou marca de plugin). Nada de pepita → lingote: o
+# "descompactar tudo" desfaria o bloco em lingote e o lingote em pepita.
+compactador:
+  pares:
+    - {item: COAL, bloco: COAL_BLOCK, quantidade: 9}
+    - {item: IRON_INGOT, bloco: IRON_BLOCK, quantidade: 9}
+    - {item: GOLD_INGOT, bloco: GOLD_BLOCK, quantidade: 9}
+    - {item: COPPER_INGOT, bloco: COPPER_BLOCK, quantidade: 9}
+    - {item: DIAMOND, bloco: DIAMOND_BLOCK, quantidade: 9}
+    - {item: EMERALD, bloco: EMERALD_BLOCK, quantidade: 9}
+    - {item: LAPIS_LAZULI, bloco: LAPIS_BLOCK, quantidade: 9}
+    - {item: REDSTONE, bloco: REDSTONE_BLOCK, quantidade: 9}
+    - {item: NETHERITE_INGOT, bloco: NETHERITE_BLOCK, quantidade: 9}
+    - {item: RAW_IRON, bloco: RAW_IRON_BLOCK, quantidade: 9}
+    - {item: RAW_GOLD, bloco: RAW_GOLD_BLOCK, quantidade: 9}
+    - {item: RAW_COPPER, bloco: RAW_COPPER_BLOCK, quantidade: 9}
+
+# Cambista: troca Fragmentos Arcanos (caem nas minas, ~1 por hora de mina: RankupPlugin,
+# fragmentos.chance-por-bloco) e coins por encantamentos acima do máximo no item da mão. Sobe um
+# nível por vez: do que o item tem pro primeiro nível da lista, e depois um a um. A chave é o id do
+# encantamento no Minecraft. O desconto de VIP vale só nas coins. "itens" diz em que ele pode ir:
+# "_PICKAXE" vale pra todo material que termina assim (de madeira a netherita), "BOW" só pro arco.
+# Sem "itens", vale o que o jogo aceita.
+#
+# CARO DE PROPÓSITO. Pela simulação do rankup (tools/economia/simular.py), só Eficiência VIII já
+# leva a meta de 150 h até o Rei pra ~90 h, e Eficiência VIII com Fortuna VIII pra ~75 h. Os custos
+# abaixo somam ~105 h de mina em fragmentos pra Eficiência VIII e ~175 h pra Fortuna VIII, mais
+# R$ 3 mi e R$ 6 mi. O Saque vai só até VI (um acima do que o vanilla e a mina deixam: III da mesa,
+# IV e V nos kits) e mexe nos drops dos mobs e dos spawners, por isso cada nível é caro.
+cambista:
+  encantamentos:
+    efficiency:
+      nome: "Eficiência"
+      itens: [_PICKAXE, _AXE, _SHOVEL, _HOE]
+      niveis:
+        6: {fragmentos: 15, preco: 250000}
+        7: {fragmentos: 30, preco: 750000}
+        8: {fragmentos: 60, preco: 2000000}
+    fortune:
+      nome: "Fortuna"
+      # machado fica de fora: Fortuna não muda nada em tora
+      itens: [_PICKAXE, _SHOVEL, _HOE]
+      niveis:
+        6: {fragmentos: 25, preco: 500000}
+        7: {fragmentos: 50, preco: 1500000}
+        8: {fragmentos: 100, preco: 4000000}
+    sharpness:
+      nome: "Afiação"
+      itens: [_SWORD, _AXE]
+      niveis:
+        6: {fragmentos: 20, preco: 300000}
+        7: {fragmentos: 40, preco: 900000}
+        8: {fragmentos: 80, preco: 2500000}
+    protection:
+      nome: "Proteção"
+      itens: [_HELMET, _CHESTPLATE, _LEGGINGS, _BOOTS]
+      niveis:
+        6: {fragmentos: 12, preco: 200000}
+        7: {fragmentos: 25, preco: 600000}
+        8: {fragmentos: 50, preco: 1600000}
+    power:
+      nome: "Poder"
+      itens: [BOW]
+      niveis:
+        6: {fragmentos: 15, preco: 250000}
+        7: {fragmentos: 30, preco: 750000}
+        8: {fragmentos: 60, preco: 2000000}
+    looting:
+      nome: "Saque"
+      itens: [_SWORD]
+      niveis:
+        4: {fragmentos: 20, preco: 300000}
+        5: {fragmentos: 40, preco: 900000}
+        6: {fragmentos: 80, preco: 2500000}
+    unbreaking:
+      nome: "Inquebrável"
+      # ferramentas, armas e armaduras (tudo o que gasta)
+      itens: [_PICKAXE, _AXE, _SHOVEL, _HOE, _SWORD, _SPEAR, _HELMET, _CHESTPLATE, _LEGGINGS, _BOOTS, BOW, CROSSBOW,
+              TRIDENT, MACE, SHIELD, FISHING_ROD, SHEARS, ELYTRA]
+      niveis:
+        4: {fragmentos: 8, preco: 100000}
+        5: {fragmentos: 16, preco: 300000}
+        6: {fragmentos: 32, preco: 800000}
 
 # Desconto em todos os serviços por permissão (vale o maior). Os grupos de VIP já têm essas
 # permissões (as mesmas do desconto da loja). LISTA de propósito: chave com ponto viraria seção.

@@ -7,10 +7,14 @@
 //   node montar-mapa.js construir [partes...]   (servidor LIGADO) sem partes = minas spawn boss dicas arenas marcar
 //     minas      os 12 poços (cheios de pedra) e a Avenida das Minas (EstruturasPlugin) em volta, com as oficinas
 //     loja       só a Loja Oficial (portão leste do spawn): prédio, 7 vendedores, placas e quadros
-//     oficinas   só as 4 barraquinhas de serviço na entrada da avenida (OficinasPlugin: Ferreiro, Bruxa...)
+//     mobs       a /warp mobs (portão oeste do spawn): abre o portão "MOBS" num spawn que já existe e
+//                constrói o salão de estátuas, que cadastra os spawners no SpawnersPlugin
+//     banco      só a barraquinha do Bancário no spawn (folha de cheque e depósito), com o NPC
+//     oficinas   só as barraquinhas de serviço da avenida (OficinasPlugin: Ferreiro, Bruxa... e Cambista e
+//                Compactador no fundo) e os guias das 12 minas
 //     boss       a arena do boss ("toxica"), ao sul do spawn, colada no portão "BOSS"
 //     dicas      os 12 NPCs de dicas pelo spawn (DicasPlugin), com as falas
-//     tutorial   o painel "Como começar", na avenida oeste do spawn (já vem junto com o spawn)
+//     tutorial   o painel "Como começar", ao lado do portão oeste do spawn (já vem junto com o spawn)
 //     spawn      o spawn inteiro (EstruturasPlugin "spring"), as barracas dele e os hologramas da fonte
 //     barracas   só as 32 barracas do spawn (redesenha e cadastra as que faltam; aluguéis e NPCs ficam)
 //     arenas     saguão, X1 ("axepvp") e Gladiador ("coliseu"), bem longe um do outro, e limpa o que
@@ -83,6 +87,7 @@ const GLAD = {
 // a arena do boss fica enterrada (piso 32 abaixo do chão, pra não aparecer por cima do spawn): a escadaria
 // dela termina 88 blocos ao norte do centro, colada no portão sul do spawn (z = SPAWN.z + 63)
 const BOSS = { centro: [SPAWN.x, SPAWN.z + 64 + 88], chao: CHAO - 32 }
+const MOBS_PISO = CHAO - 16 // o salão da warp mobs fica meio enterrado: piso em y 48, teto de vidro em y 84
 // o que sobrou das versões anteriores no mundo arenas (as 3 caixas de X1, a axepvp em (0, -80), os
 // coliseus em (0, 100) e (0, 200) e a tóxica em (-135, 0)): sai tudo, só o saguão (x/z -7..7) fica
 const ARENAS_ANTIGAS = [
@@ -189,15 +194,24 @@ async function construirMinas() {
 }
 
 /**
- * As 4 barraquinhas de serviço na praça de entrada da avenida (EstruturasPlugin "oficinas"), com
- * os NPCs do OficinasPlugin e a mesa da bruxa embaixo. Sempre depois da avenida, que passa por cima.
+ * As barraquinhas de serviço da avenida (EstruturasPlugin "oficinas"): 4 na praça de entrada e 2 no
+ * fundo, com os NPCs do OficinasPlugin e a mesa da bruxa embaixo. Sempre depois da avenida, que passa
+ * por cima. Também põe o guia de cada mina (NPC "mina:<id>"), 2 blocos ao sul do ponto de teleporte,
+ * olhando pra avenida.
  */
 async function construirOficinas() {
-  console.log('\n== Oficinas da mina (Ferreiro, Picareteiro, Bruxa, Sábio) ==')
-  await t.console('execute in minecraft:spawn run forceload add -30 -30 30 -20')
+  console.log('\n== Oficinas da mina (Ferreiro, Picareteiro, Bruxa, Sábio, Cambista, Compactador) ==')
+  await t.console('execute in minecraft:spawn run forceload add -30 -185 30 -20')
   await t.espera(1500)
   await estrutura('oficinas', 'spawn', [0, -21])
-  await t.console('execute in minecraft:spawn run forceload remove -30 -30 30 -20')
+  console.log('== Guias das 12 minas ==')
+  const planejadas = minasPlanejadas()
+  for (let i = 0; i < planejadas.length; i++) {
+    const p = posicaoDaMina(i), oeste = i % 2 === 0
+    const zc = p.spawn[2] - 0.5
+    await t.console(`oficina criar mina-${planejadas[i].id} mina:${planejadas[i].id} spawn ${oeste ? -5.5 : 6.5} ${CHAO + 1} ${zc + 2.5} ${oeste ? -90 : 90}`)
+  }
+  await t.console('execute in minecraft:spawn run forceload remove -30 -185 30 -20')
 }
 
 /**
@@ -221,8 +235,9 @@ async function estruturaNoSpawn(id) {
 }
 
 // Painel "Como começar": um holograma grande só, no fim da avenida oeste (à esquerda de quem nasce
-// olhando pro norte), apoiado nos arbustos floridos de lá e sempre virado pra quem olha.
-const TUTORIAL = { pos: [-43, 0], altura: 2.2, linhas: [
+// olhando pro norte), do lado sul do portão "MOBS" (no meio ele taparia o túnel) e sempre virado pra
+// quem olha.
+const TUTORIAL = { pos: [-41, 10], altura: 2.2, escala: 1.3, linhas: [
   ['✦ COMO COMEÇAR ✦', 'gold', true],
   ['', null],
   ['1. Minere: portão MINAS, ao norte  (/mina)', 'white'],
@@ -232,10 +247,11 @@ const TUTORIAL = { pos: [-43, 0], altura: 2.2, linhas: [
   ['3. Suba de rank: /rankup  (/ranks mostra todos)', 'white'],
   ['4. Todo dia: /diaria e /missoes', 'white'],
   ['5. Comércio: barracas pelo spawn, clique no vendedor', 'white'],
-  ['6. Boss: portão BOSS, ao sul  (/boss proximo)', 'white'],
-  ['7. PvP: /duelo e /gladiador', 'white'],
-  ['8. Seu terreno: /terreno auto  ·  Recursos: /recursos', 'white'],
-  ['9. Benefícios: /vip tiers', 'white'],
+  ['6. Mobs (drops, XP e skills): portão OESTE  (/warp mobs)', 'white'],
+  ['7. Boss: portão BOSS, ao sul  (/boss proximo)', 'white'],
+  ['8. PvP: /duelo e /gladiador', 'white'],
+  ['9. Seu terreno: /terreno auto  ·  Recursos: /recursos', 'white'],
+  ['10. Benefícios: /vip tiers', 'white'],
   ['', null],
   ['Os NPCs pelo spawn dão mais dicas: clique neles!', 'aqua'],
 ] }
@@ -247,13 +263,14 @@ async function construirTutorial() {
   await t.console(`${em(W)} forceload add ${SPAWN.x - 48} ${SPAWN.z - 16} ${SPAWN.x + 16} ${SPAWN.z + 16}`)
   await t.espera(1500)
   await t.console(`execute in minecraft:${W} positioned ${SPAWN.x} ${CHAO + 1} ${SPAWN.z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..16]`)
-  await t.console(`execute in minecraft:${W} positioned ${SPAWN.x - 42} ${CHAO + 2} ${SPAWN.z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..4]`)
+  // o painel antigo (no meio da avenida, onde agora é o portão) e o atual, do lado dele
+  await t.console(`execute in minecraft:${W} positioned ${SPAWN.x - 42} ${CHAO + 2} ${SPAWN.z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..14]`)
   const [dx, dz] = TUTORIAL.pos
   const partes = TUTORIAL.linhas.map(([s, cor, negrito]) =>
     `{text:"${s}"${cor ? `,color:"${cor}"` : ''}${negrito ? ',bold:1b' : ''}}`).join(',"\\n",')
   await t.console(`${em(W)} summon minecraft:text_display ${SPAWN.x + dx + 0.5} ${CHAO + TUTORIAL.altura} ${SPAWN.z + dz + 0.5} `
     + `{Tags:["mapa"],billboard:"vertical",shadow:1b,line_width:400,background:${0xB0101018 | 0},`
-    + `transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[1.6f,1.6f,1.6f]},`
+    + `transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[${TUTORIAL.escala}f,${TUTORIAL.escala}f,${TUTORIAL.escala}f]},`
     + `text:[${partes}]}`)
   await t.console(`${em(W)} forceload remove ${SPAWN.x - 48} ${SPAWN.z - 16} ${SPAWN.x + 16} ${SPAWN.z + 16}`)
 }
@@ -267,10 +284,22 @@ async function construirSpawn() {
   const W = 'spawn'
   console.log('\n== Spawn (EstruturasPlugin: spring) ==')
   await estruturaNoSpawn('spring')
-  // a loja encosta no portão leste do spawn: refaz depois dele
+  // a loja e a warp mobs encostam nos portões leste e oeste do spawn: refaz depois dele
   await construirLoja()
+  await construirSalaoMobs()
+  await construirBanco()
 
   await construirTutorial()
+}
+
+/**
+ * A barraquinha do Bancário (EstruturasPlugin "banco") no quadrante nordeste do spawn, entre a
+ * cerejeira e as barracas da avenida leste, com o NPC do OficinasPlugin. Por cima de um spawn que já
+ * existe: só mexe em x 27..33, z -17..-11 a partir do centro.
+ */
+async function construirBanco() {
+  console.log('\n== Bancário (EstruturasPlugin: banco) ==')
+  await estrutura('banco', 'spawn', [SPAWN.x, SPAWN.z])
 }
 
 /**
@@ -283,6 +312,41 @@ async function construirLoja() {
   await t.espera(2000)
   await estrutura('loja', 'spawn', [SPAWN.x, SPAWN.z])
   await t.console('execute in minecraft:spawn run forceload remove 60 10 128 76')
+}
+
+/**
+ * A /warp mobs: o portão "MOBS" no oeste do spawn ("spring-oeste", só aquele pedaço, pra não mexer no
+ * resto de um spawn que já existe), o salão de estátuas ("mobs") colado nele e o painel "Como começar"
+ * do lado do portão. O salão cadastra a área e os spawners das estátuas no SpawnersPlugin.
+ */
+async function construirMobs() {
+  console.log('\n== Portão oeste do spawn (EstruturasPlugin: spring-oeste) ==')
+  await t.console('execute in minecraft:spawn run forceload add -64 24 -34 62')
+  await t.espera(1500)
+  await estrutura('spring-oeste', 'spawn', [SPAWN.x, SPAWN.z])
+  await t.console('execute in minecraft:spawn run forceload remove -64 24 -34 62')
+  await construirSalaoMobs()
+  await construirTutorial()
+}
+
+async function construirSalaoMobs() {
+  console.log('\n== Warp mobs (EstruturasPlugin: mobs) ==')
+  await t.console('execute in minecraft:spawn run forceload add -233 -5 -62 91')
+  await t.espera(3000)
+  // os mobs, os hologramas e o letreiro do salão (de qualquer versão antiga dele) saem antes
+  await t.console('execute in minecraft:spawn run minecraft:kill @e[type=!player,x=-234,y=20,z=0,dx=172,dy=90,dz=86]')
+  await estrutura('mobs', 'spawn', [SPAWN.x, SPAWN.z])
+  // letreiro no vestíbulo (lá embaixo, depois da escadaria), por cima da passagem pro salão
+  const [x, y, z] = [-90, MOBS_PISO + 7, SPAWN.z]
+  await t.console(`execute in minecraft:spawn positioned ${x} ${y} ${z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..4]`)
+  const linhas = [['⚔ WARP MOBS ⚔', 'gold', true], ['Mate os mobs das estátuas: drops, XP e skills', 'white'],
+    ['Os mobs não passam da linha vermelha', 'gray'], ['Voltar: a escadaria atrás de você ou /spawn', 'gray']]
+  const partes = linhas.map(([s, cor, negrito]) => `{text:"${s}",color:"${cor}"${negrito ? ',bold:1b' : ''}}`).join(',"\\n",')
+  await t.console(`execute in minecraft:spawn run summon minecraft:text_display ${x + 0.5} ${y} ${z + 0.5} `
+    + `{Tags:["mapa"],billboard:"vertical",shadow:1b,line_width:300,`
+    + `transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[1.5f,1.5f,1.5f]},`
+    + `text:[${partes}]}`)
+  await t.console('execute in minecraft:spawn run forceload remove -233 -5 -62 91')
 }
 
 async function construirArenas() {
@@ -363,10 +427,11 @@ const DICAS = [
     '&fDá pra lutar com uma arma em cada mão, e cada mão treina a skill da própria arma. Veja em &e/skills&f.',
     '&fTem recompensa pela sua cabeça? Confira em &e/bounty lista&f. Se não tiver, é porque você é bonzinho demais.',
   ] },
-  { id: 'banqueira', nome: '&2Banqueira Rosa', pos: [30, -12], virado: 'centro', falas: [
+  // na frente da barraquinha do Bancário (que fica onde ela ficava)
+  { id: 'banqueira', nome: '&2Banqueira Rosa', pos: [25, -9], virado: 'centro', falas: [
     '&fPra pagar alguém: &e/pix pagar <jogador> <valor>&f. Rápido, seguro e sem fila.',
     '&fConta que se repete? &e/pix agendar <jogador> <valor> <dias>&f paga agora e de novo a cada tantos dias.',
-    '&fQuer dar dinheiro de presente? &e/cheque <valor>&f vira um papel que qualquer um pode descontar.',
+    '&fQuer dar dinheiro de presente? Compre uma folha de cheque com o &6Bancário&f, aqui atrás, e use &e/cheque <valor>&f. Quem ganhar deposita com ele.',
     '&fO preço da loja muda com a oferta. Olhe o &e/shop&f antes de vender tudo de uma vez.',
   ] },
   { id: 'escriba', nome: '&9Escriba dos Clãs', pos: [-30, 12], virado: 'centro', falas: [
@@ -427,6 +492,7 @@ async function marcarComBot() {
     ['minas', 'spawn', 0.5, -24.5, 180], ['mercado', 'spawn', SPAWN.x + 16.5, SPAWN.z + 0.5, -90],
     ['arenas', 'arenas', 0.5, 0.5, 180], ['terrenos', 'terrenos', 34.5, 34.5, 0],
     ['loja', 'spawn', 67.5, SPAWN.z + 0.5, -90], // logo depois da porta da Loja Oficial, olhando pro salão
+    ['mobs', 'spawn', -85.5, SPAWN.z + 0.5, 90, MOBS_PISO + 1], // no vestíbulo da warp mobs (pé da escadaria), olhando pras estátuas
     ['boss', 'spawn', BOSS.centro[0] + 0.5, BOSS.centro[1] - 42.5, 0, BOSS.chao + 1], // logo depois do túnel da tóxica, olhando pro centro
     ['plateia-x1', 'arenas', AXE.plateia[0], AXE.plateia[2], AXE.plateia[3], AXE.plateia[1]],
     ['plateia-gladiador', 'arenas', GLAD.plateia[0], GLAD.plateia[2], GLAD.plateia[3], GLAD.plateia[1]],
@@ -525,7 +591,7 @@ if (fase === 'cadastrar') {
 } else if (fase === 'construir' || fase === 'marcar') {
   const partes = {
     'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
-    boss: construirBoss, oficinas: construirOficinas, loja: construirLoja, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, marcar: marcarComBot,
+    boss: construirBoss, oficinas: construirOficinas, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, marcar: marcarComBot,
   }
   // "marcar" sozinho era o atalho antigo pra só a parte do bot
   const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)
@@ -540,6 +606,6 @@ if (fase === 'cadastrar') {
     await t.terminar()
   })
 } else {
-  console.log('Uso: node montar-mapa.js construir [minas|oficinas|loja|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
+  console.log('Uso: node montar-mapa.js construir [minas|oficinas|loja|banco|mobs|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
     + '\n     node montar-mapa.js cadastrar [--minas]   (servidor desligado)')
 }

@@ -55,7 +55,9 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => m.includes('Extrato de')), '/pix admin log <jogador>', msgs[0])
 
   console.log('\n== Cheque ==')
-  await t.console(`minecraft:item replace entity ${a.username} weapon.mainhand with minecraft:paper 2`)
+  // o cheque só sai de uma folha de cheque (a do Bancário), e o valor sai do saldo
+  await t.console(`eco give ${a.username} 2000`)
+  await t.console(`minecraft:item replace entity ${a.username} weapon.mainhand with minecraft:paper[custom_data={PublicBukkitValues:{"chequeplugin:folha":1b}}] 2`)
   await t.espera(500)
   msgs = await t.capturar(a, () => a.chat(`/cheque 500 ${b.username}`))
   t.verificar(msgs.some(m => m.includes('nominal')), 'cheque nominal', msgs[0])
@@ -79,7 +81,7 @@ t.rodar(async () => {
   const p = a.entity.position
   await t.console(`execute in minecraft:spawn run summon minecraft:item ${Math.floor(p.x)} ${Math.floor(p.y)} ${Math.floor(p.z)} {Item:{id:"minecraft:stick",count:1},Age:-32768s,PickupDelay:32767s,Tags:["teste_cleaner"]}`)
   await t.console(`execute in minecraft:spawn run summon minecraft:experience_orb ${Math.floor(p.x) + 40} ${Math.floor(p.y)} ${Math.floor(p.z)} {Value:5,Tags:["teste_cleaner"]}`)
-  await t.espera(11000) // idade mínima
+  await t.espera(1000) // sem idade mínima: a limpeza pega na hora
   const res = await t.console('limparchao agora')
   const ficou = await t.console('execute if entity @e[type=item,tag=teste_cleaner]')
   const orbe = await t.console('execute if entity @e[type=experience_orb,tag=teste_cleaner]')

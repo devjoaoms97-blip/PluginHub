@@ -2,6 +2,13 @@
 # Toda emissão e resgate fica em plugins/ChequePlugin/cheques.log, e um cheque com ID já
 # resgatado (cópia) é recusado e anulado.
 
+# Banco (o NPC Bancário do OficinasPlugin): vende a folha de cheque em branco (sem ela ninguém
+# emite) e é onde o cheque vira dinheiro. O depósito cobra a taxa de compensação (igual à do Pix,
+# senão o cheque seria um Pix sem taxa); a taxa e a folha somem da economia.
+banco:
+  preco-folha: 50
+  taxa-deposito-percentual: 1.0
+
 limite:
   # Valor máximo de um cheque. 0 desativa.
   valor-maximo: 1000000

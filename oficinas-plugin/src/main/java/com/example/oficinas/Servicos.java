@@ -37,6 +37,7 @@ import java.util.Map;
  *       travado); o XP é do jogador, como no vanilla.</li>
  *   <li><b>Picareteiro</b>: vende as ferramentas da lista do config, com os encantamentos.</li>
  *   <li><b>Sábio</b>: vende níveis de XP (pelo custo em pontos, igual ao vanilla).</li>
+ *   <li><b>Compactador</b> e <b>Cambista</b>: nas classes deles.</li>
  * </ul>
  * Todos aplicam o desconto de VIP ({@code vip-descontos}) e registram no /pix historico.
  */
@@ -78,6 +79,14 @@ public class Servicos implements Listener {
             case PICARETEIRO -> abrirLista(jogador, Oficina.Tipo.PICARETEIRO);
             case ARMEIRO -> abrirLista(jogador, Oficina.Tipo.ARMEIRO);
             case SABIO -> abrirSabio(jogador);
+            case COMPACTADOR -> plugin.getCompactador().abrir(jogador);
+            case CAMBISTA -> plugin.getCambista().abrir(jogador);
+            case MINA -> { } // o guia de mina não abre menu (OficinasPlugin#mostrarMina)
+            case BANCARIO -> {
+                if (!plugin.getIntegracoes().abrirBanco(jogador)) {
+                    jogador.sendMessage("§cO banco está fechado agora (sem o ChequePlugin). Avise a staff.");
+                }
+            }
         }
     }
 
@@ -173,6 +182,7 @@ public class Servicos implements Listener {
             ((Damageable) meta).setDamage(0);
             item.setItemMeta(meta);
             jogador.getInventory().setItem(i, item);
+            plugin.getIntegracoes().missao(jogador, "REPARAR", item.getType().name(), 1);
             reparados++;
         }
         jogador.playSound(jogador.getLocation(), Sound.BLOCK_ANVIL_USE, 0.8f, 1.1f);
@@ -375,10 +385,11 @@ public class Servicos implements Listener {
         if (noLapis || juntando) evento.setCancelled(true);
     }
 
-    /** Depois de encantar, o lápis gasto volta. */
+    /** Depois de encantar, o lápis gasto volta (e conta pra missão de encantar). */
     @EventHandler(priority = org.bukkit.event.EventPriority.MONITOR, ignoreCancelled = true)
     public void aoEncantar(org.bukkit.event.enchantment.EnchantItemEvent evento) {
         if (!(evento.getInventory() instanceof org.bukkit.inventory.EnchantingInventory mesa) || !mesasDaBruxa.contains(mesa)) return;
+        plugin.getIntegracoes().missao(evento.getEnchanter(), "ENCANTAR", evento.getItem().getType().name(), 1);
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (mesasDaBruxa.contains(mesa)) mesa.setSecondary(new ItemStack(Material.LAPIS_LAZULI, 64));
         });
@@ -392,7 +403,7 @@ public class Servicos implements Listener {
         }
     }
 
-    private boolean cobrar(Player jogador, double valor, String tipo) {
+    boolean cobrar(Player jogador, double valor, String tipo) {
         if (valor <= 0) return true; // de graça (as ferramentas de pedra pra quem está começando): nada no extrato
         Economy econ = plugin.getEconomy();
         if (econ == null) {
@@ -434,7 +445,7 @@ public class Servicos implements Listener {
         return item.getType().name().toLowerCase(Locale.ROOT).replace('_', ' ');
     }
 
-    private static ItemStack icone(Material material, String nome, String... lore) {
+    static ItemStack icone(Material material, String nome, String... lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(nome);

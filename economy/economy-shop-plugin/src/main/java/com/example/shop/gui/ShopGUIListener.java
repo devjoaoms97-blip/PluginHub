@@ -139,7 +139,7 @@ public class ShopGUIListener implements Listener {
     private int contarNoInventario(Player jogador, Material material) {
         int total = 0;
         for (ItemStack stack : jogador.getInventory().getContents()) {
-            if (stack != null && stack.getType() == material) {
+            if (comum(stack, material)) {
                 total += stack.getAmount();
             }
         }
@@ -151,12 +151,24 @@ public class ShopGUIListener implements Listener {
         ItemStack[] conteudo = jogador.getInventory().getContents();
         for (int i = 0; i < conteudo.length && restante > 0; i++) {
             ItemStack stack = conteudo[i];
-            if (stack == null || stack.getType() != material) continue;
+            if (!comum(stack, material)) continue;
 
             int remover = Math.min(restante, stack.getAmount());
             stack.setAmount(stack.getAmount() - remover);
             restante -= remover;
         }
+    }
+
+    /**
+     * Item comum desse material: sem nome, sem encantamento e sem marca de plugin. Fragmento Arcano e
+     * produto de máquina são papel com nome, e item encantado vale mais que o preço da loja: nenhum
+     * deles pode sair do inventário junto numa venda.
+     */
+    private static boolean comum(ItemStack stack, Material material) {
+        if (stack == null || stack.getType() != material) return false;
+        if (!stack.hasItemMeta()) return true;
+        var meta = stack.getItemMeta();
+        return !meta.hasDisplayName() && !meta.hasEnchants() && meta.getPersistentDataContainer().isEmpty();
     }
 
     private static String nomeAmigavel(Material material) {

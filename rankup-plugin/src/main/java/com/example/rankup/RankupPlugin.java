@@ -9,11 +9,13 @@ import com.example.rankup.gui.Hologramas;
 import com.example.rankup.gui.Menus;
 import com.example.rankup.listener.ColetaMinaListener;
 import com.example.rankup.listener.ChatListener;
+import com.example.rankup.listener.FragmentosListener;
 import com.example.rankup.listener.MinaListener;
 import com.example.rankup.manager.MinaManager;
 import com.example.rankup.manager.PrestigioManager;
 import com.example.rankup.manager.RankManager;
 import com.example.rankup.manager.RegistroRankups;
+import com.example.rankup.model.Mina;
 import com.example.rankup.model.Rank;
 import com.example.rankup.util.Formato;
 import com.example.rankup.util.LojaIntegration;
@@ -21,10 +23,14 @@ import com.example.rankup.util.PixIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class RankupPlugin extends JavaPlugin {
@@ -42,6 +48,7 @@ public class RankupPlugin extends JavaPlugin {
     private PrestigioManager prestigioManager;
     private Menus menus;
     private Hologramas hologramas;
+    private FragmentosListener fragmentos;
     private boolean avisouFalhaTab;
 
     @Override
@@ -82,6 +89,8 @@ public class RankupPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         ColetaMinaListener coleta = new ColetaMinaListener(this);
         getServer().getPluginManager().registerEvents(coleta, this);
+        this.fragmentos = new FragmentosListener(this);
+        getServer().getPluginManager().registerEvents(fragmentos, this);
 
         getServer().getScheduler().runTaskTimer(this, () -> {
             minaManager.tick();
@@ -217,6 +226,50 @@ public class RankupPlugin extends JavaPlugin {
         String prestigio = nivel > 0 ? Formato.cores(getConfig().getString("prestigio.formato", "&d✦%nivel% ")).replace("%nivel%", String.valueOf(nivel)) : "";
         return Formato.cores(getConfig().getString("chat.formato", "&8[%rank%&8]"))
                 .replace("%rank%", prestigio + rankManager.getRankDe(jogador).nomeColorido());
+    }
+
+    /** O item do Fragmento Arcano (OficinasPlugin: o Cambista devolve o troco; staff: testes). */
+    public ItemStack fragmento(int quantidade) {
+        return fragmentos.fragmento(quantidade);
+    }
+
+    /**
+     * As linhas de informação de uma mina pro jogador (NPC da entrada da mina, no OficinasPlugin):
+     * rank exigido e se ele tem, minérios com a %, reset e quanto já foi minerado. null se a mina não existe.
+     */
+    public List<String> infoMina(String id, UUID jogador) {
+        Mina mina = minaManager.get(id);
+        if (mina == null) return null;
+        Locale br = Locale.forLanguageTag("pt-BR");
+        List<String> linhas = new ArrayList<>();
+        Rank rank = rankManager.getRank(mina.getRankMinimo());
+        boolean acesso = rankManager.temAcesso(jogador, mina.getRankMinimo());
+        linhas.add("§6§l⛏ Mina " + mina.getId());
+        linhas.add("§7Rank: " + (rank != null ? rank.nomeColorido() : "§fqualquer") + (acesso ? " §a✔ liberada pra você" : " §c✖ você ainda não tem"));
+        if (!acesso && rank != null && economy != null) {
+            linhas.add("§7Seu rank: " + rankManager.getRankDe(jogador).nomeColorido() + " §7| o " + rank.nomeColorido()
+                    + " §7custa §f" + Formato.valor(rank.preco()));
+        }
+        double soma = mina.getComposicao().values().stream().mapToDouble(Double::doubleValue).sum();
+        List<String> partes = new ArrayList<>();
+        mina.getComposicao().entrySet().stream()
+                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
+                .forEach(e -> partes.add(String.format(br, "§f%s §7%.0f%%", Formato.nomeMaterial(e.getKey()), e.getValue() * 100 / Math.max(1e-9, soma))));
+        linhas.add("§7Blocos: " + (partes.isEmpty() ? "§cvazia" : String.join("§7, ", partes)));
+        long restante = mina.getProximoReset() == Long.MAX_VALUE ? -1 : mina.getProximoReset() - System.currentTimeMillis();
+        linhas.add("§7Reset: " + (mina.isResetando() ? "§eresetando agora" : restante >= 0 ? "em §f" + Formato.tempo(restante) : "§fsem tempo")
+                + String.format(br, " §7| minerado: §f%.0f%%", mina.getQuebrados() * 100.0 / Math.max(1, mina.getVolume())));
+        if (getConfig().getBoolean("fragmentos.ativado", true)) {
+            double chance = getConfig().getDouble("fragmentos.chance-por-bloco", 0.00025);
+            if (chance > 0) linhas.add(String.format(br, "§d✦ §7Fragmento Arcano: §f1 §7a cada §f~%,.0f §7blocos", 1 / chance));
+        }
+        return linhas;
+    }
+
+    /** Se o jogador pode entrar na mina (rank ou staff). OficinasPlugin: o NPC só oferece o teleporte a quem pode. */
+    public boolean podeEntrarNaMina(String id, Player jogador) {
+        Mina mina = minaManager.get(id);
+        return mina != null && (rankManager.temAcesso(jogador.getUniqueId(), mina.getRankMinimo()) || jogador.hasPermission(PERMISSAO_ADMIN));
     }
 
     // ---------------------------------------------------------------------

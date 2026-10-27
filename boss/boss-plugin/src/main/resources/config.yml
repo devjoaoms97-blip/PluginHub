@@ -41,6 +41,21 @@ ranking-dano:
   ativado: true
   top: 3
 
+# Boss elite: de vez em quando (chance a cada boss aleatório da agenda ou do /boss start sem id),
+# o boss vem mais forte e paga mais. /boss start [id] elite força. O dano a mais vale pra tudo que
+# vem do boss (golpe, flechas, onda de choque, explosão).
+elite:
+  chance: 0.10
+  multiplicador-vida: 2.0
+  multiplicador-dano: 2.0
+  # Coins do ranking e do campeão e XP de skill por participar.
+  multiplicador-recompensas: 2.0
+  # Quantas vezes o loot do chão é sorteado.
+  rolagens-loot: 2
+  prefixo-nome: "&6&l✦ ELITE ✦ "
+  barra-cor: PURPLE
+  mensagem-spawn: "&6&l✦ UM BOSS ELITE APARECEU! ✦ &eDobro de vida, dobro de dano e recompensa em dobro!"
+
 campeao:
   grupo-luckperms: "boss_campeao"
 

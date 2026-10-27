@@ -9,12 +9,14 @@ public class PlayerSkillData {
     private final UUID jogadorId;
     private final Map<Skill, Integer> niveis = new EnumMap<>(Skill.class);
     private final Map<Skill, Double> xpAtual = new EnumMap<>(Skill.class);
+    private final Map<Skill, Integer> prestigios = new EnumMap<>(Skill.class);
 
     public PlayerSkillData(UUID jogadorId) {
         this.jogadorId = jogadorId;
         for (Skill skill : Skill.values()) {
             niveis.put(skill, 1);
             xpAtual.put(skill, 0.0);
+            prestigios.put(skill, 0);
         }
     }
 
@@ -36,5 +38,14 @@ public class PlayerSkillData {
 
     public void setXp(Skill skill, double xp) {
         xpAtual.put(skill, xp);
+    }
+
+    /** Quantas vezes a skill foi resetada no nível máximo (/skills prestigio). */
+    public int getPrestigio(Skill skill) {
+        return prestigios.getOrDefault(skill, 0);
+    }
+
+    public void setPrestigio(Skill skill, int prestigio) {
+        prestigios.put(skill, prestigio);
     }
 }

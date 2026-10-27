@@ -32,6 +32,16 @@ discord:
   # conferir conta roubada sendo esvaziada ou lavagem entre contas. 0 desliga.
   pix-suspeito-valor: 100000
 
+alertas:
+  # Além do Pix alto (discord.pix-suspeito-valor), avisa a staff (chat de quem tem pix.alertas,
+  # Discord "pix" e plugins/PixPlugin/alertas.log) quando:
+  # - um envio deixa o pagador com essa % do limite diário ou mais (só com limite.diario ligado). 0 desliga;
+  perto-do-limite-percentual: 90
+  # - uma conta que entrou pela primeira vez há menos de conta-nova-horas recebe de
+  #   remetentes-distintos contas diferentes em 24 h. 0 em qualquer um desliga.
+  conta-nova-horas: 48
+  remetentes-distintos: 3
+
 notificacao:
   # Quem recebe um Pix (pagamento, cobrança aceita ou agendado) ganha um título na tela com o
   # valor e um som, além da mensagem no chat.

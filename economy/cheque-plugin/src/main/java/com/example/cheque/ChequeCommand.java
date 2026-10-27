@@ -1,5 +1,6 @@
 package com.example.cheque;
 
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,8 +44,14 @@ public class ChequeCommand implements CommandExecutor {
             return true;
         }
 
+        if (args.length >= 1 && args[0].equalsIgnoreCase("cancelar")) {
+            cancelar(player, args);
+            return true;
+        }
+
         if (args.length < 1 || args.length > 2) {
             player.sendMessage(ChatColor.RED + "Uso correto: /cheque <valor> [jogador]  (com jogador, só ele resgata)");
+            player.sendMessage(ChatColor.RED + "Ou: /cheque cancelar [id]  (o cheque da mão, ou pelo ID do lore)");
             return true;
         }
 
@@ -87,12 +94,28 @@ public class ChequeCommand implements CommandExecutor {
 
         ItemStack itemNaMao = player.getInventory().getItemInMainHand();
 
-        if (itemNaMao.getType() != Material.PAPER) {
-            player.sendMessage(ChatColor.RED + "Você precisa estar segurando papel na mão principal.");
+        if (!plugin.getBanco().ehFolha(itemNaMao)) {
+            player.sendMessage(ChatColor.RED + "Você precisa estar segurando uma folha de cheque em branco. Compre com o Bancário.");
             return true;
         }
 
-        // Consome 1 papel da mão
+        // o valor sai do saldo de quem emite: o cheque é dinheiro de verdade passando de mão em mão
+        Economy econ = plugin.getEconomy();
+        if (econ == null) {
+            player.sendMessage(ChatColor.RED + "Não há um plugin de economia (Vault) instalado no servidor.");
+            return true;
+        }
+        if (!econ.has(player, valor)) {
+            player.sendMessage(ChatColor.RED + "Saldo insuficiente: o cheque de " + formatarValor(valor)
+                    + " sai do seu saldo, e você tem " + formatarValor(econ.getBalance(player)) + ".");
+            return true;
+        }
+        if (!econ.withdrawPlayer(player, valor).transactionSuccess()) {
+            player.sendMessage(ChatColor.RED + "Não foi possível tirar o valor do seu saldo.");
+            return true;
+        }
+
+        // Consome 1 folha da mão
         if (itemNaMao.getAmount() > 1) {
             itemNaMao.setAmount(itemNaMao.getAmount() - 1);
         } else {
@@ -101,7 +124,7 @@ public class ChequeCommand implements CommandExecutor {
 
         ItemStack cheque = criarCheque(player, valor, nominal);
         ultimaEmissao.put(player.getUniqueId(), System.currentTimeMillis());
-        plugin.getChequeLog().emitido(player.getName(), valor,
+        plugin.getChequeLog().emitido(player.getUniqueId(), player.getName(), valor,
                 cheque.getItemMeta().getPersistentDataContainer().get(plugin.getChequeIdKey(), PersistentDataType.STRING),
                 nominal != null ? nominal.getName() : null);
 
@@ -111,7 +134,7 @@ public class ChequeCommand implements CommandExecutor {
 
         player.sendMessage(ChatColor.GREEN + "Cheque no valor de " + ChatColor.GOLD + formatarValor(valor)
                 + ChatColor.GREEN + (nominal != null ? " nominal a " + ChatColor.WHITE + nominal.getName() + ChatColor.GREEN : "")
-                + " criado com sucesso!");
+                + " criado com sucesso! O valor saiu do seu saldo.");
 
         return true;
     }
@@ -128,6 +151,9 @@ public class ChequeCommand implements CommandExecutor {
         if (nominal != null) {
             lore.add(ChatColor.GRAY + "Nominal a: " + ChatColor.WHITE + nominal.getName() + ChatColor.GRAY + " (só ele resgata)");
         }
+        String id = UUID.randomUUID().toString();
+        // os 8 primeiros caracteres do ID: com eles a staff cancela um cheque que já está com outro jogador
+        lore.add(ChatColor.DARK_GRAY + "ID: " + id.substring(0, 8));
         lore.add("");
         lore.add(ChatColor.YELLOW + "Clique direito para resgatar");
         meta.setLore(lore);
@@ -135,13 +161,84 @@ public class ChequeCommand implements CommandExecutor {
         // Grava dados reais no item (não confia no texto do lore, que pode ser editado
         // por outros plugins de anvil/renomear). Isso evita duplicação/falsificação.
         meta.getPersistentDataContainer().set(plugin.getChequeValueKey(), PersistentDataType.DOUBLE, valor);
-        meta.getPersistentDataContainer().set(plugin.getChequeIdKey(), PersistentDataType.STRING, UUID.randomUUID().toString());
+        meta.getPersistentDataContainer().set(plugin.getChequeIdKey(), PersistentDataType.STRING, id);
+        meta.getPersistentDataContainer().set(plugin.getChequeEmissorKey(), PersistentDataType.STRING, emissor.getUniqueId().toString());
         if (nominal != null) {
             meta.getPersistentDataContainer().set(plugin.getChequeNominalKey(), PersistentDataType.STRING, nominal.getUniqueId().toString());
         }
 
         cheque.setItemMeta(meta);
         return cheque;
+    }
+
+    /**
+     * /cheque cancelar: anula o cheque da mão (quem emitiu, ou a staff com cheque.admin), que some.
+     * /cheque cancelar <id>: anula pelo ID do lore (8 caracteres) ou o inteiro do log, mesmo com o
+     * cheque no inventário de outro jogador; só a staff. Quem tentar resgatar depois perde o cheque.
+     * O valor volta pra quem emitiu (emitidos.yml); cheque antigo, de antes de sair do saldo, não devolve.
+     */
+    private void cancelar(Player player, String[] args) {
+        boolean admin = player.hasPermission("cheque.admin");
+        if (args.length >= 2) {
+            if (!admin) {
+                player.sendMessage(ChatColor.RED + "Cancelar pelo ID é só pra staff. Segure o cheque e use /cheque cancelar.");
+                return;
+            }
+            String id = args[1].trim().toLowerCase(Locale.ROOT);
+            if (id.length() < 8) {
+                player.sendMessage(ChatColor.RED + "Use o ID do lore do cheque (8 caracteres) ou o inteiro do cheques.log.");
+                return;
+            }
+            if (plugin.getChequeLog().jaResgatado(id)) {
+                player.sendMessage(ChatColor.RED + "Esse cheque já foi resgatado.");
+                return;
+            }
+            if (plugin.getChequeLog().cancelado(id)) {
+                player.sendMessage(ChatColor.RED + "Esse cheque já foi cancelado.");
+                return;
+            }
+            var emissao = plugin.getChequeLog().emissao(id);
+            plugin.getChequeLog().cancelar(player.getName(), id, emissao != null ? emissao.valor() : null);
+            String devolvido = devolver(emissao);
+            player.sendMessage(ChatColor.GREEN + "Cheque " + ChatColor.WHITE + id + ChatColor.GREEN + " cancelado: ninguém mais resgata."
+                    + devolvido);
+            return;
+        }
+        ItemStack item = player.getInventory().getItemInMainHand();
+        var pdc = item.hasItemMeta() ? item.getItemMeta().getPersistentDataContainer() : null;
+        String id = pdc == null ? null : pdc.get(plugin.getChequeIdKey(), PersistentDataType.STRING);
+        if (id == null) {
+            player.sendMessage(ChatColor.RED + "Segure o cheque na mão principal (ou, staff: /cheque cancelar <id>).");
+            return;
+        }
+        String emissor = pdc.get(plugin.getChequeEmissorKey(), PersistentDataType.STRING);
+        if (!admin && !player.getUniqueId().toString().equals(emissor)) {
+            player.sendMessage(ChatColor.RED + "Só quem emitiu o cheque (ou a staff) pode cancelar.");
+            return;
+        }
+        if (plugin.getChequeLog().cancelado(id) || plugin.getChequeLog().jaResgatado(id)) {
+            player.sendMessage(ChatColor.RED + "Esse cheque já foi cancelado ou resgatado (é uma cópia).");
+            return;
+        }
+        Double valor = pdc.get(plugin.getChequeValueKey(), PersistentDataType.DOUBLE);
+        var emissao = plugin.getChequeLog().emissao(id);
+        plugin.getChequeLog().cancelar(player.getName(), id, valor);
+        if (item.getAmount() > 1) item.setAmount(item.getAmount() - 1);
+        else player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+        player.sendMessage(ChatColor.GREEN + "Cheque de " + ChatColor.GOLD + formatarValor(valor == null ? 0 : valor)
+                + ChatColor.GREEN + " cancelado." + devolver(emissao));
+    }
+
+    /** Devolve o valor do cheque cancelado pra quem emitiu. Retorna o pedaço da mensagem pra staff. */
+    private String devolver(com.example.cheque.ChequeLog.Emissao emissao) {
+        if (emissao == null || plugin.getEconomy() == null) return ChatColor.GRAY + " (cheque antigo: sem valor pra devolver)";
+        OfflinePlayer emissor = Bukkit.getOfflinePlayer(emissao.emissor());
+        plugin.getEconomy().depositPlayer(emissor, emissao.valor());
+        if (emissor.getPlayer() != null) {
+            emissor.getPlayer().sendMessage(ChatColor.GREEN + "Seu cheque de " + ChatColor.GOLD + formatarValor(emissao.valor())
+                    + ChatColor.GREEN + " foi cancelado, e o valor voltou pro seu saldo.");
+        }
+        return ChatColor.GREEN + " " + formatarValor(emissao.valor()) + " voltaram pra " + emissor.getName() + ".";
     }
 
     private String formatarValor(double valor) {

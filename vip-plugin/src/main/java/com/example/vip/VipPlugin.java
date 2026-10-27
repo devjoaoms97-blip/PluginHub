@@ -138,6 +138,19 @@ public class VipPlugin extends JavaPlugin {
         return ChatColor.translateAlternateColorCodes('&', texto);
     }
 
+    /**
+     * A tag do VIP no chat e na tab: o prefixo do grupo no LuckPerms ({@code /lp group vip_ouro meta
+     * setprefix ...}), pra configurar num lugar só; sem prefixo lá (ou com {@code tag-do-luckperms:
+     * false}), o {@code nome-exibicao} do config.
+     */
+    public String getTag(VipTier tier) {
+        if (getConfig().getBoolean("tag-do-luckperms", true) && vipManager != null) {
+            String prefixo = vipManager.prefixoDoGrupo(getGrupoLuckPerms(tier));
+            if (prefixo != null) return ChatColor.translateAlternateColorCodes('&', prefixo);
+        }
+        return getNomeExibicao(tier);
+    }
+
     public int getDescontoPercentual(VipTier tier) {
         return getConfig().getInt(chaveTier(tier, "desconto-loja-percentual"), 0);
     }

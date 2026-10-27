@@ -62,6 +62,19 @@ public class VipManager {
         }
     }
 
+    /**
+     * O prefixo ({@code meta setprefix}) do grupo no LuckPerms, sem espaço nas pontas, ou null (sem
+     * LuckPerms, grupo que não existe ou sem prefixo). O LuckPerms guarda isso em cache.
+     */
+    public String prefixoDoGrupo(String grupo) {
+        if (luckPerms == null) conectarLuckPerms();
+        if (luckPerms == null) return null;
+        var g = luckPerms.getGroupManager().getGroup(grupo);
+        if (g == null) return null;
+        String prefixo = g.getCachedData().getMetaData().getPrefix();
+        return prefixo == null || prefixo.isBlank() ? null : prefixo.trim();
+    }
+
     // ---------------------------------------------------------------------
     // Adicionar / renovar / remover
     // ---------------------------------------------------------------------

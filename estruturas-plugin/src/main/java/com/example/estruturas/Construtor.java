@@ -1,15 +1,18 @@
 package com.example.estruturas;
 
 import com.example.estruturas.estrutura.ArenaAxePvP;
+import com.example.estruturas.estrutura.ArenaMobs;
 import com.example.estruturas.estrutura.ArenaColiseu;
 import com.example.estruturas.estrutura.ArenaSpringColiseu;
 import com.example.estruturas.estrutura.ArenaToxica;
 import com.example.estruturas.estrutura.LojaOficial;
 import com.example.estruturas.estrutura.OficinasDaMina;
 import com.example.estruturas.estrutura.AvenidaDasMinas;
+import com.example.estruturas.estrutura.BancoDoSpawn;
 import com.example.estruturas.estrutura.BarracasDoSpawn;
 import com.example.estruturas.estrutura.Estrutura;
 import com.example.estruturas.estrutura.Planta;
+import com.example.estruturas.estrutura.PortaoOesteDoSpawn;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -51,6 +54,9 @@ public class Construtor {
         registrar(new AvenidaDasMinas());
         registrar(new OficinasDaMina());
         registrar(new LojaOficial());
+        registrar(new PortaoOesteDoSpawn());
+        registrar(new ArenaMobs());
+        registrar(new BancoDoSpawn());
     }
 
     private void registrar(Estrutura estrutura) {

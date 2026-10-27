@@ -3,8 +3,8 @@ version: '1.0.0'
 main: com.example.oficinas.OficinasPlugin
 api-version: '26.2'
 author: Você
-description: NPCs de serviço na mina - Ferreiro (reparo), Bruxa (encantamento no máximo), Picareteiro e Sábio (XP e lápis).
-softdepend: [Vault, PixPlugin]
+description: NPCs de serviço na mina - Ferreiro, Bruxa, Picareteiro, Sábio, Compactador, Cambista e o guia de cada mina.
+softdepend: [Vault, PixPlugin, RankupPlugin, MissoesPlugin, ChequePlugin]
 
 commands:
   oficina:

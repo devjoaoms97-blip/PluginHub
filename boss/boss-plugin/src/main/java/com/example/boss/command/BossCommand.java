@@ -44,8 +44,13 @@ public class BossCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase(Locale.ROOT)) {
             case "start" -> {
-                if (args.length > 1) {
-                    plugin.getBossManager().iniciarPorId(args[1], sender);
+                // /boss start [id] [elite]: "elite" força o boss elite (sem ele, o aleatório tem a chance do config)
+                boolean elite = args.length > 1 && args[args.length - 1].equalsIgnoreCase("elite");
+                String id = args.length > 1 && !args[1].equalsIgnoreCase("elite") ? args[1] : null;
+                if (id != null) {
+                    plugin.getBossManager().iniciarPorId(id, sender, elite);
+                } else if (elite) {
+                    plugin.getBossManager().iniciarAleatorio(sender, true);
                 } else {
                     plugin.getBossManager().iniciarAleatorio(sender);
                 }
@@ -170,7 +175,7 @@ public class BossCommand implements CommandExecutor, TabCompleter {
     private void enviarAjuda(CommandSender sender) {
         sender.sendMessage("§e§l--- Comandos do Boss ---");
         sender.sendMessage("§f/boss proximo §7- quando o próximo boss aparece (pra todos)");
-        sender.sendMessage("§f/boss start [id] §7- inicia um boss aleatório (ou um específico pelo id)");
+        sender.sendMessage("§f/boss start [id] [elite] §7- inicia um boss aleatório (ou um específico pelo id); \"elite\" força o elite");
         sender.sendMessage("§f/boss list §7- lista os perfis de boss configurados");
         sender.sendMessage("§f/boss stop §7- remove o boss ativo");
         sender.sendMessage("§f/boss setlocal [mundo x y z] §7- define a arena na sua posição atual (ou no lugar informado)");
@@ -191,8 +196,12 @@ public class BossCommand implements CommandExecutor, TabCompleter {
             opcoes.removeIf(o -> !o.startsWith(digitado));
             return opcoes;
         }
+        if (args.length == 3 && args[0].equalsIgnoreCase("start")) {
+            return "elite".startsWith(args[2].toLowerCase(Locale.ROOT)) ? List.of("elite") : List.of();
+        }
         if (args.length == 2 && args[0].equalsIgnoreCase("start")) {
             List<String> opcoes = new ArrayList<>(plugin.getBossManager().getPerfis().keySet());
+            opcoes.add("elite");
             String digitado = args[1].toLowerCase(Locale.ROOT);
             opcoes.removeIf(o -> !o.startsWith(digitado));
             return opcoes;

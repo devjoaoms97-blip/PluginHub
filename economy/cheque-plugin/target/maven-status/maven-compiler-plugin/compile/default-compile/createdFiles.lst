@@ -1,4 +1,7 @@
 com\example\cheque\ChequeListener.class
-com\example\cheque\ChequePlugin.class
 com\example\cheque\ChequeCommand.class
 com\example\cheque\ChequeLog.class
+com\example\cheque\Banco$Menu.class
+com\example\cheque\ChequeLog$Emissao.class
+com\example\cheque\ChequePlugin.class
+com\example\cheque\Banco.class

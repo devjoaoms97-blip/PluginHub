@@ -7,15 +7,11 @@ intervalo-segundos: 300
 # Pode ter quantos avisos quiser, em qualquer ordem.
 avisos-segundos: [60, 30, 10, 5]
 
-# Só remove itens que já estão no chão há pelo menos esse tempo, em segundos — evita apagar
-# algo que acabou de cair na frente do jogador (ex: bloco que ele acabou de minerar).
-idade-minima-segundos: 10
-
 # Não remove itens que foram renomeados (ex: na bigorna). Costuma ser sinal de que o jogador
 # se importa com aquele item (troféu de evento, item guardado de propósito, etc.)
 ignorar-itens-nomeados: true
 
-# Também remove os orbes de XP soltos no chão (com a mesma idade mínima).
+# Também remove os orbes de XP soltos no chão.
 limpar-orbes-xp: true
 
 # Não remove nada num raio de tantos blocos de qualquer jogador (o drop de quem está minerando ou
@@ -24,6 +20,20 @@ protecao-perto-de-jogador: 8
 
 # /limparchao (sem argumento): espera tantos segundos depois do aviso antes de limpar.
 aviso-manual-segundos: 10
+
+# Achados e perdidos: o item com dono (jogado por um jogador, ou que caiu do corpo dele) que a
+# limpeza tiraria do chão vai pra caixa desse jogador (/achados), em vez de sumir. Cada pilha volta
+# pagando taxa-por-pilha (as coins somem da economia). Guarda até maximo-por-jogador pilhas por
+# "dias" dias; o que passa disso some como antes. Nos mundos-sem-caixa (as arenas, onde quem morre
+# perde os itens pro vencedor) nada vai pra caixa.
+achados:
+  ativado: true
+  taxa-por-pilha: 100
+  maximo-por-jogador: 45
+  dias: 3
+  mundos-sem-caixa: [arenas]
+  # Aviso na barra de ação quando um item vai pra caixa de quem está online.
+  avisar: true
 
 mundos:
   # "todos" limpa em todos os mundos.

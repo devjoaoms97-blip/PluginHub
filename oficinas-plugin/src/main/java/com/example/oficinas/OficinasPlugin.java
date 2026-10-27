@@ -1,5 +1,9 @@
 package com.example.oficinas;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,9 +26,10 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Oficinas da mina: NPCs de serviço nas barraquinhas da praça de entrada da avenida das minas —
- * Ferreiro (reparo pago), Bruxa (mesa de encantamento no máximo), Picareteiro (ferramentas) e
- * Sábio (XP e lápis). A staff põe cada NPC com /oficina criar.
+ * Oficinas da mina: NPCs de serviço nas barraquinhas da avenida das minas — Ferreiro (reparo pago),
+ * Bruxa (mesa de encantamento no máximo), Picareteiro (ferramentas), Sábio (XP), Compactador
+ * (blocos de minério) e Cambista (fragmentos por encantamentos acima do máximo) — e o guia na
+ * entrada de cada mina. A staff põe cada NPC com /oficina criar.
  */
 public class OficinasPlugin extends JavaPlugin implements Listener {
 
@@ -32,6 +37,9 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
     private NpcsManager npcs;
     private Servicos servicos;
     private PixIntegration pix;
+    private Integracoes integracoes;
+    private Cambista cambista;
+    private Compactador compactador;
 
     @Override
     public void onEnable() {
@@ -43,8 +51,13 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
         npcs = new NpcsManager(this);
         servicos = new Servicos(this);
         pix = new PixIntegration(this);
+        integracoes = new Integracoes(this);
+        cambista = new Cambista(this);
+        compactador = new Compactador(this);
         getServer().getPluginManager().registerEvents(npcs, this);
         getServer().getPluginManager().registerEvents(servicos, this);
+        getServer().getPluginManager().registerEvents(cambista, this);
+        getServer().getPluginManager().registerEvents(compactador, this);
         getServer().getPluginManager().registerEvents(this, this);
         npcs.carregarTodos();
         getServer().getScheduler().runTaskTimer(this, npcs::conferir, 100L, 100L);
@@ -62,7 +75,25 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
         Oficina o = npcs.getOficina(evento.getRightClicked());
         if (o == null) return;
         evento.setCancelled(true);
-        servicos.abrir(evento.getPlayer(), o.getTipo());
+        if (o.getTipo() == Oficina.Tipo.MINA) mostrarMina(evento.getPlayer(), o.getAlvo());
+        else servicos.abrir(evento.getPlayer(), o.getTipo());
+    }
+
+    /** Guia de mina: as informações dela no chat e, pra quem tem o rank, o botão de ir até ela. */
+    private void mostrarMina(Player jogador, String mina) {
+        List<String> linhas = mina == null ? null : integracoes.infoMina(mina, jogador.getUniqueId());
+        if (linhas == null) {
+            jogador.sendMessage("§cEssa mina não está aberta agora. Avise a staff.");
+            return;
+        }
+        jogador.sendMessage("");
+        linhas.forEach(jogador::sendMessage);
+        if (integracoes.podeEntrarNaMina(mina, jogador)) {
+            jogador.sendMessage(Component.text("[Clique aqui pra entrar na mina]", NamedTextColor.GREEN)
+                    .clickEvent(ClickEvent.runCommand("/mina " + mina))
+                    .hoverEvent(HoverEvent.showText(Component.text("Vai pro ponto da mina " + mina, NamedTextColor.GRAY))));
+        }
+        jogador.playSound(jogador.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_AMBIENT, 0.6f, 1f);
     }
 
     // ---------------------------------------------------------------------
@@ -87,7 +118,7 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
                 sender.sendMessage("§e§l--- Oficinas ---");
                 if (npcs.getOficinas().isEmpty()) sender.sendMessage("§7Nenhuma ainda.");
                 for (Oficina o : npcs.getOficinas().values()) {
-                    sender.sendMessage("§f" + o.getId() + " §7(" + o.getTipo().chave() + ") em §f" + o.getMundo() + " "
+                    sender.sendMessage("§f" + o.getId() + " §7(" + o.getTipo().chave() + (o.getAlvo() != null ? " " + o.getAlvo() : "") + ") em §f" + o.getMundo() + " "
                             + (int) Math.floor(o.getX()) + " " + (int) Math.floor(o.getY()) + " " + (int) Math.floor(o.getZ()));
                 }
             }
@@ -96,7 +127,7 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
                 // teste da staff: abre o serviço sem precisar do NPC
                 Oficina.Tipo tipo = args.length < 2 ? null : Oficina.Tipo.de(args[1]);
                 if (!(sender instanceof Player p) || tipo == null) {
-                    sender.sendMessage("§cUso: §f/oficina abrir <ferreiro|bruxa|picareteiro|sabio|armeiro>");
+                    sender.sendMessage("§cUso: §f/oficina abrir <ferreiro|bruxa|picareteiro|sabio|armeiro|compactador|cambista|bancario>");
                     return true;
                 }
                 servicos.abrir(p, tipo);
@@ -109,7 +140,7 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
             default -> {
                 sender.sendMessage("§e§l--- Oficinas ---");
                 sender.sendMessage("§f/oficina criar <id> <tipo> [mundo x y z yaw] §7- põe o NPC (onde você está, sem coordenadas)");
-                sender.sendMessage("§7  tipos: ferreiro, bruxa, picareteiro, sabio, armeiro");
+                sender.sendMessage("§7  tipos: ferreiro, bruxa, picareteiro, sabio, armeiro, compactador, cambista, bancario, mina:<id da mina>");
                 sender.sendMessage("§f/oficina mesa [mundo x y z] §7- onde fica a mesa de encantamento da bruxa");
                 sender.sendMessage("§f/oficina remover <id> §7| §f/oficina lista §7| §f/oficina abrir <tipo> §7| §f/oficina reload");
             }
@@ -118,9 +149,16 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
     }
 
     private void criar(CommandSender sender, String[] args) {
-        Oficina.Tipo tipo = args.length < 3 ? null : Oficina.Tipo.de(args[2]);
-        if (tipo == null) {
-            sender.sendMessage("§cUso: §f/oficina criar <id> <ferreiro|bruxa|picareteiro|sabio|armeiro> [mundo x y z yaw]");
+        // guia de mina: "mina:<id da mina>"
+        String tipoTexto = args.length < 3 ? "" : args[2];
+        String alvo = null;
+        if (tipoTexto.toLowerCase(Locale.ROOT).startsWith("mina:")) {
+            alvo = tipoTexto.substring(5).toLowerCase(Locale.ROOT);
+            tipoTexto = "mina";
+        }
+        Oficina.Tipo tipo = Oficina.Tipo.de(tipoTexto);
+        if (tipo == null || (tipo == Oficina.Tipo.MINA && (alvo == null || alvo.isBlank()))) {
+            sender.sendMessage("§cUso: §f/oficina criar <id> <ferreiro|bruxa|picareteiro|sabio|armeiro|compactador|cambista|bancario|mina:<mina>> [mundo x y z yaw]");
             return;
         }
         Location local;
@@ -143,8 +181,8 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
             sender.sendMessage("§cDo console, passe o mundo e as coordenadas.");
             return;
         }
-        Oficina o = npcs.criar(args[1], tipo, local);
-        sender.sendMessage("§aOficina §f" + o.getId() + " §a(" + tipo.chave() + ") criada.");
+        Oficina o = npcs.criar(args[1], tipo, alvo, local);
+        sender.sendMessage("§aOficina §f" + o.getId() + " §a(" + tipo.chave() + (alvo != null ? " " + alvo : "") + ") criada.");
     }
 
     private void mesa(CommandSender sender, String[] args) {
@@ -178,7 +216,7 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
         if (args.length == 1) opcoes.addAll(List.of("criar", "remover", "lista", "mesa", "abrir", "reload"));
         else if (args.length == 2 && args[0].equalsIgnoreCase("remover")) opcoes.addAll(npcs.getOficinas().keySet());
         else if ((args.length == 3 && args[0].equalsIgnoreCase("criar")) || (args.length == 2 && args[0].equalsIgnoreCase("abrir"))) {
-            Arrays.stream(Oficina.Tipo.values()).map(Oficina.Tipo::chave).forEach(opcoes::add);
+            Arrays.stream(Oficina.Tipo.values()).map(t -> t == Oficina.Tipo.MINA ? "mina:" : t.chave()).forEach(opcoes::add);
         }
         String digitado = args[args.length - 1].toLowerCase(Locale.ROOT);
         opcoes.removeIf(o -> !o.startsWith(digitado));
@@ -214,5 +252,21 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
 
     PixIntegration getPix() {
         return pix;
+    }
+
+    Integracoes getIntegracoes() {
+        return integracoes;
+    }
+
+    Servicos getServicos() {
+        return servicos;
+    }
+
+    Cambista getCambista() {
+        return cambista;
+    }
+
+    Compactador getCompactador() {
+        return compactador;
     }
 }
