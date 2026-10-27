@@ -68,6 +68,9 @@ import java.util.UUID;
  * não funcionam lá dentro, e o teleporte que um deles acabou de pedir não leva ninguém pra lá
  * (um {@code /back} pro lugar em que morreu na arena, uma casa antiga marcada lá). /spawn e /warp
  * (a plateia) continuam valendo.
+ * <p>
+ * PvP só em partes de um mundo ({@code pvp-so-nas-caixas}): no mundo spawn o PvP do jogo fica ligado,
+ * mas um jogador só machuca outro se os dois estiverem dentro de uma das caixas (a arena do boss).
  */
 public class AreasPlugin extends JavaPlugin implements Listener {
 
@@ -216,6 +219,48 @@ public class AreasPlugin extends JavaPlugin implements Listener {
         if (evento.getCause() != org.bukkit.event.entity.EntityDamageEvent.DamageCause.FALL || !(evento.getEntity() instanceof Player p)) return;
         if (p.getAllowFlight() && bloqueia("voo") && areaEm(p.getLocation()) != null && !p.hasPermission("areas.ignorar")) {
             evento.setCancelled(true);
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // PvP só nas caixas (a arena do boss, no mundo spawn)
+    // ---------------------------------------------------------------------
+
+    /** O mundo tem PvP só em caixas, e esse lugar está fora de todas? */
+    private boolean pvpBarrado(Location l) {
+        ConfigurationSection s = getConfig().getConfigurationSection("pvp-so-nas-caixas");
+        if (l == null || l.getWorld() == null || s == null || !s.isList(l.getWorld().getName())) return false;
+        for (Map<?, ?> m : s.getMapList(l.getWorld().getName())) {
+            List<?> min = m.get("min") instanceof List<?> a ? a : null, max = m.get("max") instanceof List<?> b ? b : null;
+            if (min == null || max == null || min.size() != 3 || max.size() != 3) continue;
+            boolean dentro = true;
+            double[] p = {l.getX(), l.getY(), l.getZ()};
+            for (int i = 0; i < 3 && dentro; i++) {
+                double a = ((Number) min.get(i)).doubleValue(), b = ((Number) max.get(i)).doubleValue();
+                dentro = p[i] >= Math.min(a, b) && p[i] <= Math.max(a, b) + 1;
+            }
+            if (dentro) return false;
+        }
+        return true;
+    }
+
+    /** Jogador contra jogador (golpe, flecha, tridente...): só vale com os dois dentro de uma caixa. */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoPvp(EntityDamageByEntityEvent evento) {
+        if (!(evento.getEntity() instanceof Player vitima)) return;
+        Player atacante = jogadorDe(evento.getDamager());
+        if (atacante == null || atacante == vitima) return;
+        if (pvpBarrado(vitima.getLocation()) || pvpBarrado(atacante.getLocation())) evento.setCancelled(true);
+    }
+
+    /** Poção de arremesso de um jogador não pega em outro fora das caixas. */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void aoPocao(org.bukkit.event.entity.PotionSplashEvent evento) {
+        if (!(evento.getPotion().getShooter() instanceof Player atirador)) return;
+        for (org.bukkit.entity.LivingEntity alvo : evento.getAffectedEntities()) {
+            if (alvo instanceof Player p && p != atirador && (pvpBarrado(p.getLocation()) || pvpBarrado(atirador.getLocation()))) {
+                evento.setIntensity(alvo, 0);
+            }
         }
     }
 

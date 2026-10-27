@@ -25,6 +25,14 @@ bloquear:
   fruta-do-coro: true
   carga-de-vento: true
 
+# PvP só em partes de um mundo: o PvP do mundo fica LIGADO (no Multiverse), mas um jogador só machuca
+# outro se os dois estiverem dentro de uma das caixas ([x, y, z] dos cantos). Fora delas, nada: nem
+# golpe, nem flecha, nem poção de arremesso. Mundo que não está aqui segue o PvP do próprio mundo.
+pvp-so-nas-caixas:
+  spawn:
+    # A arena do boss, enterrada ao sul do spawn, com a escadaria (estrutura "toxica"): PvP sempre.
+    - {nome: "arena do boss", min: [-60, 0, 107], max: [60, 100, 253]}
+
 # Nas áreas listadas, os comandos abaixo não funcionam lá dentro, e o teleporte que um deles acabou
 # de pedir (até 10 s) não leva ninguém pra lá: /tpa de fora pra quem está dentro (o /tpaccept lá
 # dentro é barrado), /back pro lugar em que morreu na arena, casa antiga marcada lá. /spawn e /warp

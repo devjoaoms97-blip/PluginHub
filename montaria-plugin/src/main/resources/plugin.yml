@@ -1,0 +1,21 @@
+name: MontariaPlugin
+version: '1.0.0'
+main: com.example.montaria.MontariaPlugin
+api-version: '26.2'
+author: Você
+description: Montaria do VIP no spawn (/montaria), mais rápida que a pé, fora das minas e da arena do boss.
+softdepend: [RankupPlugin]
+
+commands:
+  montaria:
+    description: Chama a sua montaria (VIP) ou manda ela embora.
+    usage: "Uso: /montaria"
+    aliases: [cavalo]
+
+permissions:
+  vip.perk.montaria:
+    description: Usa a montaria no spawn (os grupos de VIP do LuckPerms dão).
+    default: op
+  montaria.admin:
+    description: Recarrega o config da montaria.
+    default: op

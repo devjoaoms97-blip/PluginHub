@@ -1,0 +1,39 @@
+# Configuração do MontariaPlugin (montaria do VIP no spawn)
+#
+# /montaria chama a montaria (e de novo manda ela embora). Precisa da permissão vip.perk.montaria,
+# que os grupos de VIP do LuckPerms dão. Ela some quando o jogador desce, sai, se teleporta, troca de
+# mundo, toma dano ou entra num lugar proibido.
+
+# Mundos onde dá pra usar. Fora deles, a montaria nem aparece.
+mundos: [spawn]
+
+# Caixas proibidas ([x, y, z] dos cantos): ao entrar, a montaria some e o jogador segue a pé. Os poços
+# das minas do RankupPlugin já são proibidos sozinhos (não precisa pôr aqui).
+proibido:
+  # A arena do boss, enterrada ao sul do spawn, com a escadaria (estrutura "toxica"): é luta, e tem PvP.
+  - nome: "arena do boss"
+    mundo: spawn
+    min: [-60, 0, 107]
+    max: [60, 100, 253]
+
+# Velocidade: tantas vezes a corrida a pé (5,6 blocos por segundo). 1.6 é um cavalo médio do jogo.
+velocidade-vezes-corrida: 1.6
+# Força do pulo (0.5 sobe um degrau e não pula balcão nem barraca; 0.7 é o cavalo comum).
+pulo: 0.5
+# Segundos entre chamar uma montaria e outra.
+recarga-segundos: 5
+
+# A montaria de cada um: a primeira da lista cuja permissão o jogador tem. Qualquer tipo de cavalo do
+# jogo (HORSE, SKELETON_HORSE, ZOMBIE_HORSE, DONKEY, MULE, CAMEL). Sem nenhuma, tipo-padrao.
+# Exemplo, pra variar por tier:
+#   - {permissao: "vip.xp.diamante", tipo: SKELETON_HORSE}
+tipos: []
+tipo-padrao: HORSE
+
+nome: "&6Montaria de %jogador%"
+silenciosa: false
+
+mensagens:
+  sem-permissao: "&cA montaria é um benefício do VIP. Veja &f/vip&c."
+  lugar-proibido: "&cAqui não dá pra usar a montaria (%lugar%)."
+  saiu: "&7Sua montaria não entra aqui (%lugar%): siga a pé."

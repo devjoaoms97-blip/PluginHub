@@ -1,6 +1,7 @@
 com\example\boss\manager\BossManager$1.class
 com\example\boss\util\DiscordIntegration.class
 com\example\boss\listener\BossDamageListener.class
+com\example\boss\listener\BossOrfaoListener.class
 com\example\boss\model\TipoAcaoFase.class
 com\example\boss\model\BossProfile.class
 com\example\boss\util\SkillsIntegration.class

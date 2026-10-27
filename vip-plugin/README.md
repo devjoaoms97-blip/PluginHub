@@ -138,6 +138,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_bronze permission set vip.perk.heal true
 /lp group vip_bronze permission set vip.perk.feed true
 /lp group vip_bronze permission set vip.perk.kit true
+/lp group vip_bronze permission set vip.perk.montaria true
 /lp group vip_bronze permission set vip.perk.particulas true
 /lp group vip_bronze permission set vip.desconto.bronze true
 /lp group vip_bronze permission set vip.xp.bronze true
@@ -147,6 +148,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_prata permission set vip.perk.heal true
 /lp group vip_prata permission set vip.perk.feed true
 /lp group vip_prata permission set vip.perk.kit true
+/lp group vip_prata permission set vip.perk.montaria true
 /lp group vip_prata permission set vip.perk.particulas true
 /lp group vip_prata permission set vip.perk.fly true
 /lp group vip_prata permission set vip.desconto.prata true
@@ -158,6 +160,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_ouro permission set vip.perk.heal true
 /lp group vip_ouro permission set vip.perk.feed true
 /lp group vip_ouro permission set vip.perk.kit true
+/lp group vip_ouro permission set vip.perk.montaria true
 /lp group vip_ouro permission set vip.perk.particulas true
 /lp group vip_ouro permission set vip.perk.fly true
 /lp group vip_ouro permission set vip.perk.warp true
@@ -171,6 +174,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_diamante permission set vip.perk.heal true
 /lp group vip_diamante permission set vip.perk.feed true
 /lp group vip_diamante permission set vip.perk.kit true
+/lp group vip_diamante permission set vip.perk.montaria true
 /lp group vip_diamante permission set vip.perk.particulas true
 /lp group vip_diamante permission set vip.perk.fly true
 /lp group vip_diamante permission set vip.perk.warp true

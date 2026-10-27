@@ -46,6 +46,7 @@ public class BossPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BossDeathListener(this), this);
         getServer().getPluginManager().registerEvents(new BossDamageListener(this), this);
         getServer().getPluginManager().registerEvents(new BossExplosionListener(this), this);
+        getServer().getPluginManager().registerEvents(new com.example.boss.listener.BossOrfaoListener(this), this);
 
         // Checa a agenda a cada 20s — menos que 1 min de propósito, pra lag não fazer pular um
         // minuto inteiro. Spawn e avisos têm trava própria contra disparo duplicado no mesmo minuto.
@@ -65,6 +66,8 @@ public class BossPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         if (bossManager != null && bossManager.estaAtivo()) {
+            // o boss sai do mundo junto: sem isso ele ficava salvo e voltava órfão (sem barra nem ranking)
+            bossManager.getBossAtivo().remove();
             bossManager.finalizar(false);
         }
         getLogger().info("BossPlugin desativado!");

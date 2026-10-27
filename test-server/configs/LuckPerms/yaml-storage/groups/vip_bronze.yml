@@ -4,6 +4,7 @@ permissions:
 - vip.perk.feed
 - vip.perk.heal
 - vip.perk.kit
+- vip.perk.montaria
 - vip.perk.particulas
 - vip.xp.bronze
 prefixes:

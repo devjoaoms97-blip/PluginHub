@@ -16,6 +16,8 @@ Dentro de uma área fechada:
 | Carga de vento | Não sai e não é gasta |
 | Construção | Ninguém quebra nem coloca bloco, usa balde, põe fogo, pisoteia plantação nem mexe em moldura, quadro e suporte de armadura. Explosão, fogo que espalha e mob (enderman) também não mexem em nada. As minas do RankupPlugin ficam de fora: lá quem cuida é ele |
 
+**PvP só na arena do boss.** No mundo `spawn`, o PvP do Minecraft fica ligado, mas um jogador só machuca outro se os dois estiverem dentro de uma das caixas de `pvp-so-nas-caixas` (a arena do boss, com a escadaria). No resto do spawn, na Avenida das Minas e na loja, nada passa: nem golpe, nem flecha, nem poção de arremesso. Por isso o `configurar-mundos.bat` liga o PvP do mundo `spawn`. Mundo que não está na lista segue o PvP do próprio mundo.
+
 **Teleporte por comando (só nas arenas).** No mundo `arenas`, os comandos de `teleporte-por-comando.comandos` (`/tpa`, `/tpahere`, `/tpaccept`, `/back`, `/home`, `/sethome` e os apelidos do EssentialsX) não funcionam. E o teleporte que um deles acabou de pedir, até 10 s antes, não leva ninguém pra lá: nem o `/back` pro lugar em que o jogador morreu na arena, nem uma casa antiga marcada lá, nem o `/tpa` aceito antes de alguém entrar. `/spawn` e `/warp` (a plateia) continuam. As áreas com essa regra ficam em `teleporte-por-comando.areas`.
 
 Cada um liga e desliga em `bloquear`. Os admins (`areas.ignorar`) e quem está no criativo passam. Os jogadores que assistem (plateia do X1 e do Gladiador) seguem as mesmas regras de quem joga.

@@ -227,9 +227,13 @@ Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcan
 - [ ] `url-publica` do pacote no servidor de verdade (endereço e porta liberada). 🟢
 - [x] Balcão **PvP** da loja: o Armeiro (OficinasPlugin) vende todas as armaduras e armas sem encantamento (couro a netherita), escudo, flechas e poções. Só compra.
 
-### Montaria no spawn (`/montaria`) 🟡
-Pedido de 2026-10-27: um comando (`/montaria` ou `/cavalo`) que dá uma montaria nas áreas sem PvP do spawn, para o jogador ir mais rápido das minas até a loja, por exemplo. A montaria some ao descer, ao sair da área ou ao entrar em combate, e não pode ser levada para as áreas de PvP.
-- [ ] Definir: montaria única para todos ou por rank/VIP (cavalo, camelo...), velocidade e se dá para usar dentro das minas.
+### Montaria no spawn ✅ v1 (`montaria-plugin`)
+`/montaria` (ou `/cavalo`) chama um cavalo pra andar mais rápido pelo mundo spawn (decisões de 2026-10-27):
+- **Só VIP** (permissão `vip.perk.montaria`, em todos os tiers).
+- **1,6× a corrida a pé**, com pulo baixo (não pula balcão nem barraca).
+- **No mundo spawn todo, menos os poços das minas e a arena do boss**: quem entra montado desce e segue a pé.
+- Some ao descer, sair, se teleportar, trocar de mundo ou tomar dano. Ninguém mais monta nela.
+- [ ] Montaria diferente por tier (`tipos` no config já aceita), se quiser variar.
 
 ### Mine-sena ✅ v1 (no Bancário, `economy/cheque-plugin`)
 A loteria do Bancário (2026-10-27). O jogador escolhe um número de 1 a 100 e compra o bilhete no balcão (R$ 500). Todo dia às 18:00 o servidor sorteia o número premiado, e o pote inteiro (todas as apostas acumuladas) vai pra quem acertou. Mais de um ganhador divide; sem ganhador, acumula pro próximo sorteio. Resultado no chat e no Discord, e aposta e prêmio no extrato do Bancário.
@@ -238,6 +242,9 @@ As outras ideias de banco (empréstimo, poupança, câmbio de fragmentos, açõe
 
 ### Extrato no Bancário ✅ (2026-10-27)
 O `/pix historico` saiu: o extrato agora é um livro que o Bancário entrega, com as últimas 30 movimentações. Entraram nele o que faltava: os prêmios em dinheiro do boss, a revenda de código VIP e o bônus da ativação, a taxa dos achados e perdidos, e a folha, a emissão e o cancelamento de cheque. Só a venda automática das minas fica de fora (seria uma linha por bloco). O histórico guarda as últimas 50 de cada jogador.
+
+### PvP na arena do boss ✅ (2026-10-27)
+A arena do boss (enterrada ao sul do spawn, com a escadaria) tem PvP sempre ligado. O mundo `spawn` passou a ter o PvP do jogo ligado, e o AreasPlugin barra o PvP fora da caixa da arena (`pvp-so-nas-caixas`). **No servidor de verdade:** `mv modify spawn set pvp true`.
 
 ### Áreas fechadas ✅ v1 (`areas-plugin`)
 Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gladiador e plateias) por fora do caminho, nem quem joga, nem quem assiste: lá dentro não dá pra voar (`/fly` do VIP), planar de elytra, jogar pérola do fim, usar tridente com Correnteza, fruta do coro nem carga de vento. Quem entra voando ou planando cai, sem dano. Os admins e o criativo passam. As áreas ficam no config (mundo inteiro ou caixa).
@@ -253,6 +260,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **XP de skill por participar**, conforme o dano causado.
 - [x] **`/boss proximo`**: mostra quando é o próximo spawn da agenda.
 - [x] **Código de VIP pro campeão**: entrega opcional de um código de VIP de curta duração. Funciona como vitrine do VIP.
+- [x] **Corrigido** (2026-10-27): reiniciar com o boss vivo deixava um boss órfão na arena (sem barra nem ranking, matando quem chegasse). Agora o boss sai do mundo ao desligar, e qualquer boss órfão some quando a arena carrega.
 - [x] **Boss "elite"** (2026-10-27): 10% de chance a cada boss aleatório (ou `/boss start [id] elite`), com 2× de vida e de dano, recompensas em dobro e o loot do chão sorteado duas vezes.
 - [x] **Recompensa em dinheiro** pro campeão, além do item.
 

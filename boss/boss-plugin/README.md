@@ -165,7 +165,9 @@ O `.jar` sai em `target/BossPlugin.jar`.
 
 4. **`getKiller()` do Bukkit**: uso o método nativo do jogo pra saber quem deu o último hit — é o mesmo mecanismo confiável usado pra qualquer mob morrer "por" um jogador no Minecraft vanilla.
 
-5. **Loot persiste em `plugins/BossPlugin/loot.yml`**: sobrevive a reinícios do servidor, então você só precisa cadastrar os itens uma vez (a menos que queira mudar depois).
+5. **Reiniciar no meio da luta perde o boss**: ao desligar, o boss vivo sai do mundo (a luta não continua depois). E se o servidor cair com o boss vivo, ele é removido quando o chunk da arena carrega: um boss "órfão", que o plugin não conhece, ficaria sem barra e sem ranking, matando quem chegasse.
+
+6. **Loot persiste em `plugins/BossPlugin/loot.yml`**: sobrevive a reinícios do servidor, então você só precisa cadastrar os itens uma vez (a menos que queira mudar depois).
 
 ## Ideias para expandir
 
