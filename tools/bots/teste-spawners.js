@@ -1,6 +1,7 @@
 // Spawners empilhados (SpawnersPlugin): o vendedor do balcão Spawners da Loja Oficial vende, o
-// spawner só entra no terreno, empilha clicando com outro igual, a pilha de mobs aparece em cima
-// ("x2 Porco"), cada morte derruba os drops e tira um da pilha, e quebrar devolve os spawners.
+// spawner só entra no terreno, empilha clicando com outro igual, a pilha de mobs ("x2 Porco") nasce
+// num lugar livre em cima ou em volta do spawner, um abate mata a pilha inteira com os drops de
+// todos, e quebrar devolve os spawners.
 // Uso: node teste-spawners.js   (leva ~1 min: espera o ciclo de 20 s)
 const t = require('./lib')
 const { Vec3 } = require('vec3')
@@ -45,8 +46,9 @@ t.rodar(async () => {
   await t.espera(1200)
   await spawnerNaMao()
   let msgs = await t.capturar(bot, () => bot.placeBlock(bot.blockAt(bot.entity.position.offset(0, -1, 2)), new Vec3(0, 1, 0)).catch(() => {}), 1200)
-  // quem barra primeiro pode ser a proteção do spawn ou o próprio plugin: o que importa é não entrar
-  t.verificar(msgs.some(m => /só pode ser colocado no seu terreno|não pode construir/.test(m)), 'no spawn não deixa colocar', msgs[0])
+  // quem barra primeiro pode ser o AreasPlugin (o spawn não aceita bloco nenhum), a proteção do mundo ou
+  // o próprio plugin: o que importa é não entrar
+  t.verificar(msgs.some(m => /só pode ser colocado no seu terreno|não pode construir|não dá pra colocar/.test(m)), 'no spawn não deixa colocar', msgs[0])
 
   console.log('\n== No terreno ==')
   msgs = await t.capturar(bot, () => bot.chat('/terreno auto'), 3000)
@@ -57,6 +59,8 @@ t.rodar(async () => {
   await t.espera(1500)
   msgs = await t.capturar(bot, () => bot.chat('/terreno comprar'), 1500)
   t.verificar(msgs.some(m => m.includes('comprado')), 'comprou um terreno pra testar', msgs[0])
+  // a pilha de uma rodada anterior (o terreno é o mesmo) juntaria com a nova: some com ela antes
+  await t.console(`execute in minecraft:terrenos positioned ${gx * CELULA + 16} 65 ${gz * CELULA + 16} run minecraft:kill @e[type=pig,distance=..48]`)
   await spawnerNaMao()
   const chao = bot.blockAt(bot.entity.position.offset(0, -1, 2))
   await bot.placeBlock(chao, new Vec3(0, 1, 0)).catch(() => {})
@@ -72,24 +76,35 @@ t.rodar(async () => {
 
   console.log('\n== Pilha de mobs ==')
   await t.espera(22000) // um ciclo
-  const pilha = () => Object.values(bot.entities).find(e => e.name === 'pig' && e.position.distanceTo(lugar.offset(0.5, 1, 0.5)) < 1.5)
+  // a pilha é o porco com "xN" no nome; nasce em cima ou em volta do spawner e anda como um porco normal
+  const pilha = () => Object.values(bot.entities).find(e => e.name === 'pig' && /x\d+/.test(t.semCor(JSON.stringify(e.metadata)))
+    && e.position.distanceTo(lugar) < 12)
   let porco = pilha()
   const nomePilha = porco ? t.semCor(JSON.stringify(porco.metadata)) : ''
-  t.verificar(!!porco && /x2/.test(nomePilha), 'a pilha apareceu em cima do spawner (x2)', nomePilha.slice(0, 80))
+  t.verificar(!!porco && /x2 /.test(nomePilha) && /Porco/.test(nomePilha), 'a pilha nasceu com os 2 porcos ("x2 Porco")', nomePilha.slice(0, 80) || 'não achei')
+  // ela anda: traz pra frente do bot antes de bater
+  await t.console(`execute in minecraft:terrenos at ${nome} run minecraft:tp @e[type=pig,distance=..16,limit=1,sort=nearest] ^ ^ ^2`)
+  await t.espera(800)
+  porco = pilha()
 
+  // um abate mata a pilha toda: os drops dos 2 porcos caem de uma vez
+  await t.console(`minecraft:kill @e[type=item,distance=..20,x=${lugar.x},y=${lugar.y},z=${lugar.z}]`)
   await t.console(`minecraft:give ${nome} netherite_sword`)
   await bot.equip(bot.inventory.items().find(i => i.name === 'netherite_sword'), 'hand')
+  const idDaPilha = porco?.id
   for (let i = 0; i < 12 && porco; i++) {
     await bot.lookAt(porco.position.offset(0, 0.5, 0))
     bot.attack(porco)
     await t.espera(700)
-    porco = pilha()
-    if (porco && /x1/.test(t.semCor(JSON.stringify(porco.metadata)))) break
+    porco = bot.entities[idDaPilha]
   }
-  t.verificar(!!porco && /x1/.test(t.semCor(JSON.stringify(porco.metadata))), 'matar um tira um da pilha (x1)',
-    porco ? t.semCor(JSON.stringify(porco.metadata)).slice(0, 80) : 'sumiu')
-  t.verificar(t.itensNoChao(bot).some(n => String(n).startsWith('porkchop')) || Object.keys(t.inventario(bot)).includes('porkchop'),
-    'e derrubou carne de porco', JSON.stringify(t.itensNoChao(bot)).slice(0, 80))
+  await t.espera(800)
+  const outra = Object.values(bot.entities).find(e => e.name === 'pig' && e.position.distanceTo(lugar) < 12)
+  t.verificar(!!idDaPilha && !porco && !outra, 'um abate mata a pilha inteira (não sobra x1)', outra ? t.semCor(JSON.stringify(outra.metadata)).slice(0, 80) : '')
+  // a carne cai no chão ou o bot do lado já pega
+  const carne = t.itensNoChao(bot).filter(n => String(n).startsWith('porkchop')).reduce((s, n) => s + Number(String(n).split('x')[1] || 0), 0)
+    + Number(((await t.console(`minecraft:clear ${nome} porkchop 0`)).match(/Found (\d+)/) || [, 0])[1])
+  t.verificar(carne >= 2, 'e derrubou a carne dos 2 porcos de uma vez', `${carne} carne(s)`)
 
   console.log('\n== Quebrar devolve ==')
   // pode haver spawners de outros jogadores no servidor: confere que a conta caiu em um
