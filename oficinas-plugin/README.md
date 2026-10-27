@@ -21,7 +21,7 @@ NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma
 - **Picareteiro** e **Armeiro**: preço fixo por item em `picareteiro.itens` e `armeiro.itens` (material, nome, quantidade, encantamentos e, nas poções, `pocao` com o tipo do Minecraft, como `strong_healing`). Com `preco: 0` o item é de graça e não aparece no extrato: a picareta e o machado de pedra do Picareteiro são assim, pra quem está começando.
 - **Bruxa**: `bruxa.taxa` por abrir (0 = de graça).
 
-Todos têm o desconto de VIP (`vip-descontos`, as mesmas permissões da loja) e aparecem no `/pix historico`.
+Todos têm o desconto de VIP (`vip-descontos`, as mesmas permissões da loja) e aparecem no extrato do Bancário.
 
 ## Cambista
 
@@ -39,7 +39,7 @@ O Cambista encanta o item da **mão** com níveis acima do máximo do jogo, pago
 
 - Sobe **um nível por vez**: do que o item tem pro primeiro nível da lista (uma picareta com Fortuna III ou sem Fortuna vai pra VI) e depois um a um.
 - Cada encantamento só vai nos itens da lista `itens` dele no config (Afiação nunca em picareta ou pá). `_PICKAXE` vale pra todo material que termina assim; `BOW`, só pro arco. Sem a lista, vale o que o jogo aceita. Também não aparece o que conflita com um encantamento do item (Fortuna e Toque Suave, as proteções entre si).
-- O desconto de VIP vale **só nas coins**. A compra aparece no `/pix historico`, conta pra missão de encantar e, no último nível, é anunciada no chat.
+- O desconto de VIP vale **só nas coins**. A compra aparece no extrato do Bancário, conta pra missão de encantar e, no último nível, é anunciada no chat.
 - **É caro de propósito.** Pela simulação do rankup, só Eficiência VIII leva a meta de 150 h até o Rei pra ~90 h, e Eficiência VIII com Fortuna VIII pra ~75 h. Os custos somam ~105 h de mina em fragmentos pra Eficiência VIII e ~175 h pra Fortuna VIII. O Saque vai só até VI, um nível acima do que dá pra ter no jogo, porque mexe nos drops dos mobs (inclusive dos spawners).
 - Sem item na mão, o menu mostra a vitrine com todos os custos.
 

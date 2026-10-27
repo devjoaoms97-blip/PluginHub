@@ -7,9 +7,23 @@ Cheques entre jogadores, com dinheiro de verdade do servidor (via Vault). O cheq
 1. O jogador compra uma **folha de cheque** em branco no Bancário (NPC do OficinasPlugin, tipo `bancario`), por `banco.preco-folha` (R$ 50).
 2. Com a folha na mão, digita `/cheque <valor> [jogador]`. Exemplo: `/cheque 250` cria um cheque de R$ 250,00.
 3. O valor sai do saldo de quem emite (sem saldo, não emite). A folha é consumida (1 unidade) e vira um item **Cheque**, com nome, dono, data de emissão e valor gravado de forma segura dentro do item (não é só texto — usa `PersistentDataContainer`, então não dá pra falsificar editando o nome/lore no bigorna). Papel comum não serve.
-4. Quem está com o cheque leva ao Bancário e clica em **Depositar cheques**: todos os cheques do inventário caem na conta de quem depositou, menos a **taxa de compensação** (`banco.taxa-deposito-percentual`, 1%, igual à do Pix, senão o cheque seria um Pix sem taxa). O depósito aparece no `/pix historico` como transação do emissor pra quem depositou. O clique direito no cheque só avisa pra levar ao Bancário.
+4. Quem está com o cheque leva ao Bancário e clica em **Depositar cheques**: todos os cheques do inventário caem na conta de quem depositou, menos a **taxa de compensação** (`banco.taxa-deposito-percentual`, 1%, igual à do Pix, senão o cheque seria um Pix sem taxa). O clique direito no cheque só avisa pra levar ao Bancário.
+5. **Extrato:** no mesmo balcão, o botão **Extrato** abre um livro com as últimas `banco.extrato-transacoes` (30) movimentações de dinheiro do jogador (o histórico do PixPlugin: Pix, loja, oficinas, rankup, cheques, Mine-sena, boss, VIP...). Nele, a folha e o cheque emitido saem de quem emite, o cancelamento devolve, e o depósito entra pra quem deposita, já sem a taxa.
 
 A folha e a taxa somem da economia. `/cheque` é liberado pra todos (`cheque.criar`, padrão true).
+
+## Mine-sena
+
+A loteria do Bancário. No balcão, o botão **Mine-sena** abre os números de 1 a `minesena.numero-maximo` (100), em páginas. Cada clique compra um bilhete daquele número por `minesena.preco-bilhete` (R$ 500). O número fica verde com a quantidade de bilhetes que o jogador tem nele.
+
+- Todo dia às `minesena.horario` (18:00, hora do servidor) sai o número premiado. O **pote inteiro** (todas as apostas acumuladas) é dividido entre os bilhetes com esse número: quem tem 2 bilhetes no número leva 2 partes.
+- **Sem ganhador, acumula** pro sorteio seguinte.
+- O bilhete fica registrado no nome do jogador (não é item: não dá pra duplicar nem perder) e vale pro próximo sorteio. Cada um compra até `minesena.maximo-bilhetes-por-jogador` (20) por sorteio.
+- Se o servidor estava desligado no horário, o sorteio sai assim que ele liga. Sem aposta e sem pote, não há anúncio.
+- O resultado vai pro chat e pro Discord (categoria `minesena` do DiscordPlugin). Quem ganhou offline é avisado ao entrar. A aposta e o prêmio aparecem no extrato do Bancário.
+- `/minesena` mostra o pote, o horário, os seus números e o último resultado. A staff (`cheque.admin`) sorteia na hora com `/minesena sortear [número]` (sem número, sorteia de verdade). Tudo fica em `minesena.yml`.
+
+O dinheiro das apostas não sai da economia: volta inteiro pra quem ganha.
 
 ## Cheque nominal, limites e log
 

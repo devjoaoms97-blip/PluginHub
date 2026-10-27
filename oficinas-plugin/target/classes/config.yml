@@ -285,5 +285,5 @@ vip-descontos:
     percentual: 3
 
 integracao:
-  # Registra os pagamentos no /pix historico (precisa do PixPlugin).
+  # Registra os pagamentos no extrato do Bancário (precisa do PixPlugin).
   pix: true

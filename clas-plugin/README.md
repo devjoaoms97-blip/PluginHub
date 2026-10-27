@@ -36,7 +36,7 @@ Permissões: `clas.usar` (padrão: todos) e `clas.admin` (padrão: op).
 - **Fogo amigo desligado**: membro do mesmo clã não machuca o outro com golpe direto, projétil, poção de dano, TNT acesa por ele ou cristal do End em que ele bateu. Poção arremessada ou persistente com efeito ruim (veneno, lentidão, fraqueza...) não pega no colega, e as boas (cura, força) continuam pegando. O líder pode ligar o fogo amigo.
 - **Boss mundial**: o clã de quem dá o último golpe no boss vira o **clã do campeão** (★ no `/cla top` e no `/cla info`) e ganha 10 pontos. Os outros clãs cujos membros, somados, tiraram pelo menos 10% da vida do boss ganham 3 pontos. O boss é reconhecido sozinho, sem configurar nada no BossPlugin.
 - **Abates e mortes**: matar um jogador de fora do clã soma um abate pro seu clã e uma morte pro clã da vítima. Não conta entre colegas, entre contas do mesmo IP nem no mundo das arenas (duelo X1 e Gladiador, onde dá pra combinar a luta), configurado em `placar.mundos-ignorados`.
-- **Banco**: qualquer membro deposita, e só o líder saca (ou também os oficiais, se configurado). O extrato guarda as últimas 30 movimentações, e todo membro online é avisado de cada uma. Depósitos e saques também aparecem no `/pix historico` de quem fez, como "Clã [TAG]".
+- **Banco**: qualquer membro deposita, e só o líder saca (ou também os oficiais, se configurado). O extrato guarda as últimas 30 movimentações, e todo membro online é avisado de cada uma. Depósitos e saques também aparecem no extrato do Bancário de quem fez, como "Clã [TAG]".
 - **Nome e chat do clã** não aceitam códigos de cor digitados por jogador.
 
 ## Integrações
@@ -44,7 +44,7 @@ Permissões: `clas.usar` (padrão: todos) e `clas.admin` (padrão: op).
 - **BountyPlugin**: não paga recompensa entre colegas de clã, e não deixa colocar recompensa num colega. O Bounty consulta o `ClasPlugin#mesmoCla(UUID, UUID)` por reflexão.
 - **VipPlugin**: as duas tags convivem no chat e na tab. Na tab, o VipPlugin monta o nome perguntando a tag do clã ao `ClasPlugin#prefixoTab(UUID)`.
 - **BossPlugin**: pontos e clã do campeão (ver acima). O boss é reconhecido pela chave compartilhada `pluginhub:boss_mob`.
-- **PixPlugin**: criação do clã ("Loja do Servidor"), depósitos e saques ("Clã [TAG]") e a devolução do banco quando o clã é desfeito aparecem no `/pix historico`.
+- **PixPlugin**: criação do clã ("Loja do Servidor"), depósitos e saques ("Clã [TAG]") e a devolução do banco quando o clã é desfeito aparecem no extrato do Bancário.
 - **BountyPlugin**: também consulta `tagDoCla(UUID)` e `tagExistente(String)`, pras recompensas contra um clã inteiro.
 - **PainelEconomiaPlugin**: o custo de criação aparece como saída do `ClasPlugin`. Um depósito no banco também aparece como saída, porque o dinheiro sai da conta do jogador, e o saque volta como entrada.
 
@@ -95,6 +95,6 @@ O `.jar` sai em `target/ClasPlugin.jar`.
 ## ⚠️ Simplificações técnicas
 
 1. **A tag na tab e no chat precisa do VipPlugin atualizado** pra aparecer junto com a do VIP. Com um VipPlugin antigo, o VIP sobrescreve a tab sem a tag do clã.
-2. **O banco no `/pix historico` precisa do PixPlugin atualizado.** Com um Pix antigo, só a criação do clã aparece, e um aviso sai uma vez no console.
+2. **O banco no extrato do Bancário precisa do PixPlugin atualizado.** Com um Pix antigo, só a criação do clã aparece, e um aviso sai uma vez no console.
 3. **Fogo amigo não cobre explosão de cama ou de âncora de renascimento** (o jogo não diz quem causou) nem TNT ativada por redstone ou dispensador. Lava e fogo colocados por um colega também machucam.
 4. **O dano do boss por clã fica em memória.** Um restart no meio da luta zera a conta de participação daquele boss.

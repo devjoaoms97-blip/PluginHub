@@ -24,7 +24,7 @@ Tudo o que está planejado para os plugins, num só lugar. Os READMEs de cada pl
 
 O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 
-## Foco atual (2026-10-27) — implementado, falta testar no servidor
+## Foco atual (2026-10-27) — implementado e testado
 
 1. ~~Skills: correção do Sangramento, parry com escudo e prestígio no nível 50~~ ✅
 2. ~~Placar: linha com a skill em uso e o XP dela~~ ✅
@@ -32,7 +32,7 @@ O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 4. ~~Oficinas: Compactador e Cambista (fragmentos das minas por encantamentos VI a VIII) no fundo da avenida, e missões de reparar e encantar~~ ✅
 5. ~~Boss elite, alerta de Pix suspeito, cancelar cheque, tag do VIP pelo LuckPerms, achados e perdidos do ItemCleaner e `/tpa`, `/back` e `/home` barrados nas arenas~~ ✅
 
-Tudo compila, mas nada disso foi testado com o servidor ligado. Os custos do Cambista e a chance do fragmento (1 em 4.000 blocos) são a primeira calibragem: conferir no `analisar.py` com jogadores de verdade.
+Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes antigos). Os custos do Cambista e a chance do fragmento (1 em 4.000 blocos) são a primeira calibragem: conferir no `analisar.py` com jogadores de verdade.
 
 ## Mapa do rankup (decisões de 2026-10-23)
 
@@ -115,13 +115,13 @@ Comércio entre jogadores em barracas alugadas no spawn. A loja é um NPC com a 
 - [x] Loja por NPC com estoque virtual, no lugar dos baús e placas (2026-10-24).
 
 ### Clãs ✅ v1 (`clas-plugin`)
-Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), convites com botão, banco compartilhado com extrato (também no `/pix historico`), fogo amigo desligado (inclusive poção e explosão), chat do clã (`/cc`) e ranking por pontos (abates + boss).
+Tag no chat e na tab (convive com a do VIP), cargos (líder, oficial, membro), convites com botão, banco compartilhado com extrato (também no extrato do Bancário), fogo amigo desligado (inclusive poção e explosão), chat do clã (`/cc`) e ranking por pontos (abates + boss).
 
 **Próximos passos**
 - [x] Tag na tab list, junto com a do VIP.
 - [x] Integração com o Boss: clã do campeão e pontos no ranking.
 - [x] Fogo amigo também pra poção arremessada e explosão (TNT e cristal do End).
-- [x] Banco do clã no `/pix historico` (o Pix ganhou transação com "entidade").
+- [x] Banco do clã no extrato do Bancário (o Pix ganhou transação com "entidade").
 - [ ] Guerra de clãs: declarar guerra, placar de abates entre os dois e prêmio pro vencedor. 🟡
 
 ### Rankup ✅ v1 (`rankup-plugin`)
@@ -199,7 +199,7 @@ Constrói estruturas de código, sem WorldEdit (`/estrutura construir <id> [mund
 NPCs pelo spawn que falam ao receber um clique direito: o balão cresce, escreve letra por letra e some. Cada clique mostra a próxima fala. 12 NPCs com 4 falas cada (`/dica` pra criar e editar).
 
 ### Oficinas da mina ✅ v1 (`oficinas-plugin`)
-Quatro barraquinhas temáticas na praça de entrada da Avenida das Minas (estrutura `oficinas`), cada uma com um NPC de serviço: **Ferreiro** (repara os itens por uma taxa pelo desgaste, material e encantamentos), **Bruxa** (mesa de encantamento sempre no nível 30, com a câmara de estantes escondida embaixo da barraca), **Picareteiro** (picaretas prontas, encantadas ou não) e **Sábio** (níveis de XP). A bruxa põe o lápis; cada NPC tem skin temática. Desconto de VIP e registro no `/pix historico`.
+Quatro barraquinhas temáticas na praça de entrada da Avenida das Minas (estrutura `oficinas`), cada uma com um NPC de serviço: **Ferreiro** (repara os itens por uma taxa pelo desgaste, material e encantamentos), **Bruxa** (mesa de encantamento sempre no nível 30, com a câmara de estantes escondida embaixo da barraca), **Picareteiro** (picaretas prontas, encantadas ou não) e **Sábio** (níveis de XP). A bruxa põe o lápis; cada NPC tem skin temática. Desconto de VIP e registro no extrato do Bancário.
 - [x] Mais oficinas no fundo da avenida (2026-10-27): **Compactador** (minérios e lingotes em blocos e de volta, de graça) e **Cambista**, que troca **Fragmentos Arcanos** (caem nas minas, 1 em 4.000 blocos, ~1 por hora) e coins por Eficiência, Fortuna, Afiação, Proteção e Poder VI a VIII e Saque e Inquebrável IV a VI (o Saque vai até um acima do que dá pra ter no jogo), cada um só nos itens que fazem sentido (Afiação em espada e machado, nunca em picareta ou pá). Caro de propósito: ~105 h de mina pra Eficiência VIII, ~175 h pra Fortuna VIII e ~140 h pra Saque VI, mais milhões em coins.
 - [ ] Calibrar a chance do fragmento e os custos do Cambista com jogadores de verdade (`analisar.py`). 🟡
 - [x] Missões nas oficinas (2026-10-27): tipos `reparar` (Ferreiro) e `encantar` (Bruxa e Cambista), com uma diária e uma semanal de cada.
@@ -231,19 +231,13 @@ Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcan
 Pedido de 2026-10-27: um comando (`/montaria` ou `/cavalo`) que dá uma montaria nas áreas sem PvP do spawn, para o jogador ir mais rápido das minas até a loja, por exemplo. A montaria some ao descer, ao sair da área ou ao entrar em combate, e não pode ser levada para as áreas de PvP.
 - [ ] Definir: montaria única para todos ou por rank/VIP (cavalo, camelo...), velocidade e se dá para usar dentro das minas.
 
-### Banco (ideias em análise, 2026-10-27)
-O Bancário começou com o cheque, mas abre espaço pra mais serviços financeiros. A regra pra todos: o painel da economia mostra mais dinheiro entrando que saindo, então o banco **não pode imprimir dinheiro**. Rendimento só vale se for pago por algo que já sai da economia (taxas), ou se for pequeno, com teto e calibrado pelo painel.
+### Mine-sena ✅ v1 (no Bancário, `economy/cheque-plugin`)
+A loteria do Bancário (2026-10-27). O jogador escolhe um número de 1 a 100 e compra o bilhete no balcão (R$ 500). Todo dia às 18:00 o servidor sorteia o número premiado, e o pote inteiro (todas as apostas acumuladas) vai pra quem acertou. Mais de um ganhador divide; sem ganhador, acumula pro próximo sorteio. Resultado no chat e no Discord, e aposta e prêmio no extrato do Bancário.
 
-| Ideia | Como seria | Efeito na economia | Risco | Esforço |
-|---|---|---|---|---|
-| **Agência no mapa** | Hoje é uma barraquinha no spawn; se os serviços crescerem, vira um prédio próprio | Nenhum | Nenhum | 🟡 |
-| **Poupança / CDB** | Deposita e trava por 7 a 30 dias; rende uma % pequena, maior quanto mais tempo travado, com teto por jogador | Cria dinheiro (o rendimento) e tira de circulação enquanto está travado | Rico fica mais rico (o Gini do painel sobe). Teto baixo e taxa decrescente por faixa resolvem | 🟡 |
-| **Empréstimo** | Pega até X% do preço do próximo rank, paga com juros em parcelas descontadas sozinhas (das vendas na mina ou do saldo) | Os juros saem da economia (sink) | Calote de quem some: exigir garantia (terreno, que vai a leilão como no imposto atrasado) e limite por rank | 🟡/🔴 |
-| **Ações de "empresas do servidor"** | Empresas ligadas a números reais (Mina de Diamante, Loja Oficial, Máquinas). O preço sobe e desce com o volume de vendas da semana, e o dividendo vem de uma parte das taxas já cobradas | Redistribui o que já é sink; não cria dinheiro se o dividendo vier das taxas | Manipulação por quem controla o volume (um jogador vendendo muito diamante). Teto de ações por jogador e preço por média de 7 dias | 🔴 |
-| **Negócios dos jogadores** | Barraca ou clã "abre capital": vende cotas e paga parte do lucro aos cotistas | Nenhum (dinheiro entre jogadores) | Golpe (abre capital e some com o dinheiro). Precisa de garantia e de regras de saída | 🔴 |
-| **Câmbio de fragmentos** | O banco compra e vende Fragmento Arcano com preço dinâmico, como a loja | Cria um preço de mercado pro fragmento | Encurta o "difícil" do Cambista se o banco vender barato: só com spread alto | 🟡 |
+As outras ideias de banco (empréstimo, poupança, câmbio de fragmentos, ações e negócios dos jogadores) foram descartadas em 2026-10-27.
 
-Sugestão de ordem: 1) empréstimo com garantia, porque é sink e ajuda quem está começando; 2) poupança com teto, só depois de algumas semanas de dados do painel; 3) ações. Os negócios dos jogadores ficam por último, porque dependem de regras anti-golpe.
+### Extrato no Bancário ✅ (2026-10-27)
+O `/pix historico` saiu: o extrato agora é um livro que o Bancário entrega, com as últimas 30 movimentações. Entraram nele o que faltava: os prêmios em dinheiro do boss, a revenda de código VIP e o bônus da ativação, a taxa dos achados e perdidos, e a folha, a emissão e o cancelamento de cheque. Só a venda automática das minas fica de fora (seria uma linha por bloco). O histórico guarda as últimas 50 de cada jogador.
 
 ### Áreas fechadas ✅ v1 (`areas-plugin`)
 Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gladiador e plateias) por fora do caminho, nem quem joga, nem quem assiste: lá dentro não dá pra voar (`/fly` do VIP), planar de elytra, jogar pérola do fim, usar tridente com Correnteza, fruta do coro nem carga de vento. Quem entra voando ou planando cai, sem dano. Os admins e o criativo passam. As áreas ficam no config (mundo inteiro ou caixa).
@@ -290,7 +284,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Cancelar e estornar** um cheque emitido por engano (2026-10-27): `/cheque cancelar` com ele na mão, ou `/cheque cancelar <id>` (staff) com ele no inventário de outro. O valor volta pra quem emitiu.
 - [x] **O cheque sai do saldo de quem emite** (2026-10-27). Antes, emitir não custava nada.
 - [x] **Folha de cheque e Bancário** (2026-10-27): o cheque só nasce numa folha comprada no Bancário (NPC do OficinasPlugin) e só vira dinheiro depositado lá, com taxa de compensação igual à do Pix. Liberado pra todos os jogadores.
-- [x] Barraquinha do Bancário no spawn (2026-10-27), estrutura `banco` no quadrante nordeste, só com a folha de cheque e o depósito. Os outros serviços de banco ficam pra depois (ver "Banco", abaixo).
+- [x] Barraquinha do Bancário no spawn (2026-10-27), estrutura `banco` no quadrante nordeste, com a folha de cheque, o depósito e a Mine-sena (ver "Mine-sena", acima).
 - [x] **Log** de cheques emitidos e resgatados.
 - [x] **Limite de valor** por cheque, ou cooldown. Valor máximo e cooldown no config; `cheque.limite.ignorar` pula os dois. O ID resgatado não resgata de novo (segura cópia por dupe).
 
@@ -316,7 +310,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 ## 🔗 Integrações entre plugins
 - O Boss paga em coins o ranking de dano.
 - ~~Missões dão XP de skill.~~ ✅
-- ~~Bounty, Barracas, Duelo e Gladiador aparecem no `/pix historico`.~~ ✅
+- ~~Bounty, Barracas, Duelo e Gladiador aparecem no extrato do Bancário.~~ ✅
 - ~~Missões de vender na loja e de dano no boss.~~ ✅
 - ~~Clãs ganham pontos no boss e mostram a tag na tab junto com o VIP.~~ ✅
 - ~~O rank dá bônus no `/sell` da loja.~~ ✅
@@ -342,7 +336,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - **Missões**: missões de vender na loja e de dano no boss, menu visual e missões semanais.
 - **Bounty**: contrato contra um clã inteiro e anúncio no Discord.
 - **Barracas**: placa `[Comprar]`, placa de entrada ("Aluga-se"), preço por barraca e renovação automática.
-- **Clãs**: tag na tab junto com o VIP, pontos e clã do campeão no boss, fogo amigo com poção e explosão, e banco no `/pix historico`.
+- **Clãs**: tag na tab junto com o VIP, pontos e clã do campeão no boss, fogo amigo com poção e explosão, e banco no extrato do Bancário.
 - **Correção**: o `plugin.yml` do Pix tinha um `:` sem aspas, e o Paper recusava carregar o Pix.
 - **Servidor de teste** (`test-server/`): montagem automática, configs de teste e backup automático do mundo.
 - **Rankup** (v1): ranks medievais, minas que se regeneram e bônus de venda na loja.

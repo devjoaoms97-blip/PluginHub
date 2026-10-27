@@ -14,10 +14,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 import java.util.List;
 import java.util.Locale;
@@ -59,7 +57,8 @@ public class PixCommand implements CommandExecutor, TabCompleter {
             case "recusar" -> recusar(jogador, resto);
             case "pendentes" -> pendentes(jogador);
             case "cancelar" -> cancelar(jogador, resto);
-            case "historico", "extrato" -> historico(jogador, resto);
+            // o extrato saiu do /pix: quem entrega é o Bancário, no spawn
+            case "historico", "extrato" -> jogador.sendMessage(cor("§eO extrato agora é com o §6Bancário§e, no spawn: clique nele e escolha §fExtrato§e."));
             case "qrcode" -> qrcode(jogador, resto);
             case "limite" -> limite(jogador);
             case "agendar" -> agendar(jogador, resto);
@@ -292,57 +291,21 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    // ---------------------------------------------------------------------
-    // /pix historico [quantidade]
-    // ---------------------------------------------------------------------
-    private void historico(Player jogador, String[] args) {
-        int quantidade = 10;
-        if (args.length > 0) {
-            try {
-                quantidade = Math.max(1, Math.min(20, Integer.parseInt(args[0])));
-            } catch (NumberFormatException ignored) {
-                // mantém o padrão de 10
-            }
-        }
-
-        mostrarExtrato(jogador, jogador.getUniqueId(), quantidade, "§e§lÚltimas transações:", "§7Você ainda não tem transações no histórico.");
-    }
-
     /**
-     * O extrato de {@code dono} pra quem pediu ({@code leitor}): o seu no /pix historico, o de
-     * qualquer um no /pix admin log. Com taxa, quem pagou vê o valor cheio e a taxa, quem recebeu
-     * vê o que entrou de fato e a taxa descontada.
+     * O extrato de {@code dono} no chat, pra staff ({@code /pix admin log}). O dos jogadores é o
+     * livro que o Bancário entrega (ChequePlugin), pelo {@link PixPlugin#extrato}.
      */
     private void mostrarExtrato(Player leitor, UUID dono, int quantidade, String titulo, String vazio) {
-        List<TransacaoRegistro> registros = plugin.getChargeManager().getHistorico(dono, quantidade);
-
-        if (registros.isEmpty()) {
+        List<String[]> linhas = plugin.extrato(dono, quantidade);
+        if (linhas.isEmpty()) {
             leitor.sendMessage(cor(vazio));
             return;
         }
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
         leitor.sendMessage(cor(titulo));
-        for (TransacaoRegistro r : registros) {
-            boolean recebeu = r.getPara().equals(dono);
-            UUID outroId = recebeu ? r.getDe() : r.getPara();
-            String seta = recebeu ? "§a+" : "§c-";
-            String prep = recebeu ? "de" : "para";
-
-            String nomeOutro;
-            if (r.getNomeEntidade() != null) {
-                nomeOutro = r.getNomeEntidade();
-            } else if (outroId.equals(ChargeManager.ENTIDADE_LOJA)) {
-                nomeOutro = "Loja do Servidor";
-            } else {
-                nomeOutro = Bukkit.getOfflinePlayer(outroId).getName();
-            }
-
-            double valor = recebeu ? r.getValor() - r.getTaxa() : r.getValor();
-            String taxa = r.getTaxa() > 0 ? " §8[taxa " + formatarValor(r.getTaxa()) + "]" : "";
-            leitor.sendMessage(cor("  §7[" + sdf.format(new Date(r.getData())) + "] " + seta
-                    + formatarValor(valor) + " §7" + prep + " §f" + nomeOutro
-                    + " §7(" + r.getTipo() + ")" + taxa));
+        for (String[] l : linhas) {
+            boolean recebeu = l[1].equals("+");
+            leitor.sendMessage(cor("  §7[" + l[0] + "] " + (recebeu ? "§a+" : "§c-") + l[2] + " §7" + (recebeu ? "de" : "para")
+                    + " §f" + l[3] + " §7(" + l[4] + ")" + (l[5].isEmpty() ? "" : " §8[taxa " + l[5] + "]")));
         }
     }
 
@@ -493,7 +456,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage(cor("§f/pix recusar <jogador> §7- recusa a cobrança desse jogador"));
         jogador.sendMessage(cor("§f/pix cancelar <jogador> §7- cancela a cobrança que você enviou a esse jogador"));
         jogador.sendMessage(cor("§f/pix pendentes §7- lista cobranças em aberto"));
-        jogador.sendMessage(cor("§f/pix historico [qtd] §7- suas últimas transações"));
+        jogador.sendMessage(cor("§7Seu extrato (todas as movimentações): com o §6Bancário§7, no spawn"));
         jogador.sendMessage(cor("§f/pix qrcode <valor> [motivo] §7- anuncia um pagamento pra qualquer um clicar"));
         jogador.sendMessage(cor("§f/pix limite §7- quanto você ainda pode enviar hoje"));
         jogador.sendMessage(cor("§f/pix agendar <jogador> <valor> <dias> [motivo] §7- paga agora e repete a cada N dias"));
@@ -663,7 +626,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         List<String> opcoes = new ArrayList<>();
 
         if (args.length == 1) {
-            opcoes.addAll(Arrays.asList("pagar", "receber", "aceitar", "recusar", "pendentes", "cancelar", "historico", "qrcode", "limite",
+            opcoes.addAll(Arrays.asList("pagar", "receber", "aceitar", "recusar", "pendentes", "cancelar", "qrcode", "limite",
                     "agendar", "agendamentos", "chave"));
             if (sender.hasPermission("pix.admin")) {
                 opcoes.add("admin");

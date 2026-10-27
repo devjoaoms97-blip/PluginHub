@@ -12,7 +12,7 @@ import java.util.Locale;
  * Venda automática do que se minera nas minas (pra todos), chamada pelo RankupPlugin por reflexão
  * via {@link ShopPlugin#venderAutomaticamente}. Preço dinâmico, bônus do rank e do VIP e imposto
  * ({@link Precificacao}), sem a trava nem o limite diário da venda do inventário. Não grava o itens.yml a cada bloco (a regeneração já grava a cada
- * minuto) e não lança no /pix historico, que viraria uma linha por bloco minerado.
+ * minuto) e não lança no extrato do Bancário, que viraria uma linha por bloco minerado.
  */
 public class AutoVenda {
 

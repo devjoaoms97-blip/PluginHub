@@ -80,5 +80,5 @@ leilao:
   anti-snipe-minutos: 5
 
 integracao:
-  # Registra compra, imposto e leilão no /pix historico (precisa do PixPlugin).
+  # Registra compra, imposto e leilão no extrato do Bancário (precisa do PixPlugin).
   pix: true

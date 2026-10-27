@@ -124,6 +124,8 @@ public class ChequeCommand implements CommandExecutor {
 
         ItemStack cheque = criarCheque(player, valor, nominal);
         ultimaEmissao.put(player.getUniqueId(), System.currentTimeMillis());
+        plugin.getPix().registrar(player.getUniqueId(), "Cheque", valor, false,
+                "Cheque emitido" + (nominal != null ? " pra " + nominal.getName() : ""));
         plugin.getChequeLog().emitido(player.getUniqueId(), player.getName(), valor,
                 cheque.getItemMeta().getPersistentDataContainer().get(plugin.getChequeIdKey(), PersistentDataType.STRING),
                 nominal != null ? nominal.getName() : null);
@@ -234,6 +236,7 @@ public class ChequeCommand implements CommandExecutor {
         if (emissao == null || plugin.getEconomy() == null) return ChatColor.GRAY + " (cheque antigo: sem valor pra devolver)";
         OfflinePlayer emissor = Bukkit.getOfflinePlayer(emissao.emissor());
         plugin.getEconomy().depositPlayer(emissor, emissao.valor());
+        plugin.getPix().registrar(emissao.emissor(), "Cheque", emissao.valor(), true, "Cheque cancelado (devolução)");
         if (emissor.getPlayer() != null) {
             emissor.getPlayer().sendMessage(ChatColor.GREEN + "Seu cheque de " + ChatColor.GOLD + formatarValor(emissao.valor())
                     + ChatColor.GREEN + " foi cancelado, e o valor voltou pro seu saldo.");

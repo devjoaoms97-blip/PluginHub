@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
 
 /**
- * Registra o pagamento do rankup no histórico do PixPlugin (/pix historico), como "Loja do
+ * Registra o pagamento do rankup no histórico do PixPlugin (extrato do Bancário), como "Loja do
  * Servidor". Mesma abordagem dos outros plugins: reflexão, sem dependência de compilação — se o
  * Pix não estiver instalado (ou for de uma versão sem suporte), não registra nada.
  */

@@ -248,7 +248,9 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         econ.withdrawPlayer(comprador, code.getPreco());
 
         if (code.getVendedorId() == null) {
-            return; // código pago sem vendedor associado — o valor simplesmente não vai pra ninguém
+            // código pago sem vendedor associado — o valor simplesmente não vai pra ninguém
+            plugin.getPix().comEntidade(comprador.getUniqueId(), "VIP", code.getPreco(), false, "Compra de código VIP");
+            return;
         }
 
         double taxaPercentual = plugin.getConfig().getDouble("revenda.taxa-percentual", 10.0);
@@ -256,6 +258,9 @@ public class VipCommand implements CommandExecutor, TabCompleter {
 
         OfflinePlayer vendedor = Bukkit.getOfflinePlayer(code.getVendedorId());
         econ.depositPlayer(vendedor, valorLiquido);
+        // no extrato dos dois: o comprador vê o preço cheio, o vendedor o que entrou (a taxa aparece à parte)
+        plugin.getPix().entreJogadores(comprador.getUniqueId(), vendedor.getUniqueId(), code.getPreco(),
+                "Revenda de VIP " + org.bukkit.ChatColor.stripColor(plugin.getNomeExibicao(code.getTier())), code.getPreco() - valorLiquido);
 
         if (vendedor.isOnline()) {
             vendedor.getPlayer().sendMessage("§aSeu VIP " + plugin.getNomeExibicao(code.getTier())

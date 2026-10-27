@@ -12,7 +12,6 @@ Sistema de pagamentos entre jogadores, com pagamento direto e cobranças aceitá
 | `/pix recusar <jogador>` | Recusa a cobrança enviada por esse jogador |
 | `/pix cancelar <jogador>` | Cancela a cobrança que você enviou para esse jogador |
 | `/pix pendentes` | Lista cobranças enviadas e recebidas em aberto |
-| `/pix historico [quantidade]` | Mostra suas últimas transações (padrão: 10, máx: 20) |
 | `/pix qrcode <valor> [motivo]` | Anuncia publicamente um pagamento — qualquer um pode clicar para te pagar |
 | `/pix limite` | Mostra seu limite diário, quanto já enviou hoje e quanto ainda pode enviar |
 | `/pix agendar <jogador> <valor> <dias> [motivo]` | Paga agora e repete a cada N dias, sozinho (até 5 agendamentos por jogador, de 1 a 30 dias) |
@@ -20,6 +19,10 @@ Sistema de pagamentos entre jogadores, com pagamento direto e cobranças aceitá
 | `/pix admin reload` | (staff) Recarrega o `config.yml` (ex: depois de mudar a taxa ou o limite) |
 | `/pix admin resetlimite <jogador>` | (staff) Zera o que um jogador já enviou hoje |
 | `/pix admin vencer <nº>` | (staff) Faz um Pix agendado vencer agora (para testar) |
+
+### Extrato
+
+O histórico de transações não é mais um comando: o jogador pega o **extrato com o Bancário** (ChequePlugin), um livro com as últimas movimentações. Ele vem daqui (`PixPlugin#extrato`), porque quase todo movimento de dinheiro do servidor é registrado neste histórico: Pix, loja, oficinas, rankup, terrenos, barracas, Bounty, Duelo, Gladiador, clã, missões, diária, máquinas, spawners, cheques, Mine-sena, boss, VIP e achados e perdidos. A venda automática nas minas fica de fora (seria uma linha por bloco). `/pix historico` só avisa pra procurar o Bancário, e a staff vê o de qualquer um com `/pix admin log <jogador>`. Ficam as últimas 50 transações de cada jogador.
 
 ### Chave Pix
 
@@ -58,7 +61,7 @@ taxa:
 - `0` em `percentual-transacao` desativa a taxa completamente.
 - `/pix qrcode` usa o mesmo caminho de código de `/pix pagar` (é um botão clicável que roda `/pix pagar`), então já sai taxado automaticamente sem nenhuma mudança extra.
 
-**Simplificação atual:** o histórico (`/pix historico`) ainda registra o valor bruto da transação, não o valor líquido recebido — a taxa aparece só na mensagem de chat no momento da transação, não fica gravada por transação individual no extrato. Se quiser ver a taxa no histórico também, dá pra estender `TransacaoRegistro` pra guardar os dois valores; é só pedir.
+No extrato, quem pagou vê o valor cheio e quem recebeu vê o que entrou de fato, com a taxa ao lado.
 
 ## Desconto de VIP na taxa
 
@@ -96,15 +99,15 @@ O `.jar` sai em `target/PixPlugin.jar`.
 
 ## Persistência
 
-Cobranças pendentes e histórico (`/pix historico`) ficam salvos em `plugins/PixPlugin/dados.yml`, gravado a cada mudança e também no desligamento. Por isso sobrevivem a reinício ou queda do servidor:
+Cobranças pendentes e o histórico (o extrato do Bancário) ficam salvos em `plugins/PixPlugin/dados.yml`, gravado a cada mudança e também no desligamento. Por isso sobrevivem a reinício ou queda do servidor:
 
 - A cobrança volta com o **tempo de expiração que faltava**. Se ela foi criada 2 min antes do restart, expira 3 min depois que o servidor subir.
 - Uma cobrança que venceu com o servidor desligado é descartada ao carregar, sem notificação.
-- O histórico mantém o mesmo limite de 20 transações por jogador.
+- O histórico guarda as últimas 50 transações de cada jogador.
 
 ## Transações de outros plugins no histórico
 
-Outros plugins do PluginHub registram as próprias transações no `/pix historico`, chamando o `ChargeManager` por reflexão:
+Outros plugins do PluginHub registram as próprias transações no histórico (o extrato do Bancário), chamando o `ChargeManager` por reflexão:
 
 | Método | Aparece como | Quem usa |
 |---|---|---|

@@ -69,5 +69,5 @@ destaques:
 agenda: []
 
 integracao:
-  # Registra inscrições e prêmios no /pix historico (precisa do PixPlugin).
+  # Registra inscrições e prêmios no extrato do Bancário (precisa do PixPlugin).
   pix: true

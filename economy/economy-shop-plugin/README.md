@@ -76,7 +76,7 @@ Como não dá pra desenhar um gráfico "de verdade" numa interface de Minecraft,
 Cada item agora tem uma categoria (texto livre, definida por você no `/shop admin additem`). A GUI ganhou uma tela inicial listando as categorias como "pastas" — clicar numa abre a lista paginada só daquele grupo.
 
 ### 3. Integração com o histórico do Pix
-Toda compra/venda na loja agora também aparece no `/pix historico` do jogador, junto com pagamentos e cobranças do Pix — um extrato só, unificado. Isso foi feito com uma pequena adição no `ChargeManager` do Pix (um método novo, `registrarTransacaoComLoja`) e uma pequena correção no `PixCommand` (pra mostrar "Loja do Servidor" em vez de tentar achar um jogador com esse nome).
+Toda compra/venda na loja agora também aparece no extrato do Bancário do jogador, junto com pagamentos e cobranças do Pix — um extrato só, unificado. Isso foi feito com uma pequena adição no `ChargeManager` do Pix (um método novo, `registrarTransacaoComLoja`) e uma pequena correção no `PixCommand` (pra mostrar "Loja do Servidor" em vez de tentar achar um jogador com esse nome).
 
 **Importante:** isso exige atualizar o `pix-plugin` também — os arquivos alterados estão inclusos separadamente (veja a seção abaixo).
 

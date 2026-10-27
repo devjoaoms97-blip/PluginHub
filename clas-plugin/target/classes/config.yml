@@ -38,6 +38,6 @@ boss:
   participacao-minima-percentual: 10
 
 integracao:
-  # Registra a criação do clã e os depósitos/saques do banco no /pix historico (precisa do
+  # Registra a criação do clã e os depósitos/saques do banco no extrato do Bancário (precisa do
   # PixPlugin atualizado, com suporte a transação com clã).
   pix: true

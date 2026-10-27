@@ -95,5 +95,5 @@ warp-mobs:
   limite-por-estatua: 4
 
 integracao:
-  # Registra as compras no /pix historico (precisa do PixPlugin).
+  # Registra as compras no extrato do Bancário (precisa do PixPlugin).
   pix: true

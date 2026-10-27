@@ -29,6 +29,12 @@ public class VipPlugin extends JavaPlugin {
     private BonusAtivacao bonusAtivacao;
 
     private final com.example.vip.util.DiscordIntegration discord = new com.example.vip.util.DiscordIntegration(this);
+    private final com.example.vip.util.PixIntegration pix = new com.example.vip.util.PixIntegration(this);
+
+    /** O extrato (PixPlugin): revenda de código e bônus de ativação em dinheiro. */
+    public com.example.vip.util.PixIntegration getPix() {
+        return pix;
+    }
 
     public com.example.vip.util.DiscordIntegration getDiscord() {
         return discord;

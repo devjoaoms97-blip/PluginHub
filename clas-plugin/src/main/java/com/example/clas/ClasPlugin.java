@@ -160,7 +160,7 @@ public class ClasPlugin extends JavaPlugin {
         return pixIntegration;
     }
 
-    /** Nome do clã como aparece no /pix historico. */
+    /** Nome do clã como aparece no extrato do Bancário. */
     public static String nomeNoExtrato(Cla cla) {
         return "Clã [" + cla.getTag() + "]";
     }

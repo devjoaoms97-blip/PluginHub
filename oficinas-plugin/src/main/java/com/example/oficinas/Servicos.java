@@ -39,7 +39,7 @@ import java.util.Map;
  *   <li><b>Sábio</b>: vende níveis de XP (pelo custo em pontos, igual ao vanilla).</li>
  *   <li><b>Compactador</b> e <b>Cambista</b>: nas classes deles.</li>
  * </ul>
- * Todos aplicam o desconto de VIP ({@code vip-descontos}) e registram no /pix historico.
+ * Todos aplicam o desconto de VIP ({@code vip-descontos}) e registram no extrato do Bancário.
  */
 public class Servicos implements Listener {
 

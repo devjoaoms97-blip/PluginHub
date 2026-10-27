@@ -16,6 +16,8 @@ public class ChequePlugin extends JavaPlugin {
     private NamespacedKey chequeEmissorKey;
     private NamespacedKey folhaKey;
     private Banco banco;
+    private MineSena mineSena;
+    private PixIntegration pix;
     private ChequeLog chequeLog;
 
     @Override
@@ -36,9 +38,15 @@ public class ChequePlugin extends JavaPlugin {
         }
 
         getCommand("cheque").setExecutor(new ChequeCommand(this));
+        this.pix = new PixIntegration(this);
         this.banco = new Banco(this);
+        this.mineSena = new MineSena(this);
         getServer().getPluginManager().registerEvents(new ChequeListener(this), this);
         getServer().getPluginManager().registerEvents(banco, this);
+        getServer().getPluginManager().registerEvents(mineSena, this);
+        getCommand("minesena").setExecutor(mineSena);
+        // sorteio da Mine-sena: confere a cada minuto (e logo ao ligar, se o horário já passou)
+        getServer().getScheduler().runTaskTimer(this, mineSena::conferir, 20L * 10, 20L * 60);
 
         getLogger().info("ChequePlugin ativado!");
     }
@@ -82,6 +90,14 @@ public class ChequePlugin extends JavaPlugin {
 
     public Banco getBanco() {
         return banco;
+    }
+
+    public MineSena getMineSena() {
+        return mineSena;
+    }
+
+    public PixIntegration getPix() {
+        return pix;
     }
 
     /** API pública (OficinasPlugin, NPC Bancário, por reflexão): abre o balcão do banco. */

@@ -54,6 +54,8 @@ public class BonusAtivacao implements Listener {
         double dinheiro = preco * percentual / 100.0;
         if (dinheiro > 0 && plugin.getEconomy() != null) {
             plugin.getEconomy().depositPlayer(jogador, dinheiro);
+            plugin.getPix().comEntidade(jogador.getUniqueId(), "VIP", dinheiro, true,
+                    "Bônus de ativação do VIP " + org.bukkit.ChatColor.stripColor(plugin.getNomeExibicao(tier)));
         }
 
         double xp = plugin.getConfig().getDouble(base + "xp-por-skill", 0);

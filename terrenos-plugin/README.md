@@ -87,7 +87,7 @@ As medidas e os blocos da grade ficam em `grade` no `config.yml`. Mudar depois d
 ## Integrações
 
 - **RankupPlugin:** o imposto é uma % do preço do rank atual (`precoRankAtual`). Sem ele, o imposto é fixo (`imposto.sem-rankup`).
-- **PixPlugin:** compra, imposto, dívida e leilão aparecem no `/pix historico` como pagamento à "Loja do Servidor".
+- **PixPlugin:** compra, imposto, dívida e leilão aparecem no extrato do Bancário como pagamento à "Loja do Servidor".
 - **Painel da economia:** cada fluxo aparece separado em `/economia tipos TerrenosPlugin`.
 - **DiscordPlugin:** os leilões de imóvel (abertos, arrematados e sem lances) vão para a categoria `leiloes`.
 

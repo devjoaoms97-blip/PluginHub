@@ -79,7 +79,7 @@ integracao:
 
 ## Integrações
 
-- **PixPlugin** (opcional): oferecer, cobrar e receber devolução aparecem no `/pix historico`.
+- **PixPlugin** (opcional): oferecer, cobrar e receber devolução aparecem no extrato do Bancário.
 - **ClasPlugin** (opcional): regra do mesmo clã no anti-farm e contratos contra clã. Consulta por reflexão os métodos `mesmoCla`, `tagDoCla` e `tagExistente`.
 - **PainelEconomiaPlugin**: a taxa aparece como saída do `BountyPlugin` no fluxo por origem.
 

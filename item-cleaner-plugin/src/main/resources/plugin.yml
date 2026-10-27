@@ -4,7 +4,7 @@ main: com.example.itemcleaner.ItemCleanerPlugin
 api-version: '26.2'
 author: Você
 description: Limpa periodicamente itens dropados no chão pra reduzir lag, com aviso em contagem regressiva e achados e perdidos.
-softdepend: [Vault]
+softdepend: [Vault, PixPlugin]
 
 commands:
   limparchao:

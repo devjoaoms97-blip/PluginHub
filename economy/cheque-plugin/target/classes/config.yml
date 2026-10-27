@@ -8,6 +8,20 @@
 banco:
   preco-folha: 50
   taxa-deposito-percentual: 1.0
+  # Quantas movimentações o extrato (o livro que o Bancário entrega) mostra, da mais nova pra mais velha.
+  extrato-transacoes: 30
+
+# Mine-sena: a loteria do Bancário. O jogador escolhe um número de 1 a numero-maximo e compra o
+# bilhete no balcão. Todo dia no horario (hora do servidor) sai o número premiado, e o pote inteiro
+# (todas as apostas acumuladas) é dividido entre os bilhetes com esse número. Sem ganhador, acumula.
+# A staff sorteia na hora com /minesena sortear [número].
+minesena:
+  ativado: true
+  preco-bilhete: 500
+  numero-maximo: 100
+  horario: "18:00"
+  # Bilhetes de um jogador pro mesmo sorteio. 0 = sem limite.
+  maximo-bilhetes-por-jogador: 20
 
 limite:
   # Valor máximo de um cheque. 0 desativa.

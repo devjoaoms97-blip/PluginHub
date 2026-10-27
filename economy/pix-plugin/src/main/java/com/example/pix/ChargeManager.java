@@ -34,7 +34,8 @@ import java.util.logging.Level;
  */
 public class ChargeManager {
 
-    private static final int HISTORICO_MAX_POR_JOGADOR = 20;
+    // o extrato do Bancário mostra até 30; quase todo movimento de dinheiro do servidor entra aqui
+    private static final int HISTORICO_MAX_POR_JOGADOR = 50;
     public static final long EXPIRACAO_TICKS = 20L * 60 * 5; // 5 minutos (20 ticks/segundo)
 
     /**
@@ -148,7 +149,7 @@ public class ChargeManager {
 
     /**
      * Registra uma transação entre um jogador e a Loja do Servidor (compra/venda no
-     * EconomyShopPlugin), pra unificar tudo no mesmo extrato do /pix historico.
+     * EconomyShopPlugin), pra unificar tudo no mesmo extrato do extrato do Bancário.
      * Só adiciona a entrada pro jogador (a "loja" não é uma conta de verdade).
      */
     public void registrarTransacaoComLoja(UUID jogador, double valor, boolean jogadorRecebeu, String tipo) {

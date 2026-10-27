@@ -134,5 +134,5 @@ protecao:
   mundos: []
 
 integracao:
-  # Registra o pagamento do rankup no /pix historico.
+  # Registra o pagamento do rankup no extrato do Bancário.
   pix: true

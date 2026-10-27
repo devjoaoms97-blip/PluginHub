@@ -42,5 +42,5 @@ discord:
   nome: "Bounty"
 
 integracao:
-  # Registra recompensas oferecidas, cobradas e devolvidas no /pix historico.
+  # Registra recompensas oferecidas, cobradas e devolvidas no extrato do Bancário.
   pix: true

@@ -48,11 +48,13 @@ t.rodar(async () => {
   b.off('title', ouvir)
   t.verificar(msgs.some(m => m.includes('Você pagou') && m.includes(b.username)), 'pagar pela chave Pix', msgs[0])
   t.verificar(recebidas.length > 0, 'título na tela de quem recebe o Pix', JSON.stringify(recebidas).slice(0, 80))
+  // o extrato dos jogadores é o livro do Bancário (teste-foco.js); aqui, o /pix só aponta pra ele
   msgs = await t.capturar(b, () => b.chat('/pix historico'))
-  t.verificar(msgs.some(m => m.includes('taxa')), 'taxa aparece no extrato', msgs.slice(1, 2).join(''))
+  t.verificar(msgs.some(m => m.includes('Bancário')), '/pix historico manda pro Bancário', msgs[0])
   await t.console(`op ${a.username}`)
   msgs = await t.capturar(a, () => a.chat(`/pix admin log ${b.username}`))
   t.verificar(msgs.some(m => m.includes('Extrato de')), '/pix admin log <jogador>', msgs[0])
+  t.verificar(msgs.some(m => m.includes('taxa')), 'taxa aparece no extrato', msgs.slice(1, 2).join(''))
 
   console.log('\n== Cheque ==')
   // o cheque só sai de uma folha de cheque (a do Bancário), e o valor sai do saldo

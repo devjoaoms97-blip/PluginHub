@@ -14,7 +14,7 @@ Cada dia vale uma **% do preço do próximo rank** do jogador (RankupPlugin), pa
 - O mínimo é R$ 200 por dia. No 7º dia, o mínimo é três vezes isso (R$ 600).
 - Sem o RankupPlugin, cada dia vale `dias.sem-rankup` (R$ 1.000).
 
-É dinheiro novo na economia: aparece no painel como "Recompensa diária" (`/economia tipos DiariaPlugin`) e no `/pix historico`.
+É dinheiro novo na economia: aparece no painel como "Recompensa diária" (`/economia tipos DiariaPlugin`) e no extrato do Bancário.
 
 ## Bônus do VIP
 

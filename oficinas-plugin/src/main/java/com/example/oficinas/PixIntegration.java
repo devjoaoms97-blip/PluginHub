@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
 
 /**
- * Registra as compras nas oficinas no histórico do PixPlugin (/pix historico).
+ * Registra as compras nas oficinas no histórico do PixPlugin (extrato do Bancário).
  * Mesma abordagem do EconomyShopPlugin: reflexão, sem dependência de compilação — se o Pix não
  * estiver instalado (ou for de uma versão muito diferente), simplesmente não registra nada.
  */

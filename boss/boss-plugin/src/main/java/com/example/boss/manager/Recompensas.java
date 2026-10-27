@@ -18,18 +18,21 @@ import java.util.UUID;
  * O que o boss paga quando morre, além do loot: coins pros primeiros do ranking de dano,
  * dinheiro pro campeão (último golpe), XP de skill pra todo mundo que bateu (proporcional ao
  * dano, na skill da arma usada) e, se ligado, um código de VIP pro campeão. O dinheiro vem do
- * servidor (é dinheiro novo na economia); sem Vault, só o dinheiro fica de fora.
+ * servidor (é dinheiro novo na economia); sem Vault, só o dinheiro fica de fora. O dinheiro aparece no
+ * extrato (o histórico do PixPlugin, que o Bancário entrega).
  */
 public class Recompensas {
 
     private final BossPlugin plugin;
     private final SkillsIntegration skills;
     private final VipIntegration vip;
+    private final com.example.boss.util.PixIntegration pix;
 
     public Recompensas(BossPlugin plugin) {
         this.plugin = plugin;
         this.skills = new SkillsIntegration(plugin);
         this.vip = new VipIntegration(plugin);
+        this.pix = new com.example.boss.util.PixIntegration(plugin);
     }
 
     private Economy economia() {
@@ -52,11 +55,13 @@ public class Recompensas {
                 if (valor <= 0) continue;
                 UUID id = ranking.get(i).getKey();
                 eco.depositPlayer(Bukkit.getOfflinePlayer(id), valor);
+                pix.comEntidade(id, "Boss", valor, true, (i + 1) + "º no ranking de dano do boss");
                 avisar(id, "§6⚔ §e" + (i + 1) + "º no ranking de dano: §f+" + formatar(valor) + "§e.");
             }
             double dinheiroCampeao = plugin.getConfig().getDouble("recompensas.campeao-dinheiro", 0) * mult;
             if (campeao != null && dinheiroCampeao > 0) {
                 eco.depositPlayer(campeao, dinheiroCampeao);
+                pix.comEntidade(campeao.getUniqueId(), "Boss", dinheiroCampeao, true, "Campeão do boss (último golpe)");
                 campeao.sendMessage("§6★ §eRecompensa de campeão: §f+" + formatar(dinheiroCampeao) + "§e.");
             }
         }

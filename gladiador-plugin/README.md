@@ -72,7 +72,7 @@ Com `premio.cla-no-banco: true`, o modo por clã manda o pote inteiro pro banco 
 
 - **Vault:** inscrição e prêmio.
 - **ClasPlugin:** o modo por clã usa a tag do clã de cada jogador (`tagDoCla`). Sem o ClasPlugin, o modo por clã não abre.
-- **PixPlugin:** inscrição, devolução e prêmio aparecem no `/pix historico`.
+- **PixPlugin:** inscrição, devolução e prêmio aparecem no extrato do Bancário.
 - **Painel da economia:** `/economia tipos GladiadorPlugin`.
 - **DiscordPlugin:** a abertura e o resultado vão para a categoria `gladiador`.
 

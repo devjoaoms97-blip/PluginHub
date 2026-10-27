@@ -63,12 +63,14 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
     }
 
     private final ItemCleanerPlugin plugin;
+    private final PixIntegration pix;
     private final File arquivo;
     private final Map<UUID, List<Guardado>> caixas = new HashMap<>();
     private final List<Morte> mortes = new ArrayList<>();
 
     public AchadosPerdidos(ItemCleanerPlugin plugin) {
         this.plugin = plugin;
+        this.pix = new PixIntegration(plugin);
         this.arquivo = new File(plugin.getDataFolder(), "achados.yml");
         carregar();
     }
@@ -205,6 +207,10 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
             econ.withdrawPlayer(jogador, taxa);
         }
         Guardado g = caixa.remove((int) indice);
+        if (taxa > 0) {
+            pix.comEntidade(jogador.getUniqueId(), "Achados e perdidos", taxa, false,
+                    "Recuperou " + g.item().getAmount() + "x " + g.item().getType().name().toLowerCase(Locale.ROOT).replace('_', ' '));
+        }
         jogador.getInventory().addItem(g.item()).values()
                 .forEach(sobra -> jogador.getWorld().dropItemNaturally(jogador.getLocation(), sobra));
         salvar();

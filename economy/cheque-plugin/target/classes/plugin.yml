@@ -3,8 +3,8 @@ version: '1.0.0'
 main: com.example.cheque.ChequePlugin
 api-version: '26.2'
 author: Você
-description: Cheques emitidos numa folha de cheque e depositados no Bancário (via Vault).
-softdepend: [Vault, PixPlugin]
+description: Cheques emitidos numa folha de cheque e depositados no Bancário, e a Mine-sena, a loteria do Bancário (via Vault).
+softdepend: [Vault, PixPlugin, DiscordPlugin]
 
 commands:
   cheque:
@@ -12,6 +12,10 @@ commands:
     usage: "Uso correto: /cheque <valor> [jogador] | /cheque cancelar [id]"
     permission: cheque.criar
     permission-message: "§cVocê não tem permissão para criar cheques."
+
+  minesena:
+    description: Mostra o pote, o horário e os seus bilhetes da Mine-sena (staff sorteia na hora).
+    usage: "Uso: /minesena | /minesena sortear [número]"
 
 permissions:
   cheque.criar:

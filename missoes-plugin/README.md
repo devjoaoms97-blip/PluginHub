@@ -105,7 +105,7 @@ Num servidor que já tinha o `config.yml` da versão anterior, as semanais apare
 - **SkillsPlugin** (opcional): a recompensa `skill` + `xp` vai pro XP da skill, por reflexão, e pode até fazer subir de nível. Sem o SkillsPlugin, o XP é ignorado e só os coins são pagos.
 - **EconomyShopPlugin** (opcional): avisa as vendas e compras pra missão de vender, chamando o `MissoesPlugin` por reflexão (`registrarProgresso` e `registrarCompraNaLoja`).
 - **BossPlugin** (opcional): o boss é reconhecido pela chave compartilhada `pluginhub:boss_mob`. O BossPlugin não precisou mudar.
-- **PixPlugin** (opcional): a recompensa aparece no `/pix historico` como "Missão diária" ou "Missão semanal".
+- **PixPlugin** (opcional): a recompensa aparece no extrato do Bancário como "Missão diária" ou "Missão semanal".
 - **PainelEconomiaPlugin**: os coins pagos aparecem como `MissoesPlugin` no fluxo por origem.
 
 ## Persistência

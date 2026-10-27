@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +27,21 @@ import java.util.UUID;
  * folha de cheque em branco, sem a qual ninguém emite cheque, e é o único lugar onde um cheque vira
  * dinheiro: "Depositar cheques" credita todos os cheques do inventário em quem depositou.
  * <p>
+ * O balcão também vende os bilhetes da Mine-sena ({@link MineSena}), a loteria diária, e entrega o
+ * <b>extrato</b>: um livro com as últimas movimentações de dinheiro do jogador (as que o PixPlugin
+ * guarda: Pix, loja, oficinas, rankup, cheques, Mine-sena, boss...).
+ * <p>
  * O depósito cobra {@code banco.taxa-deposito-percentual} do valor (igual à taxa do Pix por padrão),
- * senão o cheque viraria um Pix sem taxa. A taxa some da economia, e o depósito aparece no
- * /pix historico como uma transação do emissor pra quem depositou.
+ * senão o cheque viraria um Pix sem taxa. A taxa some da economia. No extrato, a folha e o cheque
+ * emitido saem de quem emite, e o depósito entra pra quem deposita (já sem a taxa).
  */
 public class Banco implements Listener {
 
     private static final int SLOT_FOLHA_1 = 10;
     private static final int SLOT_FOLHA_10 = 12;
     private static final int SLOT_DEPOSITAR = 15;
+    private static final int SLOT_MINESENA = 13;
+    private static final int SLOT_EXTRATO = 16;
 
     static class Menu implements InventoryHolder {
         Inventory inventario;
@@ -48,7 +53,6 @@ public class Banco implements Listener {
     }
 
     private final ChequePlugin plugin;
-    private boolean avisouFalhaPix;
 
     public Banco(ChequePlugin plugin) {
         this.plugin = plugin;
@@ -104,6 +108,14 @@ public class Banco implements Listener {
                 cheques > 0 ? "§7" + cheques + " cheque(s) no inventário: §f" + dinheiro(total) : "§7Nenhum cheque no inventário.",
                 "§7Taxa de compensação: §f" + String.format(Locale.forLanguageTag("pt-BR"), "%.1f%%", taxa),
                 "§7Cai na conta de quem deposita.", cheques > 0 ? "§eClique" : ""));
+        if (plugin.getConfig().getBoolean("minesena.ativado", true)) {
+            menu.inventario.setItem(SLOT_MINESENA, icone(Material.SUNFLOWER, "§6§l🎟 Mine-sena",
+                    "§7Escolha um número de 1 a " + plugin.getConfig().getInt("minesena.numero-maximo", 100) + ".",
+                    "§7Pote: §a" + dinheiro(plugin.getMineSena().getPote()),
+                    "§7Sorteio todo dia às §f" + plugin.getConfig().getString("minesena.horario", "18:00") + "§7.", "§eClique"));
+        }
+        menu.inventario.setItem(SLOT_EXTRATO, icone(Material.WRITTEN_BOOK, "§b§lExtrato",
+                "§7Suas últimas movimentações de dinheiro:", "§7Pix, loja, oficinas, rankup, cheques,", "§7Mine-sena, boss e o resto.", "§eClique"));
         menu.inventario.setItem(22, icone(Material.WRITABLE_BOOK, "§6Como funciona",
                 "§71. Compre uma folha de cheque.", "§72. Com ela na mão: §f/cheque <valor> [jogador]",
                 "§7   O valor sai do seu saldo.", "§73. Quem recebe deposita aqui.",
@@ -121,6 +133,15 @@ public class Banco implements Listener {
             case SLOT_FOLHA_1 -> comprarFolhas(jogador, 1);
             case SLOT_FOLHA_10 -> comprarFolhas(jogador, 10);
             case SLOT_DEPOSITAR -> depositar(jogador);
+            case SLOT_EXTRATO -> {
+                jogador.closeInventory();
+                abrirExtrato(jogador);
+                return;
+            }
+            case SLOT_MINESENA -> {
+                if (plugin.getConfig().getBoolean("minesena.ativado", true)) plugin.getMineSena().abrir(jogador, 0);
+                return;
+            }
             default -> { return; }
         }
         abrir(jogador);
@@ -140,7 +161,8 @@ public class Banco implements Listener {
                 jogador.playSound(jogador.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8f, 1f);
                 return;
             }
-            econ.withdrawPlayer(jogador, preco);
+                econ.withdrawPlayer(jogador, preco);
+            plugin.getPix().registrar(jogador.getUniqueId(), "Bancário", preco, false, quantas + " folha(s) de cheque");
         }
         jogador.getInventory().addItem(folha(quantas)).values()
                 .forEach(sobra -> jogador.getWorld().dropItemNaturally(jogador.getLocation(), sobra));
@@ -190,7 +212,9 @@ public class Banco implements Listener {
             double taxa = Math.round(valor * taxaPercentual) / 100.0;
             econ.depositPlayer(jogador, valor - taxa);
             log.resgatado(jogador.getName(), valor, id);
-            registrarNoPix(emissao, jogador.getUniqueId(), valor, taxa);
+            String deQuem = emissao != null ? Bukkit.getOfflinePlayer(emissao.emissor()).getName() : null;
+            plugin.getPix().registrar(jogador.getUniqueId(), deQuem != null ? "Cheque de " + deQuem : "Cheque", valor - taxa, true,
+                    "Depósito de cheque" + (taxa > 0 ? " (taxa " + dinheiro(taxa) + ")" : ""));
             creditado += valor - taxa;
             depositados++;
             // mais de uma unidade com o mesmo ID é cópia: só a primeira vale
@@ -209,21 +233,36 @@ public class Banco implements Listener {
         jogador.playSound(jogador.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.5f);
     }
 
-    /** O depósito no /pix historico: do emissor pra quem depositou (só os cheques com emissor conhecido). */
-    private void registrarNoPix(ChequeLog.Emissao emissao, UUID depositante, double valor, double taxa) {
-        if (emissao == null) return;
-        Plugin pix = Bukkit.getPluginManager().getPlugin("PixPlugin");
-        if (pix == null || !pix.isEnabled()) return;
-        try {
-            Object charges = pix.getClass().getMethod("getChargeManager").invoke(pix);
-            charges.getClass().getMethod("registrarTransacao", UUID.class, UUID.class, double.class, String.class, double.class)
-                    .invoke(charges, emissao.emissor(), depositante, valor, "Cheque", taxa);
-        } catch (ReflectiveOperationException e) {
-            if (!avisouFalhaPix) {
-                plugin.getLogger().warning("PixPlugin encontrado, mas não foi possível registrar o cheque no histórico: " + e.getMessage());
-                avisouFalhaPix = true;
+    /**
+     * O extrato em livro (aberto na tela, não vai pro inventário): as últimas
+     * {@code banco.extrato-transacoes} movimentações, 3 por página, da mais nova pra mais velha.
+     */
+    private void abrirExtrato(Player jogador) {
+        int quantas = Math.max(1, Math.min(100, plugin.getConfig().getInt("banco.extrato-transacoes", 30)));
+        List<String[]> linhas = plugin.getPix().extrato(jogador.getUniqueId(), quantas);
+        var legado = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection();
+        List<net.kyori.adventure.text.Component> paginas = new ArrayList<>();
+        Economy econ = plugin.getEconomy();
+        StringBuilder capa = new StringBuilder("§1§lExtrato bancário\n§0" + jogador.getName() + "\n\n");
+        if (econ != null) capa.append("§0Saldo: §2").append(dinheiro(econ.getBalance(jogador))).append("\n\n");
+        if (!plugin.getPix().disponivel()) capa.append("§8O extrato está fora do ar (sem o PixPlugin).");
+        else if (linhas.isEmpty()) capa.append("§8Nenhuma movimentação ainda.");
+        else capa.append("§8As últimas ").append(linhas.size()).append(" movimentações, da mais nova pra mais velha. Vire a página.");
+        paginas.add(legado.deserialize(capa.toString()));
+        for (int i = 0; i < linhas.size(); i += 3) {
+            StringBuilder pagina = new StringBuilder();
+            for (int j = i; j < Math.min(i + 3, linhas.size()); j++) {
+                String[] l = linhas.get(j);
+                boolean entrou = l[1].equals("+");
+                pagina.append("§8").append(l[0]).append("\n")
+                        .append(entrou ? "§2+" : "§4-").append(l[2]).append("\n")
+                        .append("§0").append(entrou ? "de " : "pra ").append(l[3]).append("\n")
+                        .append("§8").append(l[4]).append(l[5].isEmpty() ? "" : " (taxa " + l[5] + ")").append("\n\n");
             }
+            paginas.add(legado.deserialize(pagina.toString()));
         }
+        jogador.openBook(net.kyori.adventure.inventory.Book.book(legado.deserialize("Extrato"), legado.deserialize("Bancário"), paginas));
+        jogador.playSound(jogador.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
     }
 
     private static ItemStack icone(Material material, String nome, String... lore) {

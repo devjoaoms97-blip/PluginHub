@@ -30,6 +30,33 @@ public class PixPlugin extends JavaPlugin {
         alertas.conferir(de, nomeDe, para, nomePara, valor, tipo);
     }
 
+    /**
+     * API pública (ChequePlugin, o extrato que o Bancário entrega; e o /pix admin log): as últimas
+     * {@code quantidade} transações de {@code dono}, da mais nova pra mais velha. Cada uma é
+     * {data "dd/MM HH:mm", "+" ou "-", valor, com quem, tipo, taxa (vazio sem taxa)}. Quem pagou vê o
+     * valor cheio; quem recebeu vê o que entrou de fato.
+     */
+    public List<String[]> extrato(UUID dono, int quantidade) {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM HH:mm");
+        List<String[]> linhas = new java.util.ArrayList<>();
+        for (TransacaoRegistro r : chargeManager.getHistorico(dono, quantidade)) {
+            boolean recebeu = r.getPara().equals(dono);
+            UUID outroId = recebeu ? r.getDe() : r.getPara();
+            String outro;
+            if (r.getNomeEntidade() != null) outro = r.getNomeEntidade();
+            else if (outroId.equals(ChargeManager.ENTIDADE_LOJA)) outro = "Loja do Servidor";
+            else outro = String.valueOf(org.bukkit.Bukkit.getOfflinePlayer(outroId).getName());
+            double valor = recebeu ? r.getValor() - r.getTaxa() : r.getValor();
+            linhas.add(new String[]{sdf.format(new java.util.Date(r.getData())), recebeu ? "+" : "-", valor(valor), outro, r.getTipo(),
+                    r.getTaxa() > 0 ? valor(r.getTaxa()) : ""});
+        }
+        return linhas;
+    }
+
+    private static String valor(double v) {
+        return String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", v);
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();

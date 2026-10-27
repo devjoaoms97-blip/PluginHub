@@ -58,6 +58,6 @@ holograma:
   altura: 2.0
 
 integracao:
-  # Registra aluguéis, leilões ganhos e compras nas barracas no /pix historico (se o PixPlugin
+  # Registra aluguéis, leilões ganhos e compras nas barracas no extrato do Bancário (se o PixPlugin
   # estiver instalado).
   pix: true

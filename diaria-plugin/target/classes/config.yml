@@ -15,7 +15,7 @@ dias:
   sem-rankup: 1000.0
 
 integracao:
-  # Registra a recompensa no /pix historico (precisa do PixPlugin).
+  # Registra a recompensa no extrato do Bancário (precisa do PixPlugin).
   pix: true
 
 vip-bonus:

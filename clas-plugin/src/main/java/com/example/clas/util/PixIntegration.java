@@ -8,7 +8,7 @@ import java.util.UUID;
 
 /**
  * Registra a criação de clã e as movimentações do banco do clã no histórico do PixPlugin
- * (/pix historico). Mesma abordagem dos outros plugins: reflexão, sem dependência de compilação
+ * (extrato do Bancário). Mesma abordagem dos outros plugins: reflexão, sem dependência de compilação
  * — se o Pix não estiver instalado (ou for de uma versão sem suporte), não registra nada.
  */
 public class PixIntegration {

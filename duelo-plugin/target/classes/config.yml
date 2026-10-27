@@ -36,5 +36,5 @@ anuncio:
   aposta-minima: 10000.0
 
 integracao:
-  # Registra apostas e prêmios no /pix historico (precisa do PixPlugin).
+  # Registra apostas e prêmios no extrato do Bancário (precisa do PixPlugin).
   pix: true

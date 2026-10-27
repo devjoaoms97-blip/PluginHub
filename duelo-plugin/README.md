@@ -57,7 +57,7 @@ Com mais de uma arena, acontece mais de um duelo ao mesmo tempo. Cada arena rece
 ## Integrações
 
 - **Vault:** as apostas. Sem ele, só há duelo amistoso.
-- **PixPlugin:** aposta, prêmio e devolução aparecem no `/pix historico`.
+- **PixPlugin:** aposta, prêmio e devolução aparecem no extrato do Bancário.
 - **Painel da economia:** `/economia tipos DueloPlugin` separa apostas, prêmios e devoluções.
 
 ## Dados

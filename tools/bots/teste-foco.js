@@ -1,5 +1,5 @@
-// O foco de 2026-10-27: Bancário (folha de cheque, cheque saindo do saldo, depósito com taxa e
-// cancelamento com devolução), Cambista (fragmentos por encantamento, só nos itens que fazem sentido),
+// O foco de 2026-10-27: Bancário (folha de cheque, cheque saindo do saldo, depósito com taxa,
+// cancelamento com devolução e a Mine-sena), Cambista (fragmentos por encantamento, só nos itens que fazem sentido),
 // Compactador, guia de mina, achados e perdidos, teleporte por comando barrado nas arenas, prestígio
 // de skill com a skill em uso no placar, parry com escudo e Boss elite.
 // Uso: node teste-foco.js   (depois do "node montar-mapa.js construir oficinas banco")
@@ -90,6 +90,63 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => /cancelado/i.test(m)) && await saldo(nome) === 99940, 'cancelar o cheque devolve os R$ 500',
     `${await saldo(nome)} | ${msgs.join(' | ')}`)
 
+  console.log('\n== Mine-sena ==')
+  // o pote pode ter sobra de outra rodada: o prêmio é o pote de antes mais as apostas daqui
+  const poteDe = r => parseFloat((r.match(/Pote: R\$ ([\d.,]+)/) || [, '0'])[1].replace(/\./g, '').replace(',', '.'))
+  await t.console('minesena sortear 100') // zera as apostas pendentes (ninguém joga no 100 aqui)
+  const poteAntes = poteDe(await t.console('minesena'))
+  await t.console(`eco set ${nome} 100000`)
+  janela = await falar(bot, BANCARIO)
+  t.verificar(!!janela && janela.slots[13]?.name === 'sunflower', 'o Bancário tem o botão da Mine-sena', janela?.slots[13]?.name)
+  if (janela) {
+    const lotes = await new Promise(ok => {
+      const fim = setTimeout(() => ok(null), 3000)
+      bot.once('windowOpen', j => { clearTimeout(fim); ok(j) })
+      bot.clickWindow(13, 0, 0)
+    })
+    t.verificar(!!lotes && lotes.slots[0]?.name === 'white_stained_glass_pane' && lotes.slots[44] != null && lotes.slots[53]?.name === 'arrow',
+      'abre os números (1 a 45 na primeira página, com a seta pra próxima)', lotes?.slots[0]?.name)
+    if (lotes) {
+      // nº 7 duas vezes e nº 8 uma: o menu reabre a cada compra, então espera a janela nova
+      for (const slot of [6, 6, 7]) {
+        const proxima = new Promise(ok => { const fim = setTimeout(ok, 2000); bot.once('windowOpen', () => { clearTimeout(fim); ok() }) })
+        await bot.clickWindow(slot, 0, 0)
+        await proxima
+        await t.espera(300)
+      }
+      bot.closeWindow(bot.currentWindow)
+    }
+  }
+  t.verificar(await saldo(nome) === 98500, '3 bilhetes de R$ 500 saíram do saldo', String(await saldo(nome)))
+  let info = await t.console('minesena')
+  t.verificar(Math.abs(poteDe(info) - (poteAntes + 1500)) < 0.01, 'e foram pro pote', `${poteAntes} → ${poteDe(info)}`)
+  msgs = await t.capturar(bot, () => t.console('minesena sortear 7'), 1500)
+  t.verificar(msgs.some(m => /MINE-SENA/.test(m) && /\b7\b/.test(m)), 'o sorteio é anunciado no chat', msgs.join(' | ').slice(0, 160))
+  t.verificar(msgs.some(m => /Você ganhou na Mine-sena/.test(m)), 'e o ganhador é avisado')
+  t.verificar(Math.abs(await saldo(nome) - (98500 + poteAntes + 1500)) < 0.02, 'os 2 bilhetes no 7 levam o pote inteiro (o do 8 não leva nada)',
+    `${await saldo(nome)} (pote ${poteAntes + 1500})`)
+  info = await t.console('minesena')
+  t.verificar(poteDe(info) === 0, 'o pote zera depois de pago', info.slice(0, 80))
+  // sem ganhador: acumula
+  janela = await falar(bot, BANCARIO)
+  if (janela) {
+    const lotes = await new Promise(ok => {
+      const fim = setTimeout(() => ok(null), 3000)
+      bot.once('windowOpen', j => { clearTimeout(fim); ok(j) })
+      bot.clickWindow(13, 0, 0)
+    })
+    if (lotes) {
+      const proxima = new Promise(ok => { const fim = setTimeout(ok, 2000); bot.once('windowOpen', () => { clearTimeout(fim); ok() }) })
+      await bot.clickWindow(0, 0, 0) // nº 1
+      await proxima
+      bot.closeWindow(bot.currentWindow)
+    }
+  }
+  msgs = await t.capturar(bot, () => t.console('minesena sortear 2'), 1500)
+  info = await t.console('minesena')
+  t.verificar(msgs.some(m => /Ninguém acertou/.test(m)) && poteDe(info) === 500, 'sem ganhador, o pote acumula', `${poteDe(info)} | ${msgs.join(' | ').slice(0, 120)}`)
+  await t.console('minesena sortear 1') // devolve o pote pro bot e deixa limpo pra próxima rodada
+
   console.log('\n== Cambista ==')
   await t.console(`eco set ${nome} 10000000`)
   await t.console(`minecraft:clear ${nome}`)
@@ -164,6 +221,27 @@ t.rodar(async () => {
   t.verificar(await quantos(nome, 'diamond') === 3 && await saldo(nome) === antesAchados - 100, 'e voltou por R$ 100',
     `${await quantos(nome, 'diamond')} diamantes, ${antesAchados} → ${await saldo(nome)}`)
 
+  console.log('\n== Extrato no Bancário ==')
+  // o livro abre na tela (o servidor manda o pacote open_book)
+  let livro = false
+  const aoLivro = () => { livro = true }
+  bot._client.on('open_book', aoLivro)
+  janela = await falar(bot, BANCARIO)
+  t.verificar(!!janela && janela.slots[16]?.name === 'written_book', 'o Bancário tem o botão do extrato', janela?.slots[16]?.name)
+  if (janela) await bot.clickWindow(16, 0, 0)
+  await t.espera(1500)
+  bot._client.removeListener('open_book', aoLivro)
+  t.verificar(livro, 'o extrato abre como livro na tela')
+  // o conteúdo é o histórico do PixPlugin: a staff vê o mesmo com /pix admin log
+  await t.console(`op ${nome}`)
+  msgs = await t.capturar(bot, () => bot.chat(`/pix admin log ${nome}`), 1500)
+  await t.console(`deop ${nome}`)
+  const extrato = msgs.join(' | ')
+  for (const [o, oQue] of [[/Achados e perdidos/, 'a taxa dos achados'], [/Mine-sena/, 'a Mine-sena'], [/Depósito de cheque/, 'o depósito do cheque'],
+    [/Cheque cancelado/, 'o cancelamento do cheque'], [/Cheque emitido/, 'o cheque emitido']]) {
+    t.verificar(o.test(extrato), `${oQue} está no extrato`)
+  }
+
   console.log('\n== Teleporte nas arenas ==')
   await t.console(`execute in minecraft:arenas run minecraft:tp ${nome} 0 70 0`)
   await t.espera(1500)
@@ -199,12 +277,17 @@ t.rodar(async () => {
   await t.espera(1500)
   if (alvo) atacante.attack(alvo)
   await t.espera(2500)
-  msgs = await t.capturar(bot, async () => {
-    bot.activateItem(true) // levanta o escudo da segunda mão
-    await t.espera(100)
-    if (alvo) atacante.attack(alvo)
-  }, 1500)
-  bot.deactivateItem()
+  // a janela é curta (0,3 s) e o tempo entre os dois bots varia: até 3 tentativas, com a recarga do parry entre elas
+  msgs = []
+  for (let tentativa = 0; tentativa < 3 && !msgs.some(m => /Escudo Perfeito/.test(m)); tentativa++) {
+    if (tentativa > 0) await t.espera(3500)
+    msgs = await t.capturar(bot, async () => {
+      bot.activateItem(true) // levanta o escudo da segunda mão
+      await t.espera(100)
+      if (alvo) atacante.attack(alvo)
+    }, 1500)
+    bot.deactivateItem()
+  }
   t.verificar(msgs.some(m => /Escudo Perfeito/.test(m)), 'escudo levantado bem na hora do golpe: Escudo Perfeito', msgs.join(' | '))
   const msgsAtk = atacante.mensagens.slice(-5).join(' | ')
   t.verificar(/aparado/.test(msgsAtk), 'e quem bateu é avisado do parry', msgsAtk)

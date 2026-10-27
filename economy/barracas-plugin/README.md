@@ -129,7 +129,7 @@ integracao:
 
 ## Integração com o Pix
 
-Com o PixPlugin instalado, aparecem no `/pix historico`:
+Com o PixPlugin instalado, aparecem no extrato do Bancário:
 - aluguel, renovação e renovação automática, como "Loja do Servidor";
 - leilão vencido;
 - compras e vendas nas lojas das barracas, no extrato de quem comprou e de quem vendeu.

@@ -30,6 +30,11 @@ categorias:
     ativado: true
     webhook-url: ""
     nome: "VIP"
+  # Resultado do sorteio diário da Mine-sena (ChequePlugin).
+  minesena:
+    ativado: true
+    webhook-url: ""
+    nome: "Mine-sena"
   # Pix alto (valor no config do PixPlugin): pro canal da STAFF, de preferência com webhook próprio.
   pix:
     ativado: true

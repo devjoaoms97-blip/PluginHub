@@ -30,7 +30,7 @@ Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro �
 
 ## Como funciona
 
-**Ranks.** Todo jogador começa no primeiro rank. O `/rankup` cobra o preço do próximo e sobe. Quem sobe de rank é anunciado no chat. O pagamento aparece no `/pix historico` e no `/economia tipos RankupPlugin` como "Rankup".
+**Ranks.** Todo jogador começa no primeiro rank. O `/rankup` cobra o preço do próximo e sobe. Quem sobe de rank é anunciado no chat. O pagamento aparece no extrato do Bancário e no `/economia tipos RankupPlugin` como "Rankup".
 
 **Bônus de venda.** Cada rank tem um `multiplicador-venda`: com 1.25, o `/sell` (e a venda pelo menu da loja) paga 25% a mais. O bônus entra antes do imposto da loja, e a mensagem de venda mostra quanto foi.
 
@@ -141,7 +141,7 @@ Com jogadores de verdade, o `rankups.csv` mostra quanto tempo cada rank está le
 ## Integrações
 
 - **EconomyShopPlugin**: aplica o bônus de venda do rank no `/sell`, no `/sell all` e no menu. A loja chama `RankupPlugin#multiplicadorVenda(UUID)` por reflexão.
-- **PixPlugin** (opcional): o pagamento do rankup aparece no `/pix historico` como "Loja do Servidor".
+- **PixPlugin** (opcional): o pagamento do rankup aparece no extrato do Bancário como "Loja do Servidor".
 - **PainelEconomiaPlugin**: o rankup aparece como o tipo "Rankup".
 - **MissoesPlugin**: minerar na mina conta pra missão de minerar, como qualquer bloco natural. O bloco que o reset coloca não conta como "colocado pelo jogador".
 - **LuckPerms** (opcional): use `comandos-ao-subir` pra dar um grupo por rank.

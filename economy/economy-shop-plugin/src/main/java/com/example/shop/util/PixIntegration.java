@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
 
 /**
- * Registra as transações da loja no histórico do PixPlugin (/pix historico), pra unificar
+ * Registra as transações da loja no histórico do PixPlugin (extrato do Bancário), pra unificar
  * o extrato do jogador num só lugar. Usa reflexão de propósito — assim o EconomyShopPlugin
  * continua funcionando normalmente mesmo se o PixPlugin não estiver instalado, sem precisar
  * de uma dependência de compilação entre os dois projetos.

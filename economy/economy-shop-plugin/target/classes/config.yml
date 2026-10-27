@@ -25,7 +25,7 @@ estatisticas:
   dias-guardados: 90
 
 integracao:
-  # Se true e o PixPlugin estiver instalado, toda compra/venda também aparece no /pix historico do jogador
+  # Se true e o PixPlugin estiver instalado, toda compra/venda também aparece no extrato do Bancário do jogador
   pix: true
 
 vip-descontos:

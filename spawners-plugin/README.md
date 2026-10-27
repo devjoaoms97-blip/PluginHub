@@ -38,7 +38,7 @@ A estrutura cadastra a área e as estátuas sozinha. À mão:
 - **Missões:** o mob da pilha nasce com o motivo "spawner", e as missões de matar não contam mob de spawner.
 - **Skills:** bater em mob de pilha dá `xp.multiplicador-spawner` (25%) do XP de PvE, e só pelo dano do golpe: matar a pilha toda não dá o XP de cada mob dela. Senão a pilha virava fábrica de level up (cada nível paga dinheiro). A marca é a chave `spawnersplugin:pilha` na entidade.
 - **Rankup:** o rank que libera cada tipo (por reflexão).
-- **Pix:** a compra aparece no `/pix historico`.
+- **Pix:** a compra aparece no extrato do Bancário.
 
 ## Tipos e preços
 
