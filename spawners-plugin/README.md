@@ -15,6 +15,24 @@ Spawners empilhados nos terrenos: outra fonte de renda além da mina.
 
 O bloco mostra o mob girando, mas o spawn do vanilla fica desligado: quem gera é o ciclo do plugin.
 
+## Warp mobs
+
+A `/warp mobs` é o salão de estátuas a oeste do spawn (estrutura `mobs` do EstruturasPlugin). Na frente de cada estátua tem um spawner no chão, e em volta dele nascem **mobs normais, um por vez** (sem pilha), do tipo da estátua: galinha, porco, vaca, ovelha, zumbi, esqueleto, aranha, creeper, slime, blaze e enderman.
+
+- A cada `warp-mobs.ciclo-segundos` (6), cada estátua com jogador a até `raio-ativacao` (32) blocos ganha um mob, até `limite-por-estatua` (4) vivos.
+- Qualquer um mata: drops, XP e **XP de skill cheio** (não é pilha). As missões não contam (o mob nasce com o motivo "spawner").
+- O mob fica dentro do salão: não anda nem teleporta (enderman) pra fora da área, então o vestíbulo da entrada e o túnel do spawn ficam livres. Não queima no sol do teto de vidro, não some de longe e não pega item. O slime é sempre o pequeno (o único que derruba slime).
+- O spawner do bloco só mostra o mob girando: o spawn do vanilla fica desligado nele. Em cima dele, um holograma com o nome do mob.
+
+A estrutura cadastra a área e as estátuas sozinha. À mão:
+
+| Comando (staff) | Ação |
+|---|---|
+| `/spawners mobs lista` | As estátuas, a área e quantos mobs vivos cada uma tem |
+| `/spawners mobs area <mundo> <x1> <y1> <z1> <x2> <y2> <z2>` | A caixa de onde os mobs não saem |
+| `/spawners mobs ponto <id> <tipo> <mundo> <x> <y> <z>` | Uma estátua: o bloco do spawner e o tipo (um dos `tipos` do config) |
+| `/spawners mobs limpar` | Apaga todas as estátuas |
+
 ## Integrações
 
 - **Missões:** o mob da pilha nasce com o motivo "spawner", e as missões de matar não contam mob de spawner.
@@ -44,13 +62,14 @@ Com 1 spawner são 180 mobs por hora (se o jogador matar todos); o preço se pag
 | `/spawners loja` | A loja de spawners (o Domador abre esse comando) |
 | `/spawners dar <jogador> <tipo> [qtd]` | (staff) Dá spawners |
 | `/spawners lista` | (staff) Os spawners colocados, com tipo, quantidade e dono |
+| `/spawners mobs` | (staff) A warp mobs (veja acima) |
 | `/spawners reload` | (staff) Recarrega o config |
 
 Permissão da staff: `spawners.admin`.
 
 ## Dados
 
-`spawners.yml`: cada spawner colocado (mundo, posição, tipo, quantidade, dono, a pilha e o holograma).
+`spawners.yml`: cada spawner colocado (mundo, posição, tipo, quantidade, dono, a pilha e o holograma). `mobs.yml`: a área e as estátuas da warp mobs.
 
 ## Como compilar
 

@@ -37,12 +37,23 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => ['minas', 'mercado', 'boss', 'plateia-x1', 'plateia-gladiador'].every(w => m.includes(w))),
     'lista de warps', msgs.join(' ').slice(0, 160))
 
-  // um painel "Como começar" só, no fim da avenida oeste, no lugar dos hologramas espalhados
-  await t.console('execute in minecraft:spawn run forceload add -43 43')
+  // um painel "Como começar" só, no fim da avenida oeste (do lado do portão "MOBS"), no lugar dos hologramas espalhados
+  await t.console('execute in minecraft:spawn run forceload add -41 53')
   await t.espera(1000)
   const holos = await t.console('execute in minecraft:spawn positioned 0 65 43 run execute if entity @e[type=text_display,tag=mapa,distance=..16]')
-  const painel = await t.console('execute in minecraft:spawn positioned -42.5 66.2 43.5 run data get entity @e[type=text_display,tag=mapa,limit=1,sort=nearest,distance=..1] text.text')
+  const painel = await t.console('execute in minecraft:spawn positioned -40.5 66.2 53.5 run data get entity @e[type=text_display,tag=mapa,limit=1,sort=nearest,distance=..1] text.text')
   t.verificar(!holos.includes('passed') && painel.includes('COMO COME'), 'o painel "Como começar" no fim da avenida oeste, sem hologramas espalhados', `${holos} | ${painel}`)
+
+  console.log('\n== Warp mobs ==')
+  msgs = await t.capturar(bot, () => bot.chat('/warp mobs'), 2000)
+  t.verificar(bot.entity.position.distanceTo(new Vec3(-85.5, 49, 43.5)) < 3, '/warp mobs leva ao vestíbulo do salão', `${bot.entity.position} ${msgs.join(' ')}`)
+  t.verificar(await blocoE('spawn', -54, 65, 43, 'air') && await blocoE('spawn', -75, 55, 43, 'stone_brick_stairs') && await blocoE('spawn', -67, 70, 43, 'air'),
+    'o portão oeste do spawn está aberto e a escadaria desce até o salão')
+  t.verificar(await blocoE('spawn', -140, 84, 30, 'glass') && await blocoE('spawn', -140, 90, 30, 'air') && await blocoE('spawn', -229, 40, 43, 'air'),
+    'o salão fica meio enterrado: teto de vidro em y 84, nada por cima (nem sobra das versões antigas)')
+  const estatuas = await t.console('spawners mobs lista')
+  t.verificar(/11 estátuas/.test(estatuas), 'as 11 estátuas da warp mobs estão cadastradas', estatuas.slice(0, 120))
+  await t.capturar(bot, () => bot.chat('/spawn'), 2000)
 
   console.log('\n== Minas ==')
   t.verificar(!(await blocoE('spawn', -19, 64, -40, 'air')) && !(await blocoE('spawn', 19, 50, -165, 'air')),

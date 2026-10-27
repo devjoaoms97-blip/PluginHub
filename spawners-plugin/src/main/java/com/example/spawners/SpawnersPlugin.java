@@ -38,6 +38,7 @@ public class SpawnersPlugin extends JavaPlugin {
     private final Map<String, Tipo> tipos = new LinkedHashMap<>();
     private NamespacedKey chaveTipo;
     private SpawnerManager spawners;
+    private WarpMobs warpMobs;
     private LojaSpawners loja;
     private PixIntegration pix;
     private RankupIntegration rankup;
@@ -53,16 +54,22 @@ public class SpawnersPlugin extends JavaPlugin {
         rankup = new RankupIntegration(this);
         spawners = new SpawnerManager(this);
         loja = new LojaSpawners(this);
+        warpMobs = new WarpMobs(this);
         getServer().getPluginManager().registerEvents(spawners, this);
+        getServer().getPluginManager().registerEvents(warpMobs, this);
         getServer().getPluginManager().registerEvents(loja, this);
         long ciclo = Math.max(1, getConfig().getLong("ciclo-segundos", 20)) * 20L;
         getServer().getScheduler().runTaskTimer(this, spawners::ciclo, ciclo, ciclo);
-        getLogger().info("SpawnersPlugin ativado! " + tipos.size() + " tipo(s), " + spawners.quantos() + " spawner(s) colocados.");
+        long cicloMobs = Math.max(1, getConfig().getLong("warp-mobs.ciclo-segundos", 6)) * 20L;
+        getServer().getScheduler().runTaskTimer(this, warpMobs::ciclo, 40L, cicloMobs);
+        getLogger().info("SpawnersPlugin ativado! " + tipos.size() + " tipo(s), " + spawners.quantos() + " spawner(s) colocados, "
+                + warpMobs.quantos() + " estátua(s) na warp mobs.");
     }
 
     @Override
     public void onDisable() {
         if (spawners != null) spawners.salvar();
+        if (warpMobs != null) warpMobs.desligar();
     }
 
     private void carregarTipos() {
@@ -147,12 +154,13 @@ public class SpawnersPlugin extends JavaPlugin {
                 sender.sendMessage("§e§l--- Spawners colocados: " + spawners.quantos() + " ---");
                 spawners.resumo().forEach(sender::sendMessage);
             }
+            case "mobs" -> warpMobs.comando(sender, args);
             case "reload" -> {
                 reloadConfig();
                 carregarTipos();
                 sender.sendMessage("§aConfig recarregado (" + tipos.size() + " tipos).");
             }
-            default -> sender.sendMessage("§f/spawners loja §7| §f/spawners dar <jogador> <tipo> [qtd] §7| §f/spawners lista §7| §f/spawners reload");
+            default -> sender.sendMessage("§f/spawners loja §7| §f/spawners dar <jogador> <tipo> [qtd] §7| §f/spawners lista §7| §f/spawners mobs §7| §f/spawners reload");
         }
         return true;
     }
@@ -162,9 +170,11 @@ public class SpawnersPlugin extends JavaPlugin {
         List<String> opcoes = new ArrayList<>();
         if (args.length == 1) {
             opcoes.add("loja");
-            if (sender.hasPermission("spawners.admin")) opcoes.addAll(List.of("dar", "lista", "reload"));
+            if (sender.hasPermission("spawners.admin")) opcoes.addAll(List.of("dar", "lista", "mobs", "reload"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("dar")) {
             Bukkit.getOnlinePlayers().forEach(p -> opcoes.add(p.getName()));
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("mobs") && sender.hasPermission("spawners.admin")) {
+            opcoes.addAll(List.of("lista", "area", "ponto", "limpar"));
         } else if (args.length == 3 && args[0].equalsIgnoreCase("dar")) {
             opcoes.addAll(tipos.keySet());
         }

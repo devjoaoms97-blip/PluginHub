@@ -29,8 +29,9 @@ import static com.example.estruturas.estrutura.Planta.laje;
  * arquibancada e muralha externa — nada escalável), com fonte e pavilhão no centro onde o jogador
  * nasce, quatro avenidas, cerejeiras com bancos e barracas de loja (NPC atrás do balcão).
  *
- * Três saídas: o portão LESTE (letreiro "LOJA") leva à Loja Oficial (estrutura "loja"), do lado de
- * fora da muralha. E as duas de sempre: o portão ao NORTE (letreiro "MINAS" por dentro e "SPAWN" por fora), com o
+ * Quatro saídas: o portão LESTE (letreiro "LOJA") leva à Loja Oficial (estrutura "loja"), e o OESTE
+ * ("MOBS") ao salão de estátuas da /warp mobs (estrutura "mobs"), os dois do lado de fora da
+ * muralha. E as duas de sempre: o portão ao NORTE (letreiro "MINAS" por dentro e "SPAWN" por fora), com o
  * túnel atravessando a muralha direto pra avenida das minas, e o portão ao SUL, igual e espelhado
  * (letreiro "BOSS"), que leva à arena do boss. As duas encostam na face de fora dos portões
  * (|z| = 63): o spawn não escreve nada além disso, pra não apagar as vizinhas.
@@ -185,9 +186,12 @@ public class ArenaSpringColiseu implements Estrutura {
         RotacaoLeste leste = new RotacaoLeste(p);
         gerarPortao(leste);
         letreirosDoPortaoLeste(leste);
+        // o dos mobs é o das minas girado pro outro lado (norte vira oeste), com o letreiro "MOBS"
+        RotacaoOeste oeste = new RotacaoOeste(p);
+        gerarPortao(oeste);
+        letreirosDoPortaoOeste(oeste);
         for (int k = 0; k < 4; k++) gerarQuadrante(p, k);
         gerarBarracas(p);
-        gerarFimDasAvenidas(p);
         gerarFlores(p);
         gerarLiquens(p);
         gerarJardinsNoTopo(p);
@@ -275,11 +279,11 @@ public class ArenaSpringColiseu implements Estrutura {
 
     // ------------------------------------------------------------------ base
 
-    /** A área de fora de um dos portões (norte e sul, espelhados, e o leste, girado). */
+    /** A área de fora de um dos portões (norte e sul, espelhados, e o leste e o oeste, girados). */
     private static boolean naAreaDoPortao(int x, int z) {
         boolean norteSul = Math.abs(x) <= 18 && Math.abs(z) >= 48 && Math.abs(z) <= -Z_FIM_CAMINHO;
-        boolean leste = Math.abs(z) <= 18 && x >= 48 && x <= -Z_FIM_CAMINHO;
-        return norteSul || leste;
+        boolean lesteOeste = Math.abs(z) <= 18 && Math.abs(x) >= 48 && Math.abs(x) <= -Z_FIM_CAMINHO;
+        return norteSul || lesteOeste;
     }
 
     /**
@@ -310,6 +314,38 @@ public class ArenaSpringColiseu implements Estrutura {
     private void letreirosDoPortaoLeste(Planta p) {
         painel(p, Z_FACE_INT);
         escrever(p, "LOJA", -7, 1, 16, Z_FACE_INT);
+        painel(p, Z_FACE_EXT);
+        escrever(p, "SPAWN", 11, -1, 16, Z_FACE_EXT);
+    }
+
+    /**
+     * Planta girada 90° no sentido anti-horário (visto de cima): o que é escrito "ao norte" sai a
+     * oeste (x negativo), com a orientação dos blocos girada junto.
+     */
+    private static final class RotacaoOeste extends Planta {
+        private final Planta destino;
+
+        RotacaoOeste(Planta destino) {
+            this.destino = destino;
+        }
+
+        @Override
+        public void set(int x, int y, int z, BlockData dados) {
+            BlockData girado = dados.clone();
+            girado.rotate(StructureRotation.COUNTERCLOCKWISE_90);
+            destino.set(z, y, -x, girado);
+        }
+
+        @Override
+        public Material get(int x, int y, int z) {
+            return destino.get(z, y, -x);
+        }
+    }
+
+    /** "MOBS" lido de dentro e "SPAWN" lido de quem volta da warp mobs (na planta girada, igual ao norte). */
+    private void letreirosDoPortaoOeste(Planta p) {
+        painel(p, Z_FACE_INT);
+        escrever(p, "MOBS", -8, 1, 16, Z_FACE_INT);
         painel(p, Z_FACE_EXT);
         escrever(p, "SPAWN", 11, -1, 16, Z_FACE_EXT);
     }
@@ -485,10 +521,10 @@ public class ArenaSpringColiseu implements Estrutura {
                         m = mancha[3] == 0 ? Material.MOSS_BLOCK : Material.COARSE_DIRT;
                     }
                 }
-                // nas avenidas com portão (minas, boss e loja) o calçamento vai direto até a boca do
-                // túnel, sem o anel de terra batida e a borda da praça cruzando no meio
+                // nas avenidas (todas têm portão: minas, boss, loja e mobs) o calçamento vai direto até a
+                // boca do túnel, sem o anel de terra batida e a borda da praça cruzando no meio
                 boolean avenidaComPortao = (Math.abs(x) <= MEIA_AVENIDA && Math.abs(z) > MEIA_AVENIDA)
-                        || (Math.abs(z) <= MEIA_AVENIDA && x > MEIA_AVENIDA);
+                        || (Math.abs(z) <= MEIA_AVENIDA && Math.abs(x) > MEIA_AVENIDA);
                 if (avenidaComPortao && r >= R_ANEL_C_INI) m = calcamento(x, z);
                 else if (r >= R_PISO - 1) m = pedra(x, 0, z);
                 else if (r >= R_ANEL_C_INI && r < R_ANEL_C_FIM) {
@@ -1010,35 +1046,6 @@ public class ArenaSpringColiseu implements Estrutura {
     }
 
     // ------------------------------------------------------------------ enfeites
-
-    /** Nas avenidas sem portão (leste e oeste): canteiro de azaleia e flores encostado na parede. */
-    private void gerarFimDasAvenidas(Planta p) {
-        for (int k = 3; k < 4; k += 2) { // só a oeste: a norte, a sul e a leste têm portão (minas, boss e loja)
-            Quadrante q = new Quadrante(p, k);
-            // No referencial do NE girado: a avenida "norte" girada k vezes vira leste/sul/oeste.
-            for (int a = 42; a <= 44; a++) {
-                for (int t = -5; t <= 5; t++) {
-                    if (raio(t, -a) >= R_PISO - 1) continue;
-                    q.set(t, 0, -a, Material.GRASS_BLOCK);
-                    q.set(t, 1, -a, folha(Math.floorMod(t, 2) == 0 ? Material.FLOWERING_AZALEA_LEAVES : Material.AZALEA_LEAVES));
-                }
-            }
-            for (int t = -4; t <= 4; t++) {
-                q.set(t, 0, -41, Material.GRASS_BLOCK);
-                Material flor = switch (Math.floorMod(t, 3)) {
-                    case 0 -> Material.PINK_TULIP;
-                    case 1 -> Material.ALLIUM;
-                    default -> Material.OXEYE_DAISY;
-                };
-                q.set(t, 1, -41, flor);
-            }
-            q.banco(0, -39, BlockFace.NORTH);
-            q.set(-5, 0, -39, PEDRA);
-            q.poste(-5, -39);
-            q.set(5, 0, -39, PEDRA);
-            q.poste(5, -39);
-        }
-    }
 
     /** Grama, flores e flores altas espalhadas onde for grama (semente fixa). */
     private void gerarFlores(Planta p) {

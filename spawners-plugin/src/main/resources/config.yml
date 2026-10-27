@@ -82,6 +82,18 @@ tipos:
     preco: 120000
     rank: barao
 
+# /warp mobs: o salão de estátuas a oeste do spawn (estrutura "mobs" do EstruturasPlugin, que
+# cadastra as estátuas e a área com o /spawners mobs). Em volta do spawner na frente de cada estátua
+# nascem mobs normais, um por vez, de um dos tipos acima (o nome vem daqui). Drops, XP e XP de skill
+# cheios; as missões não contam (é mob de spawner).
+warp-mobs:
+  # A cada quantos segundos cada estátua ganha um mob (se tiver jogador perto e não estiver cheia).
+  ciclo-segundos: 6
+  # Só nasce com algum jogador a até tantos blocos do spawner da estátua.
+  raio-ativacao: 32
+  # Máximo de mobs vivos de cada estátua.
+  limite-por-estatua: 4
+
 integracao:
   # Registra as compras no /pix historico (precisa do PixPlugin).
   pix: true
