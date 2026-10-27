@@ -419,6 +419,7 @@ const DICAS = [
   { id: 'sentinela-boss', nome: '&cSentinela do Portão', pos: [-6, 38], virado: 'centro', falas: [
     '&fTem boss &ctodo dia às 20h&f. No &cdomingo&f é o &8Flagelo das Trevas&f. Dez minutos antes, o chat avisa. &e/boss proximo&f diz quando.',
     '&fQuem dá o último golpe vira &6campeão&f e ganha a tag. Quem bate mais aparece no ranking de dano.',
+    '&fO boss só espera &c1 hora&f. Se ninguém derrotar, ele vai embora e o mal reina: XP de skill &c-10%&f até alguém derrubar o próximo.',
     '&fQuem morre na arena deixa os itens lá. Não leve nada que você não aceita perder.',
     '&fA arena tem cara de tóxica, mas pode pisar à vontade. O que mata mesmo é o boss. E o orgulho.',
     '&fAtenção: a arena do boss é o único lugar do spawn com &cPvP&f. Lá dentro, o colega do lado também pode te bater.',

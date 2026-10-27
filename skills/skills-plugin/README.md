@@ -63,6 +63,8 @@ O PlacarPlugin mostra a skill em uso pelos métodos `textoSkillEmUso(UUID)` e `p
 
 `xp-dobro` no config: nos dias da lista (`[SABADO, DOMINGO]` por padrão) todo XP de skill vale `multiplicador`, por cima do bônus do VIP (combate, missões e boss; o bônus de ativação do VIP não). A staff também liga na hora com `/skills admin xpdobro`, que vale mais que o dos dias fixos e sobrevive a reinício. O começo e o fim são anunciados no chat, e quem entra durante o evento é avisado.
 
+**Maldição do boss.** Quando um boss vai embora sem ser derrotado, o BossPlugin amaldiçoa o servidor: esse mesmo XP sai multiplicado por `maldicao.xp-skill-multiplicador` do BossPlugin (0,9) até o próximo boss morrer ou passar 24 h. O SkillsPlugin lê isso por reflexão (`fatorXpMaldicao()`); sem o BossPlugin, nada muda.
+
 Ao subir de nível, duas espirais da partícula da skill sobem em volta do jogador (crítico nas Espadas, coração na Regeneração...), e no fim vem a explosão de totem. Todo mundo em volta vê.
 
 O `/skills top` lê o `playerdata` de todos (e o cache de quem está online) e guarda o resultado por um minuto.

@@ -41,6 +41,7 @@ node teste-pix-agendado.js  # Pix agendado: primeiro pagamento, vencimento, falt
 node teste-discord.js       # ponte com o Discord (um servidor HTTP local faz o papel do Discord)
 node teste-diaria.js        # recompensa diária e a sequência de dias
 node teste-gladiador-borda.js # borda do Gladiador fechando (muda o config por alguns segundos)
+node teste-boss-maldicao.js # boss que escapa amaldiçoa (XP -10%) e o próximo morto quebra (precisa do limite de 2 min no config)
 node teste-boss-vip.js      # só o campeão do Wither ganha o código de VIP de evento de 7 dias; o boss normal não
 node teste-vip-evento.js    # código de VIP de evento: só 3/7/15 dias, sem bônus nem kit mensal, não vende, quem tem VIP resgata depois
 node teste-creditos.js      # loja de créditos: créditos pelo console, cosmético com confirmação, cor na tab, VIP e código, apoiador

@@ -34,8 +34,9 @@ public class XpManager {
 
     public void adicionarXp(Player jogador, Skill skill, double quantidade) {
         if (quantidade <= 0) return;
-        // o XP em dobro (ou o multiplicador do evento) vale por cima do bônus do VIP
-        double multiplicador = (1 + bonusVipPercentual(jogador) / 100.0) * plugin.getEventoXp().multiplicador();
+        // o XP em dobro (ou o multiplicador do evento) e a maldição do boss que escapou valem por cima do bônus do VIP
+        double multiplicador = (1 + bonusVipPercentual(jogador) / 100.0) * plugin.getEventoXp().multiplicador()
+                * plugin.fatorMaldicaoBoss();
         adicionar(jogador, skill, quantidade * multiplicador, true);
     }
 

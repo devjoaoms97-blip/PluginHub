@@ -14,6 +14,7 @@ com\example\boss\listener\BossDeathListener.class
 com\example\boss\model\TipoGatilhoFase.class
 com\example\boss\BossPlugin.class
 com\example\boss\manager\BossManager.class
+com\example\boss\manager\Maldicao.class
 com\example\boss\util\PixIntegration.class
 com\example\boss\manager\ScheduleManager.class
 com\example\boss\manager\LootManager.class

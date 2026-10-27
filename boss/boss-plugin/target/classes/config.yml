@@ -35,6 +35,24 @@ agenda:
   - "SABADO 20:00"
   - "DOMINGO 20:00 wither"
 
+# Quanto tempo o boss fica vivo (0 = até alguém derrotar). Passou disso, ele vai embora e o servidor
+# fica amaldiçoado (veja "maldicao"). Vale pra agenda e pro /boss start; o /boss stop não amaldiçoa.
+tempo-limite-minutos: 60
+# Avisos no chat antes de ele ir embora, em minutos.
+avisos-fuga-minutos: [10, 1]
+mensagem-fuga: "&c&l⚠ &cO boss vai embora em &f%minutos% min&c! Se ninguém derrotar, o mal reina sobre o servidor."
+
+# Boss que vai embora sem ser derrotado: o XP de skill de todos vale xp-skill-multiplicador (0.9 = -10%)
+# por "horas", ou até o próximo boss morrer. Não mexe no bônus de ativação do VIP. %boss% e %horas%.
+maldicao:
+  ativado: true
+  horas: 24
+  xp-skill-multiplicador: 0.9
+  mensagem: "&c%boss% &cnão foi derrotado e voltou pras trevas... &4O mal reina sobre o servidor pelas próximas %horas% horas! &7(XP de skill -10% até alguém derrotar o próximo boss)"
+  mensagem-quebrada: "&a&l✦ &aO boss caiu e a maldição foi quebrada! &7O XP de skill voltou ao normal."
+  mensagem-fim: "&7A maldição se dissipou. O XP de skill voltou ao normal."
+  mensagem-entrada: "&4☠ &cO mal reina sobre o servidor: XP de skill -10% por mais %horas%h, ou até alguém derrotar o próximo boss."
+
 # Contagem regressiva no chat antes de cada horário da agenda (não vale pro /boss start
 # manual). Lista vazia desativa. %minutos% é trocado pelo tempo que falta.
 aviso-agenda:

@@ -55,6 +55,12 @@ public class BossManager {
     private final Set<FaseConfig> fasesPercentuaisDisparadas = new HashSet<>();
     private final Map<FaseConfig, Long> proximoDisparoTempo = new HashMap<>();
     private long proximoAtaqueAleatorio;
+    // quando o boss apareceu, pro tempo limite (tempo-limite-minutos), e os avisos de fuga já dados
+    private long iniciadoEm;
+    private final Set<Integer> avisosFugaDados = new HashSet<>();
+    // chunks da arena presos carregados enquanto o boss vive: sem ninguém perto, o chunk descarregava e o
+    // boss "sumia" sem morrer nem ir embora pelo tempo limite
+    private final java.util.List<org.bukkit.Chunk> chunksPresos = new java.util.ArrayList<>();
 
     // Dano total causado no boss atual, por jogador (pro ranking anunciado na morte)
     private final Map<UUID, Double> danoPorJogador = new HashMap<>();
@@ -231,6 +237,7 @@ public class BossManager {
 
         this.perfilAtivo = perfil;
         this.elite = comoElite;
+        prenderChunks(local);
         bossAtivo = (LivingEntity) local.getWorld().spawnEntity(local, perfil.getMob());
         configurarAtributos(bossAtivo, perfil);
         if (elite) {
@@ -253,6 +260,8 @@ public class BossManager {
         danoPorJogador.clear();
         danoPorSkill.clear();
         long agora = System.currentTimeMillis();
+        iniciadoEm = agora;
+        avisosFugaDados.clear();
         for (FaseConfig fase : perfil.getFases()) {
             if (fase.getGatilho() == TipoGatilhoFase.INTERVALO_TEMPO) {
                 proximoDisparoTempo.put(fase, agora + (long) (fase.getValorGatilho() * 1000));
@@ -339,6 +348,24 @@ public class BossManager {
         }
     }
 
+    /** Prende os chunks em volta do local do boss (raio 2, a arena toda) até ele acabar. */
+    private void prenderChunks(Location local) {
+        soltarChunks();
+        int cx = local.getBlockX() >> 4, cz = local.getBlockZ() >> 4;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                org.bukkit.Chunk chunk = local.getWorld().getChunkAt(cx + dx, cz + dz);
+                chunk.addPluginChunkTicket(plugin);
+                chunksPresos.add(chunk);
+            }
+        }
+    }
+
+    private void soltarChunks() {
+        for (org.bukkit.Chunk chunk : chunksPresos) chunk.removePluginChunkTicket(plugin);
+        chunksPresos.clear();
+    }
+
     private void iniciarMonitoramento() {
         taskMonitoramento = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 0L, 10L);
     }
@@ -364,6 +391,32 @@ public class BossManager {
         verificarFasesPercentuais(percentual);
         verificarFasesTempo();
         verificarAtaqueAleatorio();
+        verificarTempoLimite();
+    }
+
+    /**
+     * Passou {@code tempo-limite-minutos} sem ninguém derrotar: o boss vai embora e o servidor fica
+     * amaldiçoado (veja {@link Maldicao}). Antes disso, avisa no chat ({@code avisos-fuga-minutos}).
+     */
+    private void verificarTempoLimite() {
+        int limite = plugin.getConfig().getInt("tempo-limite-minutos", 60);
+        if (limite <= 0 || bossAtivo == null) return;
+        long restanteMs = iniciadoEm + limite * 60_000L - System.currentTimeMillis();
+        if (restanteMs <= 0) {
+            String nome = perfilAtivo != null ? ChatColor.translateAlternateColorCodes('&', perfilAtivo.getNome()) : "O boss";
+            bossAtivo.remove();
+            finalizar(false);
+            plugin.getMaldicao().iniciar(nome);
+            return;
+        }
+        long restanteMin = (restanteMs + 59_999) / 60_000;
+        for (int aviso : plugin.getConfig().getIntegerList("avisos-fuga-minutos")) {
+            if (restanteMin == aviso && avisosFugaDados.add(aviso)) {
+                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig()
+                        .getString("mensagem-fuga", "&c&l⚠ &cO boss vai embora em &f%minutos% min&c! Se ninguém derrotar, o mal reina sobre o servidor.")
+                        .replace("%minutos%", String.valueOf(aviso))));
+            }
+        }
     }
 
     private void suprimirBarraNativa() {
@@ -591,6 +644,7 @@ public class BossManager {
     }
 
     public void finalizar(boolean morreu) {
+        soltarChunks();
         if (taskMonitoramento != null) {
             taskMonitoramento.cancel();
             taskMonitoramento = null;

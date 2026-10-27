@@ -57,6 +57,12 @@ recompensas:
 - O dinheiro vem do servidor, então entra dinheiro novo na economia. Sem o Vault, só o dinheiro fica de fora.
 - O XP é dividido entre as skills das armas que o jogador usou, na proporção do dano de cada uma. Só ganha quem está online quando o boss morre.
 
+## Tempo limite e maldição
+
+O boss fica vivo por `tempo-limite-minutos` (60). O chat avisa antes (`avisos-fuga-minutos`: 10 e 1 min). Se ninguém derrotar, ele vai embora e sai a frase global de `maldicao.mensagem` (também no Discord): **o mal reina sobre o servidor**. Por `maldicao.horas` (24), todo XP de skill vale `maldicao.xp-skill-multiplicador` (0,9, ou seja, −10%), o mesmo XP que o XP em dobro mexe (combate, missões e boss; o bônus de ativação do VIP fica de fora). Derrotar o próximo boss quebra a maldição na hora. Ela fica em `maldicao.yml` (sobrevive a reinício), o `/boss proximo` mostra quanto falta e quem entra durante ela é avisado. O `/boss stop` da staff não amaldiçoa. Vale igual pro Wither.
+
+Enquanto o boss vive, os chunks da arena ficam carregados. Antes, sem ninguém perto, o chunk descarregava e o boss sumia sem morrer nem ir embora.
+
 ## Boss elite
 
 A cada boss aleatório (agenda ou `/boss start` sem id), há `elite.chance` (10%) de ele vir **elite**: `elite.multiplicador-vida` (2×) de vida, `elite.multiplicador-dano` (2×) em tudo o que ele causa (golpe, flechas da chuva, onda de choque e explosão), brilho, o prefixo `elite.prefixo-nome` no nome, barra roxa e anúncio próprio (`elite.mensagem-spawn`, também no Discord). As coins do ranking e do campeão e o XP de skill por participar saem multiplicados por `elite.multiplicador-recompensas` (2×), e o loot do chão é sorteado `elite.rolagens-loot` (2) vezes. A staff força com `/boss start [id] elite`.

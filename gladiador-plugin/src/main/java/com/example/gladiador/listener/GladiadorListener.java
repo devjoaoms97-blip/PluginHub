@@ -63,7 +63,7 @@ public class GladiadorListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void contarDano(EntityDamageByEntityEvent evento) {
-        if (evento().getFase() != Evento.Fase.LUTA || !(evento.getEntity() instanceof Player vitima)) return;
+        if (evento() == null || evento().getFase() != Evento.Fase.LUTA || !(evento.getEntity() instanceof Player vitima)) return;
         Player atacante = evento.getDamager() instanceof Player p ? p
                 : evento.getDamager() instanceof Projectile proj && proj.getShooter() instanceof Player p ? p : null;
         Participante pAtacante = atacante == null ? null : participante(atacante);

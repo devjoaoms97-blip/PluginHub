@@ -8,6 +8,7 @@ import com.example.boss.manager.ArenaManager;
 import com.example.boss.manager.BossManager;
 import com.example.boss.manager.ChampionManager;
 import com.example.boss.manager.LootManager;
+import com.example.boss.manager.Maldicao;
 import com.example.boss.manager.Recompensas;
 import com.example.boss.manager.ScheduleManager;
 import com.example.boss.util.DiscordIntegration;
@@ -26,6 +27,7 @@ public class BossPlugin extends JavaPlugin {
     private ScheduleManager scheduleManager;
     private Recompensas recompensas;
     private DiscordIntegration discord;
+    private Maldicao maldicao;
 
     @Override
     public void onEnable() {
@@ -38,6 +40,8 @@ public class BossPlugin extends JavaPlugin {
         this.bossManager = new BossManager(this);
         this.scheduleManager = new ScheduleManager(this);
         this.recompensas = new Recompensas(this);
+        this.maldicao = new Maldicao(this);
+        getServer().getPluginManager().registerEvents(maldicao, this);
 
         BossCommand comando = new BossCommand(this);
         getCommand("boss").setExecutor(comando);
@@ -55,6 +59,7 @@ public class BossPlugin extends JavaPlugin {
             if (minutosParaSpawn > 0 && !bossManager.estaAtivo()) {
                 anunciarContagemRegressiva(minutosParaSpawn);
             }
+            maldicao.conferir();
             ScheduleManager.Disparo disparo = scheduleManager.deveDispararAgora();
             if (disparo != null && !bossManager.estaAtivo()) {
                 // horário com boss fixo (ex: o Wither no domingo) ou sorteio entre os normais
@@ -100,6 +105,18 @@ public class BossPlugin extends JavaPlugin {
 
     public BossManager getBossManager() {
         return bossManager;
+    }
+
+    public Maldicao getMaldicao() {
+        return maldicao;
+    }
+
+    /**
+     * API pública (SkillsPlugin, por reflexão): o multiplicador do XP de skill pela maldição do boss
+     * que escapou (1 = sem maldição).
+     */
+    public double fatorXpMaldicao() {
+        return maldicao == null ? 1 : maldicao.fatorXp();
     }
 
     /**

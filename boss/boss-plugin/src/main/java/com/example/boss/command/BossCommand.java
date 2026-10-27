@@ -141,6 +141,10 @@ public class BossCommand implements CommandExecutor, TabCompleter {
 
     /** /boss proximo (pra todos): quando o boss aparece de novo, pela agenda. */
     private void proximo(CommandSender sender) {
+        if (plugin.getMaldicao().ativa()) {
+            sender.sendMessage("§4☠ §cO mal reina: XP de skill reduzido por mais §f" + plugin.getMaldicao().horasRestantes()
+                    + "h§c, ou até alguém derrotar o próximo boss.");
+        }
         if (plugin.getBossManager().estaAtivo()) {
             sender.sendMessage("§4☠ §cTem um boss vivo agora! §7Corra pro portão do boss, ao sul do spawn (§f/warp boss§7).");
             return;

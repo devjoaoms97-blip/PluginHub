@@ -266,6 +266,8 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **`/boss proximo`**: mostra quando é o próximo spawn da agenda.
 - [x] **Corrigido** (2026-10-27): o código de VIP do campeão não era gerado desde o VIP de 30 dias fixos (o método mudou). Agora ele é um **código de evento** de 7 dias, e só o Wither dá (`recompensas.codigo-vip.bosses`).
 - [x] **Agenda do boss** (2026-10-27): um boss normal sorteado de segunda a sábado às 20:00 e o **Wither, o especial, no domingo às 20:00**. A agenda aceita boss fixo por horário (`"DOMINGO 20:00 wither"`), e o `/boss proximo` mostra o nome dele.
+- [x] **Tempo limite e maldição** (2026-10-27): o boss fica vivo 1 hora (avisos aos 10 e 1 min). Se ninguém derrotar, ele vai embora com uma frase global e o servidor fica amaldiçoado: XP de skill −10% (sem mexer no bônus de ativação do VIP) por 24 h ou até o próximo boss morrer. Os chunks da arena ficam carregados enquanto o boss vive (antes ele sumia sem ninguém perto).
+- [x] **Corrigido** (2026-10-27): o Gladiador dava erro a cada dano entre entidades quando não havia evento.
 - [x] **Código de VIP pro campeão**: entrega opcional de um código de VIP de curta duração. Funciona como vitrine do VIP.
 - [x] **Corrigido** (2026-10-27): reiniciar com o boss vivo deixava um boss órfão na arena (sem barra nem ranking, matando quem chegasse). Agora o boss sai do mundo ao desligar, e qualquer boss órfão some quando a arena carrega.
 - [x] **Boss "elite"** (2026-10-27): 10% de chance a cada boss aleatório (ou `/boss start [id] elite`), com 2× de vida e de dano, recompensas em dobro e o loot do chão sorteado duas vezes.

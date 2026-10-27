@@ -199,6 +199,22 @@ public class SkillsPlugin extends JavaPlugin {
                 + String.format(Locale.forLanguageTag("pt-BR"), " §f%.0f%%", Math.floor(fracao * 100));
     }
 
+    private java.lang.reflect.Method metodoMaldicao;
+
+    /** A maldição do BossPlugin (boss que escapou): multiplicador do XP de skill, 1 sem ela ou sem o plugin. */
+    public double fatorMaldicaoBoss() {
+        org.bukkit.plugin.Plugin boss = getServer().getPluginManager().getPlugin("BossPlugin");
+        if (boss == null || !boss.isEnabled()) return 1;
+        try {
+            if (metodoMaldicao == null || metodoMaldicao.getDeclaringClass() != boss.getClass()) {
+                metodoMaldicao = boss.getClass().getMethod("fatorXpMaldicao");
+            }
+            return ((Number) metodoMaldicao.invoke(boss)).doubleValue();
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            return 1;
+        }
+    }
+
     public EventoXp getEventoXp() {
         return eventoXp;
     }
