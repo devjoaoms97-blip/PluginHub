@@ -34,12 +34,14 @@ t.rodar(async () => {
   const persiste = await t.console('execute in minecraft:spawn positioned -147 49 43 run data get entity @e[type=zombie,limit=1,sort=nearest] PersistenceRequired')
   t.verificar(/1b/.test(persiste), 'o mob da warp não some de longe', persiste)
 
-  // matar: some e a estátua repõe no ciclo seguinte
+  // matar: some e a estátua repõe. O ciclo é de 6 s, então às vezes um já nasceu entre o kill e a
+  // contagem: o que vale é a contagem cair e depois voltar a subir
+  const antes = (await vivos()).zumbi
   await t.console('execute in minecraft:spawn run minecraft:kill @e[type=zombie,x=-208,y=48,z=4,dx=116,dy=36,dz=79]')
   const logoDepois = (await vivos()).zumbi
   await t.espera(8000)
   const depois = (await vivos()).zumbi
-  t.verificar(logoDepois === 0 && depois >= 1, 'morto o zumbi, a estátua repõe', `${logoDepois} → ${depois}`)
+  t.verificar(logoDepois < antes && depois > logoDepois, 'morto o zumbi, a estátua repõe', `${antes} → ${logoDepois} → ${depois}`)
 
   // as do fundo só nascem com alguém perto delas
   await t.console('execute in minecraft:spawn run tp MobsTeste -187.5 49 43.5')
@@ -49,5 +51,6 @@ t.rodar(async () => {
   await t.espera(24000)
   n = await vivos()
   t.verificar(Math.max(...Object.values(n)) <= 4, 'nenhuma estátua passa do limite (4)', JSON.stringify(n))
-  bot.quit()
+  await t.console('gamemode survival MobsTeste')
+  await t.terminar(bot) // fecha o console (RCON) e sai com o resultado: com só bot.quit() o processo ficava parado
 })
