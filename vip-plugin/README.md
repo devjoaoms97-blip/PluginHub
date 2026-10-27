@@ -20,11 +20,12 @@ Todos os comandos, de jogador e de staff, entram por `/vip <ação>` — não te
 | `/vip kitmensal` | quem tem VIP | Resgata o equipamento encantado do seu tier (armadura, armas e ferramentas), uma vez a cada 30 dias |
 | `/vip particula <tipo\|off>` | quem tem VIP | Escolhe o efeito de partícula que te segue |
 | `/vip warp` | quem tem VIP | Teleporta pra área exclusiva de VIP |
-| `/vip add <jogador> <tier>` | staff | Concede/renova VIP direto por 30 dias (sem passar por código) |
+| `/vip add <jogador> <tier>` | staff | Concede VIP direto por 30 dias (sem passar por código). Com o mesmo tier já ativo, soma os 30 dias aos que faltam |
 | `/vip remove <jogador>` | staff | Remove o VIP na hora |
 | `/vip check <jogador>` | staff | Vê o VIP de outro jogador |
 | `/vip list` | staff | Lista todos os VIPs ativos |
 | `/vip gerarcodigo <tier> [usos] [validade-dias]` | staff | Gera um código de 30 dias pra lojinha entregar ao comprador (validade opcional, veja abaixo) |
+| `/vip gerarevento <tier> <3\|7\|15> [usos] [validade-dias]` | staff | Código de prêmio de evento: VIP de 3, 7 ou 15 dias só com os benefícios passivos (veja "Códigos de evento") |
 | `/vip codigos` | staff | Lista códigos ativos ainda não resgatados |
 | `/vip revogarcodigo <codigo>` | staff | Invalida um código antes de ser usado |
 | `/vip reload` | staff | Recarrega o `config.yml` |
@@ -303,6 +304,19 @@ mvn clean package
 ```
 
 O `.jar` sai em `target/VipPlugin.jar`.
+
+## Códigos de evento (prêmio)
+
+`/vip gerarevento <tier> <dias> [usos] [validade-dias]` (staff) gera um código de VIP de **3, 7 ou 15 dias** (`codigos-evento.dias-permitidos`) pra premiar eventos do servidor. Ele **não é vendido** (nem na loja de créditos, que só tem o VIP de 30 dias) e **não dá pra revender** (`/vip vender` recusa). O VIP que ele dá tem **só os benefícios passivos**, os que vêm do grupo do LuckPerms (desconto na loja, venda a mais, XP a mais, montaria, voo, heal...):
+
+- **sem o bônus de ativação** (coins e XP);
+- **sem o kit mensal** (`/vip kitmensal` recusa); o kit diário (`/vip kit`) vale.
+
+Quem já tem VIP ativo não resgata (trocaria o VIP comprado por um mais curto): guarda o código pra quando o seu acabar. Comprar um VIP de verdade por cima de um de evento do **mesmo tier soma** os dias e ele vira VIP normal (com o kit mensal); de outro tier, substitui. O `/vip check` mostra "de evento". O campeão do boss (`recompensas.codigo-vip` no BossPlugin) recebe esse tipo de código.
+
+## Créditos (CreditosPlugin)
+
+A tag de apoiador e a cor do nome compradas com créditos entram depois da tag do VIP, no chat e na tab: o VipPlugin pergunta ao CreditosPlugin (por reflexão). O VIP também pode ser comprado com créditos, ativado ou como código de presente (veja o README do CreditosPlugin).
 
 ## ⚠️ Simplificações técnicas
 

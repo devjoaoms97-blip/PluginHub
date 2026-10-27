@@ -55,8 +55,11 @@ public class BossPlugin extends JavaPlugin {
             if (minutosParaSpawn > 0 && !bossManager.estaAtivo()) {
                 anunciarContagemRegressiva(minutosParaSpawn);
             }
-            if (scheduleManager.deveDispararAgora() && !bossManager.estaAtivo()) {
-                bossManager.iniciarAleatorio(null);
+            ScheduleManager.Disparo disparo = scheduleManager.deveDispararAgora();
+            if (disparo != null && !bossManager.estaAtivo()) {
+                // horário com boss fixo (ex: o Wither no domingo) ou sorteio entre os normais
+                if (disparo.bossId() != null) bossManager.iniciarPorId(disparo.bossId(), null);
+                else bossManager.iniciarAleatorio(null);
             }
         }, 20L * 10, 20L * 20);
 

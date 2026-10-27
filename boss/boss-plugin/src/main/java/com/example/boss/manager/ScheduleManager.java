@@ -14,7 +14,12 @@ import java.util.Set;
 
 public class ScheduleManager {
 
-    private record Horario(DayOfWeek dia, LocalTime hora) {
+    /** {@code bossId}: o boss fixo desse horário (ex: "wither"), ou null pra sortear um normal. */
+    private record Horario(DayOfWeek dia, LocalTime hora, String bossId) {
+    }
+
+    /** O que a agenda pede agora: o boss fixo do horário, ou {@code null} em {@code bossId} pra sortear. */
+    public record Disparo(String bossId) {
     }
 
     private final BossPlugin plugin;
@@ -46,15 +51,16 @@ public class ScheduleManager {
 
         for (String entrada : entradas) {
             String[] partes = entrada.trim().split("\\s+");
-            if (partes.length != 2) {
-                plugin.getLogger().warning("Entrada de agenda inválida (esperado 'DIA HH:mm'): " + entrada);
+            if (partes.length != 2 && partes.length != 3) {
+                plugin.getLogger().warning("Entrada de agenda inválida (esperado 'DIA HH:mm [boss]'): " + entrada);
                 continue;
             }
             try {
                 DayOfWeek dia = mapearDia(partes[0]);
                 LocalTime hora = LocalTime.parse(partes[1]);
+                String bossId = partes.length == 3 ? partes[2].toLowerCase(Locale.ROOT) : null;
                 if (dia != null) {
-                    horarios.add(new Horario(dia, hora));
+                    horarios.add(new Horario(dia, hora, bossId));
                 } else {
                     plugin.getLogger().warning("Dia da semana não reconhecido na agenda: " + partes[0]);
                 }
@@ -77,13 +83,16 @@ public class ScheduleManager {
         };
     }
 
-    /** Chamado periodicamente; retorna true no minuto exato em que algum horário da agenda bate. */
-    public boolean deveDispararAgora() {
+    /**
+     * Chamado periodicamente; no minuto exato em que algum horário da agenda bate, retorna o que
+     * disparar (o boss fixo do horário ou sorteio). Fora disso, null.
+     */
+    public Disparo deveDispararAgora() {
         LocalDateTime agora = LocalDateTime.now();
         String chaveMinuto = agora.toLocalDate() + " " + agora.getHour() + ":" + agora.getMinute();
 
         if (chaveMinuto.equals(ultimoMinutoDisparado)) {
-            return false; // já disparou nesse exato minuto, evita disparo duplicado
+            return null; // já disparou nesse exato minuto, evita disparo duplicado
         }
 
         for (Horario h : horarios) {
@@ -91,10 +100,10 @@ public class ScheduleManager {
                     && h.hora().getHour() == agora.getHour()
                     && h.hora().getMinute() == agora.getMinute()) {
                 ultimoMinutoDisparado = chaveMinuto;
-                return true;
+                return new Disparo(h.bossId());
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -128,17 +137,36 @@ public class ScheduleManager {
 
     /** O próximo horário da agenda (a partir de agora), ou null se a agenda estiver vazia. */
     public LocalDateTime proximo() {
+        Horario h = proximoHorario();
+        return h == null ? null : proximaData(h, LocalDateTime.now());
+    }
+
+    /** O boss fixo do próximo horário da agenda (ex: "wither"), ou null se for sorteado. */
+    public String proximoBossId() {
+        Horario h = proximoHorario();
+        return h == null ? null : h.bossId();
+    }
+
+    private Horario proximoHorario() {
         LocalDateTime agora = LocalDateTime.now();
-        LocalDateTime melhor = null;
+        Horario melhor = null;
+        LocalDateTime melhorData = null;
         for (Horario h : horarios) {
-            for (int d = 0; d <= 7; d++) {
-                LocalDateTime candidato = agora.toLocalDate().plusDays(d).atTime(h.hora());
-                if (candidato.getDayOfWeek() != h.dia() || !candidato.isAfter(agora)) continue;
-                if (melhor == null || candidato.isBefore(melhor)) melhor = candidato;
-                break;
+            LocalDateTime candidato = proximaData(h, agora);
+            if (candidato != null && (melhorData == null || candidato.isBefore(melhorData))) {
+                melhor = h;
+                melhorData = candidato;
             }
         }
         return melhor;
+    }
+
+    private LocalDateTime proximaData(Horario h, LocalDateTime agora) {
+        for (int d = 0; d <= 7; d++) {
+            LocalDateTime candidato = agora.toLocalDate().plusDays(d).atTime(h.hora());
+            if (candidato.getDayOfWeek() == h.dia() && candidato.isAfter(agora)) return candidato;
+        }
+        return null;
     }
 
     public void recarregar() {

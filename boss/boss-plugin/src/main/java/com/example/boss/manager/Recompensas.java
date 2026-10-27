@@ -68,15 +68,23 @@ public class Recompensas {
 
         darXpDeParticipacao();
 
-        if (campeao != null && plugin.getConfig().getBoolean("recompensas.codigo-vip.ativado", false)) {
-            String codigo = vip.gerarCodigo(plugin.getConfig().getString("recompensas.codigo-vip.tier", "bronze"),
-                    Math.max(1, plugin.getConfig().getInt("recompensas.codigo-vip.dias", 3)),
+        if (campeao != null && plugin.getConfig().getBoolean("recompensas.codigo-vip.ativado", false) && bossDaVip()) {
+            int dias = Math.max(1, plugin.getConfig().getInt("recompensas.codigo-vip.dias", 7));
+            String codigo = vip.gerarCodigo(plugin.getConfig().getString("recompensas.codigo-vip.tier", "bronze"), dias,
                     Math.max(0, plugin.getConfig().getInt("recompensas.codigo-vip.validade-dias", 7)));
             if (codigo != null) {
-                campeao.sendMessage("§6★ §eVocê ganhou um código de VIP: §f" + codigo
-                        + " §7(use §f/vip resgatar " + codigo + "§7, ou venda com §f/vip vender§7)");
+                campeao.sendMessage("§6★ §eVocê ganhou um código de VIP de evento (" + dias + " dias): §f" + codigo
+                        + " §7(use §f/vip resgatar " + codigo + "§7; se já tiver VIP, guarde pra quando ele acabar)");
             }
         }
+    }
+
+    /** O boss que morreu dá o código de VIP? Só os de {@code recompensas.codigo-vip.bosses} (vazio = todos). */
+    private boolean bossDaVip() {
+        java.util.List<String> bosses = plugin.getConfig().getStringList("recompensas.codigo-vip.bosses");
+        if (bosses.isEmpty()) return true;
+        var perfil = plugin.getBossManager().getPerfilAtivo();
+        return perfil != null && bosses.stream().anyMatch(b -> b.equalsIgnoreCase(perfil.getId()));
     }
 
     /**

@@ -246,6 +246,11 @@ O `/pix historico` saiu: o extrato agora é um livro que o Bancário entrega, co
 ### PvP na arena do boss ✅ (2026-10-27)
 A arena do boss (enterrada ao sul do spawn, com a escadaria) tem PvP sempre ligado. O mundo `spawn` passou a ter o PvP do jogo ligado, e o AreasPlugin barra o PvP fora da caixa da arena (`pvp-so-nas-caixas`). **No servidor de verdade:** `mv modify spawn set pvp true`.
 
+### Loja de créditos ✅ v1 (`creditos-plugin`)
+Decisões de 2026-10-27: a loja do Discord vende **créditos** (R$ 1 = 10); no jogo, `/creditos` troca por **VIP** (ativar ou código de presente pra vender no jogo) e **cosméticos** (rastros, cor do nome e efeitos de abate), por preço fixo. **Itens do jogo não são vendidos**, e nada pago tem sorteio (caixas pagas foram descartadas: ECA Digital e regras da Mojang). Quem contribui sem levar nada ganha a **tag de apoiador** por 30 dias a cada contribuição.
+- [ ] O bot do Discord (loja com Mercado Pago) entregar os créditos com `creditos dar` e a tag com `apoiador dar`, pelo RCON. 🔴
+- [ ] Ajustar os preços (VIP e cosméticos) antes de abrir a loja. 🟢
+
 ### Áreas fechadas ✅ v1 (`areas-plugin`)
 Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gladiador e plateias) por fora do caminho, nem quem joga, nem quem assiste: lá dentro não dá pra voar (`/fly` do VIP), planar de elytra, jogar pérola do fim, usar tridente com Correnteza, fruta do coro nem carga de vento. Quem entra voando ou planando cai, sem dano. Os admins e o criativo passam. As áreas ficam no config (mundo inteiro ou caixa).
 - [x] **Sem construção** (2026-10-25): ninguém quebra nem coloca bloco no spawn, na loja, na arena do boss e nas arenas de X1 e Gladiador (balde, fogo, molduras e explosão também). As minas ficam de fora.
@@ -259,6 +264,8 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Ranking de dano com prêmio**: o top 3 recebe coins proporcionais ao dano, e não só o último hit.
 - [x] **XP de skill por participar**, conforme o dano causado.
 - [x] **`/boss proximo`**: mostra quando é o próximo spawn da agenda.
+- [x] **Corrigido** (2026-10-27): o código de VIP do campeão não era gerado desde o VIP de 30 dias fixos (o método mudou). Agora ele é um **código de evento** de 7 dias, e só o Wither dá (`recompensas.codigo-vip.bosses`).
+- [x] **Agenda do boss** (2026-10-27): um boss normal sorteado de segunda a sábado às 20:00 e o **Wither, o especial, no domingo às 20:00**. A agenda aceita boss fixo por horário (`"DOMINGO 20:00 wither"`), e o `/boss proximo` mostra o nome dele.
 - [x] **Código de VIP pro campeão**: entrega opcional de um código de VIP de curta duração. Funciona como vitrine do VIP.
 - [x] **Corrigido** (2026-10-27): reiniciar com o boss vivo deixava um boss órfão na arena (sem barra nem ranking, matando quem chegasse). Agora o boss sai do mundo ao desligar, e qualquer boss órfão some quando a arena carrega.
 - [x] **Boss "elite"** (2026-10-27): 10% de chance a cada boss aleatório (ou `/boss start [id] elite`), com 2× de vida e de dano, recompensas em dobro e o loot do chão sorteado duas vezes.
@@ -301,6 +308,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Preço mínimo e máximo** no `/vip vender`.
 - [x] **Um warp diferente para cada tier.** `/vip setwarp <tier>`; o tier sem área própria vai pra área geral.
 - [x] **Saque fora do kit mensal do Ouro e do Diamante** (2026-10-27): o Cambista vende até Saque VI. Os kits ainda vão ser revistos.
+- [x] **Códigos de evento** (2026-10-27): `/vip gerarevento <tier> <3|7|15>` gera VIP de 3, 7 ou 15 dias só pra premiação de eventos. Não é vendido nem revendido, e o VIP que dá tem só os benefícios passivos (desconto, venda, XP, montaria...), e o kit diário, sem bônus de ativação (coins e XP) e sem o kit mensal. Quem já tem VIP resgata depois; comprar o mesmo tier por cima soma os dias. O campeão do boss recebe esse tipo.
 - [x] **Ler a tag do prefixo do LuckPerms** (2026-10-27): `tag-do-luckperms: true`; o grupo sem prefixo usa o `nome-exibicao`.
 - [x] **Avisar o vendedor** quando o código à venda dele vence.
 - [x] **Kit mensal** (`/vip kitmensal`): armadura, armas e ferramentas, de diamante no Bronze e de netherite nos outros, com encantamentos acima do máximo normal (nível IV no Bronze até VII no Diamante; Fortuna IV e V no Ouro e no Diamante).

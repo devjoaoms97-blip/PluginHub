@@ -150,6 +150,12 @@ tiers:
     cooldown-heal-minutos: 5
     cooldown-feed-minutos: 0
 
+# Códigos de evento (/vip gerarevento <tier> <dias>): prêmio de evento do servidor, nunca vendido nem
+# revendido. O VIP que eles dão tem só os benefícios passivos (desconto, venda, XP, montaria, voo...):
+# e o kit diário (/vip kit), sem o bônus de ativação (coins e XP) e sem o kit mensal. Quem já tem VIP ativo resgata depois.
+codigos-evento:
+  dias-permitidos: [3, 7, 15]
+
 # Tag do VIP no chat e na tab: true usa o prefixo do grupo no LuckPerms (/lp group vip_ouro meta
 # setprefix "&6[Ouro] "), pra configurar num lugar só. O grupo sem prefixo usa o nome-exibicao de
 # cada tier acima, que também aparece nas mensagens (kit, ativação...). false = sempre o nome-exibicao.

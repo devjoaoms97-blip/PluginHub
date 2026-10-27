@@ -23,11 +23,17 @@ barra:
   cor: RED
   estilo: SEGMENTED_10
 
-# Agenda recorrente. Sempre sorteia entre os bosses NÃO especiais (o Wither fica de
-# fora da agenda/aleatoriedade, só sobe com /boss start wither).
+# Agenda recorrente: "DIA HH:mm" sorteia entre os bosses NÃO especiais; "DIA HH:mm <boss>" sobe
+# aquele boss (o Wither, especial, só sai assim ou com /boss start wither). Dias: SEGUNDA, TERCA,
+# QUARTA, QUINTA, SEXTA, SABADO, DOMINGO.
 agenda:
+  - "SEGUNDA 20:00"
+  - "TERCA 20:00"
+  - "QUARTA 20:00"
+  - "QUINTA 20:00"
   - "SEXTA 20:00"
-  - "SABADO 21:00"
+  - "SABADO 20:00"
+  - "DOMINGO 20:00 wither"
 
 # Contagem regressiva no chat antes de cada horário da agenda (não vale pro /boss start
 # manual). Lista vazia desativa. %minutos% é trocado pelo tempo que falta.
@@ -73,9 +79,13 @@ recompensas:
   xp-skill-minimo: 100
   # Código de VIP pro campeão (gerado pelo VipPlugin, 1 uso): vitrine do VIP.
   codigo-vip:
-    ativado: false
+    ativado: true
+    # Só esses bosses dão o código (lista vazia = todos): o Wither, o especial de domingo.
+    bosses: [wither]
     tier: bronze
-    dias: 3
+    # Código de evento (3, 7 ou 15 dias, os de codigos-evento.dias-permitidos no VipPlugin): só os
+    # benefícios passivos do VIP e kit diário, sem bônus de ativação nem kit mensal; não dá pra vender.
+    dias: 7
     # Prazo pra resgatar (0 = não expira).
     validade-dias: 7
 

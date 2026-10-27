@@ -40,15 +40,15 @@ Os NPCs e as falas ficam no `npcs.yml`.
 
 ## No mapa do servidor
 
-O `tools/bots/montar-mapa.js construir dicas` cria 12 NPCs pelo spawn, com 4 falas cada:
+O `tools/bots/montar-mapa.js construir dicas` cria 12 NPCs pelo spawn, com 4 a 6 falas cada:
 
 | Onde | NPC | Assunto |
 |---|---|---|
-| Em volta da fonte | Velho Minerador, Dona Cida (a Mercadora), Veterano Bartolomeu, Zé (o Guia) | minas e rank; barracas e Pix; boss; diária, X1, Gladiador, terreno e recursos |
-| Portão das minas | Guarda do Portão, Dona Neusa (a Ranzinza) | `/mina` e a venda automática das minas; `/rankup max`, `/prestigio` e `/missoes` |
-| Portão do boss | Sentinela do Portão | horários do boss, campeão e perda de itens |
-| Fim das avenidas leste e oeste | Leiloeiro Matias, Mestre de Armas Duda | leilão das barracas ★ e renovação; combate, `/skills` e `/bounty` |
-| Jardins | Banqueira Rosa, Escriba dos Clãs, Seu Juca do Terreno | `/pix`, `/cheque` e `/shop`; `/cla` e `/cc`; `/terreno` e `/recursos` |
+| Em volta da fonte | Velho Minerador, Dona Cida (a Mercadora), Veterano Bartolomeu, Zé (o Guia) | minas, rank, Fragmento Arcano e Compactador; barracas e Pix; boss, Wither de domingo e boss elite; diária, X1, Gladiador, terreno, `/achados` e `/montaria` |
+| Portão das minas | Guarda do Portão, Dona Neusa (a Ranzinza) | `/mina`, a venda automática e o guia de cada mina; `/rankup max`, `/prestigio`, `/missoes` e o Ferreiro |
+| Portão do boss | Sentinela do Portão | agenda do boss, campeão, perda de itens e PvP na arena |
+| Fim das avenidas leste e oeste | Leiloeiro Matias, Mestre de Armas Duda | leilão das barracas ★ e renovação; combate, Escudo Perfeito, prestígio de skill, XP em dobro e `/bounty` |
+| Jardins | Banqueira Rosa, Escriba dos Clãs, Seu Juca do Terreno | `/pix`, `/cheque`, `/shop`, extrato e Mine-sena; `/cla` e `/cc`; `/terreno` e `/recursos` |
 
 Pra mudar as falas de vez, mude a lista `DICAS` no script e rode a parte de novo (ela recria todos); pra um ajuste rápido, use o `/dica`.
 

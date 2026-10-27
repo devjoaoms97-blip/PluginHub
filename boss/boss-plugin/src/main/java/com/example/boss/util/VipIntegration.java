@@ -5,8 +5,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * Gera um código de VIP pelo CodeManager do VipPlugin, por reflexão (sem dependência de
- * compilação). Sem o VipPlugin, ou com tier inválido, devolve null.
+ * Gera um código de VIP de evento (prêmio: benefícios passivos e kit diário, sem bônus de ativação nem kit mensal,
+ * e não dá pra vender) pelo CodeManager do VipPlugin, por reflexão (sem dependência de compilação).
+ * Sem o VipPlugin, ou com tier inválido, devolve null.
  */
 public class VipIntegration {
 
@@ -29,8 +30,9 @@ public class VipIntegration {
                 return null;
             }
             Object codeManager = vip.getClass().getMethod("getCodeManager").invoke(vip);
+            // prêmio: código de evento (só os benefícios passivos, não dá pra vender), de "dias" dias
             Object codigo = codeManager.getClass()
-                    .getMethod("gerar", classeTier, int.class, int.class, String.class, int.class)
+                    .getMethod("gerarEvento", classeTier, int.class, int.class, String.class, int.class)
                     .invoke(codeManager, objTier, dias, 1, "BossPlugin", validadeDias);
             return (String) codigo.getClass().getMethod("getCodigo").invoke(codigo);
         } catch (ReflectiveOperationException | ClassCastException e) {

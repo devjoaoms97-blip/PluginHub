@@ -120,6 +120,12 @@ public class VipPlugin extends JavaPlugin {
         return particleTrailListener;
     }
 
+    /** API (CreditosPlugin): o VIP ativo do jogador veio de um código de evento? */
+    public boolean vipDeEvento(java.util.UUID jogador) {
+        var ativo = vipManager.getVipAtivo(jogador);
+        return ativo != null && ativo.evento();
+    }
+
     /** Atualiza a tag do jogador na tab list na hora (sem precisar dele relogar). */
     public void refrescarTagJogador(Player player) {
         if (chatTagListener != null) {

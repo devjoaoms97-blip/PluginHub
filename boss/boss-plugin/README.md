@@ -46,10 +46,11 @@ recompensas:
   campeao-dinheiro: 20000               # coins pro campeão, além do item (0 desativa)
   xp-skill-maximo: 3000                 # XP de skill de quem tirou 100% da vida do boss (0 desativa)
   xp-skill-minimo: 100                  # mínimo pra quem bateu pelo menos um pouco
-  codigo-vip:                           # código de VIP de 1 uso pro campeão (VipPlugin)
-    ativado: false
+  codigo-vip:                           # código de VIP de evento, 1 uso, pro campeão (VipPlugin)
+    ativado: true
+    bosses: [wither]                    # só esses bosses dão (vazio = todos)
     tier: bronze
-    dias: 3
+    dias: 7                             # 3, 7 ou 15 (sem bônus de ativação nem kit mensal; não dá pra vender)
     validade-dias: 7                    # prazo pra resgatar (0 = não expira)
 ```
 
@@ -123,10 +124,11 @@ Ao morrer, o boss sorteia **exatamente 1** desses itens pra dar ao campeão — 
 No `config.yml`:
 ```yaml
 agenda:
-  - "SEXTA 20:00"
-  - "SABADO 21:00"
+  - "SEGUNDA 20:00"         # sorteia um boss normal
+  # ... TERCA a SABADO
+  - "DOMINGO 20:00 wither"  # boss fixo: o Wither, especial
 ```
-Deixe a lista vazia se quiser controlar só na mão com `/boss start`.
+`DIA HH:mm` sorteia entre os bosses normais; `DIA HH:mm <boss>` sobe aquele boss (é assim que o Wither entra na agenda). O `/boss proximo` mostra o nome quando o próximo é fixo. Deixe a lista vazia se quiser controlar só na mão com `/boss start`.
 
 ### 6. Contagem regressiva e ranking de dano (opcional)
 ```yaml

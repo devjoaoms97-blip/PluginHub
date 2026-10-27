@@ -81,6 +81,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             case "vender" -> tratarVender(sender, args);
             case "cancelarvenda" -> tratarCancelarVenda(sender);
             case "gerarcodigo" -> tratarGerarCodigo(sender, args);
+            case "gerarevento" -> tratarGerarEvento(sender, args);
             case "codigos" -> tratarCodigos(sender);
             case "revogarcodigo" -> tratarRevogarCodigo(sender, args);
             case "setwarp" -> tratarSetWarp(sender, args);
@@ -226,6 +227,11 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             }
         }
 
+        if (code.ehEvento()) {
+            resgatarEvento(player, code);
+            return;
+        }
+
         plugin.getCodeManager().consumir(code);
 
         if (code.getPreco() > 0) {
@@ -240,6 +246,25 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         plugin.getDiscord().enviar("vip", "💎 " + player.getName() + " ativou VIP "
                 + org.bukkit.ChatColor.stripColor(plugin.getNomeExibicao(code.getTier())) + " por " + VipManager.DIAS_VIP + " dias"
                 + (code.getPreco() > 0 ? " (comprado de outro jogador)" : "") + "!");
+    }
+
+    /**
+     * Código de evento: VIP de {@code diasEvento} dias, só com os benefícios passivos. Quem já tem VIP
+     * ativo guarda o código pra depois (trocaria o VIP comprado por um de prêmio, mais curto).
+     */
+    private void resgatarEvento(Player player, VipCode code) {
+        if (plugin.getVipManager().getVipAtivo(player.getUniqueId()) != null) {
+            player.sendMessage("§cVocê já tem VIP ativo. Guarde esse código de evento e resgate quando o seu acabar.");
+            return;
+        }
+        plugin.getCodeManager().consumir(code);
+        String data = plugin.getVipManager().adicionarEvento(player.getUniqueId(), code.getTier(), code.getDiasEvento());
+        player.sendMessage("§aPrêmio resgatado! VIP " + plugin.getNomeExibicao(code.getTier()) + " §ade evento por §f"
+                + code.getDiasEvento() + " dias§a, até §f" + data + "§a.");
+        player.sendMessage("§7O VIP de evento tem os benefícios passivos (desconto, venda, montaria...) e o kit diário, sem bônus de ativação nem kit mensal.");
+        plugin.refrescarTagJogador(player);
+        plugin.getDiscord().enviar("vip", "🏆 " + player.getName() + " resgatou um VIP "
+                + org.bukkit.ChatColor.stripColor(plugin.getNomeExibicao(code.getTier())) + " de evento (" + code.getDiasEvento() + " dias)!");
     }
 
     /** Cobra o comprador e repassa (menos a taxa de revenda) pro vendedor, se houver um. */
@@ -302,6 +327,10 @@ public class VipCommand implements CommandExecutor, TabCompleter {
 
         // faixa de preço por tier (revenda.precos.<tier>.minimo/maximo; 0 = sem limite)
         VipCode consultado = plugin.getCodeManager().buscar(args[2]);
+        if (consultado != null && consultado.ehEvento()) {
+            player.sendMessage("§cCódigo de evento é prêmio: não dá pra vender.");
+            return;
+        }
         if (consultado != null) {
             String chaveTier = "revenda.precos." + consultado.getTier().name().toLowerCase(Locale.ROOT);
             // sem valor explícito pra cair no padrão do config.yml do jar (configs antigos não têm a seção)
@@ -429,6 +458,52 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§7Validade pra resgatar: §f" + descreverValidade(code));
     }
 
+    /** /vip gerarevento <tier> <dias> [usos] [validade-dias]: código de prêmio de evento (não é vendido). */
+    private void tratarGerarEvento(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("vip.admin")) {
+            sender.sendMessage("§cVocê não tem permissão.");
+            return;
+        }
+        List<Integer> permitidos = plugin.getConfig().getIntegerList("codigos-evento.dias-permitidos");
+        if (permitidos.isEmpty()) permitidos = List.of(3, 7, 15);
+        VipTier tier = args.length >= 2 ? VipTier.fromString(args[1]) : null;
+        Integer dias = null;
+        if (args.length >= 3) {
+            try {
+                dias = Integer.parseInt(args[2]);
+            } catch (NumberFormatException ignorado) {
+                // fica null
+            }
+        }
+        if (tier == null || dias == null || !permitidos.contains(dias)) {
+            sender.sendMessage("§cUso: §f/vip gerarevento <bronze|prata|ouro|diamante> <" + permitidos.stream().map(String::valueOf)
+                    .collect(java.util.stream.Collectors.joining("|")) + "> [usos] [validade-dias]");
+            sender.sendMessage("§7Prêmio de evento: benefícios passivos e kit diário, sem bônus de ativação nem kit mensal, e não dá pra vender.");
+            return;
+        }
+        int usos = 1;
+        if (args.length >= 4) {
+            Integer lidos = lerInteiroPositivo(sender, args[3], "Usos");
+            if (lidos == null) return;
+            usos = lidos;
+        }
+        int validadeDias = Math.max(0, plugin.getConfig().getInt("codigos.validade-padrao-dias", 0));
+        if (args.length >= 5) {
+            try {
+                validadeDias = Math.max(0, Integer.parseInt(args[4]));
+            } catch (NumberFormatException e) {
+                sender.sendMessage("§cValidade inválida. Use um número de dias (0 = não expira).");
+                return;
+            }
+        }
+        String criadoPor = sender instanceof Player p ? p.getName() : "console";
+        VipCode code = plugin.getCodeManager().gerarEvento(tier, dias, usos, criadoPor, validadeDias);
+        sender.sendMessage("§aCódigo de evento gerado: §f§lVIP-" + code.getCodigo());
+        sender.sendMessage("§7" + plugin.getNomeExibicao(tier) + " §7por §f" + dias + " dias §7(prêmio, só benefícios passivos)"
+                + (usos > 1 ? " §7(" + usos + " usos)" : "") + " §7— §f/vip resgatar VIP-" + code.getCodigo());
+        sender.sendMessage("§7Validade pra resgatar: §f" + descreverValidade(code));
+    }
+
     private String descreverValidade(VipCode code) {
         if (code.getExpiraEm() <= 0) {
             return "não expira";
@@ -503,6 +578,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         long horas = (restanteMs / (60L * 60 * 1000)) % 24;
         String data = FORMATO_DATA.format(Instant.ofEpochMilli(vip.expiraEm()).atZone(ZoneId.systemDefault()));
         sender.sendMessage("§f" + nome + " §7tem VIP " + plugin.getNomeExibicao(vip.tier())
+                + (vip.evento() ? " §6(de evento: sem kit mensal)" : "")
                 + " §7— expira em §f" + dias + "d " + horas + "h §7(§f" + data + "§7)");
     }
 

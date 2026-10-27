@@ -1,0 +1,58 @@
+# Configuração do CreditosPlugin (créditos da loja do Discord)
+#
+# Os créditos vêm de fora do jogo: a loja do Discord vende (R$ 1 = 10 créditos) e entrega com
+# "creditos dar <jogador> <quantidade> [motivo]" pelo console (RCON). No jogo, /creditos mostra o saldo
+# e abre a loja, onde eles viram VIP e cosméticos. Preço fixo, sem sorteio, e nada de item que dê
+# vantagem no jogo: os itens só saem jogando. Os créditos não viram coins nem o contrário.
+
+# Onde comprar créditos (aparece no /creditos).
+onde-comprar: "&fNo nosso Discord: &bdiscord.gg/seuservidor"
+# Quanto vale o crédito (só pra mostrar o equivalente em reais na loja).
+creditos-por-real: 10
+
+# VIP com créditos: ativar pra si (30 dias, pelo /vip add, com o bônus de ativação) ou gerar um
+# código de presente de 30 dias (1 uso), que dá pra usar, dar ou revender no jogo (/vip vender).
+vip:
+  bronze: 100
+  prata: 200
+  ouro: 350
+  diamante: 500
+
+# Tag de apoiador: quem contribui sem levar nada ganha a tag por "dias" dias, renovando a cada
+# contribuição ("apoiador dar <jogador> [dias]" pelo console). Aparece no chat e na tab.
+apoiador:
+  tag: "&d[Apoiador]"
+  dias: 30
+
+# Cosméticos: comprados uma vez, ficam pra sempre. Em cada categoria o jogador usa um por vez
+# (escolhe na loja, que também tira). Ícone: material do Minecraft.
+cosmeticos:
+  # Rastro de partícula nos pés, enquanto anda (parado não sai).
+  rastros:
+    coracoes: {nome: "&dRastro de corações", particula: HEART, icone: RED_DYE, preco: 50}
+    chamas: {nome: "&6Rastro de chamas", particula: FLAME, icone: BLAZE_POWDER, preco: 50}
+    almas: {nome: "&bRastro de almas", particula: SOUL_FIRE_FLAME, icone: SOUL_LANTERN, preco: 50}
+    notas: {nome: "&aRastro de notas", particula: NOTE, icone: NOTE_BLOCK, preco: 50}
+    cerejeira: {nome: "&dRastro de cerejeira", particula: CHERRY_LEAVES, icone: CHERRY_LEAVES, preco: 50}
+    estrelas: {nome: "&fRastro de estrelas", particula: END_ROD, icone: END_ROD, preco: 50}
+    encantado: {nome: "&5Rastro encantado", particula: ENCHANT, icone: ENCHANTING_TABLE, preco: 50}
+    neve: {nome: "&fRastro de neve", particula: SNOWFLAKE, icone: SNOWBALL, preco: 50}
+  # Cor do nome no chat e na tab (código de cor do Minecraft, sem o &).
+  cores:
+    aqua: {nome: "&bNome aqua", cor: "b", icone: LIGHT_BLUE_DYE, preco: 30}
+    verde: {nome: "&aNome verde", cor: "a", icone: LIME_DYE, preco: 30}
+    amarelo: {nome: "&eNome amarelo", cor: "e", icone: YELLOW_DYE, preco: 30}
+    rosa: {nome: "&dNome rosa", cor: "d", icone: PINK_DYE, preco: 30}
+    vermelho: {nome: "&cNome vermelho", cor: "c", icone: RED_DYE, preco: 30}
+    dourado: {nome: "&6Nome dourado", cor: "6", icone: ORANGE_DYE, preco: 30}
+    azul: {nome: "&9Nome azul", cor: "9", icone: BLUE_DYE, preco: 30}
+    roxo: {nome: "&5Nome roxo", cor: "5", icone: PURPLE_DYE, preco: 30}
+  # Efeito ao matar outro jogador (só visual, não machuca ninguém).
+  # efeito: RAIO, FOGOS, CORACOES, ALMAS, EXPLOSAO ou NOTAS
+  abates:
+    raio: {nome: "&eAbate: raio", efeito: RAIO, icone: LIGHTNING_ROD, preco: 60}
+    fogos: {nome: "&cAbate: fogos de artifício", efeito: FOGOS, icone: FIREWORK_ROCKET, preco: 60}
+    coracoes: {nome: "&dAbate: chuva de corações", efeito: CORACOES, icone: PINK_TULIP, preco: 60}
+    almas: {nome: "&bAbate: almas", efeito: ALMAS, icone: SOUL_SAND, preco: 60}
+    explosao: {nome: "&6Abate: explosão", efeito: EXPLOSAO, icone: TNT, preco: 60}
+    notas: {nome: "&aAbate: música", efeito: NOTAS, icone: JUKEBOX, preco: 60}

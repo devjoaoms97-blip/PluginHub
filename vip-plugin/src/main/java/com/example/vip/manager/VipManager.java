@@ -80,9 +80,10 @@ public class VipManager {
     // ---------------------------------------------------------------------
 
     /**
-     * Concede (ou renova/troca) um VIP pra um jogador, por {@link #DIAS_VIP} dias a partir de agora.
-     * Se o jogador já tinha um tier diferente, o grupo antigo é removido do LuckPerms antes
-     * de aplicar o novo. Retorna a data de expiração já formatada, pra mensagens de chat.
+     * Concede (ou renova/troca) um VIP pra um jogador, por {@link #DIAS_VIP} dias. Com o MESMO tier
+     * já ativo, os 30 dias somam aos que faltam (inclusive por cima de um VIP de evento do mesmo tier,
+     * que vira VIP normal e passa a ter o kit mensal). Com outro tier, troca: começa a contar de agora e o
+     * grupo antigo é removido do LuckPerms. Retorna a data de expiração já formatada, pra mensagens.
      */
     public String adicionar(UUID jogadorId, VipTier tier) {
         if (luckPerms == null) {
@@ -94,13 +95,37 @@ public class VipManager {
             removerGrupo(jogadorId, atual.tier());
         }
 
-        long expiraEm = System.currentTimeMillis() + (DIAS_VIP * 24L * 60 * 60 * 1000);
-        ativos.put(jogadorId, new VipAtivo(jogadorId, tier, expiraEm));
+        long agora = System.currentTimeMillis();
+        long base = atual != null && atual.tier() == tier && !atual.expirado() ? atual.expiraEm() : agora;
+        long expiraEm = base + (DIAS_VIP * 24L * 60 * 60 * 1000);
+        ativos.put(jogadorId, new VipAtivo(jogadorId, tier, expiraEm, false));
 
         if (luckPerms != null) {
             adicionarGrupo(jogadorId, tier);
         }
 
+        salvar();
+        return formatarData(expiraEm);
+    }
+
+    /**
+     * VIP de evento (código de prêmio): {@code dias} dias, só com os benefícios passivos (o grupo do
+     * LuckPerms dá desconto, venda, montaria...) e o kit diário, sem bônus de ativação nem kit mensal. Quem chama confere
+     * que o jogador não tem VIP ativo.
+     */
+    public String adicionarEvento(UUID jogadorId, VipTier tier, int dias) {
+        if (luckPerms == null) {
+            conectarLuckPerms();
+        }
+        VipAtivo atual = ativos.get(jogadorId);
+        if (atual != null && atual.tier() != tier && luckPerms != null) {
+            removerGrupo(jogadorId, atual.tier());
+        }
+        long expiraEm = System.currentTimeMillis() + (dias * 24L * 60 * 60 * 1000);
+        ativos.put(jogadorId, new VipAtivo(jogadorId, tier, expiraEm, true));
+        if (luckPerms != null) {
+            adicionarGrupo(jogadorId, tier);
+        }
         salvar();
         return formatarData(expiraEm);
     }
@@ -214,11 +239,12 @@ public class VipManager {
                 UUID uuid = UUID.fromString(chaveUuid);
                 VipTier tier = VipTier.fromString(secao.getString(chaveUuid + ".tier"));
                 long expiraEm = secao.getLong(chaveUuid + ".expira-em");
+                boolean evento = secao.getBoolean(chaveUuid + ".evento", false);
                 if (tier == null) {
                     plugin.getLogger().warning("Tier inválido em vips.yml pro jogador " + chaveUuid + ", ignorando.");
                     continue;
                 }
-                ativos.put(uuid, new VipAtivo(uuid, tier, expiraEm));
+                ativos.put(uuid, new VipAtivo(uuid, tier, expiraEm, evento));
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().warning("UUID inválido em vips.yml: " + chaveUuid);
             }
@@ -231,6 +257,7 @@ public class VipManager {
             String base = "vips." + entrada.getKey();
             yaml.set(base + ".tier", entrada.getValue().tier().name());
             yaml.set(base + ".expira-em", entrada.getValue().expiraEm());
+            if (entrada.getValue().evento()) yaml.set(base + ".evento", true);
         }
         try {
             yaml.save(arquivo);

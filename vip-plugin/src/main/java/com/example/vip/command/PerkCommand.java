@@ -110,6 +110,14 @@ public class PerkCommand {
         player.sendMessage("§aFome restaurada.");
     }
 
+    /** O VIP de evento (prêmio) tem o kit diário, mas não o mensal (o equipamento encantado). */
+    private boolean vipDeEvento(Player player) {
+        var ativo = plugin.getVipManager().getVipAtivo(player.getUniqueId());
+        if (ativo == null || !ativo.evento()) return false;
+        player.sendMessage("§cO VIP de evento não dá o kit mensal: só o kit diário e os benefícios passivos (desconto, venda, montaria...).");
+        return true;
+    }
+
     private void tratarKit(Player player, VipTier tier) {
         if (!perkPermitido(player, "kit", "vip.perk.kit")) {
             return;
@@ -128,7 +136,7 @@ public class PerkCommand {
 
     /** Kit com ferramentas encantadas, uma vez a cada {@code cooldown-kit-mensal-dias}. Usa a mesma permissão do kit. */
     private void tratarKitMensal(Player player, VipTier tier) {
-        if (!perkPermitido(player, "kit", "vip.perk.kit")) {
+        if (!perkPermitido(player, "kit", "vip.perk.kit") || vipDeEvento(player)) {
             return;
         }
         List<String> itens = plugin.getKitMensal(tier);

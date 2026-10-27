@@ -378,6 +378,8 @@ const DICAS = [
     '&fNa mina, tudo o que você quebra vira dinheiro na hora! O resto se vende na &6Loja Oficial&f (&e/warp loja&f). E &e/rankup&f te leva pro próximo rank. Eu levei 40 anos pra deixar de ser Camponês...',
     '&fCuidado na mina de &bdiamante&f: meu sobrinho entrou lá com uma picareta de madeira e saiu com uma de diamante. E sem a dignidade.',
     '&fA mina se enche de novo sozinha de tempos em tempos. Tá vazia? Espere um pouco, ou vá incomodar outra mina.',
+    '&fDe vez em quando a picareta acha um &dFragmento Arcano&f. Guarde! O &dCambista&f, no fundo da avenida, troca por encantamento acima do máximo.',
+    '&fMuito minério ocupando a mochila? O &7Compactador&f, no fundo da avenida, transforma 9 em 1 bloco. De graça, e ainda desfaz.',
   ] },
   { id: 'mercadora', nome: '&dDona Cida, a Mercadora', pos: [6, -6], falas: [
     '&fAs barracas do spawn são de vocês! Alugue uma com &e/barraca alugar&f e um vendedor com a SUA cara trabalha por você.',
@@ -389,31 +391,37 @@ const DICAS = [
     '&fMuito cuidado ao enfrentar o boss... o primo do cunhado de um conhecido meu foi morto pela &dFeiticeira Maldita&f.',
     '&fO portão &cBOSS&f, ao sul, desce até a arena. Lá embaixo tem um degrau alto: desceu, só volta com &e/spawn&f!',
     '&fQuem dá o último golpe no boss vira campeão e leva o melhor prêmio. Quem só assiste leva... boas lembranças.',
-    '&fDizem que o &8Flagelo das Trevas&f só aparece quando a staff quer. Torça pra staff estar de bom humor.',
+    '&fTodo &cdomingo&f vem o &8Flagelo das Trevas&f. Quem derrubar ele leva até um VIP de presente... se sobreviver.',
+    '&fÀs vezes o boss vem &6✦ ELITE ✦&f: o dobro de vida, o dobro de dano e o dobro de prêmio. Eu, nesses dias, fico em casa.',
   ] },
   { id: 'guia', nome: '&aZé, o Guia', pos: [6, 6], falas: [
     '&fBem-vindo! Pegue sua recompensa de todo dia com &e/diaria&f. Quanto mais dias seguidos, melhor.',
     '&fQuer um X1? &e/duelo <jogador> <valor>&f. Quem perde, perde os itens. Quem ganha, ganha o meu respeito.',
     '&fNo &6Gladiador&f é todo mundo contra todo mundo. Meu conselho: no fim, a borda fecha no centro. Não seja o último a perceber.',
     '&fQuer um cantinho seu? &e/terreno&f. Madeira e bicho você acha no mundo de &e/recursos&f.',
+    '&fMorreu e não achou suas coisas? Olhe o &e/achados&f: o que a limpeza recolheu do chão fica guardado por 3 dias, por uma taxinha.',
+    '&fVIP tem &e/montaria&f: um cavalo na hora, bem mais rápido que a pé. Só não entra nas minas nem na arena do boss.',
   ] },
   { id: 'guarda-minas', nome: '&7Guarda do Portão', pos: [6, -38], virado: 'centro', falas: [
     '&fDaqui pra frente é a &bAvenida das Minas&f. Cada mina tem um holograma com o rank, o que tem nela e quando enche de novo.',
     '&fSó minera quem tem o rank da mina. Não adianta me olhar assim, a regra não é minha.',
     '&f&e/mina&f abre o menu das minas: clicou, foi. Bem mais rápido que andar, mas você perde a paisagem.',
     '&fNas minas, o que você quebra é vendido na hora. VIP ainda ganha de 3% a 12% a mais em toda venda.',
+    '&fNa entrada de cada mina tem um guia: clique nele pra ver o rank, os blocos, quanto já foi minerado e quando ela enche de novo.',
   ] },
   { id: 'ranzinza', nome: '&8Dona Neusa, a Ranzinza', pos: [-6, -38], virado: 'centro', falas: [
     '&fNo meu tempo não tinha &e/rankup max&f. A gente subia um rank por vez e ainda agradecia!',
     '&fChegou no &6Rei&f? Tem o &e/prestigio&f: você volta pro começo, mas com uma estrelinha. Eu acho uma bobagem. Tenho três.',
     '&fNão empurra! As minas se enchem sozinhas. Quem estiver dentro na hora vai pro ponto de teleporte, inteirinho.',
     '&fEsse povo de hoje quer tudo de graça. Faz as &e/missoes&f, menino, que paga bem.',
+    '&fPicareta gasta? No meu tempo a gente jogava fora. Hoje tem o &7Ferreiro&f, na avenida, que conserta. Moleza.',
   ] },
   { id: 'sentinela-boss', nome: '&cSentinela do Portão', pos: [-6, 38], virado: 'centro', falas: [
-    '&fO boss aparece toda &csexta às 20h&f e todo &csábado às 21h&f. Dez minutos antes, o chat avisa.',
+    '&fTem boss &ctodo dia às 20h&f. No &cdomingo&f é o &8Flagelo das Trevas&f. Dez minutos antes, o chat avisa. &e/boss proximo&f diz quando.',
     '&fQuem dá o último golpe vira &6campeão&f e ganha a tag. Quem bate mais aparece no ranking de dano.',
     '&fQuem morre na arena deixa os itens lá. Não leve nada que você não aceita perder.',
     '&fA arena tem cara de tóxica, mas pode pisar à vontade. O que mata mesmo é o boss. E o orgulho.',
+    '&fAtenção: a arena do boss é o único lugar do spawn com &cPvP&f. Lá dentro, o colega do lado também pode te bater.',
   ] },
   { id: 'leiloeiro', nome: '&6Leiloeiro Matias', pos: [38, -6], virado: 'centro', falas: [
     '&fAs barracas &6★&f vão a leilão quando ficam livres: &e/barraca lance <id> <valor>&f. Cada lance precisa ser 5% maior.',
@@ -422,10 +430,12 @@ const DICAS = [
     '&fBarraca normal pode renovar sozinha: &e/barraca autorenovar&f, enquanto tiver saldo na conta.',
   ] },
   { id: 'mestre-armas', nome: '&4Mestre de Armas Duda', pos: [-36, -6], virado: 'centro', falas: [
-    '&fAqui o combate é à moda antiga: sem recarga de golpe. Quem clica mais rápido, bate mais.',
+    '&fAqui o combate é à moda antiga: sem barra de recarga, todo golpe sai com o dano inteiro. E quem alterna as duas mãos bate o dobro.',
     '&fBloquear com a espada tira metade do dano. Mas com escudo na outra mão, a espada não bloqueia: escolha.',
     '&fDá pra lutar com uma arma em cada mão, e cada mão treina a skill da própria arma. Veja em &e/skills&f.',
     '&fTem recompensa pela sua cabeça? Confira em &e/bounty lista&f. Se não tiver, é porque você é bonzinho demais.',
+    '&fLevante o escudo bem na hora do golpe: o &6Escudo Perfeito&f anula o dano e deixa o outro tonto por um segundo.',
+    '&fSkill no 50? &e/skills prestigio <skill>&f volta pro 1, mas cada prestígio deixa ela mais forte. E no sábado e no domingo o XP de skill vale o dobro!',
   ] },
   // na frente da barraquinha do Bancário (que fica onde ela ficava)
   { id: 'banqueira', nome: '&2Banqueira Rosa', pos: [25, -9], virado: 'centro', falas: [
@@ -433,6 +443,8 @@ const DICAS = [
     '&fConta que se repete? &e/pix agendar <jogador> <valor> <dias>&f paga agora e de novo a cada tantos dias.',
     '&fQuer dar dinheiro de presente? Compre uma folha de cheque com o &6Bancário&f, aqui atrás, e use &e/cheque <valor>&f. Quem ganhar deposita com ele.',
     '&fO preço da loja muda com a oferta. Olhe o &e/shop&f antes de vender tudo de uma vez.',
+    '&fQuer saber pra onde foi seu dinheiro? O &6Bancário&f te dá o extrato num livro, com tudo o que entrou e saiu.',
+    '&fJá jogou na &6Mine-sena&f? Bilhete de R$ 500 no Bancário, sorteio todo dia às 18h, e o pote inteiro vai pra quem acertar.',
   ] },
   { id: 'escriba', nome: '&9Escriba dos Clãs', pos: [-30, 12], virado: 'centro', falas: [
     '&fJunte os amigos: &e/cla criar&f funda um clã, e &e/cla convidar&f chama a turma.',

@@ -154,7 +154,10 @@ public class BossCommand implements CommandExecutor, TabCompleter {
         long minutos = Math.max(1, Duration.between(LocalDateTime.now(), quando).toMinutes());
         String falta = minutos >= 1440 ? (minutos / 1440) + "d " + (minutos % 1440 / 60) + "h"
                 : minutos >= 60 ? (minutos / 60) + "h " + (minutos % 60) + "min" : minutos + "min";
-        sender.sendMessage("§e☠ Próximo boss: §f" + dia + " às " + quando.toLocalTime() + " §7(daqui a " + falta + ")");
+        String bossId = plugin.getScheduleManager().proximoBossId();
+        var perfil = bossId == null ? null : plugin.getBossManager().getPerfis().get(bossId);
+        String qual = perfil == null ? "" : " §7— " + org.bukkit.ChatColor.translateAlternateColorCodes('&', perfil.getNome());
+        sender.sendMessage("§e☠ Próximo boss: §f" + dia + " às " + quando.toLocalTime() + " §7(daqui a " + falta + ")" + qual);
     }
 
     private Player exigirJogador(CommandSender sender) {

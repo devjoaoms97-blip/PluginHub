@@ -4,6 +4,7 @@ com\example\boss\listener\BossDamageListener.class
 com\example\boss\listener\BossOrfaoListener.class
 com\example\boss\model\TipoAcaoFase.class
 com\example\boss\model\BossProfile.class
+com\example\boss\manager\ScheduleManager$Disparo.class
 com\example\boss\util\SkillsIntegration.class
 com\example\boss\manager\ScheduleManager$Horario.class
 com\example\boss\manager\ArenaManager.class

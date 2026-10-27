@@ -23,11 +23,16 @@ barra:
   cor: RED
   estilo: SEGMENTED_10
 
-# Agenda recorrente. Sempre sorteia entre os bosses NÃO especiais (o Wither fica de
-# fora da agenda/aleatoriedade, só sobe com /boss start wither).
+# Agenda recorrente: "DIA HH:mm" sorteia entre os bosses NÃO especiais; "DIA HH:mm <boss>" sobe
+# aquele boss (o Wither, especial, só sai assim ou com /boss start wither).
 agenda:
+  - "SEGUNDA 20:00"
+  - "TERCA 20:00"
+  - "QUARTA 20:00"
+  - "QUINTA 20:00"
   - "SEXTA 20:00"
-  - "SABADO 21:00"
+  - "SABADO 20:00"
+  - "DOMINGO 20:00 wither"
 
 # Contagem regressiva no chat antes de cada horário da agenda (não vale pro /boss start
 # manual). Lista vazia desativa. %minutos% é trocado pelo tempo que falta.
@@ -280,7 +285,8 @@ recompensas:
   xp-skill-maximo: 3000                 # XP de skill por participar, proporcional ao dano, na skill da arma
   xp-skill-minimo: 100
   codigo-vip:
-    ativado: true                       # no teste, ligado pra conferir
+    ativado: true
+    bosses: [wither]                    # só o Wither dá o código
     tier: bronze
-    dias: 3
+    dias: 7
     validade-dias: 7

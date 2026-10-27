@@ -58,18 +58,27 @@ public class CodeManager {
      */
     public VipCode gerar(VipTier tier, int usos, String criadoPor, int validadeDias) {
         long expiraEm = validadeDias > 0 ? System.currentTimeMillis() + validadeDias * 86_400_000L : 0;
-        return criarESalvar(tier, usos, criadoPor, 0.0, null, expiraEm);
+        return criarESalvar(tier, usos, criadoPor, 0.0, null, expiraEm, 0);
+    }
+
+    /**
+     * Código de VIP de evento (prêmio do servidor, nunca vendido): {@code dias} dias de VIP só com os
+     * benefícios passivos. Quem chama confere se os dias estão em {@code codigos-evento.dias-permitidos}.
+     */
+    public VipCode gerarEvento(VipTier tier, int dias, int usos, String criadoPor, int validadeDias) {
+        long expiraEm = validadeDias > 0 ? System.currentTimeMillis() + validadeDias * 86_400_000L : 0;
+        return criarESalvar(tier, usos, criadoPor, 0.0, null, expiraEm, Math.max(1, dias));
     }
 
     private VipCode criarESalvar(VipTier tier, int usos, String criadoPor, double preco, UUID vendedorId,
-                                 long expiraEm) {
+                                 long expiraEm, int diasEvento) {
         String codigo;
         do {
             codigo = sortearCodigo();
         } while (codigos.containsKey(codigo));
 
         VipCode novo = new VipCode(codigo, tier, usos, System.currentTimeMillis(), criadoPor, preco, vendedorId,
-                expiraEm);
+                expiraEm, diasEvento);
         codigos.put(codigo, novo);
         salvar();
         return novo;
@@ -85,12 +94,13 @@ public class CodeManager {
         limparExpirados();
         String chave = normalizar(codigoDigitado);
         VipCode atual = codigos.get(chave);
-        if (atual == null || atual.getVendedorId() != null) {
+        // o código de evento é prêmio: não é vendido
+        if (atual == null || atual.getVendedorId() != null || atual.ehEvento()) {
             return null;
         }
 
         VipCode atualizado = new VipCode(atual.getCodigo(), atual.getTier(), atual.getUsosRestantes(),
-                atual.getCriadoEm(), atual.getCriadoPor(), preco, vendedorId, atual.getExpiraEm());
+                atual.getCriadoEm(), atual.getCriadoPor(), preco, vendedorId, atual.getExpiraEm(), atual.getDiasEvento());
         codigos.put(chave, atualizado);
         salvar();
         return atualizado;
@@ -181,7 +191,7 @@ public class CodeManager {
 
         VipCode atual = codigos.get(chave);
         VipCode revertido = new VipCode(atual.getCodigo(), atual.getTier(), atual.getUsosRestantes(),
-                atual.getCriadoEm(), atual.getCriadoPor(), 0.0, null, atual.getExpiraEm());
+                atual.getCriadoEm(), atual.getCriadoPor(), 0.0, null, atual.getExpiraEm(), atual.getDiasEvento());
         codigos.put(chave, revertido);
         salvar();
         return revertido;
@@ -267,7 +277,8 @@ public class CodeManager {
                 }
             }
 
-            codigos.put(codigo, new VipCode(codigo, tier, usos, criadoEm, criadoPor, preco, vendedorId, expiraEm));
+            int diasEvento = secao.getInt(codigo + ".dias-evento", 0); // ausente = código normal de 30 dias
+            codigos.put(codigo, new VipCode(codigo, tier, usos, criadoEm, criadoPor, preco, vendedorId, expiraEm, diasEvento));
         }
     }
 
@@ -286,6 +297,9 @@ public class CodeManager {
             }
             if (code.getExpiraEm() > 0) {
                 yaml.set(base + ".expira-em", code.getExpiraEm());
+            }
+            if (code.ehEvento()) {
+                yaml.set(base + ".dias-evento", code.getDiasEvento());
             }
         }
         avisosPendentes.forEach((id, lista) -> yaml.set("avisos-pendentes." + id, lista));

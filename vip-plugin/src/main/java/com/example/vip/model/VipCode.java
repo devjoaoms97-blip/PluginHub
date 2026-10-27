@@ -14,6 +14,9 @@ import java.util.UUID;
  *   <li><b>Código de revenda entre jogadores</b> (via {@code /vip vender}): {@code preco}
  *       em coins e {@code vendedorId} apontando pra quem colocou o próprio VIP à venda —
  *       quem resgata paga o vendedor na hora, via Vault.</li>
+ *   <li><b>Código de evento</b> (via {@code /vip gerarevento}): prêmio de evento do servidor, de
+ *       {@code diasEvento} dias (3, 7 ou 15). Não é vendido nem revendido, e o VIP que ele dá só tem os
+ *       benefícios passivos e o kit diário (sem bônus de ativação nem kit mensal).</li>
  * </ul>
  */
 public class VipCode {
@@ -26,9 +29,10 @@ public class VipCode {
     private final double preco;
     private final UUID vendedorId;
     private final long expiraEm; // 0 = não expira
+    private final int diasEvento; // 0 = VIP normal (30 dias)
 
     public VipCode(String codigo, VipTier tier, int usosRestantes, long criadoEm, String criadoPor,
-                   double preco, UUID vendedorId, long expiraEm) {
+                   double preco, UUID vendedorId, long expiraEm, int diasEvento) {
         this.codigo = codigo;
         this.tier = tier;
         this.usosRestantes = usosRestantes;
@@ -37,6 +41,16 @@ public class VipCode {
         this.preco = preco;
         this.vendedorId = vendedorId;
         this.expiraEm = expiraEm;
+        this.diasEvento = diasEvento;
+    }
+
+    /** Dias do VIP de evento (3, 7, 15...), ou 0 num código normal de 30 dias. */
+    public int getDiasEvento() {
+        return diasEvento;
+    }
+
+    public boolean ehEvento() {
+        return diasEvento > 0;
     }
 
     public String getCodigo() {

@@ -1,0 +1,21 @@
+name: CreditosPlugin
+version: '1.0.0'
+main: com.example.creditos.CreditosPlugin
+api-version: '26.2'
+author: Você
+description: Créditos da loja do Discord, trocados por VIP e cosméticos (rastros, cor do nome, efeitos de abate), e a tag de apoiador.
+softdepend: [VipPlugin]
+
+commands:
+  creditos:
+    description: Mostra seus créditos e abre a loja (staff - dar, tirar, ver).
+    usage: "Uso: /creditos | creditos dar|tirar <jogador> <quantidade> [motivo] | creditos ver <jogador>"
+    aliases: [credito, cosmeticos]
+  apoiador:
+    description: (staff / loja do Discord) Dá a tag de apoiador por 30 dias.
+    usage: "Uso: apoiador dar <jogador> [dias] | apoiador ver <jogador>"
+
+permissions:
+  creditos.admin:
+    description: Dá e tira créditos e a tag de apoiador (a loja do Discord usa pelo console).
+    default: op
