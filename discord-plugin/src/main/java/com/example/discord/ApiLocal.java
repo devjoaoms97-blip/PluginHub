@@ -7,6 +7,7 @@ import com.google.gson.JsonParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * (127.0.0.1 por padrão) e exige {@code Authorization: Bearer <api.token>} em tudo.
  *
  * <pre>
- * GET  /saude        → {"ok":true,"online":3,"maximo":20}
+ * GET  /saude        → {"ok":true,"online":3,"maximo":20,"jogadores":[...],"tps":20.0,"proximoBoss","poteMineSena","horarioMineSena"}
  * GET  /vinculos     → {"vinculos":[{"uuid","nick","discordId","vip"}]}
  * POST /vinculo      {"codigo","discordId","discordNome","recompensa":true} → {"ok","nick","uuid","recompensado"} ou {"ok":false,"erro"}
  * POST /desvincular  {"discordId"} ou {"nick"} → {"ok","nick","discordId"}
@@ -85,13 +86,7 @@ public class ApiLocal {
         }
         JsonObject pedido = corpo;
         JsonObject resposta = switch (rota) {
-            case "GET /saude" -> naThread(() -> {
-                JsonObject r = new JsonObject();
-                r.addProperty("ok", true);
-                r.addProperty("online", Bukkit.getOnlinePlayers().size());
-                r.addProperty("maximo", Bukkit.getMaxPlayers());
-                return r;
-            });
+            case "GET /saude" -> naThread(this::saude);
             case "GET /vinculos" -> naThread(this::listar);
             case "POST /vinculo" -> naThread(() -> vincular(pedido));
             case "POST /desvincular" -> naThread(() -> desvincular(pedido));
@@ -99,6 +94,42 @@ public class ApiLocal {
         };
         if (resposta == null) responder(troca, 404, erro("rota desconhecida: " + rota));
         else responder(troca, resposta.has("ok") && !resposta.get("ok").getAsBoolean() ? 400 : 200, resposta);
+    }
+
+    /** Pro #status: online, nomes, TPS, próximo boss (BossPlugin) e pote da Mine-sena (ChequePlugin). */
+    private JsonObject saude() {
+        JsonObject r = new JsonObject();
+        r.addProperty("ok", true);
+        r.addProperty("online", Bukkit.getOnlinePlayers().size());
+        r.addProperty("maximo", Bukkit.getMaxPlayers());
+        JsonArray nomes = new JsonArray();
+        Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).sorted(String.CASE_INSENSITIVE_ORDER).forEach(nomes::add);
+        r.add("jogadores", nomes);
+        r.addProperty("tps", Math.min(20, Math.round(Bukkit.getTPS()[0] * 10) / 10.0));
+        Object boss = chamar("BossPlugin", "textoProximoBoss");
+        if (boss != null) r.addProperty("proximoBoss", boss.toString());
+        Object mineSena = chamar("ChequePlugin", "getMineSena");
+        if (mineSena != null) {
+            try {
+                r.addProperty("poteMineSena", (Double) mineSena.getClass().getMethod("getPote").invoke(mineSena));
+                Plugin cheque = Bukkit.getPluginManager().getPlugin("ChequePlugin");
+                r.addProperty("horarioMineSena", cheque.getConfig().getString("minesena.horario", "18:00"));
+            } catch (ReflectiveOperationException | ClassCastException ignorado) {
+                // versão sem a Mine-sena: só não mostra
+            }
+        }
+        return r;
+    }
+
+    /** Método sem argumentos de outro plugin, por reflexão; null se ele não existir ou falhar. */
+    private static Object chamar(String nomePlugin, String metodo) {
+        Plugin outro = Bukkit.getPluginManager().getPlugin(nomePlugin);
+        if (outro == null || !outro.isEnabled()) return null;
+        try {
+            return outro.getClass().getMethod(metodo).invoke(outro);
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
     }
 
     private JsonObject listar() {

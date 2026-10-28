@@ -1,0 +1,20 @@
+# ⚔️ Skills e combate
+
+**Skills**
+São 13 skills que sobem lutando: **Espadas, Machado, Arqueiro, Porradeiro, Tridente, Lanceiro, Marreteiro, Esquiva, Defesa, Bloqueio, Crítico, Regeneração** e **Agilidade**. Cada uma ganha XP com o que o nome diz e dá um bônus forte no nível 50 (mais dano, chance de esquiva, menos dano recebido...).
+`/skills` abre o menu · `/skills top [skill]` mostra o ranking
+• **PvP** dá XP cheio; **mobs** dão metade.
+• No nível 50, `/skills prestigio <skill>` recomeça a skill em troca de um bônus permanente.
+• Fique de olho no **✨ XP em dobro**, anunciado no {#eventos}.
+
+**Combate estilo 1.8**
+• **Sem recarga de ataque**: dá pra bater rápido.
+• **Bloqueio com a espada** (botão direito, sem escudo na outra mão).
+• **Duas mãos**: o botão direito bate com a arma da segunda mão, e alternar as duas bate mais.
+• Carregar **besta** ou puxar o **arco** trava a espada por um instante.
+
+**Onde tem PvP**
+✅ Mundo de recursos, arenas de duelo e Gladiador
+❌ Spawn, minas, loja, terrenos e arena do boss
+
+**Itens nas arenas:** no **duelo** e no **Gladiador**, cada um luta com o próprio equipamento, e **quem morre perde os itens**. Pense bem no que leva!

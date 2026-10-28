@@ -2,7 +2,7 @@
   "name": "brasamc-bot",
   "version": "1.0.0",
   "private": true,
-  "description": "Bot do Discord da BrasaMC: vínculo de contas, cargos sincronizados (e depois tickets, status e loja)",
+  "description": "Bot do Discord da BrasaMC: vínculo de contas, cargos sincronizados, tickets, status e textos fixos",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js"

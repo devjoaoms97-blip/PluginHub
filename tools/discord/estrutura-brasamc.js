@@ -23,7 +23,7 @@ module.exports = {
     comunidade: true,
     canalRegras: 'regras',
     canalAvisosDiscord: 'staff', // avisos do próprio Discord pra moderação
-    canalSistema: 'boas-vindas',
+    canalSistema: 'geral', // "fulano entrou" do Discord: no #boas-vindas empurraria a mensagem fixa
     canalAfk: 'afk-voz',
   },
 

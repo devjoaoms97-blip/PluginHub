@@ -6,6 +6,13 @@ const plugin = require('./plugin');
 
 const SINCRONIA_MS = 60_000;
 
+/** Última lista de vínculos que chegou do servidor (pra quem precisa responder rápido, como os tickets). */
+let ultimos = new Map();
+
+function vinculoDe(discordId) {
+  return ultimos.get(discordId) || null;
+}
+
 /** Deixa um membro com os cargos e o apelido do vínculo dele (ou sem eles, se não tiver vínculo). */
 async function aplicar(membro, vinculo) {
   if (membro.user.bot) return;
@@ -50,6 +57,7 @@ async function sincronizar(guild) {
     return;
   }
   const porDiscord = new Map(lista.map((v) => [v.discordId, v]));
+  ultimos = porDiscord;
   for (const membro of guild.members.cache.values()) {
     await aplicar(membro, porDiscord.get(membro.id));
   }
@@ -61,4 +69,4 @@ function iniciar(guild) {
   setInterval(rodar, SINCRONIA_MS);
 }
 
-module.exports = { aplicar, sincronizar, iniciar };
+module.exports = { aplicar, sincronizar, iniciar, vinculoDe };

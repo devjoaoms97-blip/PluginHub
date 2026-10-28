@@ -13,6 +13,11 @@ Bot em Node ([discord.js](https://discord.js.org) 14) que roda **separado do ser
 | **`/conta [membro]`** | Mostra a conta vinculada e o VIP |
 | **`/desvincular <membro>`** | Staff (quem pode gerenciar cargos). Tudo vai pro `#log-vinculos` |
 | **Atividade** | "Jogando BrasaMC · N online", ou "servidor desligado" |
+| **`#status`** | Uma mensagem só, editada a cada minuto: online ou offline (e desde quando), o IP (`SERVIDOR_IP`), quem está jogando, o próximo boss, o pote da Mine-sena e o TPS quando cai. Se outra mensagem cair no canal, o painel é reenviado pra ficar por último |
+| **Textos fixos** | Boas-vindas, regras e um post por tutorial no fórum `#tutoriais`, escritos em `conteudo/*.md` (veja abaixo). Publicados uma vez e editados quando o arquivo muda |
+| **Cargos de aviso** | Botões na mensagem de boas-vindas: 🐉 Boss, ⚔️ Gladiador, ⚖️ Leilões e 📢 Novidades. Clicou, ganha o cargo; de novo, tira. Os avisos do DiscordPlugin marcam esses cargos |
+| **Tickets** | Painel em `#abrir-ticket` com um menu: Dúvida, Bug, Denúncia, Pagamento, Apelação e Outro. Cada tipo abre um formulário (o nick vem do vínculo; sem vínculo, o formulário pergunta) e cria um canal privado em "📂 TICKETS ABERTOS", que só o dono e a staff veem. Os de **Pagamento**, só a direção. Até 2 abertos por pessoa |
+| **Atender** | A staff marca que assumiu com **Assumir**. O dono ou a staff fecha com **Fechar** e uma resolução opcional: a conversa vai em `.txt` pro `#log-tickets` (com quem abriu, assumiu, fechou e quanto durou), o dono recebe na DM só o aviso com a resolução, e o canal some em 5 s |
 
 Com o servidor do Minecraft desligado, o vínculo avisa que ele está fora do ar, e a sincronia não mexe em nenhum cargo (nunca tira cargo por falta de resposta).
 
@@ -35,11 +40,22 @@ A configuração fica fora do repositório, em `C:\mc-teste\discord\` (ou na pas
   PLUGIN_API_URL=http://127.0.0.1:8155
   PLUGIN_API_TOKEN=...         o api.token do config.yml do DiscordPlugin (gerado na 1ª vez)
   IDADE_MINIMA_DIAS=30
+  SERVIDOR_IP=jogar.brasamc.com.br   mostrado no #status e nas boas-vindas (vazio: "em breve")
 estado-<servidor>.json         IDs dos cargos e canais, do tools/discord/estrutura.js
-bot-<servidor>.json            o que o bot guarda (mensagem do painel, apelidos aplicados)
+bot-<servidor>.json            o que o bot guarda (mensagens dos painéis, apelidos aplicados, tickets abertos e o contador)
 ```
 
-O bot precisa dos intents **Server Members** e do cargo dele acima dos cargos que controla (o `estrutura.js` já deixa assim).
+O bot precisa dos intents **Server Members** e **Message Content** (a transcrição dos tickets lê o texto das mensagens) e do cargo dele acima dos cargos que controla (o `estrutura.js` já deixa assim).
+
+## Textos (`conteudo/`)
+
+| Arquivo | Onde aparece |
+|---|---|
+| `boas-vindas.md` | `#boas-vindas`, com os botões dos cargos de aviso |
+| `regras.md` | `#regras` |
+| `tutoriais/NN-nome.md` | Um post no fórum `#tutoriais` por arquivo, na ordem do número (o `01` fica fixado no topo) |
+
+A primeira linha (`# ...`) é o título; o resto é o texto, em markdown do Discord, com até 4096 caracteres. `{ip}` vira o `SERVIDOR_IP` (ou "em breve") e `{#chave}` vira o link do canal (as chaves do `estrutura-brasamc.js`, como `{#abrir-ticket}`). Editou? Reinicie o bot: ele edita só o que mudou. Tutorial novo vira post novo.
 
 ## Testar
 
@@ -47,4 +63,4 @@ O bot precisa dos intents **Server Members** e do cargo dele acima dos cargos qu
 
 ## Próximas etapas
 
-Ponte de chat (`#chat-do-jogo`), tickets, `#status` e tutoriais, e a loja de créditos com Mercado Pago.
+Avisos por DM e a loja de créditos com Mercado Pago.
