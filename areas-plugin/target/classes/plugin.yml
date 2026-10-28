@@ -9,7 +9,7 @@ softdepend: [RankupPlugin]
 commands:
   areas:
     description: Lista as áreas fechadas (staff).
-    usage: "Uso: /areas [reload]"
+    usage: "Uso: /areas [reload | ciclo <id> <ligado|desligado>]"
     permission: areas.admin
     permission-message: "§cVocê não tem permissão."
 

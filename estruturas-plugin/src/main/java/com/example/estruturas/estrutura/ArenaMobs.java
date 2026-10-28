@@ -11,16 +11,19 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.example.estruturas.estrutura.Planta.eixo;
+import static com.example.estruturas.estrutura.Planta.laje;
 import static com.example.estruturas.estrutura.Planta.lanterna;
 
 /**
  * Warp mobs (inspirada na /warp mobs da Craftlandia): salão enorme colado no portão OESTE do spawn
  * ("MOBS"), fechado, com teto de vidro e nenhuma saída além do túnel do spawn. Em volta, estátuas
- * gigantes de mobs em pedestais, e na frente de cada uma um spawner no chão: o SpawnersPlugin faz os
+ * gigantes de mobs direto na grama, e na frente de cada uma um spawner no chão: o SpawnersPlugin faz os
  * mobs daquela estátua nascerem em volta dele, pra quem quiser farmar drops, XP e skills.
  *
  * <p>Cinco estátuas de cada lado, viradas pra avenida do meio, e o Enderman no fundo, de frente pra
- * entrada. Logo depois da porta fica o vestíbulo (onde a /warp mobs chega): os mobs não passam da
+ * entrada. Em volta de cada par, o cenário do tema (granja, lama, pasto, cemitério, ossada, florestas,
+ * pântano, Nether e o Fim), e um rio com cascatas atravessa o salão por baixo de uma ponte. Em cima da
+ * entrada, o painel do PvP em ciclos do AreasPlugin (da linha vermelha pra dentro). Logo depois da porta fica o vestíbulo (onde a /warp mobs chega): os mobs não passam da
  * linha vermelha do chão, então quem chega ou sai não apanha.
  *
  * <p>O salão fica meio enterrado (igual à arena do boss): o teto de vidro fica em y 84, abaixo do topo
@@ -43,9 +46,10 @@ public class ArenaMobs implements Estrutura {
     private static final int MEIA_AVENIDA = 3;
 
     // Escadaria (y relativo ao chão de fora): patamar no nível do portão, um degrau por bloco até o
-    // piso do salão e outro patamar na porta.
+    // piso do salão e outro patamar na porta. O primeiro degrau fica na altura do patamar (o alto dele
+    // rente ao chão do patamar), senão sobra um degrau inteiro pra pular na chegada lá em cima.
     private static final int X_TOPO = -64;                // começo, colado no túnel do portão do spawn
-    private static final int PATAMAR = 3;                 // blocos planos antes do primeiro degrau
+    private static final int PATAMAR = 2;                 // blocos planos antes do primeiro degrau
     private static final int ALTURA_ESCADA = 7;           // ar livre acima de cada degrau (o patamar de cima tem 9: 3 de degrau no teto)
     private static final int DZ_SPAWNER = 13;             // spawner das estátuas dos lados
 
@@ -87,6 +91,9 @@ public class ArenaMobs implements Estrutura {
         paredes();
         teto();
         vestibulo();
+        painelPvp();
+        cenario();
+        rio();
         for (Lugar l : LUGARES) estatua(l);
         base = 0;
         escadaria();
@@ -302,12 +309,14 @@ public class ArenaMobs implements Estrutura {
      * Escadaria fechada do portão do spawn até a porta do salão: 7 de largura, patamar no nível do
      * túnel do portão (com o mesmo arco, 9, 8 e 7 de altura), um degrau por bloco descendo pro oeste e
      * outro patamar com o arco da porta lá embaixo. Cada coluna tem parede e teto até 11 acima do degrau,
-     * então na troca de altura não sobra fresta.
+     * então na troca de altura não sobra fresta. Em cima dos degraus, o teto é de escada de cabeça pra
+     * baixo e desce junto com eles, sem os dentes de um bloco; a luz fica embutida nele.
      */
     private void escadaria() {
         for (int x = X_TOPO; x > X_FRENTE; x--) {
-            int degrau = Math.max(-PROFUNDIDADE, Math.min(0, -(X_TOPO - x - PATAMAR + 1)));
-            boolean patamar = degrau == 0 || degrau == -PROFUNDIDADE;
+            int passo = X_TOPO - x - PATAMAR;             // 0 no primeiro degrau
+            boolean patamar = passo < 0 || passo >= PROFUNDIDADE;
+            int degrau = passo < 0 ? 0 : -Math.min(passo, PROFUNDIDADE);
             for (int dz = -MEIA_AVENIDA - 1; dz <= MEIA_AVENIDA + 1; dz++) {
                 if (Math.abs(dz) == MEIA_AVENIDA + 1) {
                     for (int y = degrau - 1; y <= degrau + 11; y++) set(x, y, dz, pedra(x, y, dz));
@@ -320,8 +329,435 @@ public class ArenaMobs implements Estrutura {
                 else set(x, degrau, dz, Planta.escada(Material.STONE_BRICK_STAIRS, org.bukkit.block.BlockFace.EAST, false));
                 for (int y = degrau + 1; y <= degrau + livre; y++) set(x, y, dz, Material.AIR);
                 for (int y = degrau + livre + 1; y <= degrau + 11; y++) set(x, y, dz, pedra(x, y, dz));
-                if (dz == 0 && Math.floorMod(x, 4) == 0) set(x, degrau + livre + 1, dz, Material.SHROOMLIGHT);
+                boolean luz = dz == 0 && Math.floorMod(x, 4) == 0;
+                if (luz) set(x, degrau + livre + 1, dz, Material.SHROOMLIGHT);
+                else if (!patamar) set(x, degrau + livre, dz, Planta.escada(Material.STONE_BRICK_STAIRS, org.bukkit.block.BlockFace.WEST, true));
             }
+        }
+    }
+
+    // ------------------------------------------------------------------ cenário
+
+    /**
+     * Cada par de estátuas ganha um cantinho com o tema delas (granja, lama, pasto, cemitério, ossada,
+     * floresta sombria, floresta, pântano, Nether e o Fim no fundo). Nada é posto na avenida nem a até
+     * 4 blocos de um spawner (onde os mobs nascem), e as luzes do chão ficam. As estátuas vêm depois e
+     * passam por cima do que encostar nelas.
+     */
+    private void cenario() {
+        for (Lugar l : LUGARES) {
+            Random r = new Random(l.tipo().hashCode());
+            int c = l.x(), s = l.lado();
+            switch (l.tipo()) {
+                case "galinha" -> granja(c, s, r);
+                case "porco" -> lama(c, s, r);
+                case "vaca" -> pasto(c, s, r, Material.OAK_LOG, Material.OAK_LEAVES,
+                        Material.POPPY, Material.DANDELION, Material.CORNFLOWER, Material.OXEYE_DAISY);
+                case "ovelha" -> pasto(c, s, r, Material.BIRCH_LOG, Material.BIRCH_LEAVES,
+                        Material.ALLIUM, Material.PINK_TULIP, Material.AZURE_BLUET, Material.WHITE_TULIP);
+                case "zumbi" -> cemiterio(c, s, r);
+                case "esqueleto" -> ossada(c, s, r);
+                case "aranha" -> florestaSombria(c, s, r);
+                case "creeper" -> floresta(c, s, r);
+                case "slime" -> pantano(c, s, r);
+                case "blaze" -> nether(c, s, r);
+                default -> fim(r);
+            }
+        }
+    }
+
+    /** Lugar onde o cenário não entra: avenida, perto de spawner, vestíbulo e paredes. */
+    private boolean reservado(int x, int dz) {
+        if (x >= X_LIMITE - 1 || x <= X_FUNDO || Math.abs(dz) >= DZ_PAREDE) return true;
+        if (Math.abs(dz) <= MEIA_AVENIDA + 1 && x > X_FUNDO + 20) return true;
+        for (Lugar l : LUGARES) {
+            int[] sp = spawner(l);
+            if (Math.abs(x - sp[0]) <= 4 && Math.abs(dz - sp[1]) <= 4) return true;
+        }
+        return false;
+    }
+
+    /** Troca o chão (sem apagar as luzes). */
+    private void chao(int x, int dz, Material m) {
+        if (reservado(x, dz) || p.get(x, base, dz) == Material.SHROOMLIGHT) return;
+        set(x, 0, dz, m);
+    }
+
+    private void enfeite(int x, int y, int dz, BlockData d) {
+        if (!reservado(x, dz)) set(x, y, dz, d);
+    }
+
+    private void enfeite(int x, int y, int dz, Material m) {
+        enfeite(x, y, dz, m.createBlockData());
+    }
+
+    /** Mancha redonda de chão. */
+    private void mancha(int cx, int cdz, double raio, Random r, Material... materiais) {
+        int ri = (int) Math.ceil(raio);
+        for (int a = -ri; a <= ri; a++) {
+            for (int b = -ri; b <= ri; b++) {
+                if (a * a + b * b > raio * raio || r.nextInt(6) == 0) continue;
+                chao(cx + a, cdz + b, materiais[r.nextInt(materiais.length)]);
+            }
+        }
+    }
+
+    /** Planta em cima da grama em {@code vezes} lugares sorteados do retângulo. */
+    private void espalhar(int x1, int x2, int dz1, int dz2, int vezes, Random r, Material... plantas) {
+        for (int i = 0; i < vezes; i++) {
+            int x = x1 + r.nextInt(x2 - x1 + 1), dz = Math.min(dz1, dz2) + r.nextInt(Math.abs(dz2 - dz1) + 1);
+            Material chao = p.get(x, base, dz);
+            if (chao != Material.GRASS_BLOCK && chao != Material.MOSS_BLOCK && chao != Material.PODZOL
+                    && chao != Material.COARSE_DIRT) continue;
+            if (p.get(x, base + 1, dz) != null && p.get(x, base + 1, dz) != Material.AIR) continue;
+            enfeite(x, 1, dz, plantas[r.nextInt(plantas.length)]);
+        }
+    }
+
+    private static BlockData folha(Material m) {
+        org.bukkit.block.data.type.Leaves f = (org.bukkit.block.data.type.Leaves) m.createBlockData();
+        f.setPersistent(true);
+        return f;
+    }
+
+    /** Árvore de copa redonda; {@code grosso} = tronco 2x2 (carvalho escuro). */
+    private void arvore(int x, int dz, Material tronco, Material folhas, int altura, double raio, boolean grosso, Random r) {
+        int g = grosso ? 1 : 0;
+        for (int y = 1; y <= altura; y++) {
+            for (int a = 0; a <= g; a++) for (int b = 0; b <= g; b++) set(x + a, y, dz + b, eixo(tronco, Axis.Y));
+        }
+        BlockData f = folha(folhas);
+        double[][] camadas = {{altura - 2, raio - 0.6}, {altura - 1, raio}, {altura, raio}, {altura + 1, raio - 1.2}, {altura + 2, 1.2}};
+        double meio = g / 2.0;
+        for (double[] cam : camadas) {
+            int y = (int) cam[0], ri = (int) Math.ceil(cam[1]) + g;
+            for (int a = -ri; a <= ri + g; a++) {
+                for (int b = -ri; b <= ri + g; b++) {
+                    double d = Math.hypot(a - meio, b - meio);
+                    if (d > cam[1] + 0.3 || (d > cam[1] - 0.7 && r.nextInt(3) == 0)) continue;
+                    Material ja = p.get(x + a, base + y, dz + b);
+                    if (ja != null && ja != Material.AIR) continue;
+                    set(x + a, y, dz + b, f);
+                }
+            }
+        }
+    }
+
+    /** Árvore seca: tronco e uns galhos, sem folha. */
+    private void arvoreSeca(int x, int dz, Material tronco, int altura) {
+        for (int y = 1; y <= altura; y++) set(x, y, dz, eixo(tronco, Axis.Y));
+        set(x + 1, altura - 1, dz, eixo(tronco, Axis.X));
+        set(x + 2, altura, dz, eixo(tronco, Axis.Y));
+        set(x - 1, altura - 2, dz, eixo(tronco, Axis.X));
+        set(x - 2, altura - 1, dz, eixo(tronco, Axis.Y));
+        set(x, altura - 1, dz + 1, eixo(tronco, Axis.Z));
+        set(x, altura + 1, dz, eixo(tronco, Axis.Y));
+    }
+
+    /** Poste de cerca com lanterna (comum ou de alma) em cima. */
+    private void poste(int x, int dz, Material cerca, Material luz) {
+        enfeite(x, 1, dz, cerca);
+        enfeite(x, 2, dz, cerca);
+        enfeite(x, 3, dz, lanterna(luz, false));
+    }
+
+    /** Cerca/vidro conectado aos vizinhos que também são dela (lista de [x, dz]). */
+    private void cercar(List<int[]> pontos, int y, Material cerca) {
+        java.util.Set<Long> tem = new java.util.HashSet<>();
+        for (int[] pt : pontos) tem.add(((long) pt[0] << 32) ^ (pt[1] & 0xffffffffL));
+        for (int[] pt : pontos) {
+            List<org.bukkit.block.BlockFace> faces = new ArrayList<>();
+            if (tem.contains(((long) (pt[0] + 1) << 32) ^ (pt[1] & 0xffffffffL))) faces.add(org.bukkit.block.BlockFace.EAST);
+            if (tem.contains(((long) (pt[0] - 1) << 32) ^ (pt[1] & 0xffffffffL))) faces.add(org.bukkit.block.BlockFace.WEST);
+            if (tem.contains(((long) pt[0] << 32) ^ ((pt[1] + 1) & 0xffffffffL))) faces.add(org.bukkit.block.BlockFace.SOUTH);
+            if (tem.contains(((long) pt[0] << 32) ^ ((pt[1] - 1) & 0xffffffffL))) faces.add(org.bukkit.block.BlockFace.NORTH);
+            set(pt[0], y, pt[1], Planta.conectado(cerca, faces.toArray(new org.bukkit.block.BlockFace[0])));
+        }
+    }
+
+    // --- os temas: c = x da estátua, s = lado (-1 norte, +1 sul); "s * n" é a distância n da avenida
+
+    /** Galinha: galinheiro de tábua, cercadinho, feno e dente-de-leão. */
+    private void granja(int c, int s, Random r) {
+        for (int x = c + 6; x <= c + 9; x++) {
+            for (int a = 22; a <= 26; a++) {
+                boolean borda = x == c + 6 || x == c + 9 || a == 22 || a == 26;
+                chao(x, s * a, Material.OAK_PLANKS);
+                for (int y = 1; y <= 2; y++) {
+                    boolean porta = a == 22 && (x == c + 7 || x == c + 8) && y <= 2;
+                    if (borda && !porta) set(x, y, s * a, Material.OAK_PLANKS);
+                }
+                set(x, 3, s * a, laje(Material.SPRUCE_SLAB, false));
+            }
+        }
+        set(c + 8, 1, s * 25, eixo(Material.HAY_BLOCK, Axis.Y));
+        set(c + 7, 1, s * 25, eixo(Material.HAY_BLOCK, Axis.Y));
+        List<int[]> cerca = new ArrayList<>();
+        for (int x = c + 5; x <= c + 10; x++) cerca.add(new int[]{x, s * 19});
+        cercar(cerca, 1, Material.OAK_FENCE);
+        int[][] feno = {{-8, 24, 1}, {-8, 25, 1}, {-9, 24, 1}, {-8, 24, 2}, {-9, 27, 1}};
+        for (int[] f : feno) enfeite(c + f[0], f[2], s * f[1], eixo(Material.HAY_BLOCK, Axis.Y));
+        enfeite(c - 7, 1, s * 20, Material.COMPOSTER);
+        espalhar(c - 10, c + 10, s * 5, s * 34, 30, r, Material.DANDELION, Material.SHORT_GRASS);
+    }
+
+    /** Porco: lamaçal, cocho com água, feno e um carvalho na beira do rio. */
+    private void lama(int c, int s, Random r) {
+        mancha(c - 7, s * 22, 3.2, r, Material.MUD, Material.MUD, Material.PACKED_MUD);
+        mancha(c + 7, s * 25, 3.0, r, Material.MUD, Material.COARSE_DIRT);
+        enfeite(c + 8, 1, s * 18, Material.WATER_CAULDRON);
+        enfeite(c + 9, 1, s * 18, Material.WATER_CAULDRON);
+        enfeite(c + 7, 1, s * 18, eixo(Material.HAY_BLOCK, Axis.Y));
+        arvore(c - 9, s * 31, Material.OAK_LOG, Material.OAK_LEAVES, 6, 2.6, false, r);
+        espalhar(c - 10, c + 10, s * 5, s * 34, 18, r, Material.SHORT_GRASS, Material.FERN);
+    }
+
+    /** Vaca e ovelha: pasto florido com duas árvores. */
+    private void pasto(int c, int s, Random r, Material tronco, Material folhas, Material... flores) {
+        arvore(c - 9, s * 30, tronco, folhas, 6, 2.8, false, r);
+        arvore(c + 9, s * 28, tronco, folhas, 5, 2.4, false, r);
+        for (int i = 0; i < 4; i++) enfeite(c - 8 + r.nextInt(17), 1, s * (17 + r.nextInt(4)), folha(Material.FLOWERING_AZALEA_LEAVES));
+        espalhar(c - 10, c + 10, s * 5, s * 36, 55, r, flores);
+        espalhar(c - 10, c + 10, s * 5, s * 36, 15, r, Material.SHORT_GRASS);
+    }
+
+    /** Zumbi: cemitério de terra batida, lápides, árvores secas, teia e lanternas de alma. */
+    private void cemiterio(int c, int s, Random r) {
+        for (int i = 0; i < 6; i++) mancha(c - 9 + r.nextInt(19), s * (8 + r.nextInt(28)), 2.5, r, Material.PODZOL, Material.COARSE_DIRT, Material.ROOTED_DIRT);
+        for (int gx : new int[]{c - 10, c - 8, c + 8, c + 10}) {
+            for (int a : new int[]{17, 21, 25}) {
+                enfeite(gx, 1, s * a, r.nextBoolean() ? Material.MOSSY_COBBLESTONE_WALL : Material.COBBLESTONE_WALL);
+                chao(gx, s * (a - 1), Material.COARSE_DIRT);
+                chao(gx, s * (a - 2), Material.COARSE_DIRT);
+                if (r.nextInt(3) == 0) enfeite(gx, 1, s * (a - 1), Material.COBWEB);
+            }
+        }
+        arvoreSeca(c - 9, s * 32, Material.SPRUCE_LOG, 6);
+        arvoreSeca(c + 9, s * 31, Material.DARK_OAK_LOG, 5);
+        poste(c - 7, s * 12, Material.SPRUCE_FENCE, Material.SOUL_LANTERN);
+        poste(c + 7, s * 12, Material.SPRUCE_FENCE, Material.SOUL_LANTERN);
+        espalhar(c - 10, c + 10, s * 5, s * 36, 14, r, Material.DEAD_BUSH);
+    }
+
+    /** Esqueleto: costelas gigantes de osso, terra de alma, crânios e fogueira de alma. */
+    private void ossada(int c, int s, Random r) {
+        for (int i = 0; i < 5; i++) mancha(c - 9 + r.nextInt(19), s * (8 + r.nextInt(28)), 2.3, r, Material.SOUL_SOIL, Material.COARSE_DIRT);
+        for (int base0 : new int[]{c + 6, c - 10}) {
+            for (int x = base0; x <= base0 + 4; x++) set(x, 4, s * 22, eixo(Material.BONE_BLOCK, Axis.X)); // espinha
+            for (int x = base0; x <= base0 + 4; x += 2) {
+                for (int t : new int[]{-1, 1}) {
+                    set(x, 3, s * 22 + t * 2, eixo(Material.BONE_BLOCK, Axis.Y));
+                    set(x, 2, s * 22 + t * 3, eixo(Material.BONE_BLOCK, Axis.Y));
+                    set(x, 1, s * 22 + t * 3, eixo(Material.BONE_BLOCK, Axis.Y));
+                }
+            }
+        }
+        enfeite(c + 8, 1, s * 17, Material.SKELETON_SKULL);
+        enfeite(c - 6, 1, s * 30, Material.SKELETON_SKULL);
+        enfeite(c - 9, 1, s * 16, Material.SOUL_CAMPFIRE);
+        espalhar(c - 10, c + 10, s * 5, s * 36, 12, r, Material.DEAD_BUSH);
+    }
+
+    /** Aranha: carvalhos escuros grossos cheios de teia, cogumelos e musgo. */
+    private void florestaSombria(int c, int s, Random r) {
+        for (int i = 0; i < 6; i++) mancha(c - 9 + r.nextInt(19), s * (8 + r.nextInt(28)), 2.5, r, Material.PODZOL, Material.MOSS_BLOCK);
+        arvore(c - 11, s * 30, Material.DARK_OAK_LOG, Material.DARK_OAK_LEAVES, 7, 3.6, true, r);
+        arvore(c + 10, s * 31, Material.DARK_OAK_LOG, Material.DARK_OAK_LEAVES, 6, 3.2, true, r);
+        for (int i = 0; i < 18; i++) {
+            int x = c - 10 + r.nextInt(21), a = 16 + r.nextInt(20), y = 1 + r.nextInt(4);
+            Material ja = p.get(x, base + y, s * a);
+            if (ja == null || ja == Material.AIR) enfeite(x, y, s * a, Material.COBWEB);
+        }
+        espalhar(c - 10, c + 10, s * 5, s * 36, 16, r, Material.BROWN_MUSHROOM, Material.RED_MUSHROOM, Material.FERN);
+    }
+
+    /** Creeper: floresta de carvalho e pinheiro com samambaia e a cratera de uma explosão. */
+    private void floresta(int c, int s, Random r) {
+        arvore(c - 8, s * 31, Material.OAK_LOG, Material.OAK_LEAVES, 6, 2.8, false, r);
+        arvore(c + 8, s * 32, Material.SPRUCE_LOG, Material.SPRUCE_LEAVES, 7, 2.4, false, r);
+        arvore(c - 9, s * 21, Material.OAK_LOG, Material.OAK_LEAVES, 5, 2.2, false, r);
+        // a cratera: chão revirado, cascalho e pedra solta
+        mancha(c + 8, s * 20, 2.8, r, Material.COARSE_DIRT, Material.GRAVEL, Material.ROOTED_DIRT);
+        enfeite(c + 9, 1, s * 21, Material.COBBLESTONE);
+        enfeite(c + 7, 1, s * 18, Material.MOSSY_COBBLESTONE);
+        espalhar(c - 10, c + 10, s * 5, s * 36, 30, r, Material.FERN, Material.SHORT_GRASS, Material.SHORT_GRASS);
+    }
+
+    /** Slime: pântano com laguinhos, vitória-régia, argila, lama e mangues. */
+    private void pantano(int c, int s, Random r) {
+        mancha(c, s * 22, 5, r, Material.MUD, Material.MUD, Material.CLAY);
+        lago(c - 8, s * 24, 3.2, r);
+        lago(c + 7, s * 21, 2.6, r);
+        for (int x : new int[]{c - 9, c + 8}) {
+            int dz = s * 33;
+            for (int[] raiz : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) enfeite(x + raiz[0], 1, dz + raiz[1], Material.MANGROVE_ROOTS);
+            arvore(x, dz, Material.MANGROVE_LOG, Material.MANGROVE_LEAVES, 6, 2.8, false, r);
+        }
+        espalhar(c - 10, c + 10, s * 5, s * 36, 14, r, Material.SHORT_GRASS, Material.FERN);
+    }
+
+    /** Laguinho raso (2 de fundo) com argila embaixo e vitória-régia. */
+    private void lago(int cx, int cdz, double raio, Random r) {
+        int ri = (int) Math.ceil(raio);
+        for (int a = -ri; a <= ri; a++) {
+            for (int b = -ri; b <= ri; b++) {
+                if (a * a + b * b > raio * raio || reservado(cx + a, cdz + b)) continue;
+                set(cx + a, -2, cdz + b, Material.CLAY);
+                set(cx + a, -1, cdz + b, Material.WATER);
+                set(cx + a, 0, cdz + b, Material.WATER);
+                if (r.nextInt(5) == 0) set(cx + a, 1, cdz + b, Material.LILY_PAD);
+            }
+        }
+    }
+
+    /** Blaze: chão do Nether, poços de lava cercados, braseiros eternos e um portal em ruínas. */
+    private void nether(int c, int s, Random r) {
+        for (int x = c - 10; x <= c + 10; x++) {
+            for (int a = 5; a < DZ_PAREDE; a++) {
+                int t = r.nextInt(10);
+                chao(x, s * a, t < 6 ? Material.NETHERRACK : t < 8 ? Material.BLACKSTONE : t < 9 ? Material.SOUL_SAND : Material.NETHER_WART_BLOCK);
+            }
+        }
+        for (int x : new int[]{c - 8, c + 8}) {
+            int dz = s * 21;
+            List<int[]> cerca = new ArrayList<>();
+            for (int a = -2; a <= 2; a++) {
+                for (int b = -2; b <= 2; b++) {
+                    if (Math.max(Math.abs(a), Math.abs(b)) == 2) {
+                        set(x + a, 0, dz + b, Material.MAGMA_BLOCK);
+                        cerca.add(new int[]{x + a, dz + b});
+                    } else {
+                        set(x + a, -1, dz + b, Material.NETHERRACK);
+                        set(x + a, 0, dz + b, Material.LAVA);
+                    }
+                }
+            }
+            cercar(cerca, 1, Material.NETHER_BRICK_FENCE);
+        }
+        // braseiros: coluna de basalto com fogo eterno em cima do netherrack
+        for (int[] b : new int[][]{{-10, 34}, {10, 34}, {-10, 13}, {10, 13}}) {
+            int x = c + b[0], dz = s * b[1];
+            for (int y = 1; y <= 2; y++) set(x, y, dz, eixo(Material.POLISHED_BASALT, Axis.Y));
+            set(x, 3, dz, Material.NETHERRACK);
+            set(x, 4, dz, Material.FIRE);
+        }
+        // portal em ruínas encostado na ponta da área, com uns blocos faltando
+        int px = c + 10;
+        for (int a = 28; a <= 31; a++) {
+            for (int y = 1; y <= 5; y++) {
+                boolean moldura = a == 28 || a == 31 || y == 1 || y == 5;
+                if (!moldura || (a == 31 && y >= 4) || (a == 29 && y == 5)) continue;
+                set(px, y, s * a, r.nextInt(3) == 0 ? Material.CRYING_OBSIDIAN : Material.OBSIDIAN);
+            }
+        }
+    }
+
+    /** Enderman (fundo): chão de pedra do Fim, pilares de obsidiana com vara do fim e coros. */
+    private void fim(Random r) {
+        for (int x = X_FUNDO + 1; x <= X_FUNDO + 23; x++) {
+            for (int dz = -9; dz <= 9; dz++) {
+                if (r.nextInt(8) == 0) continue;
+                chao(x, dz, r.nextInt(4) == 0 ? Material.END_STONE_BRICKS : Material.END_STONE);
+            }
+        }
+        int[][] pilares = {{X_FUNDO + 8, -8, 6}, {X_FUNDO + 8, 8, 6}, {X_FUNDO + 18, -8, 5}, {X_FUNDO + 18, 8, 5}};
+        for (int[] pl : pilares) {
+            for (int y = 1; y <= pl[2]; y++) set(pl[0], y, pl[1], r.nextInt(4) == 0 ? Material.CRYING_OBSIDIAN : Material.OBSIDIAN);
+            set(pl[0], pl[2] + 1, pl[1], direcionalCima(Material.END_ROD));
+        }
+        for (int[] co : new int[][]{{X_FUNDO + 13, -7, 3}, {X_FUNDO + 13, 7, 4}, {X_FUNDO + 21, -6, 2}, {X_FUNDO + 21, 6, 3}}) {
+            for (int y = 1; y <= co[2]; y++) set(co[0], y, co[1], Planta.conectado(Material.CHORUS_PLANT, org.bukkit.block.BlockFace.UP, org.bukkit.block.BlockFace.DOWN));
+            set(co[0], 0, co[1], Material.END_STONE);
+            set(co[0], co[2] + 1, co[1], Material.CHORUS_FLOWER);
+        }
+    }
+
+    private static BlockData direcionalCima(Material m) {
+        return Planta.direcional(m, org.bukkit.block.BlockFace.UP);
+    }
+
+    // ------------------------------------------------------------------ rio
+
+    /**
+     * O rio que atravessa o salão de parede a parede entre a granja e o pasto (x -115..-113), raso (2 de
+     * fundo), com uma cascata saindo de cada parede dos dois lados do pilar e a ponte de pedra na avenida.
+     */
+    private void rio() {
+        int x1 = -115, x2 = -113;
+        Random r = new Random(7);
+        for (int x = x1; x <= x2; x++) {
+            for (int dz = -DZ_PAREDE + 1; dz < DZ_PAREDE; dz++) {
+                set(x, -2, dz, r.nextInt(3) == 0 ? Material.SAND : Material.GRAVEL);
+                set(x, -1, dz, Material.WATER);
+                if (Math.abs(dz) <= MEIA_AVENIDA + 1) {
+                    set(x, 0, dz, Math.abs(dz) == MEIA_AVENIDA + 1 ? PEDRA : Math.abs(dz) == MEIA_AVENIDA ? PEDRA : CALCADA);
+                    continue;
+                }
+                set(x, 0, dz, Material.WATER);
+                set(x, 1, dz, Math.abs(dz) > 8 && r.nextInt(7) == 0 ? Material.LILY_PAD.createBlockData() : Material.AIR.createBlockData());
+            }
+        }
+        // margens: areia e cana-de-açúcar aqui e ali
+        for (int x : new int[]{x1 - 1, x2 + 1}) {
+            for (int dz = -DZ_PAREDE + 1; dz < DZ_PAREDE; dz++) {
+                if (Math.abs(dz) <= MEIA_AVENIDA + 1 || p.get(x, base, dz) == Material.SHROOMLIGHT) continue;
+                int t = r.nextInt(8);
+                if (t < 2) set(x, 0, dz, Material.SAND);
+                if (t == 0 && Math.abs(dz) > 6) {
+                    set(x, 1, dz, Material.SUGAR_CANE);
+                    if (r.nextBoolean()) set(x, 2, dz, Material.SUGAR_CANE);
+                }
+            }
+        }
+        // a ponte: mureta dos dois lados e poste com lanterna nas pontas
+        for (int s : new int[]{-1, 1}) {
+            int dz = s * (MEIA_AVENIDA + 1);
+            List<int[]> mureta = new ArrayList<>();
+            for (int x = x1; x <= x2; x++) mureta.add(new int[]{x, dz});
+            for (int[] m : mureta) set(m[0], 1, m[1], Material.STONE_BRICK_WALL);
+            for (int x : new int[]{x1 - 1, x2 + 1}) {
+                set(x, 0, dz, PEDRA);
+                set(x, 1, dz, Material.CHISELED_STONE_BRICKS);
+                set(x, 2, dz, lanterna(Material.LANTERN, false));
+            }
+        }
+        // cascatas: a água sai da parede no alto e cai no rio, dos dois lados do pilar
+        int y0 = 9;
+        for (int s : new int[]{-1, 1}) {
+            for (int x : new int[]{x1, x2}) {
+                set(x, y0, s * (DZ_PAREDE + 1), PEDRA);          // tampa por fora
+                set(x, y0, s * DZ_PAREDE, Material.WATER);
+                set(x, y0, s * (DZ_PAREDE - 1), agua(1));
+                for (int y = 1; y < y0; y++) set(x, y, s * (DZ_PAREDE - 1), agua(8));
+            }
+        }
+    }
+
+    /** Água corrente: 1..7 escorrendo pro lado, 8 caindo. */
+    private static BlockData agua(int nivel) {
+        org.bukkit.block.data.Levelled a = (org.bukkit.block.data.Levelled) Material.WATER.createBlockData();
+        a.setLevel(nivel);
+        return a;
+    }
+
+    // ------------------------------------------------------------------ painel do PvP
+
+    /**
+     * Na parede da frente, em cima da entrada: o painel do PvP em ciclos (AreasPlugin). A moldura é de
+     * concreto verde, que o plugin pinta de vermelho quando o PvP liga, e o holograma do tempo fica na
+     * frente do miolo preto.
+     */
+    private void painelPvp() {
+        for (int dz = -12; dz <= 12; dz++) {
+            for (int y = 14; y <= 22; y++) {
+                boolean borda = Math.abs(dz) == 12 || y == 14 || y == 22;
+                set(X_FRENTE, y, dz, borda ? Material.LIME_CONCRETE : Material.POLISHED_BLACKSTONE);
+            }
+        }
+        // luz em cima e embaixo, pra ler de longe
+        for (int dz : new int[]{-8, 0, 8}) {
+            set(X_FRENTE - 1, 23, dz, lanterna(Material.LANTERN, false));
+            set(X_FRENTE - 1, 22, dz, Material.POLISHED_BLACKSTONE_BRICKS);
         }
     }
 
@@ -329,12 +765,11 @@ public class ArenaMobs implements Estrutura {
 
     /**
      * Uma estátua em coordenadas próprias: lx da esquerda pra direita de quem olha de frente, ly pra
-     * cima (0 = em cima do pedestal) e lz pra trás (a cara fica no lz menor).
+     * cima (0 = em cima da grama) e lz pra trás (a cara fica no lz menor).
      */
     private static final class Modelo {
         final Map<Long, BlockData> blocos = new HashMap<>();
         final List<int[]> posicoes = new ArrayList<>();
-        int pedestal = 3;
 
         void set(int x, int y, int z, Material m) {
             long k = ((long) (x + 512) << 40) | ((long) (y + 512) << 20) | (z + 512);
@@ -397,30 +832,11 @@ public class ArenaMobs implements Estrutura {
             case "ovelha" -> ovelha();
             default -> galinha();
         };
-        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
-        for (int[] pos : m.posicoes) {
-            minX = Math.min(minX, pos[0]);
-            maxX = Math.max(maxX, pos[0]);
-            minZ = Math.min(minZ, pos[2]);
-            maxZ = Math.max(maxZ, pos[2]);
-        }
-        // pedestal com 1 de folga em volta da estátua
-        for (int lx = minX - 1; lx <= maxX + 1; lx++) {
-            for (int lz = minZ - 1; lz <= maxZ + 1; lz++) {
-                boolean borda = lx == minX - 1 || lx == maxX + 1 || lz == minZ - 1 || lz == maxZ + 1;
-                boolean canto = (lx == minX - 1 || lx == maxX + 1) && (lz == minZ - 1 || lz == maxZ + 1);
-                int[] w = mundo(l, lx, lz, maxZ);
-                for (int y = 1; y <= m.pedestal; y++) {
-                    Material mat = y == m.pedestal ? FAIXA
-                            : canto ? Material.CHISELED_STONE_BRICKS
-                            : borda ? (y == 1 ? Material.POLISHED_ANDESITE : pedra(w[0], y, w[1])) : PEDRA;
-                    set(w[0], y, w[1], mat);
-                }
-            }
-        }
+        int maxZ = Integer.MIN_VALUE;
+        for (int[] pos : m.posicoes) maxZ = Math.max(maxZ, pos[2]);
         for (int[] pos : m.posicoes) {
             int[] w = mundo(l, pos[0], pos[2], maxZ);
-            set(w[0], m.pedestal + 1 + pos[1], w[1], m.get(pos));
+            set(w[0], 1 + pos[1], w[1], m.get(pos)); // direto na grama, sem pedestal
         }
     }
 
@@ -504,14 +920,13 @@ public class ArenaMobs implements Estrutura {
 
     private static Modelo aranha() {
         Modelo m = new Modelo();
-        m.pedestal = 5;
         Material corpo = Material.BLACK_TERRACOTTA, cabeca = Material.GRAY_TERRACOTTA, pata = Material.BLACK_CONCRETE;
         m.caixa(cabeca, -3, 3, -6, 2, 8, -1);                         // cabeça
         m.caixa(corpo, -2, 4, 0, 1, 7, 3);                            // tórax
         m.caixa(new Material[]{corpo, cabeca}, new int[]{80, 20}, -4, 3, 4, 3, 8, 12); // abdômen
         m.rosto(-3, 8, -6, cores('D', cabeca, 'R', Material.RED_CONCRETE),
                 "DDDDDD", "DDDDDD", "RDRRDR", "DRDDRD", "DDDDDD", "DDDDDD");
-        // oito patas, quatro de cada lado: sobem até o joelho e descem até o pedestal
+        // oito patas, quatro de cada lado: sobem até o joelho e descem até o chão
         int[][] perna = {{1, 6}, {2, 7}, {3, 8}, {4, 8}, {5, 7}, {6, 6}, {6, 5}, {7, 4}, {7, 3}, {7, 2}, {7, 1}, {7, 0}};
         for (int lz : new int[]{-1, 1, 3, 5}) {
             for (int[] pt : perna) {
@@ -524,7 +939,6 @@ public class ArenaMobs implements Estrutura {
 
     private static Modelo slime() {
         Modelo m = new Modelo();
-        m.pedestal = 5;
         m.caixa(Material.SLIME_BLOCK, -4, 0, 0, 3, 7, 7);
         m.caixa(Material.LIME_TERRACOTTA, -2, 2, 2, 1, 5, 5);         // o miolo, que aparece através
         m.rosto(-4, 7, 0, cores('K', Material.GREEN_CONCRETE),
@@ -590,7 +1004,6 @@ public class ArenaMobs implements Estrutura {
 
     private static Modelo porco() {
         Modelo m = new Modelo();
-        m.pedestal = 5;
         Material rosa = Material.PINK_WOOL;
         for (int x : new int[]{-4, 1}) {
             m.caixa(rosa, x, 0, 0, x + 2, 4, 2);
@@ -624,7 +1037,6 @@ public class ArenaMobs implements Estrutura {
 
     private static Modelo galinha() {
         Modelo m = new Modelo();
-        m.pedestal = 4;
         Material pena = Material.WHITE_WOOL, pe = Material.YELLOW_TERRACOTTA;
         for (int x : new int[]{-2, 1}) {                              // pernas e pés
             m.caixa(pe, x, 1, 3, x, 4, 3);

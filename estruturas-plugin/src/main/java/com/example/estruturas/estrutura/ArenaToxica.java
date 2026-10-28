@@ -339,8 +339,11 @@ public class ArenaToxica implements Estrutura {
     /**
      * Escadaria fechada da entrada norte até o chão de fora: 7 de largura e 6 de altura livre, sobe um
      * bloco por passo a partir do piso elevado do túnel e termina num patamar no nível do gramado, com o
-     * mesmo arco do túnel do portão do spawn. Por baixo do gramado ela é um túnel; perto do topo, o
-     * teto aparece um pouco acima do chão.
+     * mesmo arco do túnel do portão do spawn. É feita como o túnel do spawn e a escadaria da warp mobs
+     * (tijolo de pedra com musgo, faixa lisa, degraus de tijolo e luz embutida no teto), pra quem sai do
+     * portão sul seguir no mesmo corredor; o escuro da usina só começa no túnel da muralha. Em cima dos
+     * degraus o teto é de escada de cabeça pra baixo e desce junto com eles. Por baixo do gramado ela é
+     * um túnel; perto do topo, o teto aparece um pouco acima do chão.
      */
     private void gerarDescida(Planta p) {
         for (int w = RAIO_PAREDE + 1; w <= FIM_DESCIDA; w++) {
@@ -353,17 +356,28 @@ public class ArenaToxica implements Estrutura {
                 // paredes e teto vão até a altura do teto do patamar: na troca da escada pro patamar (que
                 // é mais alto) não sobra vão aberto pro céu
                 if (Math.abs(u) == 4) {
-                    for (int y = degrau - 1; y <= degrau + 10; y++) p.set(c[0], y, c[1], ESCURO);
+                    for (int y = degrau - 1; y <= degrau + 10; y++) p.set(c[0], y, c[1], pedra(c[0], y, c[1]));
+                    p.set(c[0], degrau + 1, c[1], Material.SMOOTH_STONE);
                     continue;
                 }
-                p.set(c[0], degrau - 1, c[1], ESCURO);
-                p.set(c[0], degrau, c[1], patamar ? ESCURO.createBlockData()
-                        : Planta.escada(Material.POLISHED_BLACKSTONE_BRICK_STAIRS, BlockFace.NORTH, false));
+                p.set(c[0], degrau - 1, c[1], Material.STONE_BRICKS);
+                p.set(c[0], degrau, c[1], patamar ? (Math.abs(u) == 3 ? Material.STONE_BRICKS : Material.POLISHED_ANDESITE).createBlockData()
+                        : Planta.escada(Material.STONE_BRICK_STAIRS, BlockFace.NORTH, false));
                 for (int y = degrau + 1; y <= degrau + livre; y++) p.set(c[0], y, c[1], Material.AIR);
-                for (int y = degrau + livre + 1; y <= degrau + 10; y++) p.set(c[0], y, c[1], ESCURO);
-                p.set(c[0], degrau + livre + 1, c[1], u == 0 && w % 3 == 0 ? LUZ : ESCURO);
+                for (int y = degrau + livre + 1; y <= degrau + 10; y++) p.set(c[0], y, c[1], pedra(c[0], y, c[1]));
+                if (u == 0 && w % 4 == 0) p.set(c[0], degrau + livre + 1, c[1], Material.SHROOMLIGHT);
+                else if (!patamar) p.set(c[0], degrau + livre, c[1], Planta.escada(Material.STONE_BRICK_STAIRS, BlockFace.SOUTH, true));
             }
         }
+    }
+
+    /** Tijolo de pedra misturado com musgo e rachado (igual ao spawn). */
+    private static Material pedra(int x, int y, int z) {
+        int h = (x * 73856093) ^ (y * 19349663) ^ (z * 83492791);
+        h = Math.floorMod(h ^ (h >>> 13), 100);
+        if (h < 62) return Material.STONE_BRICKS;
+        if (h < 86) return Material.MOSSY_STONE_BRICKS;
+        return Material.CRACKED_STONE_BRICKS;
     }
 
     // ------------------------------------------------------------------ teto

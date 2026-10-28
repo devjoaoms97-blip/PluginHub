@@ -296,12 +296,12 @@ async function construirSpawn() {
 async function construirBanco() {
   console.log('\n== Banco (EstruturasPlugin: banco) e o spawn sem a barraquinha antiga ==')
   await t.console(`execute in minecraft:spawn run forceload add ${SPAWN.x + 26} ${SPAWN.z - 18} ${SPAWN.x + 34} ${SPAWN.z - 10}`)
-  await t.console('execute in minecraft:spawn run forceload add -10 -183 10 -171')
+  await t.console('execute in minecraft:spawn run forceload add -10 -186 10 -171')
   await t.espera(1500)
   await estrutura('spring-banco', 'spawn', [SPAWN.x, SPAWN.z])
   await estrutura('banco', 'spawn', [0, -21])
   await t.console(`execute in minecraft:spawn run forceload remove ${SPAWN.x + 26} ${SPAWN.z - 18} ${SPAWN.x + 34} ${SPAWN.z - 10}`)
-  await t.console('execute in minecraft:spawn run forceload remove -10 -183 10 -171')
+  await t.console('execute in minecraft:spawn run forceload remove -10 -186 10 -171')
 }
 
 /**

@@ -8,7 +8,7 @@ const { Vec3 } = require('vec3')
 
 // NPCs (mundo spawn) e de onde o bot fala com cada um: [onde o NPC está, onde o bot fica, yaw do bot]
 // o Bancário fica no Banco do fim da avenida, em cima da plataforma (um degrau acima do chão)
-const BANCARIO = [new Vec3(0.5, 66, -179.5), [0.5, -177.5], 180, 66]
+const BANCARIO = [new Vec3(0.5, 66, -182.5), [0.5, -180.5], 180, 66]
 const CAMBISTA = [new Vec3(14.5, 65, -180.5), [14.5, -177.5], 180]
 const COMPACTADOR = [new Vec3(-13.5, 65, -180.5), [-13.5, -177.5], 180]
 

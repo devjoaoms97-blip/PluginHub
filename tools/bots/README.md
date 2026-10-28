@@ -29,6 +29,7 @@ node teste-terrenos.js      # terrenos e leilão de imóvel (precisa do mundo te
 node montar-mapa.js construir # monta o mapa funcional (servidor ligado; veja abaixo)
 node teste-mapa.js          # o mapa: chegada na fonte, /spawn e warps, minas, proteção, portões colados e cadastros
 node teste-warp-mobs.js     # warp mobs: as estátuas geram mobs, limite, nada sai do salão e a reposição
+node teste-pvp-ciclo.js     # PvP em ciclos na warp mobs (salão sim, vestíbulo não), painel, boss sempre e spawn nunca
 node teste-dicas.js         # NPCs de dicas: balão animado, próxima fala, some sozinho, não toma dano
 node teste-duelo.js         # X1 com aposta (precisa das arenas)
 node teste-gladiador.js     # Gladiador individual e por clã (precisa das arenas)

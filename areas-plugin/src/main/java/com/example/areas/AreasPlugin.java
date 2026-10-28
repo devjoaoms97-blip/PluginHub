@@ -70,7 +70,8 @@ import java.util.UUID;
  * (a plateia) continuam valendo.
  * <p>
  * PvP só em partes de um mundo ({@code pvp-so-nas-caixas}): no mundo spawn o PvP do jogo fica ligado,
- * mas um jogador só machuca outro se os dois estiverem dentro de uma das caixas (a arena do boss).
+ * mas um jogador só machuca outro se os dois estiverem dentro de uma das caixas (a arena do boss, sempre,
+ * e a warp mobs da linha vermelha pra dentro, em ciclos: veja {@link CicloPvp}).
  */
 public class AreasPlugin extends JavaPlugin implements Listener {
 
@@ -91,18 +92,42 @@ public class AreasPlugin extends JavaPlugin implements Listener {
     /** RankupPlugin.getMinaManager() e MinaManager.getMinaEm(Location), achados por reflexão. */
     private Method getMinaManager, getMinaEm;
     private boolean avisouFalhaRankup;
+    /** As caixas de PvP com ciclo (liga e desliga sozinho), pelo id. */
+    private final Map<String, CicloPvp> ciclos = new HashMap<>();
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        // config de uma versão antiga: as seções novas (como a pvp-so-nas-caixas) entram no arquivo. Sem
+        // isso, uma seção que falta volta vazia em vez da padrão, e o PvP passava no spawn inteiro.
+        getConfig().options().copyDefaults(true);
+        saveConfig();
         carregar();
         getServer().getPluginManager().registerEvents(this, this);
         // quem entra voando ou planando (pelo portão, por teleporte) cai na hora
         getServer().getScheduler().runTaskTimer(this, this::conferirVoo, 10L, 10L);
+        // ciclos de PvP: barra, holograma, moldura e avisos
+        getServer().getScheduler().runTaskTimer(this, () -> ciclos.values().forEach(CicloPvp::tick), 20L, 20L);
         getLogger().info("AreasPlugin ativado! " + areas.size() + " área(s) fechada(s).");
     }
 
+    @Override
+    public void onDisable() {
+        ciclos.values().forEach(CicloPvp::desligar);
+    }
+
     private void carregar() {
+        ciclos.values().forEach(CicloPvp::desligar);
+        ciclos.clear();
+        ConfigurationSection pvp = getConfig().getConfigurationSection("pvp-so-nas-caixas");
+        if (pvp != null) {
+            for (String mundo : pvp.getKeys(false)) {
+                for (Map<?, ?> m : pvp.getMapList(mundo)) {
+                    CicloPvp c = CicloPvp.de(mundo, m);
+                    if (c != null) ciclos.put(c.id, c);
+                }
+            }
+        }
         areas.clear();
         ConfigurationSection secao = getConfig().getConfigurationSection("areas");
         if (secao == null) return;
@@ -233,6 +258,9 @@ public class AreasPlugin extends JavaPlugin implements Listener {
         for (Map<?, ?> m : s.getMapList(l.getWorld().getName())) {
             List<?> min = m.get("min") instanceof List<?> a ? a : null, max = m.get("max") instanceof List<?> b ? b : null;
             if (min == null || max == null || min.size() != 3 || max.size() != 3) continue;
+            // caixa com ciclo na fase sem PvP: vale como se estivesse fora
+            CicloPvp ciclo = CicloPvp.de(l.getWorld().getName(), m);
+            if (ciclo != null && ciclos.containsKey(ciclo.id) && !ciclos.get(ciclo.id).ligado()) continue;
             boolean dentro = true;
             double[] p = {l.getX(), l.getY(), l.getZ()};
             for (int i = 0; i < 3 && dentro; i++) {
@@ -455,6 +483,16 @@ public class AreasPlugin extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(org.bukkit.command.CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+        if (args.length == 3 && args[0].equalsIgnoreCase("ciclo")) {
+            CicloPvp c = ciclos.get(args[1]);
+            if (c == null || !(args[2].equalsIgnoreCase("ligado") || args[2].equalsIgnoreCase("desligado"))) {
+                sender.sendMessage("§cUso: /areas ciclo <" + String.join("|", ciclos.keySet()) + "> <ligado|desligado>");
+                return true;
+            }
+            c.forcar(args[2].equalsIgnoreCase("ligado"));
+            sender.sendMessage("§a" + c.nome + ": " + c.resumo());
+            return true;
+        }
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             reloadConfig();
             carregar();
@@ -466,6 +504,7 @@ public class AreasPlugin extends JavaPlugin implements Listener {
             sender.sendMessage("§f" + a.nome() + " §7: " + a.mundo() + (a.min() == null ? " (mundo inteiro)"
                     : " de " + a.min()[0] + "," + a.min()[1] + "," + a.min()[2] + " a " + a.max()[0] + "," + a.max()[1] + "," + a.max()[2]));
         }
+        for (CicloPvp c : ciclos.values()) sender.sendMessage("§f" + c.nome + " §7(" + c.id + "): " + c.resumo());
         if (sender instanceof Player p) {
             Area aqui = areaEm(p.getLocation());
             sender.sendMessage("§7Você está em: §f" + (aqui == null ? "nenhuma" : aqui.nome()));

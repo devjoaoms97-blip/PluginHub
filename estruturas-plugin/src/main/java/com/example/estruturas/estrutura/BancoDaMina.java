@@ -25,19 +25,22 @@ import static com.example.estruturas.estrutura.Planta.lanterna;
  * é do ChequePlugin).
  *
  * <p>Mesma origem da Avenida das Minas: {@code /estrutura construir banco spawn 0 65 -21}. x e z são
- * ABSOLUTOS e y é relativo ao chão (y = 0 é o piso em 64). Ocupa x -9..9, z -182..-172 (limpa a copa da
- * cerejeira antiga) e refaz o piso da praça em volta. Construir depois da avenida.
+ * ABSOLUTOS e y é relativo ao chão (y = 0 é o piso em 64). O fundo entra na muralha norte (z -183..-185),
+ * pra a frente ficar alinhada com a do Compactador e a do Cambista e sobrar a passagem até o canteiro.
+ * Ocupa x -8..8, z -185..-179, limpa x -9..9 até o z -172 (a versão de antes vinha até o -176) e refaz o
+ * piso da praça na frente. Construir depois da avenida.
  */
 public class BancoDaMina implements Estrutura {
 
     private static final int ORIGEM_Z = -21;
 
     private static final int X = 8;            // largura: x -8..8
-    private static final int Z_FUNDO = -182;   // parede do fundo (encostada na muralha norte)
-    private static final int Z_NPC = -180;
-    private static final int Z_BALCAO = -179;
-    private static final int Z_FRENTE = -177;  // linha das colunas, beira da plataforma
-    private static final int Z_DEGRAU = -176;
+    private static final int Z_FUNDO = -185;   // parede do fundo: a face de fora da muralha norte
+    private static final int Z_MURALHA = -183; // a face de dentro da muralha (o miolo da avenida acaba no -182)
+    private static final int Z_NPC = -183;
+    private static final int Z_BALCAO = -182;
+    private static final int Z_FRENTE = -180;  // linha das colunas, beira da plataforma
+    private static final int Z_DEGRAU = -179;  // na linha da frente das barracas vizinhas
     private static final int Y_TETO = 8;
 
     private Planta p;
@@ -73,14 +76,35 @@ public class BancoDaMina implements Estrutura {
         frontao();
     }
 
-    /** Tira a cerejeira antiga (monte de musgo, tronco e copa), os bancos e os postes, e refaz o piso da praça. */
+    /**
+     * Tira o que estava no lugar (a versão de antes do banco, mais pra frente, ou a cerejeira antiga) e
+     * refaz o piso da praça na frente, como a avenida faz. Dentro da muralha só sai o miolo: as paredes,
+     * o teto e o frontão do banco tomam o lugar do resto, e a muralha em volta fica inteira.
+     */
     private void limpar() {
         for (int x = -X - 1; x <= X + 1; x++) {
             for (int z = Z_FUNDO; z <= -172; z++) {
+                if (z <= Z_MURALHA) {
+                    if (Math.abs(x) > X) continue;
+                    // o miolo e, por cima do teto, o alto da muralha e as ameias (o frontão vai até o fundo)
+                    if (Math.abs(x) < X) for (int y = 2; y < Y_TETO; y++) set(x, y, z, Material.AIR);
+                    for (int y = Y_TETO + 2; y <= 13; y++) set(x, y, z, Material.AIR);
+                    continue;
+                }
                 // perto do canteiro (z -173 em diante) só a copa sai: o canteiro e os postes ficam
                 int yMin = z >= -174 ? 5 : 1;
                 for (int y = yMin; y <= 16; y++) set(x, y, z, Material.AIR);
-                if (z <= -175) set(x, 0, z, Math.floorMod(x, 8) == 0 ? Material.SMOOTH_STONE : Material.POLISHED_ANDESITE);
+                if (z <= -175) set(x, 0, z, AvenidaDasMinas.pisoBase(x, z));
+            }
+        }
+        // a luz do chão da avenida que a escadaria de antes cobria
+        for (int s : new int[]{-1, 1}) set(s * 5, 0, -176, Material.SHROOMLIGHT);
+        // o arco cego da muralha que o banco corta no meio: fecha a metade que sobra dos dois lados
+        for (int s : new int[]{-1, 1}) {
+            for (int ax = X + 1; ax <= X + 2; ax++) {
+                for (int y = 2; y <= 11; y++) {
+                    if (y != 7) set(s * ax, y, Z_MURALHA, Material.STONE_BRICKS);
+                }
             }
         }
     }
@@ -116,7 +140,7 @@ public class BancoDaMina implements Estrutura {
             for (int x = -X; x <= X; x++) set(x, y, Z_FUNDO, Material.QUARTZ_BRICKS);
             for (int z = Z_FUNDO + 1; z < Z_FRENTE; z++) {
                 for (int s : new int[]{-1, 1}) {
-                    boolean janela = (y == 4 || y == 5) && z == Z_NPC;
+                    boolean janela = (y == 4 || y == 5) && z == Z_BALCAO + 1; // a que dá pra fora da muralha
                     set(s * X, y, z, janela ? Material.IRON_BARS : Material.QUARTZ_BRICKS);
                 }
             }
@@ -130,7 +154,7 @@ public class BancoDaMina implements Estrutura {
         for (int x = -X; x <= X; x++) {
             for (int z = Z_FUNDO; z <= Z_FRENTE; z++) set(x, Y_TETO, z, Material.SMOOTH_QUARTZ);
         }
-        for (int x : new int[]{-5, 0, 5}) set(x, Y_TETO, -179, Material.PEARLESCENT_FROGLIGHT);
+        for (int x : new int[]{-5, 0, 5}) set(x, Y_TETO, Z_BALCAO, Material.PEARLESCENT_FROGLIGHT);
     }
 
     /** O cofre atrás do NPC: moldura de pedra-negra e ouro, porta de ferro, o bloco de cofre e esmeralda em cima. */
@@ -172,15 +196,15 @@ public class BancoDaMina implements Estrutura {
     private void interior() {
         for (int s : new int[]{-1, 1}) {
             int x7 = s * (X - 1), x6 = s * (X - 2), x5 = s * (X - 3);
-            set(x7, 2, -181, direcional(Material.BARREL, BlockFace.UP));
-            set(x7, 3, -181, Material.RAW_GOLD_BLOCK);
-            set(x7, 4, -181, Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
-            set(x6, 2, -181, Material.GOLD_BLOCK);
-            set(x6, 3, -181, Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
-            set(x5, 2, -181, direcional(Material.CHEST, BlockFace.SOUTH));
+            set(x7, 2, Z_FUNDO + 1, direcional(Material.BARREL, BlockFace.UP));
+            set(x7, 3, Z_FUNDO + 1, Material.RAW_GOLD_BLOCK);
+            set(x7, 4, Z_FUNDO + 1, Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
+            set(x6, 2, Z_FUNDO + 1, Material.GOLD_BLOCK);
+            set(x6, 3, Z_FUNDO + 1, Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
+            set(x5, 2, Z_FUNDO + 1, direcional(Material.CHEST, BlockFace.SOUTH));
             set(x7, 2, Z_NPC, Material.EMERALD_BLOCK);
             set(x7, 3, Z_NPC, Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
-            set(s * 3, 2, -181, Material.POTTED_AZALEA_BUSH);
+            set(s * 3, 2, Z_FUNDO + 1, Material.POTTED_AZALEA_BUSH);
             // lustres: corrente e lanterna penduradas no teto
             set(s * 3, 7, Z_NPC, eixo(Material.IRON_CHAIN, Axis.Y));
             set(s * 3, 6, Z_NPC, lanterna(Material.LANTERN, true));

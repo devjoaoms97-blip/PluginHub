@@ -32,6 +32,18 @@ pvp-so-nas-caixas:
   spawn:
     # A arena do boss, enterrada ao sul do spawn, com a escadaria (estrutura "toxica"): PvP sempre.
     - {nome: "arena do boss", min: [-60, 0, 107], max: [60, 100, 253]}
+    # A warp mobs da linha vermelha pra dentro (estrutura "mobs"): PvP em ciclos, 15 min sem e 15 com.
+    # O vestíbulo (atrás da linha) nunca tem. "avisos" é quem vê a barra, o título e o aviso de 1 minuto
+    # (o salão, o vestíbulo e a escadaria); "painel" é o holograma da parede de cima da entrada e
+    # "moldura" a caixa em que o concreto verde/vermelho troca de cor. Staff: /areas ciclo mobs ligado|desligado.
+    - nome: "warp mobs"
+      id: mobs
+      min: [-209, 40, 3]
+      max: [-93, 90, 83]
+      ciclo: {desligado: 900, ligado: 900}
+      avisos: {min: [-209, 30, -1], max: [-64, 90, 87]}
+      painel: [-84.3, 64.6, 43.5]
+      moldura: {min: [-83, 62, 31], max: [-83, 70, 55]}
 
 # Nas áreas listadas, os comandos abaixo não funcionam lá dentro, e o teleporte que um deles acabou
 # de pedir (até 10 s) não leva ninguém pra lá: /tpa de fora pra quem está dentro (o /tpaccept lá

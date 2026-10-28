@@ -47,7 +47,7 @@ t.rodar(async () => {
   console.log('\n== Warp mobs ==')
   msgs = await t.capturar(bot, () => bot.chat('/warp mobs'), 2000)
   t.verificar(bot.entity.position.distanceTo(new Vec3(-85.5, 49, 43.5)) < 3, '/warp mobs leva ao vestíbulo do salão', `${bot.entity.position} ${msgs.join(' ')}`)
-  t.verificar(await blocoE('spawn', -54, 65, 43, 'air') && await blocoE('spawn', -75, 55, 43, 'stone_brick_stairs') && await blocoE('spawn', -67, 70, 43, 'air'),
+  t.verificar(await blocoE('spawn', -54, 65, 43, 'air') && await blocoE('spawn', -75, 55, 43, 'stone_brick_stairs') && await blocoE('spawn', -67, 69, 43, 'air'),
     'o portão oeste do spawn está aberto e a escadaria desce até o salão')
   t.verificar(await blocoE('spawn', -140, 84, 30, 'glass') && await blocoE('spawn', -140, 90, 30, 'air') && await blocoE('spawn', -229, 40, 43, 'air'),
     'o salão fica meio enterrado: teto de vidro em y 84, nada por cima (nem sobra das versões antigas)')

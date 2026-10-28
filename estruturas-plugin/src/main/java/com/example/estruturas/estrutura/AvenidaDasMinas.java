@@ -54,7 +54,7 @@ public class AvenidaDasMinas implements Estrutura {
     private static final int Z_ARCADA_SUL = -26;
     private static final int Z_ARCADA_NORTE = -180;
 
-    private static final int MEIO_PORTAO = 4;  // abertura x -4..4, igual ao caminho do spawn
+    private static final int MEIO_PORTAO = 3;  // abertura x -3..3, igual ao túnel do portão norte do spawn
 
     private static final Material PEDRA = Material.STONE_BRICKS;
     private static final Material FAIXA = Material.SMOOTH_STONE;
@@ -236,7 +236,8 @@ public class AvenidaDasMinas implements Estrutura {
         }
     }
 
-    private static Material pisoBase(int x, int z) {
+    /** O chão da avenida em (x, z), sem as luzes (o Banco refaz com ele o pedaço da praça do fundo). */
+    static Material pisoBase(int x, int z) {
         int ax = Math.abs(x);
         boolean faixaArcada = z <= Z_ARCADA_SUL && z >= Z_ARCADA_NORTE;
         if (ax >= X_ARCADA && faixaArcada) {
@@ -621,56 +622,58 @@ public class AvenidaDasMinas implements Estrutura {
             set(s * 17, 23, -23, lanterna(Material.LANTERN, false));
         }
 
-        // Passagem de 9 de largura (x -4..4) com teto em arco, continuando o chão do caminho do spawn.
+        // Passagem de 7 de largura (x -3..3), com o mesmo arco, paredes e calçamento do túnel do portão
+        // norte do spawn: quem passa de um pro outro não vê emenda.
         for (int z = -23; z <= Z_SUL; z++) {
             for (int x = -MEIO_PORTAO; x <= MEIO_PORTAO; x++) {
                 set(x, -1, z, Material.DIRT);
-                set(x, 0, z, Math.abs(x) <= 2 ? Material.DIRT_PATH : Material.COARSE_DIRT);
-                int topo = Math.abs(x) <= 2 ? 9 : (Math.abs(x) == 3 ? 8 : 7);
+                set(x, 0, z, calcadaCentral(x, z));
+                int topo = Math.abs(x) <= 1 ? 9 : (Math.abs(x) == 2 ? 8 : 7);
                 for (int y = 1; y <= topo; y++) set(x, y, z, Material.AIR);
             }
-            set(-4, 8, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.WEST, true));
-            set(4, 8, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.EAST, true));
-            set(-3, 9, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.WEST, true));
-            set(3, 9, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.EAST, true));
+            set(-3, 8, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.WEST, true));
+            set(3, 8, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.EAST, true));
+            set(-2, 9, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.WEST, true));
+            set(2, 9, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.EAST, true));
             if (z != Z_SUL) {
                 for (int y = 1; y <= 7; y++) {
                     Material parede = Math.floorMod(z, 2) == 0 ? VERMELHO : PEDRA;
-                    set(-5, y, z, parede);
-                    set(5, y, z, parede);
+                    set(-4, y, z, parede);
+                    set(4, y, z, parede);
                 }
             }
         }
         set(0, 9, -22, lanterna(Material.LANTERN, true));
-        for (int x = -6; x <= 6; x++) set(x, 0, Z_SUL_INT, Math.abs(x) <= MEIO_PORTAO ? PEDRA : CALCADA);
+        // o calçamento segue até a praça, por baixo da moldura de dentro
+        for (int x = -MEIO_PORTAO; x <= MEIO_PORTAO; x++) set(x, 0, Z_SUL_INT, calcadaCentral(x, Z_SUL_INT));
 
         // Moldura por fora (embutida na face z = -21, colada nas cercas vivas do caminho do spawn).
         for (int y = 1; y <= 9; y++) {
             for (int s : new int[]{-1, 1}) {
-                set(s * 5, y, Z_SUL, eixo(Material.CRIMSON_STEM, Axis.Y));
-                set(s * 6, y, Z_SUL, eixo(Material.CHERRY_LOG, Axis.Y));
+                set(s * 4, y, Z_SUL, eixo(Material.CRIMSON_STEM, Axis.Y));
+                set(s * 5, y, Z_SUL, eixo(Material.CHERRY_LOG, Axis.Y));
             }
         }
-        for (int x = -6; x <= 6; x++) set(x, 10, Z_SUL, VERMELHO);
+        for (int x = -5; x <= 5; x++) set(x, 10, Z_SUL, VERMELHO);
         set(0, 10, Z_SUL, LUZ);
 
         // Moldura por dentro (na frente da face z = -23), igual à do spawn.
         int zDentro = Z_SUL_INT;
         for (int y = 1; y <= 9; y++) {
             for (int s : new int[]{-1, 1}) {
-                set(s * 5, y, zDentro, eixo(Material.CRIMSON_STEM, Axis.Y));
-                set(s * 6, y, zDentro, eixo(Material.CHERRY_LOG, Axis.Y));
+                set(s * 4, y, zDentro, eixo(Material.CRIMSON_STEM, Axis.Y));
+                set(s * 5, y, zDentro, eixo(Material.CHERRY_LOG, Axis.Y));
             }
         }
-        for (int x = -6; x <= 6; x++) set(x, 10, zDentro, VERMELHO);
+        for (int x = -5; x <= 5; x++) set(x, 10, zDentro, VERMELHO);
         set(0, 10, zDentro, LUZ);
         for (int x = -3; x <= 3; x++) {
             if (x != 0) set(x, 11, zDentro, laje(Material.RED_NETHER_BRICK_SLAB, false));
         }
         for (int s : new int[]{-1, 1}) {
-            set(s * 7, 1, zDentro, folha(Material.FLOWERING_AZALEA_LEAVES));
-            set(s * 8, 1, zDentro, folha(Material.AZALEA_LEAVES));
-            set(s * 7, 2, zDentro, lanterna(Material.LANTERN, false));
+            set(s * 6, 1, zDentro, folha(Material.FLOWERING_AZALEA_LEAVES));
+            set(s * 7, 1, zDentro, folha(Material.AZALEA_LEAVES));
+            set(s * 6, 2, zDentro, lanterna(Material.LANTERN, false));
         }
 
         // Letreiros: "MINAS" lido de quem chega do spawn (direita = +x), "SPAWN" lido de dentro.
