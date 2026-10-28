@@ -1,18 +1,26 @@
 name: DiscordPlugin
-version: '1.1.0'
+version: '1.2.0'
 main: com.example.discord.DiscordPlugin
 api-version: '26.2'
 author: Você
-description: Ponte com o Discord - anúncios do servidor por webhook, em embeds, com menção aos cargos de aviso.
+description: Ponte com o Discord - anúncios por webhook, vínculo de contas e API local pro bot.
+softdepend: [VipPlugin]
 
 commands:
   discord:
-    description: Testa e recarrega a ponte com o Discord (staff).
-    usage: "Uso: /discord teste [categoria] | /discord reload"
+    description: Testa e recarrega a ponte com o Discord e cuida dos vínculos (staff).
+    usage: "Uso: /discord teste [categoria|todas] | /discord reload | /discord vinculo <jogador> | /discord desvincular <jogador>"
     permission: discord.admin
     permission-message: "§cVocê não tem permissão."
+  vincular:
+    description: Gera o código pra vincular sua conta ao Discord.
+    usage: "Uso: /vincular"
+    permission: discord.vincular
 
 permissions:
   discord.admin:
-    description: Testa e recarrega a ponte com o Discord.
+    description: Testa e recarrega a ponte com o Discord e desfaz vínculos.
     default: op
+  discord.vincular:
+    description: Vincular a própria conta ao Discord.
+    default: true

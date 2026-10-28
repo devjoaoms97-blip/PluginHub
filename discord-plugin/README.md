@@ -53,13 +53,34 @@ status:
 
 As URLs dos webhooks e os IDs dos cargos não precisam ser colados à mão: o `tools/discord/estrutura.js` cria os webhooks no Discord e grava tudo no config (veja o [README de lá](../tools/discord/README.md)). Para pegar uma URL manualmente: no Discord, **Editar canal > Integrações > Webhooks > Novo webhook > Copiar URL do webhook**.
 
-## Comandos (staff, `discord.admin`)
+## Vínculo de conta e API do bot
 
-| Comando | O que faz |
+O [bot do Discord](../discord-bot/README.md) roda separado e fala com o servidor por uma **API HTTP local**: só escuta em `api.endereco` (127.0.0.1) na `api.porta` (8155) e exige `Authorization: Bearer <api.token>`. Sem token no config, o plugin gera um na primeira vez e grava lá; ele vai pro `.env` do bot.
+
+| Rota | O quê |
 |---|---|
-| `/discord teste [categoria]` | Manda uma mensagem de teste para a categoria (com o texto de `teste`, que dispara a menção) |
-| `/discord teste todas` | Manda um teste em cada categoria do config |
-| `/discord reload` | Recarrega o config e os encaminhamentos |
+| `GET /saude` | Jogadores online e máximo |
+| `GET /vinculos` | Todos os vínculos, com o tier do VIP ativo (do VipPlugin) |
+| `POST /vinculo` | Confirma um código do `/vincular` (`codigo`, `discordId`, `discordNome`, `recompensa`) |
+| `POST /desvincular` | Desfaz pelo `discordId` ou pelo `nick` |
+
+- **`/vincular`** (todos) mostra um código de 6 letras, clicável pra copiar, que vale por `vinculo.codigo-minutos` (10). Quem já vinculou vê com qual Discord.
+- Uma conta do Discord por conta do Minecraft. Trocar só pela staff.
+- A **recompensa** (`vinculo.recompensa`, comandos de console; por padrão 5 bilhetes grátis da Mine-sena) sai uma vez por conta do Minecraft e uma vez por conta do Discord, e só quando o bot diz que a conta do Discord tem a idade mínima. Desvincular e vincular de novo não dá outra.
+- O nick é atualizado quando o jogador entra (se ele trocou de nome). Tudo fica em `vinculos.yml`.
+
+## Comandos
+
+| Comando | Quem | O que faz |
+|---|---|---|
+| `/vincular` | todos | Código pra vincular a conta ao Discord |
+| `/discord teste [categoria]` | staff | Manda uma mensagem de teste para a categoria (com o texto de `teste`, que dispara a menção) |
+| `/discord teste todas` | staff | Manda um teste em cada categoria do config |
+| `/discord reload` | staff | Recarrega o config e os encaminhamentos |
+| `/discord vinculo <jogador>` | staff | Mostra o Discord vinculado ao jogador |
+| `/discord desvincular <jogador>` | staff | Desfaz o vínculo |
+
+Staff é `discord.admin` (op).
 
 ## Para outros plugins
 

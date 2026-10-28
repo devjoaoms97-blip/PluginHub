@@ -1,6 +1,6 @@
 // Ponte com o Discord: um servidor HTTP local faz o papel do Discord e guarda o que chega. Aponta
 // o webhook do DiscordPlugin pra ele, dispara o teste, a abertura do Gladiador e um leilão de
-// terreno, e confere o nome de cada categoria e o texto sem cores. Volta o config no fim.
+// terreno, e confere o nome de cada categoria, o embed e o texto sem cores. Volta o config no fim.
 // Uso: node teste-discord.js
 const t = require('./lib')
 const fs = require('fs')
@@ -22,30 +22,31 @@ t.rodar(async () => {
     })
   })
   await new Promise(ok => servidor.listen(PORTA, '127.0.0.1', ok))
+  const texto = x => (x.embeds && x.embeds[0] && x.embeds[0].description) || x.content || ''
   const esperar = async (filtro, ms = 5000) => {
     for (let s = 0; s < ms / 250 && !recebidas.some(filtro); s++) await t.espera(250)
     return recebidas.find(filtro)
   }
 
   const original = fs.readFileSync(CONFIG, 'utf8')
-  fs.writeFileSync(CONFIG, original.replace(/^webhook-url: ".*"/m, `webhook-url: "http://127.0.0.1:${PORTA}/webhook"`))
+  fs.writeFileSync(CONFIG, original.replace(/^(\s*)webhook-url:.*$/gm, (_, recuo) => recuo + `webhook-url: "http://127.0.0.1:${PORTA}/webhook"`))
   try {
     await t.console('discord reload')
 
-    let m = await (t.console('discord teste gladiador').then(() => esperar(x => x.content?.includes('teste'))))
-    t.verificar(m && m.username === 'Gladiador', 'o /discord teste chegou com o nome da categoria', m && `${m.username}: ${m.content}`)
-    t.verificar(m && m.allowed_mentions && m.allowed_mentions.parse.length === 0, 'sem menções (@everyone)')
+    let m = await (t.console('discord teste gladiador').then(() => esperar(x => texto(x).includes('teste'))))
+    t.verificar(m && m.username === 'Gladiador', 'o /discord teste chegou com o nome da categoria', m && `${m.username}: ${texto(m)}`)
+    t.verificar(m && m.allowed_mentions && m.allowed_mentions.parse.length === 0, 'sem @everyone: só o cargo de aviso da categoria pode ser marcado')
 
     await t.console('gladiador abrir individual 0')
-    m = await esperar(x => x.content?.includes('GLADIADOR'))
-    t.verificar(!!m, 'a abertura do Gladiador foi pro Discord', m && m.content.slice(0, 80))
-    t.verificar(m && !m.content.includes('§'), 'sem os códigos de cor do Minecraft')
+    m = await esperar(x => texto(x).includes('GLADIADOR'))
+    t.verificar(!!m, 'a abertura do Gladiador foi pro Discord', m && texto(m).slice(0, 80))
+    t.verificar(m && !texto(m).includes('§'), 'sem os códigos de cor do Minecraft')
     await t.console('gladiador cancelar')
 
     await t.console('terreno admin dono 9;9 BotTeste')
     await t.console('terreno admin leiloar 9;9')
-    m = await esperar(x => x.content?.includes('Leilão de imóvel'))
-    t.verificar(m && m.username === 'Leilões', 'o leilão de terreno foi pro Discord (categoria leilões)', m && `${m.username}: ${m.content.slice(0, 80)}`)
+    m = await esperar(x => texto(x).includes('Leilão de imóvel'))
+    t.verificar(m && m.username === 'Leilões', 'o leilão de terreno foi pro Discord (categoria leilões)', m && `${m.username}: ${texto(m).slice(0, 80)}`)
     await t.console('terreno admin remover 9;9')
 
     fs.writeFileSync(CONFIG, original)

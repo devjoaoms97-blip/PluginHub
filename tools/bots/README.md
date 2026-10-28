@@ -39,6 +39,7 @@ node teste-recursos.js      # mundo de recursos: /recursos, borda e reset (uns 2
 node teste-rankup-extras.js # menus do /ranks e do /mina, holograma, rank na tab e prestígio
 node teste-pix-agendado.js  # Pix agendado: primeiro pagamento, vencimento, falta de saldo e cancelar
 node teste-discord.js       # ponte com o Discord (um servidor HTTP local faz o papel do Discord)
+node teste-vinculo.js       # vínculo com o Discord pela API local (o teste faz o papel do bot)
 node teste-diaria.js        # recompensa diária e a sequência de dias
 node teste-gladiador-borda.js # borda do Gladiador fechando (muda o config por alguns segundos)
 node teste-boss-maldicao.js # boss que escapa amaldiçoa (XP -10%) e o próximo morto quebra (precisa do limite de 2 min no config)
@@ -74,7 +75,8 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-combate.js` | Velocidade de ataque, dois golpes seguidos com o dano inteiro, tempo entre golpes (no padrão o 2º golpe em 0,15 s não conta; com 0 conta), bloqueio com a espada tirando metade do dano, sem bloqueio da espada com escudo na outra mão golpe com a espada da segunda mão, espada e machado alternados contando os dois golpes em 0,15 s, a mesma mão não, e soco com a segunda mão vazia; carregando a besta (ou puxando o arco) a espada da segunda mão não golpeia, logo depois de disparar também não, e meio segundo depois volta a golpear |
 | `teste-rankup-extras.js` | Menu do `/ranks` (subir clicando), menu do `/mina` (ir clicando), holograma em cima da mina, rank na tab, prestígio só no último rank, volta pro primeiro com ✦ na tab e no chat |
 | `teste-pix-agendado.js` | Primeiro pagamento na hora com a taxa, quem recebe vê o agendamento, o próximo sai sozinho com quem recebe offline, sem saldo avisa e tenta de novo, cancelar tira da lista |
-| `teste-discord.js` | Teste por categoria com o nome certo e sem menções, abertura do Gladiador sem cores e leilão de terreno na categoria leilões |
+| `teste-discord.js` | Teste por categoria com o nome certo, embed e sem @everyone, abertura do Gladiador sem cores e leilão de terreno na categoria leilões |
+| `teste-vinculo.js` | API recusa sem token, /vincular dá o código, código errado e reusado recusados, vínculo com 5 bilhetes grátis da Mine-sena só na primeira vez, conta já vinculada não gera código, desvincular pelo bot e pela staff |
 | `teste-diaria.js` | Aviso ao entrar, dia 1 com o mínimo, sem repetir no mesmo dia, sequência avançando no dia seguinte e voltando pro 1 depois de perder um dia, e o painel |
 | `teste-gladiador-borda.js` | Aviso da borda fechando, dano em quem ficou fora e o fim da luta pela borda |
 | `teste-recursos.js` | `/recursos` em chão firme dentro do raio, borda, espera entre usos, reset marcado com aviso no chat, quem estava lá tirado antes, bloco do mundo antigo sumindo, e quem saiu do servidor lá dentro voltando num lugar seguro do mundo novo |

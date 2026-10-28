@@ -1,23 +1,36 @@
 package com.example.discord;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.BroadcastMessageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,12 +59,17 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
     private ExecutorService fila;
     private long ultimoAvisoFalha;
     private final List<Encaminhamento> encaminhamentos = new ArrayList<>();
+    private Vinculos vinculos;
+    private ApiLocal api;
 
     private record Encaminhamento(String categoria, Pattern padrao) {}
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        vinculos = new Vinculos(this);
+        ligarApi();
+        getServer().getScheduler().runTaskTimer(this, vinculos::limparCodigos, 20L * 60, 20L * 60);
         fila = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "DiscordPlugin-envio");
             t.setDaemon(true);
@@ -69,6 +87,7 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        if (api != null) api.desligar();
         if (fila != null) fila.shutdown();
         // Na hora de desligar não dá pra contar com a fila: manda direto, com prazo curto.
         String json = montar("status", getConfig().getString("status.desligou", "🔴 Servidor desligado."));
@@ -197,6 +216,87 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
     }
 
     // ---------------------------------------------------------------------
+    // API local pro bot e vínculo de contas
+    // ---------------------------------------------------------------------
+
+    /** Liga a API do bot. Sem token no config, gera um e salva (o bot precisa do mesmo no .env dele). */
+    private void ligarApi() {
+        if (!getConfig().getBoolean("api.ativado", true)) return;
+        String token = getConfig().getString("api.token", "").trim();
+        if (token.length() < 16) {
+            byte[] bytes = new byte[24];
+            new SecureRandom().nextBytes(bytes);
+            token = HexFormat.of().formatHex(bytes);
+            getConfig().set("api.token", token);
+            saveConfig();
+            getLogger().info("Token da API do bot gerado em config.yml (api.token). Copie pro .env do bot (PLUGIN_API_TOKEN).");
+        }
+        String endereco = getConfig().getString("api.endereco", "127.0.0.1");
+        int porta = getConfig().getInt("api.porta", 8155);
+        api = new ApiLocal(this, vinculos);
+        try {
+            api.ligar(endereco, porta, token);
+            getLogger().info("API do bot em http://" + endereco + ":" + porta);
+        } catch (IOException e) {
+            api = null;
+            getLogger().warning("Não foi possível abrir a API do bot na porta " + porta + ": " + e.getMessage());
+        }
+    }
+
+    @EventHandler
+    public void aoEntrar(PlayerJoinEvent evento) {
+        vinculos.atualizarNick(evento.getPlayer());
+    }
+
+    /** /vincular: gera o código que o jogador digita no Discord. */
+    private void comandoVincular(CommandSender sender) {
+        if (!(sender instanceof Player jogador)) {
+            sender.sendMessage("§cSó jogadores vinculam a conta.");
+            return;
+        }
+        Vinculos.Vinculo atual = vinculos.doJogador(jogador.getUniqueId());
+        if (atual != null) {
+            jogador.sendMessage("§aSua conta já está vinculada ao Discord §f" + atual.discordNome()
+                    + "§a. §7Pra trocar, abra um ticket no Discord.");
+            return;
+        }
+        String codigo = vinculos.gerarCodigo(jogador);
+        jogador.sendMessage("§6§l🔗 Vincular ao Discord");
+        jogador.sendMessage(Component.text("Seu código: ", NamedTextColor.GRAY)
+                .append(Component.text(codigo, NamedTextColor.YELLOW,
+                        TextDecoration.BOLD))
+                .append(Component.text(" (clique pra copiar)", NamedTextColor.DARK_GRAY))
+                .clickEvent(ClickEvent.copyToClipboard(codigo))
+                .hoverEvent(HoverEvent.showText(Component.text("Copiar o código"))));
+        jogador.sendMessage("§7No Discord, use §f/vincular " + codigo + " §7ou o botão em §f#vincular-conta§7. Vale por §f"
+                + vinculos.minutosDoCodigo() + " min§7.");
+        String convite = getConfig().getString("vinculo.convite", "");
+        if (!convite.isBlank()) jogador.sendMessage("§7Discord: §b" + convite);
+    }
+
+    /** /discord vinculo <jogador> e /discord desvincular <jogador> (staff). */
+    private void comandoVinculoStaff(CommandSender sender, String sub, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage("§cUso: §f/discord " + sub + " <jogador>");
+            return;
+        }
+        OfflinePlayer alvo = vinculos.acharJogador(args[1]);
+        if (alvo == null) {
+            sender.sendMessage("§cJogador §f" + args[1] + " §cnão encontrado.");
+            return;
+        }
+        if (sub.equals("desvincular")) {
+            Vinculos.Vinculo v = vinculos.remover(alvo.getUniqueId(), null);
+            sender.sendMessage(v == null ? "§e" + args[1] + " não tem vínculo." : "§aVínculo de §f" + v.nick() + " §acom §f" + v.discordNome() + " §adesfeito.");
+            return;
+        }
+        Vinculos.Vinculo v = vinculos.doJogador(alvo.getUniqueId());
+        sender.sendMessage(v == null ? "§e" + args[1] + " não tem vínculo."
+                : "§f" + v.nick() + " §7→ Discord §f" + v.discordNome() + " §7(" + v.discordId() + "), desde §f"
+                + new SimpleDateFormat("dd/MM/yyyy").format(new Date(v.desde())));
+    }
+
+    // ---------------------------------------------------------------------
     // Anúncios do chat encaminhados (rankup, prestígio, XP em dobro, alta na loja...)
     // ---------------------------------------------------------------------
 
@@ -230,11 +330,17 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
     // Comandos
     // ---------------------------------------------------------------------
 
-    /** /discord teste [categoria|todas] e /discord reload (staff). */
+    /** /vincular (jogador) e /discord teste|reload|vinculo|desvincular (staff). */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (command.getName().equalsIgnoreCase("vincular")) {
+            comandoVincular(sender);
+            return true;
+        }
         String sub = args.length == 0 ? "" : args[0].toLowerCase(Locale.ROOT);
-        if (sub.equals("reload")) {
+        if (sub.equals("vinculo") || sub.equals("desvincular")) {
+            comandoVinculoStaff(sender, sub, args);
+        } else if (sub.equals("reload")) {
             reloadConfig();
             carregarEncaminhamentos();
             sender.sendMessage("§aConfig do Discord recarregado (" + encaminhamentos.size() + " encaminhamentos).");
@@ -251,7 +357,7 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
                 sender.sendMessage("§a" + categoria + "§7: teste enviado.");
             }
         } else {
-            sender.sendMessage("§cUso: §f/discord teste [categoria|todas] §7| §f/discord reload");
+            sender.sendMessage("§cUso: §f/discord teste [categoria|todas] §7| §f/discord reload §7| §f/discord vinculo <jogador> §7| §f/discord desvincular <jogador>");
         }
         return true;
     }
@@ -263,7 +369,9 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1) return List.of("teste", "reload");
+        if (command.getName().equalsIgnoreCase("vincular")) return List.of();
+        if (args.length == 1) return List.of("teste", "reload", "vinculo", "desvincular");
+        if (args.length == 2 && (args[0].equalsIgnoreCase("vinculo") || args[0].equalsIgnoreCase("desvincular"))) return null;
         if (args.length == 2 && args[0].equalsIgnoreCase("teste")) {
             List<String> opcoes = new ArrayList<>(categorias());
             opcoes.add("todas");

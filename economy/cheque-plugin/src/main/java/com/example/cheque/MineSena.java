@@ -82,6 +82,11 @@ public class MineSena implements Listener, CommandExecutor {
     private String ultimoResultado = "";
     /** Quem ganhou estando offline: o aviso sai quando entrar. */
     private final Map<UUID, String> avisos = new HashMap<>();
+    /**
+     * Bilhetes grátis ainda não usados (ex.: recompensa por vincular o Discord). O jogador escolhe o
+     * número no Bancário como sempre, sem pagar; o grátis não põe dinheiro no pote.
+     */
+    private final Map<UUID, Integer> gratis = new HashMap<>();
     private boolean avisouFalhaDiscord;
 
     public MineSena(ChequePlugin plugin) {
@@ -192,8 +197,9 @@ public class MineSena implements Listener, CommandExecutor {
             int numero = pagina * POR_PAGINA + i + 1;
             if (numero > numeroMaximo()) break;
             int tenho = meus.getOrDefault(numero, 0);
+            int vales = gratis.getOrDefault(jogador.getUniqueId(), 0);
             ItemStack bola = icone(tenho > 0 ? Material.LIME_STAINED_GLASS_PANE : Material.WHITE_STAINED_GLASS_PANE,
-                    "§e§lNº " + numero, "§7Bilhete: §a" + dinheiro(preco()),
+                    "§e§lNº " + numero, vales > 0 ? "§7Bilhete: §a§lGRÁTIS §7(você tem " + vales + ")" : "§7Bilhete: §a" + dinheiro(preco()),
                     tenho > 0 ? "§aVocê tem " + tenho + " bilhete(s) nesse número" : "", "§eClique pra comprar");
             bola.setAmount(Math.min(64, Math.max(1, tenho)));
             menu.inventario.setItem(i, bola);
@@ -211,6 +217,8 @@ public class MineSena implements Listener, CommandExecutor {
         l.add("§7ganhador divide. Sem ganhador, acumula.");
         int meus = apostas.getOrDefault(jogador.getUniqueId(), Map.of()).values().stream().mapToInt(Integer::intValue).sum();
         l.add("§7Seus bilhetes pro próximo: §f" + meus);
+        int vales = gratis.getOrDefault(jogador.getUniqueId(), 0);
+        if (vales > 0) l.add("§aBilhetes grátis pra usar: §f" + vales);
         if (!ultimoResultado.isEmpty()) l.add("§7Último: §f" + ultimoResultado);
         return l.toArray(String[]::new);
     }
@@ -220,6 +228,17 @@ public class MineSena implements Listener, CommandExecutor {
         int meus = apostas.getOrDefault(jogador.getUniqueId(), Map.of()).values().stream().mapToInt(Integer::intValue).sum();
         if (maximo > 0 && meus >= maximo) {
             jogador.sendMessage("§cVocê já tem " + meus + " bilhetes pro próximo sorteio (máximo " + maximo + ").");
+            return;
+        }
+        int vales = gratis.getOrDefault(jogador.getUniqueId(), 0);
+        if (vales > 0) {
+            if (vales == 1) gratis.remove(jogador.getUniqueId());
+            else gratis.put(jogador.getUniqueId(), vales - 1);
+            apostas.computeIfAbsent(jogador.getUniqueId(), k -> new HashMap<>()).merge(numero, 1, Integer::sum);
+            salvar();
+            jogador.sendMessage("§a🎟 Bilhete §lgrátis §ada Mine-sena no número §e" + numero + "§a"
+                    + (vales > 1 ? " §7(restam " + (vales - 1) + ")" : "") + "§a. §7Sorteio às " + horario() + ".");
+            jogador.playSound(jogador.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.4f);
             return;
         }
         Economy econ = plugin.getEconomy();
@@ -275,6 +294,10 @@ public class MineSena implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("dar")) {
+            darGratis(sender, args);
+            return true;
+        }
         if (args.length > 0 && args[0].equalsIgnoreCase("sortear")) {
             if (!sender.hasPermission("cheque.admin")) {
                 sender.sendMessage("§cSó a staff sorteia na hora.");
@@ -306,10 +329,46 @@ public class MineSena implements Listener, CommandExecutor {
                         .forEach(e -> partes.add("§e" + e.getKey() + (e.getValue() > 1 ? "§7 (x" + e.getValue() + ")" : "")));
                 sender.sendMessage("§7Seus números: " + String.join("§7, ", partes));
             }
+            int vales = gratis.getOrDefault(p.getUniqueId(), 0);
+            if (vales > 0) sender.sendMessage("§aVocê tem §f" + vales + " §abilhete(s) grátis: escolha os números no §6Bancário§a.");
         }
         if (!ultimoResultado.isEmpty()) sender.sendMessage("§7Último sorteio" + (ultimoSorteio != null ? " (" + ultimoSorteio + ")" : "")
                 + ": §f" + ultimoResultado);
         return true;
+    }
+
+    /** /minesena dar <jogador> <quantidade> [motivo] (staff ou console, ex.: o bot do Discord pelo RCON). */
+    private void darGratis(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("cheque.admin")) {
+            sender.sendMessage("§cSó a staff dá bilhetes grátis.");
+            return;
+        }
+        int quantidade;
+        try {
+            quantidade = args.length >= 3 ? Integer.parseInt(args[2]) : 0;
+        } catch (NumberFormatException e) {
+            quantidade = 0;
+        }
+        if (args.length < 3 || quantidade < 1 || quantidade > 1000) {
+            sender.sendMessage("§cUso: §f/minesena dar <jogador> <quantidade> [motivo]");
+            return;
+        }
+        OfflinePlayer alvo = Bukkit.getOfflinePlayerIfCached(args[1]);
+        if (alvo == null || (!alvo.isOnline() && !alvo.hasPlayedBefore())) {
+            sender.sendMessage("§cO jogador §f" + args[1] + " §cnunca entrou no servidor.");
+            return;
+        }
+        String motivo = args.length > 3 ? String.join(" ", List.of(args).subList(3, args.length)) : "sem motivo";
+        int total = gratis.merge(alvo.getUniqueId(), quantidade, Integer::sum);
+        salvar();
+        plugin.getLogger().info(sender.getName() + " deu " + quantidade + " bilhete(s) grátis da Mine-sena a "
+                + alvo.getName() + " (" + motivo + "). Agora tem " + total + ".");
+        sender.sendMessage("§a" + quantidade + " bilhete(s) grátis dado(s) a §f" + alvo.getName() + "§a (agora tem " + total + ").");
+        Player online = alvo.getPlayer();
+        if (online != null) {
+            online.sendMessage("§a🎟 Você ganhou §f" + quantidade + " bilhete(s) grátis §ada Mine-sena! §7Escolha os números no §6Bancário§7.");
+            online.playSound(online.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8f, 1.2f);
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -346,6 +405,8 @@ public class MineSena implements Listener, CommandExecutor {
         }
         ConfigurationSection a = yaml.getConfigurationSection("avisos");
         if (a != null) for (String id : a.getKeys(false)) avisos.put(UUID.fromString(id), a.getString(id));
+        ConfigurationSection g = yaml.getConfigurationSection("gratis");
+        if (g != null) for (String id : g.getKeys(false)) gratis.put(UUID.fromString(id), g.getInt(id));
     }
 
     private void salvar() {
@@ -356,6 +417,7 @@ public class MineSena implements Listener, CommandExecutor {
         yaml.set("ultimo-resultado", ultimoResultado);
         apostas.forEach((id, nums) -> nums.forEach((n, q) -> yaml.set("apostas." + id + "." + n, q)));
         avisos.forEach((id, msg) -> yaml.set("avisos." + id, msg));
+        gratis.forEach((id, qtd) -> yaml.set("gratis." + id, qtd));
         try {
             yaml.save(arquivo);
         } catch (IOException e) {

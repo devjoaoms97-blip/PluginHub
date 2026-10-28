@@ -15,7 +15,7 @@ commands:
 
   minesena:
     description: Mostra o pote, o horário e os seus bilhetes da Mine-sena (staff sorteia na hora).
-    usage: "Uso: /minesena | /minesena sortear [número]"
+    usage: "Uso: /minesena | /minesena sortear [número] | /minesena dar <jogador> <quantidade> [motivo]"
 
 permissions:
   cheque.criar:

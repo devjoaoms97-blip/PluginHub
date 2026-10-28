@@ -119,3 +119,22 @@ encaminhar:
 status:
   ligou: "🟢 **Servidor online!** Bora jogar."
   desligou: "🔴 **Servidor desligado.** Já já a gente volta."
+
+# API local pro bot do Discord (discord-bot/). Só escuta neste endereço; o bot manda o token no
+# cabeçalho Authorization. Token vazio: o plugin gera um na primeira vez e grava aqui.
+api:
+  ativado: true
+  endereco: "127.0.0.1"
+  porta: 8155
+  token: ""
+
+# Vínculo da conta do Minecraft com a do Discord (/vincular no jogo, /vincular <código> no Discord).
+vinculo:
+  codigo-minutos: 10
+  # Comandos de console na primeira vez que a conta vincula (uma vez por conta do Minecraft e uma
+  # por conta do Discord, e só se a conta do Discord tiver idade mínima, conferida pelo bot).
+  recompensa:
+    - "minesena dar %jogador% 5 vínculo com o Discord"
+  mensagem-recompensa: "🎟 Presente pelo vínculo: 5 bilhetes grátis da Mine-sena! Escolha os números no Bancário."
+  # Mostrado no /vincular (ex.: "discord.gg/brasamc"). Vazio: não mostra.
+  convite: ""

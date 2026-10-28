@@ -22,6 +22,7 @@ A loteria do Bancário. No balcão, o botão **Mine-sena** abre os números de 1
 - Se o servidor estava desligado no horário, o sorteio sai assim que ele liga. Sem aposta e sem pote, não há anúncio.
 - O resultado vai pro chat e pro Discord (categoria `minesena` do DiscordPlugin). Quem ganhou offline é avisado ao entrar. A aposta e o prêmio aparecem no extrato do Bancário.
 - `/minesena` mostra o pote, o horário, os seus números e o último resultado. A staff (`cheque.admin`) sorteia na hora com `/minesena sortear [número]` (sem número, sorteia de verdade). Tudo fica em `minesena.yml`.
+- **Bilhetes grátis:** `/minesena dar <jogador> <quantidade> [motivo]` (staff ou console) dá bilhetes grátis, guardados no nome do jogador. Ele escolhe os números no Bancário como sempre, e enquanto tiver grátis o clique não cobra (o número mostra "GRÁTIS"). O grátis não põe dinheiro no pote e conta no limite de bilhetes por sorteio; o que sobrar fica pro próximo. O bot do Discord dá 5 a quem vincula a conta.
 
 O dinheiro das apostas não sai da economia: volta inteiro pra quem ganha.
 
