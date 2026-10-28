@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -219,6 +220,18 @@ public class PainelEconomiaPlugin extends JavaPlugin {
                 staff.sendMessage(linha1);
                 staff.sendMessage(linha2);
             }
+        }
+        enviarDiscord(ChatColor.stripColor(linha1) + "\n" + ChatColor.stripColor(linha2));
+    }
+
+    /** Alerta pra categoria "economia" do DiscordPlugin (canal da staff), por reflexão; sem ele, nada. */
+    private void enviarDiscord(String mensagem) {
+        Plugin discord = getServer().getPluginManager().getPlugin("DiscordPlugin");
+        if (discord == null || !discord.isEnabled()) return;
+        try {
+            discord.getClass().getMethod("enviar", String.class, String.class).invoke(discord, "economia", mensagem);
+        } catch (ReflectiveOperationException e) {
+            getLogger().warning("DiscordPlugin encontrado, mas não foi possível mandar o alerta: " + e.getMessage());
         }
     }
 

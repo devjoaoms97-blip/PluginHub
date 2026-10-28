@@ -38,11 +38,11 @@ Aliases: `/recompensa`, `/cabeca`. Permissões: `bounty.usar` (padrão: todos) e
 
 ## Anúncio no Discord
 
-Com `discord.webhook-url` preenchido, o plugin manda uma mensagem pro canal quando:
+O plugin manda uma mensagem pro Discord quando:
 - uma recompensa chega a `discord.valor-minimo` (R$ 1.000) ou é cobrada;
 - um contrato contra clã é criado, ou um abate dele é cobrado, a partir desse valor.
 
-Pra pegar a URL, abra o canal no Discord e vá em Editar canal > Integrações > Webhooks > Novo webhook > Copiar URL do webhook. O envio não trava o servidor, e um Discord fora do ar só gera um aviso no console (no máximo um a cada 10 min). As menções (`@everyone`) ficam desligadas.
+Com o **DiscordPlugin** ligado, a mensagem vai pela categoria `bounty` dele (embed, canal `#bounty`), e o `discord.webhook-url` daqui é ignorado. Sem o DiscordPlugin, vai pelo `discord.webhook-url`, se estiver preenchido: abra o canal no Discord e vá em Editar canal > Integrações > Webhooks > Novo webhook > Copiar URL do webhook. O envio não trava o servidor, e um Discord fora do ar só gera um aviso no console (no máximo um a cada 10 min). As menções (`@everyone`) ficam desligadas.
 
 ## Anti-farm
 

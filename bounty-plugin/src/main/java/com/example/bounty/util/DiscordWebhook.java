@@ -1,6 +1,8 @@
 package com.example.bounty.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.URI;
@@ -10,7 +12,8 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 
 /**
- * Manda anúncios pra um canal do Discord por webhook ({@code discord.webhook-url} no config).
+ * Manda anúncios pro Discord: pelo DiscordPlugin (categoria "bounty") quando ele estiver ligado,
+ * ou por um webhook próprio ({@code discord.webhook-url} no config) quando não estiver.
  * O envio é assíncrono (não trava o servidor) e uma falha só gera aviso no console — o Discord
  * fora do ar nunca atrapalha o jogo. Menções (@everyone etc.) ficam desligadas no envio.
  */
@@ -24,10 +27,15 @@ public class DiscordWebhook {
         this.plugin = plugin;
     }
 
-    /** Envia se o webhook estiver configurado e {@code valor} for pelo menos {@code discord.valor-minimo}. */
+    /**
+     * Envia se {@code valor} for pelo menos {@code discord.valor-minimo}: pelo DiscordPlugin
+     * (categoria "bounty") quando ele estiver ligado, senão pelo webhook próprio do config.
+     */
     public void anunciar(String mensagem, double valor) {
+        if (valor < plugin.getConfig().getDouble("discord.valor-minimo", 1000)) return;
+        if (pelaPonte(mensagem)) return;
         String url = plugin.getConfig().getString("discord.webhook-url", "").trim();
-        if (url.isEmpty() || valor < plugin.getConfig().getDouble("discord.valor-minimo", 1000)) return;
+        if (url.isEmpty()) return;
 
         String nome = plugin.getConfig().getString("discord.nome", "Bounty");
         String json = "{\"username\":\"" + escapar(nome) + "\",\"content\":\"" + escapar(ChatColor.stripColor(mensagem))
@@ -50,6 +58,19 @@ public class DiscordWebhook {
                 avisarFalha("o Discord respondeu HTTP " + resposta.statusCode());
             }
         });
+    }
+
+    /** DiscordPlugin#enviar por reflexão, como as outras integrações; false se ele não estiver ligado. */
+    private boolean pelaPonte(String mensagem) {
+        Plugin discord = Bukkit.getPluginManager().getPlugin("DiscordPlugin");
+        if (discord == null || !discord.isEnabled()) return false;
+        try {
+            discord.getClass().getMethod("enviar", String.class, String.class).invoke(discord, "bounty", mensagem);
+            return true;
+        } catch (ReflectiveOperationException e) {
+            avisarFalha("DiscordPlugin incompatível, usando o webhook próprio: " + e.getMessage());
+            return false;
+        }
     }
 
     /** No máximo um aviso a cada 10 min, pra um webhook quebrado não encher o console. */

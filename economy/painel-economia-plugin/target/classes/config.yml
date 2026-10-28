@@ -31,7 +31,7 @@ tipos:
     "SellCommand#venderTudoDoInventario": "Venda (/sell all)"
     "ShopGUIListener#comprarQuantidade": "Compra (menu)"
     "ShopGUIListener#venderQuantidade": "Venda (menu)"
-    "AutoVenda#vender": "Venda automática (VIP)"
+    "AutoVenda#vender": "Venda automática (minas)"
   PixPlugin:
     "PixCommand#pagar": "Pix (pagar)"
     "PixCommand#aceitar": "Pix (cobrança paga)"

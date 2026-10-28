@@ -1,47 +1,121 @@
 # Configuração do DiscordPlugin (ponte com o Discord)
 #
 # Os outros plugins mandam os anúncios pra cá, e cada categoria vai pro seu webhook ou pro
-# webhook padrão. Pra pegar a URL: no Discord, Editar canal > Integrações > Webhooks > Novo
-# webhook > Copiar URL do webhook. Vazio desliga.
+# webhook padrão, como um embed com título e cor. Pra pegar a URL: no Discord, Editar canal >
+# Integrações > Webhooks > Novo webhook > Copiar URL do webhook. Vazio desliga.
+# O tools/discord/estrutura.js cria os webhooks e preenche as URLs e os cargos sozinho.
 
 # Webhook padrão: usado pelas categorias sem webhook próprio.
 webhook-url: ""
-# Nome que aparece como autor das mensagens (cada categoria pode ter o seu "nome").
-nome: "Servidor"
+# Autor das mensagens (cada categoria pode ter o seu "nome"), cor padrão e rodapé dos embeds.
+nome: "BrasaMC"
+cor: "#f26b1d"
+rodape: "BrasaMC"
 
+# Cada categoria aceita:
+#   ativado       false desliga a categoria
+#   webhook-url   webhook próprio (vazio: o padrão)
+#   nome          autor da mensagem
+#   titulo        título do embed
+#   cor           cor da barra do embed (#rrggbb)
+#   mencionar     ID do cargo a marcar (vazio: ninguém). Nunca marca @everyone.
+#   mencionar-se  só marca quando o texto bate com este padrão (regex; vazio: sempre)
+#   teste         texto extra do /discord teste (útil pra testar a menção)
 categorias:
-  # Boss apareceu, foi derrotado (com o campeão e o ranking de dano).
+  # Boss apareceu, foi derrotado (com o campeão e o ranking de dano), maldição.
   boss:
-    ativado: true
-    webhook-url: ""
     nome: "Boss"
-  # Gladiador aberto e vencedor.
+    titulo: "🐉 Boss"
+    cor: "#c0392b"
+    mencionar: ""
+    mencionar-se: "apareceu"
+    teste: "(simulação: um chefe apareceu!)"
+  # Gladiador aberto, vencedor e destaques.
   gladiador:
-    ativado: true
-    webhook-url: ""
     nome: "Gladiador"
+    titulo: "⚔️ Gladiador"
+    cor: "#e67e22"
+    mencionar: ""
+    mencionar-se: "inscrições abertas"
+    teste: "(simulação: inscrições abertas!)"
   # Leilões de imóvel (terrenos) e de barraca especial: abertos e arrematados.
   leiloes:
-    ativado: true
-    webhook-url: ""
     nome: "Leilões"
-  # Alguém ativou um VIP (código da lojinha ou comprado de outro jogador).
-  vip:
-    ativado: true
-    webhook-url: ""
-    nome: "VIP"
-  # Resultado do sorteio diário da Mine-sena (ChequePlugin).
-  minesena:
-    ativado: true
-    webhook-url: ""
-    nome: "Mine-sena"
-  # Pix alto (valor no config do PixPlugin): pro canal da STAFF, de preferência com webhook próprio.
-  pix:
-    ativado: true
-    webhook-url: ""
-    nome: "Alerta Pix"
+    titulo: "⚖️ Leilão"
+    cor: "#f1c40f"
+    mencionar: ""
+    mencionar-se: "vai a leilão|está em leilão"
+    teste: "(simulação: o terreno vai a leilão)"
   # Barraca alugada e barraca liberada (venceu, saiu ou a staff liberou).
   barracas:
-    ativado: true
-    webhook-url: ""
     nome: "Barracas"
+    titulo: "🏪 Barracas"
+    cor: "#d35400"
+  # Alguém ativou um VIP (código da lojinha ou comprado de outro jogador).
+  vip:
+    nome: "VIP"
+    titulo: "💎 VIP"
+    cor: "#3498db"
+  # Novo Rei e prestígio (encaminhados do chat, veja "encaminhar").
+  conquistas:
+    nome: "Conquistas"
+    titulo: "🏆 Conquista"
+    cor: "#9b59b6"
+  # Bounty: recompensa grande colocada, cobrada e contrato contra clã.
+  bounty:
+    nome: "Bounty"
+    titulo: "🎯 Bounty"
+    cor: "#7f1d1d"
+  # Mine-sena (sorteio do Bancário).
+  minesena:
+    nome: "Mine-sena"
+    titulo: "🎰 Mine-sena"
+    cor: "#27ae60"
+  # XP em dobro nas skills (encaminhado do chat).
+  skills:
+    nome: "Skills"
+    titulo: "✨ Skills"
+    cor: "#8e44ad"
+  # Alta de um item na loja (encaminhado do chat).
+  loja:
+    nome: "Loja"
+    titulo: "📈 Mercado"
+    cor: "#16a085"
+  # Mundo de recursos resetado (encaminhado do chat).
+  recursos:
+    nome: "Recursos"
+    titulo: "🌲 Mundo de recursos"
+    cor: "#2ecc71"
+  # Servidor ligou e desligou.
+  status:
+    nome: "Status"
+    titulo: "Servidor"
+    cor: "#95a5a6"
+  # Pix alto ou suspeito, do PixPlugin: pro canal da STAFF.
+  pix:
+    nome: "Alerta Pix"
+    titulo: "🚨 Pix suspeito"
+    cor: "#e74c3c"
+  # Alerta do painel da economia (circulação crescendo demais): pro canal da STAFF.
+  economia:
+    nome: "Economia"
+    titulo: "📉 Economia"
+    cor: "#e74c3c"
+
+# Anúncios do chat que vão pro Discord sem o plugin de origem precisar saber. O padrão (regex) é
+# conferido no texto sem cores; vale o primeiro que bater.
+encaminhar:
+  - categoria: conquistas
+    padrao: "subiu pro rank Rei!"
+  - categoria: conquistas
+    padrao: "alcançou o prestígio"
+  - categoria: skills
+    padrao: "XP .* NAS SKILLS!"
+  - categoria: loja
+    padrao: "^📈 ALTA "
+  - categoria: recursos
+    padrao: "O mundo de recursos foi resetado"
+
+status:
+  ligou: "🟢 **Servidor online!** Bora jogar."
+  desligou: "🔴 **Servidor desligado.** Já já a gente volta."

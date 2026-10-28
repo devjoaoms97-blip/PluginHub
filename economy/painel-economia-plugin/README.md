@@ -48,7 +48,7 @@ O Pix sai negativo porque o líquido dele é a taxa: quem recebe ganha o valor m
 ```
 Os tipos dos plugins do PluginHub já vêm com nome. Um tipo sem nome aparece como `Classe#metodo`. Pra dar nome a ele, copie o que aparecer e adicione em `tipos.<Plugin>` no config.
 
-**Alerta de crescimento.** A cada 5 min, o painel compara o dinheiro novo do dia (entrou − saiu) com a circulação de ontem. Se passar de `alerta.percentual` (10%) **e** de `alerta.minimo` (R$ 50.000), a staff online (`painel.economia`) e o console recebem um aviso, com os plugins que mais colocaram dinheiro. O alerta sai uma vez por dia e não aparece no primeiro dia, porque ainda não existe a circulação de ontem.
+**Alerta de crescimento.** A cada 5 min, o painel compara o dinheiro novo do dia (entrou − saiu) com a circulação de ontem. Se passar de `alerta.percentual` (10%) **e** de `alerta.minimo` (R$ 50.000), a staff online (`painel.economia`), o console e o Discord (categoria `economia` do DiscordPlugin, canal da staff) recebem um aviso, com os plugins que mais colocaram dinheiro. O alerta sai uma vez por dia e não aparece no primeiro dia, porque ainda não existe a circulação de ontem.
 
 **Circulação.** É a soma do saldo de todo jogador que já entrou no servidor. Fica em cache por 5 min (configurável), porque com muitas contas pode ser lento. Uma "foto" do total é guardada por dia, pra comparar.
 
