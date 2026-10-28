@@ -2,6 +2,7 @@ package com.example.rankup.listener;
 
 import com.example.rankup.RankupPlugin;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -51,6 +52,15 @@ public class ColetaMinaListener implements Listener {
         if (plugin.getMinaManager().getMinaEm(evento.getBlock().getLocation()) == null) return;
         // tirar o Item da lista impede que ele apareça no mundo
         boolean sobrou = false;
+        if (semToqueSuave(evento)) {
+            for (ItemStack drop : evento.getBlockState().getDrops(ferramentaSemToque(jogador), jogador)) {
+                if (drop.getType().isAir() || plugin.getLojaIntegration().vender(jogador, drop)) continue;
+                for (ItemStack resto : jogador.getInventory().addItem(drop).values()) {
+                    evento.getBlock().getWorld().dropItemNaturally(evento.getBlock().getLocation().add(0.5, 0.5, 0.5), resto);
+                    sobrou = true;
+                }
+            }
+        }
         Iterator<Item> itens = evento.getItems().iterator();
         while (itens.hasNext()) {
             Item item = itens.next();
@@ -70,5 +80,22 @@ public class ColetaMinaListener implements Listener {
             jogador.sendActionBar(LegacyComponentSerializer.legacySection().deserialize(
                     "§cInventário cheio! §7O que a loja não compra está caindo no chão."));
         }
+    }
+
+    /**
+     * Toque suave não vale na mina: o bloco cairia inteiro (o minério), a loja não compra e ele iria pro
+     * inventário. Com ele na ferramenta, os drops do evento saem da lista (não aparecem) e quem chama
+     * entrega os de uma cópia da ferramenta sem o encantamento ({@link #ferramentaSemToque}).
+     */
+    private static boolean semToqueSuave(BlockDropItemEvent evento) {
+        if (!evento.getPlayer().getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return false;
+        evento.getItems().clear();
+        return true;
+    }
+
+    private static ItemStack ferramentaSemToque(Player jogador) {
+        ItemStack semToque = jogador.getInventory().getItemInMainHand().clone();
+        semToque.removeEnchantment(Enchantment.SILK_TOUCH);
+        return semToque;
     }
 }

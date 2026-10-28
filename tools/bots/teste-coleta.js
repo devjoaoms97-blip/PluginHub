@@ -26,6 +26,23 @@ t.rodar(async () => {
   t.verificar(Object.keys(inv).length === 1, 'nada do minerado no inventário', JSON.stringify(inv))
   t.verificar(t.itensNoChao(bot).length === 0, 'nada no chão (nem item, nem orbe)', JSON.stringify(t.itensNoChao(bot)))
 
+  // toque suave não vale na mina: o bloco não sai inteiro (o minério iria pro inventário), e vende igual
+  console.log('\n== Minerar com toque suave ==')
+  await t.console('minecraft:clear BotTeste')
+  await t.console('minecraft:give BotTeste diamond_pickaxe[enchantments={"minecraft:silk_touch":1}] 1')
+  // o Mineflayer não lê o encantamento no formato novo ao calcular o tempo de quebra: tempo fixo, com folga
+  const digTime = bot.digTime
+  bot.digTime = b => { try { return digTime(b) } catch (e) { return 1500 } }
+  await t.irParaMina('BotTeste', mina) // de novo: em volta do lugar de antes já está minerado
+  await t.espera(500)
+  let quebradosToque = 0
+  const msgsToque = await t.capturar(bot, async () => { quebradosToque = await t.minerar(bot, mina, 12) })
+  const invToque = t.inventario(bot)
+  // pela barra de venda (o saldo pode subir por recompensa de missão)
+  t.verificar(quebradosToque > 0 && msgsToque.some(m => m.includes('+R$')), 'com toque suave, o minerado também é vendido',
+    `${quebradosToque} blocos, ${msgsToque.find(m => m.includes('+R$'))}`)
+  t.verificar(Object.keys(invToque).length === 1, 'e nenhum bloco inteiro vai pro inventário', JSON.stringify(invToque))
+
   await t.console('minecraft:clear BotTeste')
   await t.terminar(bot)
 })
