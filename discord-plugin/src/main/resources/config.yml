@@ -138,3 +138,10 @@ vinculo:
   mensagem-recompensa: "🎟 Presente pelo vínculo: 5 bilhetes grátis da Mine-sena! Escolha os números no Bancário."
   # Mostrado no /vincular (ex.: "discord.gg/brasamc"). Vazio: não mostra.
   convite: ""
+
+# Loja do Discord: o bot confere o pagamento no Mercado Pago e pede a entrega pela API.
+# Comandos de console por pagamento aprovado (uma vez só por pagamento, anotado em entregas.yml).
+# %jogador% = nick, %creditos% = quantidade do pacote, %motivo% = "loja <pedido> (pagamento <id>)".
+loja:
+  comandos:
+    - "creditos dar %jogador% %creditos% %motivo%"

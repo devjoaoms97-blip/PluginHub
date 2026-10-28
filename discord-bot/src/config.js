@@ -1,7 +1,8 @@
 // Configuração do bot. Tudo o que é segredo ou muda por servidor fica fora do repositório, na pasta
 // DISCORD_PASTA (padrão C:\mc-teste\discord):
 //   .env                      DISCORD_TOKEN, GUILD_TESTE, GUILD_OFICIAL, BOT_SERVIDOR,
-//                             PLUGIN_API_URL, PLUGIN_API_TOKEN, IDADE_MINIMA_DIAS, SERVIDOR_IP
+//                             PLUGIN_API_URL, PLUGIN_API_TOKEN, IDADE_MINIMA_DIAS, SERVIDOR_IP,
+//                             MP_ACCESS_TOKEN (Mercado Pago; vazio: loja desligada)
 //   estado-<servidor>.json    IDs dos cargos e canais, gravado pelo tools/discord/estrutura.js
 //   bot-<servidor>.json       o que o próprio bot guarda (mensagem do painel, nicks aplicados)
 const fs = require('fs');
@@ -46,6 +47,7 @@ module.exports = {
   idadeMinimaDias: Number(env.IDADE_MINIMA_DIAS || 30),
   // Endereço pra entrar no servidor, mostrado no #status (vazio: não mostra).
   ipDoServidor: env.SERVIDOR_IP || '',
+  mercadoPago: { token: env.MP_ACCESS_TOKEN || '' },
   cargo: (chave) => estrutura.cargos[chave],
   canal: (chave) => estrutura.canais[chave],
   // Tier do VipPlugin → chave do cargo no estrutura-brasamc.js.

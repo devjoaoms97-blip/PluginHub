@@ -233,7 +233,7 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
         }
         String endereco = getConfig().getString("api.endereco", "127.0.0.1");
         int porta = getConfig().getInt("api.porta", 8155);
-        api = new ApiLocal(this, vinculos);
+        api = new ApiLocal(this, vinculos, new Entregas(this));
         try {
             api.ligar(endereco, porta, token);
             getLogger().info("API do bot em http://" + endereco + ":" + porta);

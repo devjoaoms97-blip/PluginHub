@@ -1,4 +1,6 @@
+com\example\discord\Entregas.class
 com\example\discord\Vinculos.class
+com\example\discord\Entregas$Resultado.class
 com\example\discord\Vinculos$Vinculo.class
 com\example\discord\Vinculos$Resultado.class
 com\example\discord\ApiLocal.class

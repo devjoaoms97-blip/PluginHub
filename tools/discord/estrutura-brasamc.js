@@ -73,7 +73,7 @@ module.exports = {
       chave: 'conta', nome: '🔗 CONTA E LOJA', acesso: 'leitura',
       canais: [
         { chave: 'vincular-conta', nome: '🔗・vincular-conta', topico: 'Vincule sua conta do Minecraft e ganhe o cargo e os avisos.' },
-        { chave: 'loja-vip', nome: '🛒・loja-vip', topico: 'Compre VIP com Pix ou cartão. Entrega automática.' },
+        { chave: 'loja-vip', nome: '🛒・loja-vip', topico: 'Compre créditos com Pix ou cartão. Entrega automática na conta vinculada.' },
       ],
     },
     {
@@ -130,7 +130,7 @@ module.exports = {
         { chave: 'staff', nome: '🛡️・staff', topico: 'Conversa da equipe.' },
         { chave: 'alertas-pix', nome: '🚨・alertas-pix', acesso: 'direcao', topico: 'Pix alto ou suspeito no servidor.' },
         { chave: 'alertas-economia', nome: '📉・alertas-economia', topico: 'Alertas do painel da economia.' },
-        { chave: 'log-vendas', nome: '🧾・log-vendas', acesso: 'direcao', topico: 'Vendas da loja (Mercado Pago) e códigos de VIP gerados.' },
+        { chave: 'log-vendas', nome: '🧾・log-vendas', acesso: 'direcao', topico: 'Vendas da loja de créditos (Mercado Pago) e entregas com problema.' },
         { chave: 'log-vinculos', nome: '🔗・log-vinculos', topico: 'Contas vinculadas e desvinculadas.' },
         { chave: 'log-tickets', nome: '🎫・log-tickets', topico: 'Transcrição dos tickets fechados.' },
       ],

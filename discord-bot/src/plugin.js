@@ -26,4 +26,5 @@ module.exports = {
   vinculos: async () => (await chamar('GET', '/vinculos')).vinculos || [],
   vincular: (dados) => chamar('POST', '/vinculo', dados),
   desvincular: (dados) => chamar('POST', '/desvincular', dados),
+  entregar: (dados) => chamar('POST', '/entregar', dados),
 };

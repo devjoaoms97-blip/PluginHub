@@ -8,6 +8,7 @@ const vinculo = require('./vinculo');
 const tickets = require('./tickets');
 const status = require('./status');
 const conteudo = require('./conteudo');
+const loja = require('./loja');
 
 // MessageContent: a transcrição dos tickets precisa do texto das mensagens.
 const cliente = new Client({
@@ -24,6 +25,7 @@ cliente.once(Events.ClientReady, async () => {
   await conteudo.publicar(guild).catch((e) => console.warn('[conteudo]', e.message));
   cargos.iniciar(guild);
   status.iniciar(cliente);
+  loja.iniciar(guild);
 });
 
 // Quem entra no Discord já vinculado (saiu e voltou) recebe os cargos na hora.
@@ -41,7 +43,7 @@ cliente.on(Events.ChannelDelete, (canal) => tickets.canalApagado(canal.id));
 
 cliente.on(Events.InteractionCreate, async (interacao) => {
   try {
-    for (const modulo of [vinculo, tickets, conteudo]) {
+    for (const modulo of [vinculo, tickets, conteudo, loja]) {
       if (await modulo.tratar(interacao)) break;
     }
   } catch (e) {

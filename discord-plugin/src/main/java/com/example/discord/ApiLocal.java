@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
  * GET  /vinculos     → {"vinculos":[{"uuid","nick","discordId","vip"}]}
  * POST /vinculo      {"codigo","discordId","discordNome","recompensa":true} → {"ok","nick","uuid","recompensado"} ou {"ok":false,"erro"}
  * POST /desvincular  {"discordId"} ou {"nick"} → {"ok","nick","discordId"}
+ * POST /entregar     {"pagamento","pedido","uuid","creditos"} → {"ok","nick","repetida"} (compra da loja; veja Entregas)
  * </pre>
  * Cada pedido roda na thread do servidor (mexe em jogador e roda comandos) e responde em até 5 s.
  */
@@ -35,12 +36,14 @@ public class ApiLocal {
 
     private final DiscordPlugin plugin;
     private final Vinculos vinculos;
+    private final Entregas entregas;
     private final Gson gson = new Gson();
     private HttpServer http;
 
-    public ApiLocal(DiscordPlugin plugin, Vinculos vinculos) {
+    public ApiLocal(DiscordPlugin plugin, Vinculos vinculos, Entregas entregas) {
         this.plugin = plugin;
         this.vinculos = vinculos;
+        this.entregas = entregas;
     }
 
     public void ligar(String endereco, int porta, String token) throws IOException {
@@ -90,6 +93,7 @@ public class ApiLocal {
             case "GET /vinculos" -> naThread(this::listar);
             case "POST /vinculo" -> naThread(() -> vincular(pedido));
             case "POST /desvincular" -> naThread(() -> desvincular(pedido));
+            case "POST /entregar" -> naThread(() -> entregar(pedido));
             default -> null;
         };
         if (resposta == null) responder(troca, 404, erro("rota desconhecida: " + rota));
@@ -175,6 +179,24 @@ public class ApiLocal {
         r.addProperty("ok", true);
         r.addProperty("nick", v.nick());
         r.addProperty("discordId", v.discordId());
+        return r;
+    }
+
+    private JsonObject entregar(JsonObject p) {
+        UUID uuid;
+        long creditos;
+        try {
+            uuid = UUID.fromString(texto(p, "uuid"));
+            creditos = p.get("creditos").getAsLong();
+        } catch (RuntimeException e) {
+            return erro("uuid ou creditos inválidos.");
+        }
+        Entregas.Resultado res = entregas.entregar(texto(p, "pagamento"), texto(p, "pedido"), uuid, creditos);
+        if (!res.ok()) return erro(res.erro());
+        JsonObject r = new JsonObject();
+        r.addProperty("ok", true);
+        r.addProperty("nick", res.nick());
+        r.addProperty("repetida", res.repetida());
         return r;
     }
 

@@ -63,6 +63,7 @@ O [bot do Discord](../discord-bot/README.md) roda separado e fala com o servidor
 | `GET /vinculos` | Todos os vínculos, com o tier do VIP ativo (do VipPlugin) |
 | `POST /vinculo` | Confirma um código do `/vincular` (`codigo`, `discordId`, `discordNome`, `recompensa`) |
 | `POST /desvincular` | Desfaz pelo `discordId` ou pelo `nick` |
+| `POST /entregar` | Entrega uma compra da loja do Discord (`pagamento`, `pedido`, `uuid`, `creditos`): roda `loja.comandos` (por padrão `creditos dar`) e anota o pagamento em `entregas.yml`. O mesmo pagamento nunca é entregue duas vezes |
 
 - **`/vincular`** (todos) mostra um código de 6 letras, clicável pra copiar, que vale por `vinculo.codigo-minutos` (10). Quem já vinculou vê com qual Discord.
 - Uma conta do Discord por conta do Minecraft. Trocar só pela staff.
