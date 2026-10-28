@@ -29,6 +29,8 @@ public class CreditosPlugin extends JavaPlugin {
 
     private Dados dados;
     private Cosmeticos cosmeticos;
+    private Skins skins;
+    private Asas asas;
     private Loja loja;
 
     @Override
@@ -36,9 +38,13 @@ public class CreditosPlugin extends JavaPlugin {
         saveDefaultConfig();
         dados = new Dados(this);
         cosmeticos = new Cosmeticos(this);
+        skins = new Skins(this);
+        asas = new Asas(this);
         loja = new Loja(this);
         getServer().getPluginManager().registerEvents(cosmeticos, this);
         getServer().getPluginManager().registerEvents(loja, this);
+        getServer().getPluginManager().registerEvents(asas, this);
+        getServer().getScheduler().runTaskTimer(this, asas::atualizar, 20L, 1L);
         getServer().getScheduler().runTaskTimer(this, cosmeticos::rastros, 20L, 2L);
         // a tag de apoiador vence sozinha: refaz a tab de todo mundo de tempos em tempos
         getServer().getScheduler().runTaskTimer(this, () -> Bukkit.getOnlinePlayers().forEach(this::refrescarTag), 20L * 60, 20L * 60 * 5);
@@ -47,6 +53,7 @@ public class CreditosPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (asas != null) asas.tirarTodas();
         if (dados != null) dados.salvar();
     }
 
@@ -237,5 +244,14 @@ public class CreditosPlugin extends JavaPlugin {
 
     public Cosmeticos getCosmeticos() {
         return cosmeticos;
+    }
+
+    /** A skin de montaria em uso (o MontariaPlugin pergunta, por reflexão), ou null. */
+    public String montariaEmUso(UUID jogador) {
+        return dados.emUso(jogador, Dados.Categoria.MONTARIA);
+    }
+
+    public Skins getSkins() {
+        return skins;
     }
 }

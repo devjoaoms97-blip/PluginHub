@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * A loja do /creditos: VIP (ativar pra si ou gerar um código de presente) e os cosméticos de cada
- * categoria. Preço fixo e sem sorteio. Como os créditos são dinheiro de verdade, toda compra pede um
+ * A loja do /creditos: VIP (ativar pra si ou gerar um código de presente), os cosméticos de cada
+ * categoria e as skins de armadura, ferramenta e arma ({@link Skins}). Preço fixo e sem sorteio. Como os créditos são dinheiro de verdade, toda compra pede um
  * segundo clique pra confirmar (em até 10 s). Cosmético comprado fica pra sempre: na loja mesmo o
  * jogador escolhe qual usar, e clicar no que está em uso tira.
  */
@@ -34,11 +34,13 @@ public class Loja implements Listener {
     private static final String[] TIERS = {"bronze", "prata", "ouro", "diamante"};
     private static final Material[] ICONE_TIER = {Material.COPPER_INGOT, Material.IRON_INGOT, Material.GOLD_INGOT, Material.DIAMOND};
 
-    enum Tela { INICIO, VIP, RASTRO, COR, ABATE }
+    enum Tela { INICIO, VIP, RASTRO, COR, ABATE, MONTARIA, ASA, CHAPEUS, SKINS, SKIN_PECAS }
 
     static class Menu implements InventoryHolder {
         final Tela tela;
         final Map<Integer, String> slotParaId = new HashMap<>();
+        /** Na tela das peças: de qual coleção. */
+        String colecao;
         Inventory inventario;
 
         Menu(Tela tela) {
@@ -68,19 +70,36 @@ public class Loja implements Listener {
         switch (tela) {
             case INICIO -> inicio(jogador);
             case VIP -> vip(jogador);
+            case SKINS, SKIN_PECAS -> skins(jogador);
+            case CHAPEUS -> chapeus(jogador);
             default -> cosmeticos(jogador, tela);
         }
     }
 
     private void inicio(Player jogador) {
         Menu menu = new Menu(Tela.INICIO);
-        menu.inventario = Bukkit.createInventory(menu, 27, "§8✦ Loja de créditos");
+        menu.inventario = Bukkit.createInventory(menu, 36, "§8✦ Loja de créditos");
         menu.inventario.setItem(4, saldo(jogador));
         menu.inventario.setItem(10, icone(Material.DIAMOND, "§b§lVIP", "§7Ativar pra você ou gerar um código", "§7de presente (dá pra vender no jogo).", "§eClique"));
         menu.inventario.setItem(12, icone(Material.BLAZE_POWDER, "§6§lRastros", "§7Partículas nos seus pés enquanto anda.", "§eClique"));
         menu.inventario.setItem(14, icone(Material.NAME_TAG, "§d§lCor do nome", "§7Seu nome colorido no chat e na tab.", "§eClique"));
         menu.inventario.setItem(16, icone(Material.FIREWORK_ROCKET, "§c§lEfeitos de abate", "§7Um efeito ao derrotar outro jogador.", "§eClique"));
-        menu.inventario.setItem(22, icone(Material.BOOK, "§fComo conseguir créditos", cores(plugin.getConfig().getString("onde-comprar", "")),
+        // asas só aparecem se o config tiver alguma
+        ConfigurationSection asas = plugin.getConfig().getConfigurationSection("cosmeticos.asas");
+        if (asas != null && !asas.getKeys(false).isEmpty()) {
+            menu.inventario.setItem(20, icone(Material.ELYTRA, "§f§lAsas", "§7Asas nas suas costas.", "§eClique"));
+        }
+        menu.inventario.setItem(22, icone(Material.LEATHER_HELMET, "§6§lChapéus",
+                "§7O visual de um chapéu no seu capacete:", "§7ele continua protegendo igual.", "§eClique"));
+        menu.inventario.setItem(24, icone(Material.SADDLE, "§a§lSkins de montaria",
+                "§7Troque o cavalo do /montaria por outro", "§7bicho. Mesma velocidade: só o visual.", "§eClique"));
+        // as coleções de armas e armaduras só aparecem se o config tiver alguma
+        ConfigurationSection colecoes = plugin.getConfig().getConfigurationSection("skins");
+        if (colecoes != null && !colecoes.getKeys(false).isEmpty()) {
+            menu.inventario.setItem(30, icone(Material.NETHERITE_CHESTPLATE, "§e§lSkins de armas e armaduras",
+                    "§7O visual de uma coleção na sua armadura,", "§7espada e ferramentas. Só o visual:", "§7o item continua o mesmo.", "§eClique"));
+        }
+        menu.inventario.setItem(32, icone(Material.BOOK, "§fComo conseguir créditos", cores(plugin.getConfig().getString("onde-comprar", "")),
                 "§7Os itens do jogo não são vendidos:", "§7só saem jogando."));
         jogador.openInventory(menu.inventario);
     }
@@ -110,6 +129,8 @@ public class Loja implements Listener {
         String titulo = switch (tela) {
             case RASTRO -> "Rastros";
             case COR -> "Cor do nome";
+            case MONTARIA -> "Montarias";
+            case ASA -> "Asas";
             default -> "Efeitos de abate";
         };
         menu.inventario = Bukkit.createInventory(menu, 36, "§8✦ Loja de créditos: " + titulo);
@@ -135,7 +156,11 @@ public class Loja implements Listener {
                     lore.add("§eClique pra comprar");
                 }
                 if (categoria == Dados.Categoria.ABATE) lore.add("§8Botão direito: ver o efeito");
+                if (categoria == Dados.Categoria.MONTARIA) lore.add("§8No /montaria (benefício do VIP). Mesma velocidade: só o visual.");
+                if (s.contains("credito")) lore.add("§8Modelo: " + s.getString("credito"));
                 ItemStack item = icone(material == null ? Material.PAPER : material, cores(s.getString("nome", id)), lore.toArray(String[]::new));
+                // com "modelo", o ícone é o próprio item do resource pack (a asa, o bicho...)
+                if (s.contains("modelo")) modelo(item, new org.bukkit.NamespacedKey("servidor", s.getString("modelo")));
                 if (emUso) brilho(item);
                 menu.inventario.setItem(slot, item);
                 menu.slotParaId.put(slot, id);
@@ -143,6 +168,101 @@ public class Loja implements Listener {
             }
         }
         menu.inventario.setItem(27, icone(Material.ARROW, "§fVoltar"));
+        jogador.openInventory(menu.inventario);
+    }
+
+    private void skins(Player jogador) {
+        Menu menu = new Menu(Tela.SKINS);
+        menu.inventario = Bukkit.createInventory(menu, 36, "§8✦ Loja de créditos: Skins");
+        menu.inventario.setItem(4, saldo(jogador));
+        ConfigurationSection secao = plugin.getConfig().getConfigurationSection("skins");
+        int slot = 10;
+        if (secao != null) {
+            for (String id : secao.getKeys(false)) {
+                if (slot > 16) break;
+                ConfigurationSection s = secao.getConfigurationSection(id);
+                if (s == null) continue;
+                boolean tem = plugin.getDados().tem(jogador.getUniqueId(), chaveSkin(id));
+                List<String> lore = new ArrayList<>();
+                lore.add("§7Capacete, peitoral, calça, botas, espada,");
+                lore.add("§7machado, picareta, pá e enxada.");
+                lore.add("§8Só o visual: o item continua o mesmo.");
+                lore.add("");
+                if (tem) {
+                    lore.add("§aJá é sua.");
+                    lore.add("§eClique: §fpôr no item da mão §7(de novo tira)");
+                    lore.add("§eShift + clique: §fpôr na armadura vestida");
+                } else {
+                    long preco = s.getLong("preco");
+                    lore.add("§7Preço: §b" + preco + " créditos" + reais(preco));
+                    lore.add("§eClique pra comprar §7(pra sempre, em quantos itens quiser)");
+                }
+                lore.add("§8Botão direito: ver as peças");
+                menu.inventario.setItem(slot, modelo(icone(Material.IRON_SWORD, cores(s.getString("nome", id)), lore.toArray(String[]::new)),
+                        Skins.modelo(id, "espada")));
+                menu.slotParaId.put(slot, id);
+                slot++;
+            }
+        }
+        menu.inventario.setItem(27, icone(Material.ARROW, "§fVoltar"));
+        menu.inventario.setItem(31, icone(Material.GRINDSTONE, "§fTirar a skin do item da mão", "§7Volta o visual original dele."));
+        jogador.openInventory(menu.inventario);
+    }
+
+    private void chapeus(Player jogador) {
+        Menu menu = new Menu(Tela.CHAPEUS);
+        menu.inventario = Bukkit.createInventory(menu, 36, "§8✦ Loja de créditos: Chapéus");
+        menu.inventario.setItem(4, saldo(jogador));
+        ConfigurationSection secao = plugin.getConfig().getConfigurationSection("chapeus");
+        int slot = 10;
+        if (secao != null) {
+            for (String id : secao.getKeys(false)) {
+                if (slot > 16) break;
+                ConfigurationSection s = secao.getConfigurationSection(id);
+                if (s == null) continue;
+                List<String> lore = new ArrayList<>();
+                lore.add("§7Vai num capacete seu: ele continua");
+                lore.add("§7protegendo igual, só o visual muda.");
+                lore.add("");
+                if (plugin.getDados().tem(jogador.getUniqueId(), chaveChapeu(id))) {
+                    lore.add("§aJá é seu.");
+                    lore.add("§eClique: §fpôr no capacete da mão §7(de novo tira)");
+                    lore.add("§eShift + clique: §fpôr no capacete vestido");
+                } else {
+                    long preco = s.getLong("preco");
+                    lore.add("§7Preço: §b" + preco + " créditos" + reais(preco));
+                    lore.add("§eClique pra comprar §7(pra sempre, em quantos capacetes quiser)");
+                }
+                menu.inventario.setItem(slot, modelo(icone(Material.LEATHER_HELMET, cores(s.getString("nome", id)), lore.toArray(String[]::new)),
+                        new org.bukkit.NamespacedKey("servidor", "chapeu_" + id)));
+                menu.slotParaId.put(slot, id);
+                slot++;
+            }
+        }
+        menu.inventario.setItem(27, icone(Material.ARROW, "§fVoltar"));
+        menu.inventario.setItem(31, icone(Material.GRINDSTONE, "§fTirar o chapéu do capacete da mão", "§7Volta o visual original dele."));
+        jogador.openInventory(menu.inventario);
+    }
+
+    /** As 9 peças da coleção, pra ver antes de comprar. */
+    private void pecas(Player jogador, String colecao) {
+        ConfigurationSection s = plugin.getSkins().secao(colecao);
+        if (s == null) return;
+        Menu menu = new Menu(Tela.SKIN_PECAS);
+        menu.colecao = colecao;
+        String nome = cores(s.getString("nome", colecao));
+        menu.inventario = Bukkit.createInventory(menu, 27, "§8✦ Skins: " + org.bukkit.ChatColor.stripColor(nome));
+        String[] pecas = {"capacete", "peitoral", "calca", "botas", "espada", "machado", "picareta", "pa", "enxada"};
+        Material[] base = {Material.IRON_HELMET, Material.IRON_CHESTPLATE, Material.IRON_LEGGINGS, Material.IRON_BOOTS, Material.IRON_SWORD,
+                Material.IRON_AXE, Material.IRON_PICKAXE, Material.IRON_SHOVEL, Material.IRON_HOE};
+        for (int i = 0; i < pecas.length; i++) {
+            menu.inventario.setItem(i, modelo(icone(base[i], nome + " §7(" + Skins.nomePeca(pecas[i]) + ")"), Skins.modelo(colecao, pecas[i])));
+        }
+        boolean tem = plugin.getDados().tem(jogador.getUniqueId(), chaveSkin(colecao));
+        long preco = s.getLong("preco");
+        menu.inventario.setItem(22, tem ? icone(Material.LIME_DYE, "§aJá é sua", "§7Clique: pôr no item da mão")
+                : icone(Material.SUNFLOWER, "§eComprar por §b" + preco + " créditos" + reais(preco), "§7Pra sempre, em quantos itens quiser."));
+        menu.inventario.setItem(18, icone(Material.ARROW, "§fVoltar"));
         jogador.openInventory(menu.inventario);
     }
 
@@ -164,6 +284,10 @@ public class Loja implements Listener {
                     case 12 -> Tela.RASTRO;
                     case 14 -> Tela.COR;
                     case 16 -> Tela.ABATE;
+                    case 20 -> menu.inventario.getItem(20) != null ? Tela.ASA : null;
+                    case 22 -> Tela.CHAPEUS;
+                    case 24 -> Tela.MONTARIA;
+                    case 30 -> menu.inventario.getItem(30) != null ? Tela.SKINS : null;
                     default -> null;
                 };
                 if (destino != null) abrir(jogador, destino);
@@ -177,6 +301,36 @@ public class Loja implements Listener {
                 if (tier == null) return;
                 boolean codigo = evento.getClick() == ClickType.RIGHT || evento.getClick() == ClickType.SHIFT_RIGHT;
                 comprarVip(jogador, tier, codigo);
+            }
+            case SKINS -> {
+                if (slot == 27) {
+                    abrir(jogador, Tela.INICIO);
+                    return;
+                }
+                if (slot == 31) {
+                    tirarSkin(jogador);
+                    return;
+                }
+                String colecao = menu.slotParaId.get(slot);
+                if (colecao == null) return;
+                if (evento.getClick().isRightClick()) pecas(jogador, colecao);
+                else clicarSkin(jogador, colecao, evento.getClick().isShiftClick());
+            }
+            case CHAPEUS -> {
+                if (slot == 27) {
+                    abrir(jogador, Tela.INICIO);
+                    return;
+                }
+                if (slot == 31) {
+                    tirarSkin(jogador);
+                    return;
+                }
+                String chapeu = menu.slotParaId.get(slot);
+                if (chapeu != null) clicarChapeu(jogador, chapeu, evento.getClick().isShiftClick());
+            }
+            case SKIN_PECAS -> {
+                if (slot == 18) abrir(jogador, Tela.SKINS);
+                else if (slot == 22 && menu.colecao != null) clicarSkin(jogador, menu.colecao, false);
             }
             default -> {
                 if (slot == 27) {
@@ -282,6 +436,116 @@ public class Loja implements Listener {
         if (categoria == Dados.Categoria.COR) plugin.refrescarTag(jogador);
     }
 
+    /** Ainda não tem: compra (com confirmação). Já tem: põe no item da mão (ou tira, se já está nele) ou na armadura vestida. */
+    private void clicarSkin(Player jogador, String colecao, boolean armaduraVestida) {
+        UUID uuid = jogador.getUniqueId();
+        ConfigurationSection s = plugin.getSkins().secao(colecao);
+        if (s == null) return;
+        String nome = cores(s.getString("nome", colecao));
+        if (!plugin.getDados().tem(uuid, chaveSkin(colecao))) {
+            long preco = s.getLong("preco");
+            if (plugin.getDados().creditos(uuid) < preco) {
+                semSaldo(jogador, preco);
+                return;
+            }
+            if (!confirmado(jogador, "skin:" + colecao, "Comprar " + nome + "§e", preco)) return;
+            plugin.getDados().mudar(uuid, jogador.getName(), -preco, "skin " + colecao);
+            plugin.getDados().darCosmetico(uuid, chaveSkin(colecao));
+            jogador.sendMessage("§a✦ Você comprou " + nome + "§a! Segure um item e clique nela pra pôr a skin.");
+            jogador.playSound(jogador.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.4f);
+            abrir(jogador, Tela.SKINS);
+            return;
+        }
+        Skins skins = plugin.getSkins();
+        if (armaduraVestida) {
+            ItemStack[] armadura = jogador.getInventory().getArmorContents();
+            int postas = 0;
+            for (ItemStack peca : armadura) {
+                if (skins.motivoRecusa(peca) != null) continue;
+                skins.aplicar(peca, colecao);
+                postas++;
+            }
+            if (postas == 0) {
+                jogador.sendMessage("§cVocê não está vestindo nenhuma armadura que aceite skin.");
+                return;
+            }
+            // getArmorContents devolve cópias: põe as peças de volta
+            jogador.getInventory().setArmorContents(armadura);
+            jogador.sendMessage("§a✦ " + nome + "§a na sua armadura (" + postas + (postas == 1 ? " peça)." : " peças)."));
+        } else {
+            ItemStack mao = jogador.getInventory().getItemInMainHand();
+            String recusa = skins.motivoRecusa(mao);
+            if (recusa != null) {
+                jogador.sendMessage("§c" + recusa);
+                jogador.playSound(jogador.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8f, 1f);
+                return;
+            }
+            if (colecao.equals(skins.colecaoDe(mao))) {
+                skins.tirar(mao);
+                jogador.sendMessage("§7Skin tirada: o item voltou ao visual original.");
+            } else {
+                skins.aplicar(mao, colecao);
+                jogador.sendMessage("§a✦ " + nome + "§a no seu item.");
+            }
+            jogador.getInventory().setItemInMainHand(mao);
+        }
+        jogador.playSound(jogador.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 1f, 1.2f);
+    }
+
+    /** Ainda não tem: compra (com confirmação). Já tem: põe no capacete da mão (ou tira, se já está nele) ou no vestido. */
+    private void clicarChapeu(Player jogador, String chapeu, boolean vestido) {
+        UUID uuid = jogador.getUniqueId();
+        ConfigurationSection s = plugin.getConfig().getConfigurationSection("chapeus." + chapeu);
+        if (s == null) return;
+        String nome = cores(s.getString("nome", chapeu));
+        if (!plugin.getDados().tem(uuid, chaveChapeu(chapeu))) {
+            long preco = s.getLong("preco");
+            if (plugin.getDados().creditos(uuid) < preco) {
+                semSaldo(jogador, preco);
+                return;
+            }
+            if (!confirmado(jogador, "chapeu:" + chapeu, "Comprar " + nome + "§e", preco)) return;
+            plugin.getDados().mudar(uuid, jogador.getName(), -preco, "chapéu " + chapeu);
+            plugin.getDados().darCosmetico(uuid, chaveChapeu(chapeu));
+            jogador.sendMessage("§a✦ Você comprou " + nome + "§a! Segure um capacete e clique nele pra pôr.");
+            jogador.playSound(jogador.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.4f);
+            abrir(jogador, Tela.CHAPEUS);
+            return;
+        }
+        Skins skins = plugin.getSkins();
+        ItemStack capacete = vestido ? jogador.getInventory().getHelmet() : jogador.getInventory().getItemInMainHand();
+        String recusa = skins.motivoRecusa(capacete);
+        if (recusa == null && !"capacete".equals(Skins.peca(capacete.getType()))) recusa = "Chapéu só vai em capacete.";
+        if (recusa != null) {
+            jogador.sendMessage("§c" + (vestido && (capacete == null || capacete.getType().isAir()) ? "Você não está com capacete." : recusa));
+            jogador.playSound(jogador.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8f, 1f);
+            return;
+        }
+        if (("chapeu:" + chapeu).equals(skins.colecaoDe(capacete))) {
+            skins.tirar(capacete);
+            jogador.sendMessage("§7Chapéu tirado: o capacete voltou ao visual original.");
+        } else {
+            skins.tirar(capacete);
+            skins.aplicarChapeu(capacete, chapeu);
+            jogador.sendMessage("§a✦ " + nome + "§a no seu capacete.");
+        }
+        if (vestido) jogador.getInventory().setHelmet(capacete);
+        else jogador.getInventory().setItemInMainHand(capacete);
+        jogador.playSound(jogador.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 1f, 1.2f);
+    }
+
+    private void tirarSkin(Player jogador) {
+        ItemStack mao = jogador.getInventory().getItemInMainHand();
+        if (plugin.getSkins().colecaoDe(mao) == null) {
+            jogador.sendMessage("§cO item da sua mão não tem skin.");
+            return;
+        }
+        plugin.getSkins().tirar(mao);
+        jogador.getInventory().setItemInMainHand(mao);
+        jogador.sendMessage("§7Skin tirada: o item voltou ao visual original.");
+        jogador.playSound(jogador.getLocation(), Sound.BLOCK_GRINDSTONE_USE, 1f, 1f);
+    }
+
     private void semSaldo(Player jogador, long preco) {
         jogador.sendMessage("§cCréditos insuficientes: custa " + preco + ", você tem " + plugin.getDados().creditos(jogador.getUniqueId()) + ". "
                 + cores(plugin.getConfig().getString("onde-comprar", "")));
@@ -294,10 +558,20 @@ public class Loja implements Listener {
         return c.name().toLowerCase(Locale.ROOT) + ":" + id;
     }
 
+    static String chaveSkin(String colecao) {
+        return "skin:" + colecao;
+    }
+
+    static String chaveChapeu(String chapeu) {
+        return "chapeu:" + chapeu;
+    }
+
     private static Dados.Categoria categoria(Tela t) {
         return switch (t) {
             case RASTRO -> Dados.Categoria.RASTRO;
             case COR -> Dados.Categoria.COR;
+            case MONTARIA -> Dados.Categoria.MONTARIA;
+            case ASA -> Dados.Categoria.ASA;
             default -> Dados.Categoria.ABATE;
         };
     }
@@ -319,6 +593,14 @@ public class Loja implements Listener {
         double porReal = plugin.getConfig().getDouble("creditos-por-real", 10);
         if (porReal <= 0) return "";
         return String.format(Locale.forLanguageTag("pt-BR"), " §8(R$ %,.2f)", creditos / porReal);
+    }
+
+    /** O ícone com o modelo do resource pack (a peça da skin). */
+    private static ItemStack modelo(ItemStack item, org.bukkit.NamespacedKey modelo) {
+        ItemMeta meta = item.getItemMeta();
+        meta.setItemModel(modelo);
+        item.setItemMeta(meta);
+        return item;
     }
 
     private static void brilho(ItemStack item) {

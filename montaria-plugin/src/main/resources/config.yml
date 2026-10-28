@@ -31,6 +31,30 @@ recarga-segundos: 5
 tipos: []
 tipo-padrao: HORSE
 
+# Skins de montaria (compradas com créditos no CreditosPlugin): o cavalo fica invisível e leva o
+# modelo 3D do bicho (resource pack, tools/pacote/montarias.py). Velocidade e pulo não mudam.
+#   escala-do-cavalo: o tamanho do cavalo invisível, que muda a altura em que o jogador senta (1 = 1,3 bloco)
+#   ajuste-altura: sobe (+) ou desce (-) o modelo, em blocos, se ele não encostar no chão
+#   anima-parado: anima mesmo parado (o tapete ondula); ticks-por-quadro: ritmo andando (e parado)
+#   particula: sai embaixo da montaria (partícula sem dado extra)
+#   fmm-modelo: usa o modelo animado do FreeMinecraftModels com esse id (o nome do .bbmodel em
+#     plugins/FreeMinecraftModels/models) em vez do nosso modelo de caixas
+skins:
+  rena: {escala-do-cavalo: 1.0, fmm-modelo: reindeer}
+  bode: {escala-do-cavalo: 1.0, fmm-modelo: goated}
+  caranguejo: {escala-do-cavalo: 0.5, fmm-modelo: krab}
+  peixe: {escala-do-cavalo: 1.0, fmm-modelo: styx_fish}
+  aviao: {escala-do-cavalo: 1.0, fmm-modelo: biplane1}
+  arara: {escala-do-cavalo: 1.0}
+  capivara: {escala-do-cavalo: 0.75}
+  onca: {escala-do-cavalo: 1.0}
+  lobo_de_gelo: {escala-do-cavalo: 1.0, particula: SNOWFLAKE}
+  grifo: {escala-do-cavalo: 1.1}
+  tapete: {escala-do-cavalo: 0.5, anima-parado: true, ticks-por-quadro-parado: 5, particula: ENCHANT}
+  dragao: {escala-do-cavalo: 1.15}
+# Giro do modelo em relação ao cavalo, em graus (o item display desenha o item virado de costas: 180).
+skins-giro: 180
+
 nome: "&6Montaria de %jogador%"
 silenciosa: false
 

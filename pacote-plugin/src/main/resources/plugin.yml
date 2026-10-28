@@ -3,10 +3,16 @@ version: '1.0.0'
 main: com.example.pacote.PacotePlugin
 api-version: '26.2'
 author: Você
-description: Resource pack do servidor (texturas próprias), servido por HTTP embutido e mandado ao entrar.
+description: Resource pack do servidor (texturas próprias, mais o de outros plugins), servido por HTTP embutido e mandado ao entrar.
+softdepend: [FreeMinecraftModels]
 
 commands:
   pacote:
     description: Manda o pacote de texturas de novo.
-    usage: "Uso: /pacote"
+    usage: "Uso: /pacote | /pacote recarregar (staff)"
     aliases: [texturas]
+
+permissions:
+  pacote.admin:
+    description: Monta o pacote de novo (/pacote recarregar).
+    default: op

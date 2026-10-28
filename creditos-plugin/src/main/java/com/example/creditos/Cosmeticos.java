@@ -51,6 +51,8 @@ public class Cosmeticos implements Listener {
             case RASTRO -> "rastros";
             case COR -> "cores";
             case ABATE -> "abates";
+            case MONTARIA -> "montarias";
+            case ASA -> "asas";
         };
     }
 

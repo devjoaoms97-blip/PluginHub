@@ -4,7 +4,7 @@ main: com.example.montaria.MontariaPlugin
 api-version: '26.2'
 author: Você
 description: Montaria do VIP no spawn (/montaria), mais rápida que a pé, fora das minas e da arena do boss.
-softdepend: [RankupPlugin]
+softdepend: [RankupPlugin, CreditosPlugin, FreeMinecraftModels]
 
 commands:
   montaria:

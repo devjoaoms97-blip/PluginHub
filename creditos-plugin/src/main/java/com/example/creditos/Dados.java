@@ -27,7 +27,7 @@ import java.util.logging.Level;
 public class Dados {
 
     /** As categorias de cosmético: em cada uma o jogador usa no máximo um. */
-    public enum Categoria { RASTRO, COR, ABATE }
+    public enum Categoria { RASTRO, COR, ABATE, MONTARIA, ASA }
 
     static class Jogador {
         long creditos;

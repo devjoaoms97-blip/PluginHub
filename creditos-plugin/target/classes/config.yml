@@ -56,3 +56,43 @@ cosmeticos:
     almas: {nome: "&bAbate: almas", efeito: ALMAS, icone: SOUL_SAND, preco: 60}
     explosao: {nome: "&6Abate: explosão", efeito: EXPLOSAO, icone: TNT, preco: 60}
     notas: {nome: "&aAbate: música", efeito: NOTAS, icone: JUKEBOX, preco: 60}
+  # Skin da montaria do /montaria (benefício do VIP): o cavalo vira outro bicho, com a mesma velocidade e
+  # o mesmo pulo. O MontariaPlugin desenha (no config dele, "skins.<id>" diz qual modelo: os animados vêm
+  # do FreeMinecraftModels). "modelo" (opcional): o ícone na loja vira esse item do resource pack.
+  # "credito": autor do modelo, mostrado na loja (licença CC BY pede o crédito).
+  montarias:
+    rena: {nome: "&cRena", icone: BROWN_WOOL, modelo: icone_reindeer, preco: 120, credito: "FrenchKrab (CC BY 4.0)"}
+    bode: {nome: "&fBode", icone: GOAT_HORN, modelo: icone_goated, preco: 120, credito: "FrenchKrab (CC BY 4.0)"}
+    caranguejo: {nome: "&cCaranguejo", icone: TURTLE_SCUTE, modelo: icone_krab, preco: 120, credito: "FrenchKrab (CC BY 4.0)"}
+    peixe: {nome: "&bPeixe do Estige", icone: TROPICAL_FISH, modelo: icone_styx_fish, preco: 120, credito: "FrenchKrab (CC BY 4.0)"}
+    aviao: {nome: "&eBiplano", icone: PHANTOM_MEMBRANE, modelo: icone_biplane1, preco: 200, credito: "FrenchKrab (CC BY 4.0)"}
+  # Asas nas costas (modelos da Artillex-Studios, tools/pacote/terceiros/artillex): um modelo montado no
+  # jogador. Fora da loja por enquanto (não ficaram boas): pra voltar, uma entrada por asa, como
+  #   angel: {nome: "&fAsas de anjo", icone: FEATHER, modelo: asa_angel, preco: 150}
+  asas: {}
+
+# Posição das asas em relação ao jogador (em blocos), pra acertar no jogo: altura do pé até o modelo,
+# recuo (negativo = pra trás), escala e giro (graus, se ficarem viradas). montada: a asa vai como
+# passageiro do jogador e fica grudada nas costas; false = teleportada a cada tick (atrasa correndo).
+asas:
+  montada: true
+  altura: 1.15
+  recuo: -0.75
+  escala: 1.1
+  giro: 0
+
+# Chapéus (modelos da Artillex-Studios, tools/pacote/terceiros/artillex): vão num capacete que o jogador
+# já tem, como skin. O capacete continua protegendo igual; só o visual vira o chapéu.
+chapeus:
+  military_helmet: {nome: "&2Capacete militar", preco: 80}
+  diving_helmet: {nome: "&6Escafandro", preco: 100}
+  flight_hat: {nome: "&6Gorro de aviador", preco: 80}
+  motorcycle_helmet: {nome: "&cCapacete de moto", preco: 80}
+  chicken_hat: {nome: "&fChapéu de galinha", preco: 60}
+  pot_hat: {nome: "&7Panela", preco: 40}
+
+# Skins de armadura, ferramenta e arma: o visual de uma coleção (capacete, peitoral, calça, botas,
+# espada, machado, picareta, pá e enxada) posto num item que o jogador já tem. Só muda o visual. Os
+# desenhos vêm do resource pack (tools/pacote/skins.py): o id daqui tem que ser o de uma coleção de lá.
+# Vazio: a seção não aparece na loja (as coleções geradas por código ficaram de fora, esperando arte melhor).
+skins: {}

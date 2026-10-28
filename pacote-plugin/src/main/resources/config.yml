@@ -14,3 +14,9 @@ obrigatorio: true
 
 # Texto da tela que pergunta se o jogador aceita o pacote ('&' pras cores).
 mensagem: "&6Texturas do servidor &7(máquinas, produtos e mais)"
+
+# Zips de resource pack de outros plugins pra juntar no nosso (caminho a partir da pasta do servidor).
+# O cliente só recebe um pacote daqui, então o dos outros entra junto; se os dois têm o mesmo arquivo,
+# fica o nosso. Zip que não existe é ignorado. Depois de mudar um deles: /pacote recarregar.
+juntar:
+  - plugins/FreeMinecraftModels/output/FreeMinecraftModels.zip
