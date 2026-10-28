@@ -93,7 +93,7 @@ public class NpcsManager implements Listener {
         Location local = o.getLocal();
         if (local == null || !local.getWorld().isChunkLoaded(local.getBlockX() >> 4, local.getBlockZ() >> 4)) return;
         String base = "tipos." + o.getTipo().chave() + ".";
-        String skin = plugin.getConfig().getString(base + "skin", "");
+        String skin = texto(base + "skin", "");
         Mannequin m = local.getWorld().spawn(local, Mannequin.class, e -> {
             e.setPersistent(false);
             e.setInvulnerable(true);
@@ -103,8 +103,8 @@ public class NpcsManager implements Listener {
             e.setCustomNameVisible(true);
             // {mina}: o id da mina do guia, com a primeira letra maiúscula
             String alvo = o.getAlvo() == null ? "" : o.getAlvo().substring(0, 1).toUpperCase(Locale.ROOT) + o.getAlvo().substring(1);
-            e.customName(LEGADO.deserialize(plugin.getConfig().getString(base + "nome", o.getTipo().chave()).replace("{mina}", alvo)));
-            e.setDescription(LEGADO.deserialize(plugin.getConfig().getString(base + "descricao", "&7Clique").replace("{mina}", alvo)));
+            e.customName(LEGADO.deserialize(texto(base + "nome", o.getTipo().chave()).replace("{mina}", alvo)));
+            e.setDescription(LEGADO.deserialize(texto(base + "descricao", "&7Clique").replace("{mina}", alvo)));
             if (!skin.isBlank()) e.setProfile(perfil(skin));
             e.getPersistentDataContainer().set(chave, PersistentDataType.STRING, o.getId());
         });
@@ -112,8 +112,20 @@ public class NpcsManager implements Listener {
     }
 
     /**
+     * O texto do config, caindo no config.yml do jar quando o do servidor não tem a chave (um config
+     * antigo não tem os tipos novos, como o Bancário). Passar o padrão direto pro getString pulava o
+     * do jar, e o NPC aparecia com o id cru e sem skin.
+     */
+    private String texto(String caminho, String seNada) {
+        String valor = plugin.getConfig().getString(caminho);
+        return valor != null ? valor : seNada;
+    }
+
+    /**
      * A skin do config: "textura:<hash>" usa direto a textura do textures.minecraft.net (a skin
      * temática, sem depender de um jogador); qualquer outra coisa é o nick de quem empresta a skin.
+     * O perfil da textura vai completo (UUID e nome fixos, tirados do hash): sem eles o cliente trata
+     * como perfil incompleto e pode mostrar a skin padrão.
      */
     private static ResolvableProfile perfil(String skin) {
         if (skin.startsWith("textura:")) {
@@ -121,6 +133,8 @@ public class NpcsManager implements Listener {
             String json = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + hash + "\"}}}";
             String valor = java.util.Base64.getEncoder().encodeToString(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             return ResolvableProfile.resolvableProfile()
+                    .uuid(java.util.UUID.nameUUIDFromBytes(hash.getBytes(java.nio.charset.StandardCharsets.UTF_8)))
+                    .name("npc" + hash.substring(0, Math.min(10, hash.length())))
                     .addProperty(new com.destroystokyo.paper.profile.ProfileProperty("textures", valor)).build();
         }
         return ResolvableProfile.resolvableProfile().name(skin).build();

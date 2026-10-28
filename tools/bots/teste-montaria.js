@@ -1,5 +1,5 @@
 // Montaria do VIP no spawn (MontariaPlugin) e PvP só na arena do boss (AreasPlugin).
-// Montaria: sem a permissão do VIP não sai; com ela, o bot monta num cavalo 1,6x a corrida, que some
+// Montaria: sem a permissão do VIP não sai; com ela, o bot monta num cavalo 3x a corrida, que some
 // ao descer, e não é chamada na arena do boss. PvP: no spawn um bot não machuca o outro; na arena do
 // boss machuca.
 // Uso: node teste-montaria.js   (o mundo spawn com PvP ligado: mv modify spawn set pvp true)
@@ -24,7 +24,7 @@ t.rodar(async () => {
   t.verificar(!!bot.vehicle && bot.vehicle.name === 'horse', 'com VIP, o bot monta no cavalo', bot.vehicle?.name || msgs.join(' | '))
   const vel = await t.console(`execute as ${nome} on vehicle run attribute @s minecraft:movement_speed base get`)
   const valor = Number((vel.match(/(-?\d+(\.\d+)?)\s*$/) || [, 0])[1])
-  t.verificar(Math.abs(valor - 5.6 * 1.6 / 43.17) < 0.005, 'na velocidade de 1,6x a corrida', `${valor.toFixed(4)} | ${vel}`)
+  t.verificar(Math.abs(valor - 5.6 * 3 / 43.17) < 0.005, 'na velocidade de 3x a corrida', `${valor.toFixed(4)} | ${vel}`)
 
   // descer (pelo console: o dismount do Mineflayer não passa pelo ViaVersion): a montaria some
   await t.console(`ride ${nome} dismount`)

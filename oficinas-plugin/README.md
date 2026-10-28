@@ -1,6 +1,6 @@
 # OficinasPlugin
 
-NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma barraca temática na Avenida das Minas (estrutura `oficinas` do EstruturasPlugin): quatro na praça de entrada e duas no fundo. Também cuida do guia na entrada de cada mina. Clique direito no NPC:
+NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma barraca temática na Avenida das Minas (estrutura `oficinas` do EstruturasPlugin): quatro na praça de entrada e duas no fundo, com o Banco no meio do fundo. Clique direito no NPC:
 
 | NPC | Barraca | O que faz |
 |---|---|---|
@@ -10,8 +10,8 @@ NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma
 | 📖 **Sábio** | Estantes, quartzo e lápis (oeste, x -29..-21) | Vende níveis de XP |
 | ✦ **Cambista** | Purpur, ametista e vitral magenta, no **fundo** da avenida (leste, x 10..18) | Troca **Fragmentos Arcanos** e coins por encantamentos acima do máximo no item da mão (veja abaixo) |
 | ▣ **Compactador** | Tufo, cobre e blocos de minério, no **fundo** da avenida (oeste, x -18..-10) | Transforma minérios e lingotes em blocos (9 → 1) e desfaz os blocos, de graça. Só mexe em item comum (sem nome, encantamento ou marca) |
-| 🏦 **Bancário** | Quartzo, ouro e toldo verde no **spawn** (quadrante nordeste, estrutura `banco`) | Vende a folha de cheque em branco e deposita os cheques do inventário (o balcão é do ChequePlugin) |
-| ⛏ **Guia de mina** | Na praça de cada mina, 2 blocos ao sul do ponto de teleporte | Mostra o rank exigido, os blocos com a %, o tempo até o reset, quanto já foi minerado e a chance de fragmento. Quem tem o rank ganha o botão "[Clique aqui pra entrar na mina]" (`/mina <id>`) |
+| **Bancário** | O **Banco** no fim da avenida, entre o Compactador e o Cambista (estrutura `banco`: quartzo, ouro, colunas, frontão e o cofre) | Vende a folha de cheque em branco, deposita os cheques do inventário, dá o extrato e vende a Mine-sena (o balcão é do ChequePlugin) |
+| **Guia de mina** | Fora do mapa desde 2026-10-27 (o `/mina` e o holograma de cada mina já mostram tudo). O tipo continua no plugin: `/oficina criar <id> mina:<id da mina>` | Mostra o rank exigido, os blocos com a %, o tempo até o reset, quanto já foi minerado e a chance de fragmento, e o botão de entrar pra quem tem o rank |
 | ⚔ **Armeiro** | Balcão PvP da **Loja Oficial** (não fica na mina) | Vende todas as armaduras (couro, cota de malha, ouro, ferro, diamante e netherita) e armas (espadas e machados de madeira a netherita, arco, besta e tridente), **sem encantamento** (encanta-se na Bruxa), mais escudo, flechas e poções (`armeiro.itens`, com `pocao:` pro tipo da poção). Só compra: nada disso volta pra loja |
 
 ## Preços
@@ -64,7 +64,7 @@ A mesa fica numa câmara fechada embaixo da barraca da bruxa (centro em -14, 61,
 
 ## NPCs
 
-Mesmo esquema dos de dicas e das barracas: Mannequin que não fica salvo no mundo (nasce quando o chunk carrega), não toma dano e volta sozinho se for removido. Ficam atrás do balcão, olhando pro passeio. Nome, descrição e skin de cada tipo ficam em `tipos.<tipo>` no config. A skin aceita `textura:<hash>` (a textura direto do textures.minecraft.net, por exemplo de uma skin do mineskin.org) ou o nick de um jogador. As temáticas que vêm no config: ferreiro de avental, minerador de capacete, bruxa de cabelo roxo e sábio de barba branca. Os lugares ficam em `oficinas.yml`.
+Mesmo esquema dos de dicas e das barracas: Mannequin que não fica salvo no mundo (nasce quando o chunk carrega), não toma dano e volta sozinho se for removido. Ficam atrás do balcão, olhando pro passeio. Nome, descrição e skin de cada tipo ficam em `tipos.<tipo>` no config. A skin aceita `textura:<hash>` (a textura direto do textures.minecraft.net, por exemplo de uma skin do mineskin.org) ou o nick de um jogador. As temáticas que vêm no config: ferreiro de avental, minerador de capacete, bruxa de cabelo roxo, sábio de barba branca, cavaleiro (armeiro), operário de capacete de obra (compactador), mercador de casaco azul (cambista) e banqueiro de cartola (bancário). O perfil da textura vai com UUID e nome fixos, tirados do hash: sem eles o cliente pode tratar como perfil incompleto e mostrar a skin padrão. Nome, descrição ou skin que faltar no config do servidor (um config antigo não tem os tipos novos) cai no do jar. Não use emoji fora do Unicode básico no nome (🏦, 📖...): o Minecraft não desenha. Os lugares ficam em `oficinas.yml`.
 
 ## Montagem
 

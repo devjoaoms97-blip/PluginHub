@@ -1,16 +1,16 @@
 // O foco de 2026-10-27: Bancário (folha de cheque, cheque saindo do saldo, depósito com taxa,
 // cancelamento com devolução e a Mine-sena), Cambista (fragmentos por encantamento, só nos itens que fazem sentido),
-// Compactador, guia de mina, achados e perdidos, teleporte por comando barrado nas arenas, prestígio
+// Compactador, achados e perdidos, teleporte por comando barrado nas arenas, prestígio
 // de skill com a skill em uso no placar, parry com escudo e Boss elite.
-// Uso: node teste-foco.js   (depois do "node montar-mapa.js construir oficinas banco")
+// Uso: node teste-foco.js   (depois do "node montar-mapa.js construir oficinas")
 const t = require('./lib')
 const { Vec3 } = require('vec3')
 
 // NPCs (mundo spawn) e de onde o bot fala com cada um: [onde o NPC está, onde o bot fica, yaw do bot]
-const BANCARIO = [new Vec3(29.5, 65, 29.5), [26.5, 29.5], -90]
+// o Bancário fica no Banco do fim da avenida, em cima da plataforma (um degrau acima do chão)
+const BANCARIO = [new Vec3(0.5, 66, -179.5), [0.5, -177.5], 180, 66]
 const CAMBISTA = [new Vec3(14.5, 65, -180.5), [14.5, -177.5], 180]
 const COMPACTADOR = [new Vec3(-13.5, 65, -180.5), [-13.5, -177.5], 180]
-const GUIA_PEDREIRA = [new Vec3(-5.5, 65, -37.5), [-2.5, -37.5], 90]
 
 // o nome do bot tem números: o valor é o que vem depois do "$"
 const saldo = async nome => parseFloat((await t.console(`balance ${nome}`)).split('$').pop().replace(/[^\d.]/g, ''))
@@ -26,8 +26,8 @@ async function quantos(nome, item) {
 const naMao = (nome, item) => t.console(`minecraft:item replace entity ${nome} hotbar.0 with ${item}`)
 
 /** Vai até o NPC e clica nele. Com janela = true, espera o menu abrir e devolve a janela. */
-async function falar(bot, [onde, [x, z], yaw], janela = true) {
-  await t.console(`execute in minecraft:spawn run minecraft:tp ${bot.username} ${x} 65 ${z} ${yaw} 0`)
+async function falar(bot, [onde, [x, z], yaw, y = 65], janela = true) {
+  await t.console(`execute in minecraft:spawn run minecraft:tp ${bot.username} ${x} ${y} ${z} ${yaw} 0`)
   await t.espera(1500)
   const npc = Object.values(bot.entities).find(e => e.position.distanceTo(onde) < 1 && e.name === 'mannequin')
   if (!npc) return null
@@ -188,11 +188,6 @@ t.rodar(async () => {
   }
   const blocos = await quantos(nome, 'iron_block'), lingotes = await quantos(nome, 'iron_ingot')
   t.verificar(blocos === 2 && lingotes === 2, 'compactou 18 lingotes em 2 blocos (sobraram 2)', `${blocos} blocos, ${lingotes} lingotes`)
-
-  console.log('\n== Guia da pedreira ==')
-  msgs = await t.capturar(bot, () => falar(bot, GUIA_PEDREIRA, false), 2000)
-  t.verificar(msgs.some(m => /Mina pedreira/.test(m)) && msgs.some(m => /Reset/.test(m)), 'o guia mostra as informações da mina', msgs.join(' | ').slice(0, 200))
-  t.verificar(msgs.some(m => /entrar na mina/.test(m)), 'e oferece entrar (o rank inicial libera a pedreira)')
 
   console.log('\n== Achados e perdidos ==')
   await t.console(`minecraft:clear ${nome}`)

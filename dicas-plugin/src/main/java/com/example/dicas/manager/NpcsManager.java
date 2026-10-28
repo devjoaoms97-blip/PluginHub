@@ -105,10 +105,28 @@ public class NpcsManager implements Listener {
             e.setCustomNameVisible(true);
             e.customName(LEGADO.deserialize(npc.getNome()));
             e.setDescription(LEGADO.deserialize(plugin.getConfig().getString("descricao", "&7Clique pra conversar")));
-            if (npc.getSkin() != null) e.setProfile(ResolvableProfile.resolvableProfile().name(npc.getSkin()).build());
+            if (npc.getSkin() != null) e.setProfile(perfil(npc.getSkin()));
             e.getPersistentDataContainer().set(chave, PersistentDataType.STRING, npc.getId());
         });
         entidades.put(npc.getId(), m);
+    }
+
+    /**
+     * A skin: "textura:<hash>" usa direto a textura do textures.minecraft.net (a skin temática, sem
+     * depender de um jogador), com UUID e nome fixos tirados do hash (perfil completo: sem eles o
+     * cliente pode mostrar a skin padrão); qualquer outra coisa é o nick de quem empresta a skin.
+     */
+    private static ResolvableProfile perfil(String skin) {
+        if (skin.startsWith("textura:")) {
+            String hash = skin.substring("textura:".length()).trim();
+            String json = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + hash + "\"}}}";
+            String valor = java.util.Base64.getEncoder().encodeToString(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return ResolvableProfile.resolvableProfile()
+                    .uuid(java.util.UUID.nameUUIDFromBytes(hash.getBytes(java.nio.charset.StandardCharsets.UTF_8)))
+                    .name("npc" + hash.substring(0, Math.min(10, hash.length())))
+                    .addProperty(new com.destroystokyo.paper.profile.ProfileProperty("textures", valor)).build();
+        }
+        return ResolvableProfile.resolvableProfile().name(skin).build();
     }
 
     public void carregarTodos() {

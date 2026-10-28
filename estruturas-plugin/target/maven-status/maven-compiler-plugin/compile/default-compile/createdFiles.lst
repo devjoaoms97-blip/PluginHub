@@ -7,14 +7,15 @@ com\example\estruturas\estrutura\LojaOficial$Balcao.class
 com\example\estruturas\estrutura\OficinasDaMina.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$Modelo.class
 com\example\estruturas\estrutura\Planta.class
+com\example\estruturas\estrutura\BancoDaMina.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$1.class
-com\example\estruturas\estrutura\BancoDoSpawn.class
 com\example\estruturas\estrutura\LojaOficial.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$RotacaoOeste.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$Barraca.class
 com\example\estruturas\command\EstruturaCommand.class
 com\example\estruturas\estrutura\BarracasDoSpawn.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$Quadrante.class
+com\example\estruturas\estrutura\SpawnSemBanco.class
 com\example\estruturas\estrutura\Estrutura.class
 com\example\estruturas\estrutura\ArenaColiseu.class
 com\example\estruturas\estrutura\ArenaMobs$Lugar.class

@@ -6,7 +6,7 @@ Montaria do VIP no spawn. No mundo `spawn` não dá pra voar, planar nem usar p�
 
 - `/montaria` (ou `/cavalo`) chama um cavalo e já monta nele. De novo, ele vai embora.
 - **Só VIP:** precisa da permissão `vip.perk.montaria`, que os grupos de VIP do LuckPerms dão (todos os tiers).
-- **Velocidade:** `velocidade-vezes-corrida` (1,6) vezes a corrida a pé, mais ou menos um cavalo médio do jogo. O fim da avenida das minas fica a uns 25 s do spawn, em vez de 40 s.
+- **Velocidade:** `velocidade-vezes-corrida` (3) vezes a corrida a pé, 16,8 blocos por segundo, bem mais que qualquer cavalo do jogo. O fim da avenida das minas fica a uns 13 s do spawn, em vez de 40 s.
 - **Pulo baixo** (`pulo`: 0.5): sobe um degrau, mas não pula balcão nem barraca.
 - **Onde:** só nos `mundos` do config (o `spawn`). Nos poços das minas do RankupPlugin e nas caixas de `proibido` (a arena do boss, que tem PvP) ela não é chamada, e quem entra montado desce na hora e segue a pé.
 - **É descartável:** some quando o jogador desce, sai do servidor, se teleporta, troca de mundo ou toma dano. Ninguém mais monta nela, ela não tem baú nem inventário, não toma dano e não fica salva no mundo.

@@ -230,7 +230,7 @@ Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcan
 ### Montaria no spawn ✅ v1 (`montaria-plugin`)
 `/montaria` (ou `/cavalo`) chama um cavalo pra andar mais rápido pelo mundo spawn (decisões de 2026-10-27):
 - **Só VIP** (permissão `vip.perk.montaria`, em todos os tiers).
-- **1,6× a corrida a pé**, com pulo baixo (não pula balcão nem barraca).
+- **3× a corrida a pé** (era 1,6×; mudado em 2026-10-27), com pulo baixo (não pula balcão nem barraca).
 - **No mundo spawn todo, menos os poços das minas e a arena do boss**: quem entra montado desce e segue a pé.
 - Some ao descer, sair, se teleportar, trocar de mundo ou tomar dano. Ninguém mais monta nela.
 - [ ] Montaria diferente por tier (`tipos` no config já aceita), se quiser variar.
@@ -302,6 +302,9 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **O cheque sai do saldo de quem emite** (2026-10-27). Antes, emitir não custava nada.
 - [x] **Folha de cheque e Bancário** (2026-10-27): o cheque só nasce numa folha comprada no Bancário (NPC do OficinasPlugin) e só vira dinheiro depositado lá, com taxa de compensação igual à do Pix. Liberado pra todos os jogadores.
 - [x] Barraquinha do Bancário no spawn (2026-10-27), estrutura `banco` no quadrante nordeste, com a folha de cheque, o depósito e a Mine-sena (ver "Mine-sena", acima).
+- [x] **O Banco no fim da Avenida das Minas** (2026-10-27): o Bancário saiu do spawn (o `spring-banco` devolve aquele pedaço) e ganhou um banco clássico entre o Compactador e o Cambista, no lugar da cerejeira do fundo: quartzo, ouro, colunas, frontão com medalhão de esmeralda e o cofre.
+- [x] **Skins dos NPCs** (2026-10-27): os de dicas ganharam skin temática (eram todos padrão), e o Bancário, o Cambista e o Compactador, as próprias. Corrigido: o perfil da textura ia sem UUID e nome (os NPCs das oficinas e da loja podiam aparecer com a skin padrão), e o config antigo do servidor sem os tipos novos deixava o Bancário com o nome "bancario" e sem skin. Nomes sem emoji fora do Unicode básico (🏦, 📖, 🪓...), que o Minecraft não desenha.
+- [x] **Guias das minas removidos** (2026-10-27): o `/mina` e o holograma já mostram tudo.
 - [x] **Log** de cheques emitidos e resgatados.
 - [x] **Limite de valor** por cheque, ou cooldown. Valor máximo e cooldown no config; `cheque.limite.ignorar` pula os dois. O ID resgatado não resgata de novo (segura cópia por dupe).
 

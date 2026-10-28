@@ -20,22 +20,22 @@ tipos:
     descricao: "&7Clique: armaduras, armas e poções"
     skin: "textura:716c2da12d4482f34db58fb872ca25ff682001064dc50b504d099bc2256afb09"   # cavaleiro de tabardo vinho
   sabio:
-    nome: "&d&l📖 Sábio"
+    nome: "&d&lSábio"
     descricao: "&7Clique: comprar XP"
     skin: "textura:c1a5fab3ccb91fa2364378f64a99b1037e1fc9698c9df525ba3a1f6b9c7c8b42"   # sábio de barba branca
   compactador:
-    nome: "&7&l▣ Compactador"
+    nome: "&7&lCompactador"
     descricao: "&7Clique: minérios em blocos e de volta"
-    skin: "textura:1c440eac8bd5308c32cf982c3b9c3c9b49d345db6483ed44784fd2d94fca322e"   # a do minerador, até ter uma própria
+    skin: "textura:12d3d6bb0c637378e1be1480ef785fedcc8b3edae6261cffea3c1cbd45661b33"   # operário de capacete de obra e avental
   cambista:
-    nome: "&d&l✦ Cambista"
+    nome: "&d&lCambista"
     descricao: "&7Clique: fragmentos por encantamentos raros"
-    skin: "textura:19c5d75f9426d887b817d2b8d191788450d0e7ee7e00541b6ad879da84995f32"   # a da bruxa, até ter uma própria
+    skin: "textura:1acbe93d9248f490c27104933c8784dbd643de28321ab35326b0d8fc0dc761f3"   # mercador de casaco azul e corrente de ouro
   # Folha de cheque e depósito de cheques (o balcão é do ChequePlugin).
   bancario:
-    nome: "&6&l🏦 Bancário"
-    descricao: "&7Clique: folha de cheque e depósito"
-    skin: "textura:716c2da12d4482f34db58fb872ca25ff682001064dc50b504d099bc2256afb09"   # a do armeiro, até ter uma própria
+    nome: "&6&lBancário"
+    descricao: "&7Clique: cheques, extrato e Mine-sena"
+    skin: "textura:f7d34d517f0730061f67076710d4e433922199a782c30719ff45cd75facebadf"   # banqueiro de cartola e terno
   # Guia na entrada de cada mina ({mina} vira o id da mina). Um por mina: /oficina criar <id> mina:<id da mina>
   mina:
     nome: "&e&l⛏ Mina {mina}"

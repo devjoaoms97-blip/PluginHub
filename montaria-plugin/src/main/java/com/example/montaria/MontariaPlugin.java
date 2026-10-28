@@ -146,7 +146,7 @@ public class MontariaPlugin extends JavaPlugin implements Listener {
                     h.setColor(Horse.Color.CHESTNUT);
                     h.setStyle(Horse.Style.WHITE);
                 }
-                double velocidade = CORRIDA * getConfig().getDouble("velocidade-vezes-corrida", 1.6) / BLOCOS_POR_SEGUNDO_POR_PONTO;
+                double velocidade = CORRIDA * getConfig().getDouble("velocidade-vezes-corrida", 3.0) / BLOCOS_POR_SEGUNDO_POR_PONTO;
                 definir(cavalo, Attribute.MOVEMENT_SPEED, velocidade);
                 definir(cavalo, Attribute.JUMP_STRENGTH, getConfig().getDouble("pulo", 0.5));
             }

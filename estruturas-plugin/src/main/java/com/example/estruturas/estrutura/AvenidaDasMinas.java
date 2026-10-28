@@ -440,17 +440,13 @@ public class AvenidaDasMinas implements Estrutura {
 
     // ------------------------------------------------------------------ fundo (norte)
 
-    /** Depois da última praça: canteiro, e a cerejeira grande no meio da praça do fundo com bancos. */
+    /**
+     * Depois da última praça: canteiro e postes. O meio da praça do fundo (x -9..9), onde ficava a
+     * cerejeira grande, é do Banco (estrutura "banco", construída depois da avenida).
+     */
     private void gerarPontaNorte() {
         canteiro(-173, -169, 399);
-        cerejeira(0, -178, 77, true);
-        banco(-6, -178, BlockFace.EAST);
-        banco(6, -178, BlockFace.WEST);
-        banco(0, Z_NORTE_INT, BlockFace.NORTH);
-        for (int s : new int[]{-1, 1}) {
-            poste(s * 3, -174);
-            poste(s * 4, Z_NORTE_INT);
-        }
+        for (int s : new int[]{-1, 1}) poste(s * 3, -174);
         canteiroDeParede(Z_NORTE_INT, 9, 35);
     }
 

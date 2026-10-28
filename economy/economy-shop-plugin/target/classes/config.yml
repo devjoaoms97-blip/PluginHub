@@ -101,32 +101,32 @@ vendedores:
     skin: "textura:3fc4500195594a77146a6e0cf0caf4c56a6a4280f6a7ec7c2204858682727f87"
   construtor:
     categoria: "Blocos"
-    nome: "&6&l🧱 Construtor"
+    nome: "&6&lConstrutor"
     descricao: "&7Pedras, tijolos, vidro, concreto e lã"
     skin: "textura:76c2c5a010614493a9cfc642fd84be421fad13178b71759021b0449c0fa45145"
   lenhador:
     categoria: "Madeiras"
-    nome: "&c&l🪓 Lenhador"
+    nome: "&c&lLenhador"
     descricao: "&7Toras e tábuas de todas as árvores"
     skin: "textura:cf42050f47e492cd14967d14e976417086a62b1ba1af81654f60d3f6539afb6d"
   fazendeiro:
     categoria: "Farm"
-    nome: "&e&l🌾 Fazendeiro"
+    nome: "&e&lFazendeiro"
     descricao: "&7Compra e vende colheita e comida"
     skin: "textura:2d60f9159fb24fbdcc2229bb8ddc01aab31cc8ccb7c8984d0e5e7dccfdbc0a51"
   cacador:
     categoria: "Drops"
-    nome: "&4&l🏹 Caçador"
+    nome: "&4&lCaçador"
     descricao: "&7Compra e vende drops de mob"
     skin: "textura:9dde918a9cb7a2a84d1a942e65ed5689597de1104656e427a89689614ddea944"
   jardineiro:
     categoria: "Natureza"
-    nome: "&a&l🌸 Jardineiro"
+    nome: "&a&lJardineiro"
     descricao: "&7Mudas, flores, terra e plantas"
     skin: "textura:7a8ab2267ae443e83b05e3a8d67b8b760adfaad335c9047338c0e1774a65c372"
   spawners:
     comando: "spawners loja"
-    nome: "&8&l🐷 Domador"
+    nome: "&8&lDomador"
     descricao: "&7Spawners pro seu terreno"
     skin: "textura:c5d0b90b535a137cd899f021d62b22ac26c8648ddc629d82ba590b9c7032cb08"
   maquinas:

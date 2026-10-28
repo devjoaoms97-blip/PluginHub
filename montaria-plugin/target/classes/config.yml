@@ -16,8 +16,9 @@ proibido:
     min: [-60, 0, 107]
     max: [60, 100, 253]
 
-# Velocidade: tantas vezes a corrida a pé (5,6 blocos por segundo). 1.6 é um cavalo médio do jogo.
-velocidade-vezes-corrida: 1.6
+# Velocidade: tantas vezes a corrida a pé (5,6 blocos por segundo). 1.6 é um cavalo médio do jogo; 3 é
+# bem mais rápido que qualquer cavalo (16,8 blocos por segundo).
+velocidade-vezes-corrida: 3.0
 # Força do pulo (0.5 sobe um degrau e não pula balcão nem barraca; 0.7 é o cavalo comum).
 pulo: 0.5
 # Segundos entre chamar uma montaria e outra.

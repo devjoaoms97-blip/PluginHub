@@ -46,7 +46,7 @@ node teste-boss-vip.js      # só o campeão do Wither ganha o código de VIP de
 node teste-vip-evento.js    # código de VIP de evento: só 3/7/15 dias, sem bônus nem kit mensal, não vende, quem tem VIP resgata depois
 node teste-creditos.js      # loja de créditos: créditos pelo console, cosmético com confirmação, cor na tab, VIP e código, apoiador
 node teste-montaria.js      # montaria do VIP (velocidade, some ao descer, não entra na arena do boss) e PvP só na arena do boss
-node teste-foco.js          # Bancário e cheque, Cambista, Compactador, guia de mina, achados, /tpa nas arenas, prestígio, parry e Boss elite
+node teste-foco.js          # Bancário e cheque, Cambista, Compactador, achados, /tpa nas arenas, prestígio, parry e Boss elite
 ```
 ### Mapa funcional (`montar-mapa.js`)
 

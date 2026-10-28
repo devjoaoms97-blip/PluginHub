@@ -8,7 +8,8 @@ import com.example.estruturas.estrutura.ArenaToxica;
 import com.example.estruturas.estrutura.LojaOficial;
 import com.example.estruturas.estrutura.OficinasDaMina;
 import com.example.estruturas.estrutura.AvenidaDasMinas;
-import com.example.estruturas.estrutura.BancoDoSpawn;
+import com.example.estruturas.estrutura.BancoDaMina;
+import com.example.estruturas.estrutura.SpawnSemBanco;
 import com.example.estruturas.estrutura.BarracasDoSpawn;
 import com.example.estruturas.estrutura.Estrutura;
 import com.example.estruturas.estrutura.Planta;
@@ -56,7 +57,8 @@ public class Construtor {
         registrar(new LojaOficial());
         registrar(new PortaoOesteDoSpawn());
         registrar(new ArenaMobs());
-        registrar(new BancoDoSpawn());
+        registrar(new BancoDaMina());
+        registrar(new SpawnSemBanco());
     }
 
     private void registrar(Estrutura estrutura) {

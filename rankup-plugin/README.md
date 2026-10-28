@@ -146,7 +146,7 @@ Com jogadores de verdade, o `rankups.csv` mostra quanto tempo cada rank está le
 - **MissoesPlugin**: minerar na mina conta pra missão de minerar, como qualquer bloco natural. O bloco que o reset coloca não conta como "colocado pelo jogador".
 - **LuckPerms** (opcional): use `comandos-ao-subir` pra dar um grupo por rank.
 
-- **OficinasPlugin**: o guia na entrada de cada mina mostra `infoMina(String, UUID)` (rank, blocos, reset, % minerada e a chance de fragmento) e, pra quem `podeEntrarNaMina(String, Player)`, o botão que roda `/mina <id>`. O Cambista reconhece o Fragmento Arcano pela marca.
+- **OficinasPlugin**: o guia de mina (fora do mapa desde 2026-10-27, mas o tipo continua) mostra `infoMina(String, UUID)` (rank, blocos, reset, % minerada e a chance de fragmento) e, pra quem `podeEntrarNaMina(String, Player)`, o botão que roda `/mina <id>`. O Cambista reconhece o Fragmento Arcano pela marca.
 
 A API pra outros plugins, por reflexão: `multiplicadorVenda(UUID)`, `rankDe(UUID)`, `tagDoRank(UUID)`, `infoMina(String, UUID)`, `podeEntrarNaMina(String, Player)` e `fragmento(int)`.
 

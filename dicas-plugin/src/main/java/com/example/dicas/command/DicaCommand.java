@@ -154,7 +154,7 @@ public class DicaCommand implements CommandExecutor, TabCompleter {
             }
             case "skin" -> {
                 if (args.length < 3) {
-                    sender.sendMessage("§cUso: §f/dica skin <id> <nick|padrao>");
+                    sender.sendMessage("§cUso: §f/dica skin <id> <nick|textura:<hash>|padrao>");
                     return;
                 }
                 npc.setSkin(args[2].equalsIgnoreCase("padrao") ? null : args[2]);
@@ -195,7 +195,7 @@ public class DicaCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/dica criar <id> <nome> §7- cria onde você está (cores com &)");
         sender.sendMessage("§f/dica fala <id> <texto> §7- adiciona uma fala (cores com &)");
         sender.sendMessage("§f/dica falas <id> §7| §f/dica tirarfala <id> <número>");
-        sender.sendMessage("§f/dica nome <id> <nome> §7| §f/dica skin <id> <nick|padrao>");
+        sender.sendMessage("§f/dica nome <id> <nome> §7| §f/dica skin <id> <nick|textura:<hash>|padrao>");
         sender.sendMessage("§f/dica mover <id> §7| §f/dica remover <id> §7| §f/dica lista §7| §f/dica reload");
     }
 

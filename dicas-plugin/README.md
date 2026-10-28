@@ -18,7 +18,7 @@ Todos exigem `dicas.admin` (padrão: op). Nome e falas aceitam cores com `&`.
 | `/dica falas <id>` | Lista as falas, numeradas |
 | `/dica tirarfala <id> <número>` | Remove uma fala |
 | `/dica nome <id> <nome>` | Troca o nome |
-| `/dica skin <id> <nick\|padrao>` | Usa a skin de um jogador (ou a padrão) |
+| `/dica skin <id> <nick\|textura:<hash>\|padrao>` | Usa a skin de um jogador, uma textura direto do textures.minecraft.net (ex: do mineskin.org) ou a padrão |
 | `/dica mover <id>` | Leva o NPC pra onde você está |
 | `/dica remover <id>` | Apaga o NPC |
 | `/dica lista` | Todos os NPCs de dicas |

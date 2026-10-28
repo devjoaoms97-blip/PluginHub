@@ -122,13 +122,20 @@ public class VendedoresManager implements Listener {
         entidades.put(id, m);
     }
 
-    /** "textura:<hash>" usa a textura do textures.minecraft.net direto; o resto é o nick de quem empresta. */
+    /**
+     * "textura:<hash>" usa a textura do textures.minecraft.net direto; o resto é o nick de quem empresta.
+     * O perfil da textura vai completo (UUID e nome fixos, tirados do hash): sem eles o cliente trata
+     * como perfil incompleto e pode mostrar a skin padrão.
+     */
     private static ResolvableProfile perfil(String skin) {
         if (skin.startsWith("textura:")) {
-            String json = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/"
-                    + skin.substring("textura:".length()).trim() + "\"}}}";
-            return ResolvableProfile.resolvableProfile().addProperty(new com.destroystokyo.paper.profile.ProfileProperty(
-                    "textures", Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8)))).build();
+            String hash = skin.substring("textura:".length()).trim();
+            String json = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + hash + "\"}}}";
+            return ResolvableProfile.resolvableProfile()
+                    .uuid(java.util.UUID.nameUUIDFromBytes(hash.getBytes(StandardCharsets.UTF_8)))
+                    .name("npc" + hash.substring(0, Math.min(10, hash.length())))
+                    .addProperty(new com.destroystokyo.paper.profile.ProfileProperty(
+                            "textures", Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8)))).build();
         }
         return ResolvableProfile.resolvableProfile().name(skin).build();
     }
