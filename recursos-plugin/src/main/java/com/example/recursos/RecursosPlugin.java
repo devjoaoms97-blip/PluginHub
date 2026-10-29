@@ -11,16 +11,20 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +41,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * Mundos de recursos: o normal ({@code /recursos}), o Nether ({@code /nether}) e o End
- * ({@code /end}). Cada comando leva a um ponto seguro do mundo, e cada mundo é resetado uma vez por
+ * Mundos de recursos: o normal ({@code /warp recursos}), o Nether ({@code /warp nether}) e o End
+ * ({@code /warp end}). Cada warp leva a um ponto seguro do mundo, e cada mundo é resetado uma vez por
  * mês, num dia diferente ({@link ResetManager}). Quem saiu do servidor num desses mundos e volta
  * depois do reset vai pra um lugar seguro do mundo novo. Os portais não funcionam nesses mundos (só
  * se entra por comando); o portal de saída do End leva pro spawn. {@code /mapa} dá um mapa de
@@ -71,7 +75,10 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(centroDoEnd, this);
         getServer().getPluginManager().registerEvents(mapas, this);
-        for (String comando : List.of("recursos", "nether", "end", "mapa")) {
+        Luz luz = new Luz(this);
+        getServer().getPluginManager().registerEvents(luz, this);
+        getCommand("luz").setExecutor(luz);
+        for (String comando : List.of("recursos", "mapa")) {
             getCommand(comando).setExecutor(this);
             getCommand(comando).setTabCompleter(this);
         }
@@ -181,15 +188,15 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         return saida != null ? saida : Bukkit.getWorlds().get(0);
     }
 
-    private ResetManager porComando(String comando) {
-        for (ResetManager m : resets.values()) if (m.getComando().equalsIgnoreCase(comando)) return m;
+    private ResetManager porWarp(String warp) {
+        for (ResetManager m : resets.values()) if (m.getWarp().equalsIgnoreCase(warp)) return m;
         return null;
     }
 
     private ResetManager porNome(String nome) {
         if (nome == null) return null;
         ResetManager m = resets.get(nome);
-        return m != null ? m : porComando(nome);
+        return m != null ? m : porWarp(nome);
     }
 
     // ---------------------------------------------------------------------
@@ -224,12 +231,40 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         if (marca == null || !marca.contains(":")) return;
         ResetManager m = resets.get(marca.substring(0, marca.lastIndexOf(':')));
         if (m == null || m.getWorld() == null || marca.endsWith(":" + m.getCiclo())) return;
-        teleporte.levar(p, m).thenAccept(ok -> {
-            if (!ok) p.teleport(mundoDeSaida().getSpawnLocation());
-        });
-        // 1 s depois, pra não se perder entre as mensagens de entrada
-        getServer().getScheduler().runTaskLater(this, () -> p.sendMessage(
-                "§eO " + m.getNome() + " foi resetado enquanto você estava fora, então você foi levado pra um lugar seguro dele."), 20L);
+        // depois do login no AuthMe: senão o ForceSpawnLocOnJoin dele manda pro spawn em cima do resgate
+        new BukkitRunnable() {
+            private int vezes;
+
+            @Override
+            public void run() {
+                if (!p.isOnline() || ++vezes > 240) { // até 2 min pra logar
+                    cancel();
+                    return;
+                }
+                if (!autenticado(p)) return;
+                cancel();
+                getServer().getScheduler().runTaskLater(RecursosPlugin.this, () -> {
+                    if (!p.isOnline()) return;
+                    teleporte.levar(p, m).thenAccept(ok -> {
+                        if (!ok) p.teleport(mundoDeSaida().getSpawnLocation());
+                    });
+                    p.sendMessage("§eO " + m.getNome() + " foi resetado enquanto você estava fora, então você foi levado pra um lugar seguro dele.");
+                }, 10L);
+            }
+        }.runTaskTimer(this, 10L, 10L);
+    }
+
+    /** O jogador já fez login no AuthMe? Sem o AuthMe, sempre. Por reflexão (sem dependência). */
+    private boolean autenticado(Player p) {
+        org.bukkit.plugin.Plugin authme = getServer().getPluginManager().getPlugin("AuthMe");
+        if (authme == null || !authme.isEnabled()) return true;
+        try {
+            Class<?> api = Class.forName("fr.xephi.authme.api.v3.AuthMeApi", true, authme.getClass().getClassLoader());
+            Object instancia = api.getMethod("getInstance").invoke(null);
+            return Boolean.TRUE.equals(api.getMethod("isAuthenticated", Player.class).invoke(instancia, p));
+        } catch (ReflectiveOperationException e) {
+            return true;
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -245,7 +280,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
             return;
         }
         evento.setCancelled(true);
-        evento.getPlayer().sendMessage("§cOs portais não funcionam aqui. Use §f/nether §cou §f/end§c.");
+        evento.getPlayer().sendMessage("§cOs portais não funcionam aqui. Use §f/warp nether §cou §f/warp end§c.");
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -255,8 +290,38 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
     }
 
     // ---------------------------------------------------------------------
-    // /recursos, /nether, /end, /mapa
+    // /warp recursos|nether|end, /recursos (info e staff), /mapa
     // ---------------------------------------------------------------------
+
+    /**
+     * {@code /warp <mundo>}: o /warp é do Essentials, mas esses destinos são do plugin (o ponto é
+     * sorteado a cada uso). Roda por último (HIGHEST, só se ninguém cancelou): o combate, o duelo e o
+     * Gladiador barram antes quem não pode se teleportar.
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void aoUsarWarp(PlayerCommandPreprocessEvent evento) {
+        String[] partes = evento.getMessage().trim().split("\\s+");
+        String cmd = partes[0].toLowerCase(Locale.ROOT);
+        if (partes.length < 2 || !(cmd.equals("/warp") || cmd.equals("/ewarp") || cmd.equals("/essentials:warp") || cmd.equals("/essentials:ewarp"))) return;
+        ResetManager m = porWarp(partes[1]);
+        if (m == null) return;
+        evento.setCancelled(true);
+        ir(evento.getPlayer(), m);
+    }
+
+    /** As warps dos mundos aparecem no Tab do /warp. */
+    @EventHandler
+    public void aoCompletar(TabCompleteEvent evento) {
+        String buffer = evento.getBuffer().toLowerCase(Locale.ROOT);
+        if (!buffer.startsWith("/warp ") || buffer.substring(6).contains(" ")) return;
+        String prefixo = buffer.substring(6);
+        List<String> opcoes = new ArrayList<>(evento.getCompletions());
+        for (ResetManager m : resets.values()) {
+            if (m.getWarp().toLowerCase(Locale.ROOT).startsWith(prefixo) && !opcoes.contains(m.getWarp())) opcoes.add(m.getWarp());
+        }
+        evento.setCompletions(opcoes);
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String cmd = command.getName().toLowerCase(Locale.ROOT);
@@ -264,18 +329,15 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
             mapa(sender, args);
             return true;
         }
-        ResetManager m = porComando(cmd);
-        String sub = args.length == 0 ? "ir" : args[0].toLowerCase(Locale.ROOT);
-        if (cmd.equals("recursos") && sub.equals("admin")) {
+        String sub = args.length == 0 ? "info" : args[0].toLowerCase(Locale.ROOT);
+        if (sub.equals("admin")) {
             admin(sender, args);
             return true;
         }
-        if (m == null) {
-            sender.sendMessage("§cEsse mundo não está no config.");
-            return true;
-        }
-        if (sub.equals("info")) info(sender, m);
-        else ir(sender, m);
+        // /recursos [info] [mundo]: as datas dos resets
+        ResetManager so = args.length >= 2 ? porNome(args[1].toLowerCase(Locale.ROOT)) : null;
+        for (ResetManager m : resets.values()) if (so == null || so == m) info(sender, m);
+        sender.sendMessage("§7Pra ir: §f/warp recursos§7, §f/warp nether §7ou §f/warp end§7. Pra se localizar: §f/mapa§7.");
         return true;
     }
 
@@ -299,7 +361,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         p.sendMessage("§7Procurando um lugar seguro no " + m.getNome() + "...");
         teleporte.levar(p, m).thenAccept(ok -> {
             if (ok) {
-                p.sendMessage("§aBem-vindo ao " + m.getNome() + "! §7Ele é resetado todo mês: §f/" + m.getComando() + " info§7. "
+                p.sendMessage("§aBem-vindo ao " + m.getNome() + "! §7Ele é resetado todo mês: §f/recursos info§7. "
                         + "Pra se localizar: §f/mapa§7.");
             } else {
                 ultimoTeleporte.remove(p.getUniqueId());
@@ -428,14 +490,16 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         List<String> opcoes = new ArrayList<>();
         boolean admin = sender.hasPermission("recursos.admin");
         if (cmd.equals("mapa")) {
-            if (args.length == 1) resets.values().forEach(m -> opcoes.add(m.getComando()));
+            if (args.length == 1) resets.values().forEach(m -> opcoes.add(m.getWarp()));
         } else if (args.length == 1) {
-            opcoes.addAll(List.of("ir", "info"));
-            if (admin && cmd.equals("recursos")) opcoes.add("admin");
-        } else if (admin && cmd.equals("recursos") && args[0].equalsIgnoreCase("admin")) {
+            opcoes.add("info");
+            if (admin) opcoes.add("admin");
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("info")) {
+            resets.values().forEach(m -> opcoes.add(m.getWarp()));
+        } else if (admin && args[0].equalsIgnoreCase("admin")) {
             if (args.length == 2) opcoes.addAll(List.of("resetar", "cancelar", "levar", "dragao", "mapa", "reload"));
             else if (args.length == 3) {
-                resets.values().forEach(m -> opcoes.add(m.getComando()));
+                resets.values().forEach(m -> opcoes.add(m.getWarp()));
                 if (args[1].equalsIgnoreCase("resetar")) opcoes.addAll(List.of("agora", "5", "30"));
             } else if (args.length == 4 && args[1].equalsIgnoreCase("resetar")) opcoes.addAll(List.of("agora", "5", "30"));
         }

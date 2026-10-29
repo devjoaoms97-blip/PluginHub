@@ -259,7 +259,7 @@ t.rodar(async () => {
   await t.console(`minecraft:clear ${nome}`)
   await t.console(`minecraft:item replace entity ${nome} weapon.offhand with shield`)
   // no mundo de recursos, que tem PvP (o spawn não tem, e nas arenas só vale dentro de duelo e Gladiador)
-  bot.chat('/recursos')
+  bot.chat('/warp recursos')
   // o lugar seguro é procurado aos poucos: espera chegar antes de levar o atacante
   for (let i = 0; i < 30 && !bot.mensagens.some(m => /Bem-vindo ao mundo de recursos/.test(m)); i++) await t.espera(500)
   await t.espera(1000)

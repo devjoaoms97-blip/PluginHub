@@ -10,13 +10,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -142,35 +137,7 @@ public class ChequeCommand implements CommandExecutor {
     }
 
     private ItemStack criarCheque(Player emissor, double valor, OfflinePlayer nominal) {
-        ItemStack cheque = new ItemStack(Material.PAPER, 1);
-        ItemMeta meta = cheque.getItemMeta();
-
-        meta.setDisplayName(ChatColor.GREEN + "Cheque" + ChatColor.DARK_GRAY + " - " + ChatColor.GOLD + formatarValor(valor));
-
-        List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "Emitido por: " + ChatColor.WHITE + emissor.getName());
-        lore.add(ChatColor.GRAY + "Data: " + ChatColor.WHITE + new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date()));
-        if (nominal != null) {
-            lore.add(ChatColor.GRAY + "Nominal a: " + ChatColor.WHITE + nominal.getName() + ChatColor.GRAY + " (só ele resgata)");
-        }
-        String id = UUID.randomUUID().toString();
-        // os 8 primeiros caracteres do ID: com eles a staff cancela um cheque que já está com outro jogador
-        lore.add(ChatColor.DARK_GRAY + "ID: " + id.substring(0, 8));
-        lore.add("");
-        lore.add(ChatColor.YELLOW + "Clique direito para resgatar");
-        meta.setLore(lore);
-
-        // Grava dados reais no item (não confia no texto do lore, que pode ser editado
-        // por outros plugins de anvil/renomear). Isso evita duplicação/falsificação.
-        meta.getPersistentDataContainer().set(plugin.getChequeValueKey(), PersistentDataType.DOUBLE, valor);
-        meta.getPersistentDataContainer().set(plugin.getChequeIdKey(), PersistentDataType.STRING, id);
-        meta.getPersistentDataContainer().set(plugin.getChequeEmissorKey(), PersistentDataType.STRING, emissor.getUniqueId().toString());
-        if (nominal != null) {
-            meta.getPersistentDataContainer().set(plugin.getChequeNominalKey(), PersistentDataType.STRING, nominal.getUniqueId().toString());
-        }
-
-        cheque.setItemMeta(meta);
-        return cheque;
+        return plugin.montarCheque(emissor.getName(), emissor.getUniqueId(), valor, nominal);
     }
 
     /**
@@ -245,6 +212,6 @@ public class ChequeCommand implements CommandExecutor {
     }
 
     private String formatarValor(double valor) {
-        return String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", valor);
+        return ChequePlugin.formatarValor(valor);
     }
 }

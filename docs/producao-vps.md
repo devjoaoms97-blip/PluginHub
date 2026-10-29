@@ -9,4 +9,4 @@ O que precisa ser feito ou conferido quando o servidor sair do PC (`C:\mc-teste`
 
 ## Servidor
 
-- [ ] `allow-nether=false` no `server.properties` e `allow-end: false` no `bukkit.yml`: o Nether e o End são só os de recursos (`/nether` e `/end`).
+- [ ] `allow-nether=false` no `server.properties` e `allow-end: false` no `bukkit.yml`: o Nether e o End são só os de recursos (`/warp nether` e `/warp end`).

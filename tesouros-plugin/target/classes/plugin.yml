@@ -4,19 +4,19 @@ main: com.example.tesouros.TesourosPlugin
 api-version: '26.2'
 author: Você
 description: Mapas do tesouro com coordenadas no mundo superplano, câmara de guardiões e baú trancado.
-softdepend: [Vault, RankupPlugin, ClasPlugin, PixPlugin, DiscordPlugin, Multiverse-Core]
+softdepend: [Vault, RankupPlugin, ClasPlugin, ChequePlugin, PixPlugin, DiscordPlugin, Multiverse-Core, SpawnersPlugin, MaquinasPlugin]
 
 commands:
   tesouro:
     description: Mapas do tesouro e o mundo dos tesouros.
-    usage: "Uso: /tesouro [ir|convidar|sair|ajuda]"
+    usage: "Uso: /tesouro [convidar|desconvidar|sair|ajuda] (ir: /warp tesouros)"
     aliases: [tesouros]
     permission: tesouros.usar
     permission-message: "§cVocê não tem permissão."
 
 permissions:
   tesouros.usar:
-    description: Vai pro mundo dos tesouros, convida amigos e sai da câmara.
+    description: Vai pro mundo dos tesouros (/warp tesouros), convida amigos e sai da câmara.
     default: true
   tesouros.admin:
     description: Dá mapas, encerra câmaras, mexe no loot e quebra blocos no mundo dos tesouros.

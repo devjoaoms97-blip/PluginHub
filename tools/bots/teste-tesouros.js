@@ -33,10 +33,14 @@ t.rodar(async () => {
     await t.console(`effect give ${b.username} minecraft:resistance infinite 4 true`)
   }
 
-  console.log('\n== /tesouro ir ==')
-  let msgs = await t.capturar(dono, () => dono.chat('/tesouro ir'), 3000)
+  console.log('\n== /warp tesouros ==')
+  let msgs = await t.capturar(dono, () => dono.chat('/warp tesouros'), 3000)
   t.verificar(msgs.some(m => m.includes('mundo dos tesouros')), 'foi pro mundo dos tesouros')
   t.verificar(Math.round(dono.entity.position.y) === SUP + 1, 'de pé no chão do superplano', `${dono.entity.position}`)
+  t.verificar(dono.blockAt(dono.entity.position.offset(0, -1, 0))?.name === 'lodestone', 'chegou no centro do templo', dono.blockAt(dono.entity.position.offset(0, -1, 0))?.name)
+  t.verificar(Math.abs(dono.entity.position.x - 0.5) < 0.01 && Math.abs(dono.entity.position.z - 0.5) < 0.01, 'bem no meio do bloco central', `${dono.entity.position}`)
+  const holos = await t.console(`${W} execute if entity @e[type=text_display,tag=tesouros_templo]`)
+  t.verificar(holos.includes("Count: 5"), "o templo tem os 5 hologramas (centro e as 4 direções)", holos)
   const borda = await t.console(`${W} worldborder get`)
   t.verificar(borda.includes('3200'), 'borda de 3.200 blocos (raio máximo + 100)', borda)
 
@@ -93,10 +97,12 @@ t.rodar(async () => {
   const janela = await dono.openContainer(bau())
   const noBau = janela.containerItems()
   t.verificar(noBau.length > 0, 'o baú tem itens', noBau.map(i => i.name + 'x' + i.count).join(', '))
-  if (noBau.length) await dono.clickWindow(noBau[0].slot, 0, 1) // tira uma pilha (shift)
+  if (noBau.length) await dono.clickWindow(noBau[0].slot, 0, 1) // tira a primeira pilha (shift): o cheque
   dono.closeWindow(janela)
   await t.espera(800)
-  t.verificar(dono.mensagens.some(m => m.includes('O baú tinha')), 'as coins foram pro dono')
+  const temCheque = await t.console(`execute if entity @a[name=${dono.username},nbt={Inventory:[{components:{"minecraft:custom_data":{PublicBukkitValues:{"chequeplugin:cheque_valor":5000.0d,"chequeplugin:cheque_origem":"Tesouro"}}}}]}]`)
+  t.verificar(temCheque.includes('passed'), 'o dinheiro veio num cheque de R$ 5.000 do Tesouro (o primeiro item do baú)', temCheque)
+  t.verificar(!dono.mensagens.some(m => m.includes('O baú tinha')), 'e não caiu direto no saldo')
 
   console.log('\n== Sair ==')
   msgs = await t.capturar(amigo, () => amigo.chat('/tesouro sair'), 1500)

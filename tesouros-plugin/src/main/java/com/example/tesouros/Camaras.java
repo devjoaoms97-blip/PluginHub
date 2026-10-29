@@ -30,11 +30,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
@@ -305,6 +307,12 @@ public class Camaras implements Listener {
         c.liberadaEm = System.currentTimeMillis();
         c.premio = plugin.getLoot().sortear(c.mapa.raridade());
         c.bau = Bukkit.createInventory(c, 54, "§8✦ Tesouro " + plugin.nomeRaridade(c.mapa.raridade()));
+        // o dinheiro vem num cheque (do ChequePlugin), o primeiro item do baú; sem o ChequePlugin, cai no saldo ao abrir
+        ItemStack cheque = c.premio.coins() > 0 ? plugin.getIntegracoes().cheque(c.premio.coins(), "Tesouro") : null;
+        if (cheque != null) {
+            c.bau.addItem(cheque);
+            c.coinsEntregues = true;
+        }
         for (ItemStack item : c.premio.itens()) c.bau.addItem(item);
 
         Location bau = c.blocoBau().getLocation().add(0.5, 1, 0.5);
@@ -349,6 +357,7 @@ public class Camaras implements Listener {
         }
     }
 
+    /** Só sem o ChequePlugin: o dinheiro do tesouro cai direto no saldo de quem tinha o mapa. */
     private void entregarCoins(Camara c, Player dono) {
         if (c.coinsEntregues || c.premio == null) return;
         c.coinsEntregues = true;
@@ -533,7 +542,7 @@ public class Camaras implements Listener {
         if (!plugin.getIntegracoes().emMina(evento.getBlock().getLocation())) return;
         String raridade = plugin.getMapas().sortearRaridade(plugin.getConfig().getConfigurationSection("drops.mina.pesos"));
         p.getInventory().addItem(plugin.getMapas().criar(raridade)).values().forEach(i -> p.getWorld().dropItem(p.getLocation(), i));
-        p.sendMessage("§6✦ §eVocê achou um §fMapa do Tesouro " + plugin.nomeRaridade(raridade) + "§e! §7Veja as coordenadas e use §f/tesouro ir§7.");
+        p.sendMessage("§6✦ §eVocê achou um §fMapa do Tesouro " + plugin.nomeRaridade(raridade) + "§e! §7Veja as coordenadas e use §f/warp tesouros§7.");
         p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 0.8f);
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5f, 1.5f);
         if ("lendario".equals(raridade)) Bukkit.broadcastMessage("§6✦ §e" + p.getName() + " §7achou um §6Mapa do Tesouro Lendário §7minerando!");
@@ -574,6 +583,29 @@ public class Camaras implements Listener {
         if (!noMundo(evento.getLocation().getWorld())) return;
         CreatureSpawnEvent.SpawnReason motivo = evento.getSpawnReason();
         if (motivo != CreatureSpawnEvent.SpawnReason.CUSTOM && motivo != CreatureSpawnEvent.SpawnReason.COMMAND) evento.setCancelled(true);
+    }
+
+    /**
+     * {@code /warp tesouros}: o /warp é do Essentials, e esse destino é do plugin. Roda por último
+     * (HIGHEST, só se ninguém cancelou), depois de quem barra teleporte (combate, duelo, Gladiador).
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void aoUsarWarp(PlayerCommandPreprocessEvent evento) {
+        String[] partes = evento.getMessage().trim().split("\\s+");
+        String cmd = partes[0].toLowerCase(java.util.Locale.ROOT);
+        if (partes.length < 2 || !partes[1].equalsIgnoreCase("tesouros")) return;
+        if (!(cmd.equals("/warp") || cmd.equals("/ewarp") || cmd.equals("/essentials:warp") || cmd.equals("/essentials:ewarp"))) return;
+        evento.setCancelled(true);
+        plugin.ir(evento.getPlayer());
+    }
+
+    @EventHandler
+    public void aoCompletar(TabCompleteEvent evento) {
+        String buffer = evento.getBuffer().toLowerCase(java.util.Locale.ROOT);
+        if (!buffer.startsWith("/warp ") || buffer.substring(6).contains(" ") || !"tesouros".startsWith(buffer.substring(6))) return;
+        List<String> opcoes = new ArrayList<>(evento.getCompletions());
+        if (!opcoes.contains("tesouros")) opcoes.add("tesouros");
+        evento.setCompletions(opcoes);
     }
 
     @EventHandler

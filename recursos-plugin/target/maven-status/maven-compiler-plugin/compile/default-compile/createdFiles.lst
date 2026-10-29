@@ -6,3 +6,5 @@ com\example\recursos\Mapas.class
 com\example\recursos\ResetManager.class
 com\example\recursos\Mapas$Terreno.class
 com\example\recursos\ResetManager$1.class
+com\example\recursos\Luz.class
+com\example\recursos\RecursosPlugin$1.class

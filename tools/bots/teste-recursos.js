@@ -11,8 +11,8 @@ t.rodar(async () => {
   const a = await t.criarBot(t.nomeNovo('Rca')), b = await t.criarBot(t.nomeNovo('Rcb'))
   for (const bot of [a, b]) await t.console(`gamemode survival ${bot.username}`)
 
-  console.log('\n== /recursos ==')
-  let msgs = await t.capturar(a, () => a.chat('/recursos'), 6000)
+  console.log('\n== /warp recursos ==')
+  let msgs = await t.capturar(a, () => a.chat('/warp recursos'), 6000)
   t.verificar(msgs.some(m => m.includes('Bem-vindo')), 'foi pro mundo de recursos', msgs.find(m => /Bem-vindo|Não achei/.test(m)))
   const p = a.entity.position
   const abaixo = a.blockAt(p.offset(0, -1, 0))
@@ -20,8 +20,8 @@ t.rodar(async () => {
   t.verificar(Math.abs(p.x) <= 2500 && Math.abs(p.z) <= 2500, 'dentro do raio do teleporte', `${p}`)
   const borda = await t.console(`${W} worldborder get`)
   t.verificar(borda.includes('6000'), 'borda de 6000 blocos', borda)
-  msgs = await t.capturar(a, () => a.chat('/recursos'))
-  t.verificar(msgs.some(m => m.includes('Espere')), 'cooldown entre um /recursos e outro')
+  msgs = await t.capturar(a, () => a.chat('/warp recursos'))
+  t.verificar(msgs.some(m => m.includes('Espere')), 'cooldown entre um teleporte e outro')
 
   // marca um bloco no mundo antigo, ao lado do bot
   const [mx, my, mz] = [Math.floor(p.x) + 2, Math.floor(p.y), Math.floor(p.z)]
@@ -29,7 +29,7 @@ t.rodar(async () => {
   t.verificar(await blocoE(mx, my, mz, 'diamond_block'), 'bloco de diamante colocado no mundo antigo')
 
   // b também vai pro mundo de recursos e sai do servidor lá dentro
-  await t.capturar(b, () => b.chat('/recursos'), 6000)
+  await t.capturar(b, () => b.chat('/warp recursos'), 6000)
   const nomeB = b.username
   b.quit()
   await t.espera(1000)
@@ -49,7 +49,7 @@ t.rodar(async () => {
 
   console.log('\n== Quem estava lá desconectado ==')
   const b2 = await t.criarBot(nomeB)
-  await t.espera(4000)
+  await t.espera(6000) // o resgate espera o login no AuthMe
   t.verificar(b2.mensagens.some(m => m.includes('foi resetado enquanto você estava fora')), 'avisado ao entrar', JSON.stringify(b2.mensagens))
   const pb = b2.entity.position
   t.verificar(String(b2.game.dimension).includes('recursos') || (await t.console(`data get entity ${nomeB} Dimension`)).includes('recursos'),

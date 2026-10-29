@@ -1,4 +1,4 @@
-// Nether e End de recursos (RecursosPlugin): /nether leva a um chão seguro abaixo do teto, /end leva
+// Nether e End de recursos (RecursosPlugin): /warp nether leva a um chão seguro abaixo do teto, /warp end leva
 // ao quadrado verde do centro (sem PvP em cima dele, com PvP fora), o centro do End não deixa quebrar,
 // as gaiolas dos cristais saem, o ovo do dragão não teleporta, o dragão renasce pela staff, /mapa dá o
 // mapa do mundo, o reset do Nether regenera o mundo e resgata quem saiu lá dentro. Precisa dos mundos
@@ -22,8 +22,8 @@ t.rodar(async () => {
     await t.console(`effect give ${bot.username} minecraft:resistance infinite 4 true`) // nada mata os bots no meio do teste
   }
 
-  console.log('\n== /nether ==')
-  let msgs = await t.capturar(a, () => a.chat('/nether'), 8000)
+  console.log('\n== /warp nether ==')
+  let msgs = await t.capturar(a, () => a.chat('/warp nether'), 8000)
   t.verificar(msgs.some(m => m.includes('Bem-vindo ao Nether')), 'foi pro Nether', msgs.find(m => /Bem-vindo|Não achei/.test(m)))
   t.verificar(await naDimensao('recursos_nether', a.username), 'está no recursos_nether')
   const p = a.entity.position
@@ -42,16 +42,31 @@ t.rodar(async () => {
   await t.capturar(a, () => a.chat('/mapa end'), 1000)
   t.verificar(a.inventory.items().filter(i => i.name === 'filled_map').length === 2, '/mapa end deu o mapa do End')
 
-  console.log('\n== /end ==')
+  console.log('\n== /warp end ==')
   // sem dragão durante o centro e o PvP (a staff renasce ele no fim)
   await t.console(`${E} minecraft:kill @e[type=ender_dragon]`)
-  msgs =await t.capturar(a, () => a.chat('/end'), 6000)
+  msgs =await t.capturar(a, () => a.chat('/warp end'), 6000)
   t.verificar(msgs.some(m => m.includes('Bem-vindo ao End')), 'foi pro End')
   t.verificar(await naDimensao('recursos_end', a.username), 'está no recursos_end')
   const pa = a.entity.position
   t.verificar(a.blockAt(pa.offset(0, -1, 0))?.name === 'lime_concrete', 'chegou no quadrado verde', `${pa} sobre ${a.blockAt(pa.offset(0, -1, 0))?.name}`)
   t.verificar(Math.abs(pa.x - 0.5) < 1 && Math.abs(pa.z - 25.5) < 1, 'no centro (0, 25)', `${pa}`)
   t.verificar((await t.console(`${E} worldborder get`)).includes('5000'), 'borda de 5.000 blocos no End')
+  const avisos = await t.console(`${E} execute if entity @e[type=text_display,tag=recursos_aviso_pvp_end,x=0,y=${Math.floor(pa.y)},z=25,distance=..5]`)
+  t.verificar(/Count: 1\b/.test(avisos), 'um holograma em cima do quadrado verde avisa do PvP', avisos)
+
+  console.log('\n== /luz ==')
+  const comLuz = async nome => (await t.console(`execute if entity @a[name=${nome},nbt={active_effects:[{id:"minecraft:night_vision"}]}]`)).includes('passed')
+  msgs = await t.capturar(a, () => a.chat('/luz'), 1000)
+  t.verificar(msgs.some(m => m.includes('Visão noturna ligada')) && await comLuz(a.username), '/luz liga a visão noturna')
+  await t.console(`minecraft:effect clear ${a.username} minecraft:night_vision`)
+  await t.console(`minecraft:kill ${a.username}`)
+  await t.espera(3000)
+  t.verificar(await comLuz(a.username), 'ela volta depois de morrer')
+  await t.console(`effect give ${a.username} minecraft:resistance infinite 4 true`)
+  msgs = await t.capturar(a, () => a.chat('/luz'), 1000)
+  t.verificar(msgs.some(m => m.includes('desligada')) && !(await comLuz(a.username)), '/luz de novo desliga')
+  await t.capturar(a, () => a.chat('/warp end'), 5000)
 
   console.log('\n== Centro protegido ==')
   const lado = a.blockAt(pa.offset(3, -1, 0))
@@ -61,7 +76,7 @@ t.rodar(async () => {
   t.verificar(a.blockAt(pa.offset(3, -1, 0))?.name === nomeLado && nomeLado !== 'air', 'não dá pra quebrar no centro do End', nomeLado)
 
   console.log('\n== PvP: no quadrado verde não, fora sim ==')
-  await t.capturar(b, () => b.chat('/end'), 6000)
+  await t.capturar(b, () => b.chat('/warp end'), 6000)
   await t.console(`effect clear ${nomeB}`)
   await t.console(`minecraft:effect give ${nomeB} minecraft:instant_health 1 5 true`)
   await t.espera(1500)
@@ -132,7 +147,7 @@ t.rodar(async () => {
     'o bloco do Nether antigo sumiu')
   await t.console(`${N} forceload remove ${marca[0]} ${marca[2]}`)
   b = await t.criarBot(nomeB)
-  await t.espera(3000)
+  await t.espera(6000) // o resgate espera o login no AuthMe
   t.verificar(b.mensagens.some(m => m.includes('Nether foi resetado enquanto você estava fora')), 'quem saiu no Nether antigo é resgatado')
   t.verificar(await naDimensao('recursos_nether', nomeB) && b.entity.position.y < 127, 'num lugar seguro do Nether novo', `${b.entity.position}`)
 

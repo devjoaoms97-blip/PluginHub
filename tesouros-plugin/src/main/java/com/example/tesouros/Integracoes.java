@@ -14,8 +14,9 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * RankupPlugin (se um bloco é de mina e o Fragmento Arcano), ClasPlugin (mesmo clã), PixPlugin (o
- * extrato), DiscordPlugin (anúncios) e Vault (coins). Os plugins nossos vão por reflexão, sem
+ * RankupPlugin (se um bloco é de mina e o Fragmento Arcano), ClasPlugin (mesmo clã), ChequePlugin (o
+ * cheque com o dinheiro do tesouro), PixPlugin (o extrato), DiscordPlugin (anúncios) e Vault (coins, sem o
+ * ChequePlugin). Os plugins nossos vão por reflexão, sem
  * dependência de compilação: sem o plugin, não faz nada.
  */
 public class Integracoes {
@@ -90,6 +91,21 @@ public class Integracoes {
                     : (ItemStack) p.getClass().getMethod(metodo, t.getClass(), int.class).invoke(p, t, quantidade);
         } catch (ReflectiveOperationException | ClassCastException e) {
             avisar(nomePlugin + "#" + metodo, e);
+            return null;
+        }
+    }
+
+    /**
+     * Um cheque com o valor, emitido pelo servidor (ChequePlugin#chequeDoServidor): o dinheiro só entra
+     * na economia quando alguém deposita no Bancário. null sem o ChequePlugin.
+     */
+    public ItemStack cheque(double valor, String origem) {
+        Plugin cheque = habilitado("ChequePlugin");
+        if (cheque == null) return null;
+        try {
+            return (ItemStack) cheque.getClass().getMethod("chequeDoServidor", double.class, String.class).invoke(cheque, valor, origem);
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            avisar("ChequePlugin#chequeDoServidor", e);
             return null;
         }
     }

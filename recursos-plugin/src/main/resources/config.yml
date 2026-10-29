@@ -1,9 +1,9 @@
 # Configuração do RecursosPlugin
 #
-# Mundos de recursos: o normal (/recursos), o Nether (/nether) e o End (/end). Cada um é resetado
+# Mundos de recursos: o normal (/warp recursos), o Nether (/warp nether) e o End (/warp end). Cada um é resetado
 # uma vez por mês, num dia diferente, pra não crescer sem fim nem virar um queijo suíço. No reset,
 # tudo o que estiver no mundo some. O Nether e o End padrão do jogo ficam desligados
-# (allow-nether=false no server.properties e allow-end: false no bukkit.yml): só se entra por comando.
+# (allow-nether=false no server.properties e allow-end: false no bukkit.yml): só se entra pela warp.
 
 reset:
   # Reset automático. Desligado, só a staff reseta (/recursos admin resetar).
@@ -21,38 +21,40 @@ saida:
 teleporte:
   # Pontos testados antes de desistir (água, lava e afins são pulados).
   tentativas: 20
-  # Espera entre um teleporte e outro (vale pros três comandos juntos).
+  # Espera entre um teleporte e outro (vale pras três warps juntas).
   cooldown-segundos: 30
 
-# Um por mundo (o nome é o do Multiverse). "comando" é o comando que leva pra ele; "dia-do-mes" é o
+# Um por mundo (o nome é o do Multiverse). "warp" é o nome da warp que leva pra ele (/warp <nome>); "dia-do-mes" é o
 # dia do reset (num mês mais curto, o último dia); "borda" é o lado da borda em blocos (0 = sem);
 # "raio" é até onde o teleporte aleatório vai do centro (no End, o teleporte é sempre pro centro).
 mundos:
   recursos:
     nome: "mundo de recursos"
-    comando: recursos
+    warp: recursos
     dia-do-mes: 30
     borda: 6000
     raio: 2500
   recursos_nether:
     nome: "Nether"
-    comando: nether
+    warp: nether
     dia-do-mes: 20
     borda: 3000
     raio: 1400
   recursos_end:
     nome: "End"
-    comando: end
+    warp: end
     dia-do-mes: 10
     borda: 5000
 
 # O centro do End: ninguém quebra nem constrói até "raio-protegido" blocos do 0, 0, e quem chega pelo
-# /end nasce num quadrado 3x3 de blocos verdes, sem PvP em cima dele.
+# /warp end nasce num quadrado 3x3 de blocos verdes, sem PvP em cima dele.
 end:
   raio-protegido: 100
   # Centro do quadrado verde (x, z), na ilha principal, fora do portal.
   plataforma: [0, 25]
   bloco-plataforma: LIME_CONCRETE
+  # O holograma em cima do quadrado verde (\n quebra a linha).
+  aviso-pvp: "&a&lSEM PvP &r&fem cima do quadrado verde\n&c&l⚔ PvP LIGADO &r&fem todo o resto do End"
   # As gaiolas de ferro dos cristais ficam dentro da área protegida, onde não dá pra construir até
   # elas: o plugin tira as grades, e todos os cristais caem com flecha.
   remover-gaiolas: true
@@ -60,4 +62,4 @@ end:
     # O dragão renasce todo dia nesse horário, se não estiver vivo (o ovo é só enfeite: não sai do lugar).
     renascer: true
     hora: "21:00"
-    mensagem: "&5&l🐉 O Dragão do End renasceu! &dVá com &f/end&d."
+    mensagem: "&5&l🐉 O Dragão do End renasceu! &dVá com &f/warp end&d."

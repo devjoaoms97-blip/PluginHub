@@ -12,12 +12,12 @@ As raridades são **comum**, **raro**, **arcano** e **lendário**. O item é um 
 
 ## Como funciona
 
-1. `/tesouro ir` leva ao mundo dos tesouros. Com o mapa na mão, a barra acima do inventário mostra quantos blocos faltam até o X.
+1. `/warp tesouros` leva ao mundo dos tesouros, no centro do **templo da chegada**: um mini templo de pedra aberto pros quatro lados, com um holograma em cada lado dizendo a direção (Norte: o Z diminui; Sul: o Z aumenta; Leste: o X aumenta; Oeste: o X diminui), um caminho saindo de cada lado e um holograma no centro explicando como achar o tesouro. O templo é construído uma vez por mundo (`templo.yml`). O mundo não tem PvP. Com o mapa na mão, a barra acima do inventário mostra quantos blocos faltam até o X.
 2. No mundo dos tesouros ninguém quebra nem coloca bloco. O único bloco que se cava é o chão do X, por quem tem aquele mapa no inventário. O mapa é gasto na hora.
 3. Embaixo do X, a câmara é montada: uma sala de 15×15 com 6 de altura, 18 blocos abaixo do chão. O dono do mapa cai nela, e quem pode entrar e está a até 6 blocos (`camara.raio-puxar`) cai junto.
 4. **Quem pode entrar:** o dono, o clã dele (ClasPlugin) e quem ele convidou com `/tesouro convidar <jogador>` (o convite vale até o dono sair do servidor). Eles entram pisando no buraco do X enquanto a câmara está aberta. Os outros são barrados no buraco, e ninguém entra por teleporte.
 5. **Guardiões:** as ondas de `raridades.<raridade>.ondas`, com vida e dano multiplicados, e um chefe no fim do arcano e do lendário. Uma barra de boss mostra a onda, quantos guardiões faltam e o tempo. Os guardiões não deixam itens, só XP.
-6. **Baú:** fica trancado enquanto houver guardião. Depois, só o dono do mapa abre. Na primeira vez ele recebe as coins (registradas no extrato), e do baú só se tira. A câmara fica aberta por `camara.tempo-para-pegar-segundos` (90 s); no fim, o que sobrou no baú vai pro inventário do dono.
+6. **Baú:** fica trancado enquanto houver guardião. Depois, só o dono do mapa abre. **O dinheiro vem num cheque** (o primeiro item do baú), emitido pelo servidor com o valor da raridade: ele vira dinheiro quando alguém deposita no Bancário (com a taxa de 1% de todo depósito) e vale pra quem estiver com ele, como dinheiro vivo. Sem o ChequePlugin, o valor cai direto no saldo do dono ao abrir o baú. Do baú só se tira. A câmara fica aberta por `camara.tempo-para-pegar-segundos` (90 s); no fim, o que sobrou no baú vai pro inventário do dono.
 7. **Fim:** `/tesouro sair` (depois que o baú destrava) leva pra superfície, ao lado do X. Quando o dono sai, a câmara fecha. Ao fechar, todo mundo sobe, e cada bloco da sala volta pra camada do superplano daquela altura.
 
 **Regras duras:**
@@ -32,7 +32,7 @@ As raridades são **comum**, **raro**, **arcano** e **lendário**. O item é um 
 
 ## Loot (`loot.yml`)
 
-Cada raridade tem coins (`[mín, máx]`; iguais = valor fixo: 5 mil, 20 mil, 50 mil e 100 mil) e `rolagens` itens sorteados pelo peso, sem repetir (cada item sai no máximo uma vez por baú). Um item pode ser um material, `fragmento` (Fragmento Arcano do RankupPlugin), `livro:<encantamento>:<nível>`, `spawner:<tipo>` (SpawnersPlugin), `maquina:<tipo>` (MaquinasPlugin, nova), `combustivel` (Células de Combustível), ou qualquer item posto pela staff com `/tesouro loot add`. Quantidade maior que uma pilha vem em várias pilhas.
+Cada raridade tem coins (`[mín, máx]`; iguais = valor fixo: 5 mil, 20 mil, 50 mil e 100 mil), entregues num cheque, e `rolagens` itens sorteados pelo peso, sem repetir (cada item sai no máximo uma vez por baú). Um item pode ser um material, `fragmento` (Fragmento Arcano do RankupPlugin), `livro:<encantamento>:<nível>`, `spawner:<tipo>` (SpawnersPlugin), `maquina:<tipo>` (MaquinasPlugin, nova), `combustivel` (Células de Combustível), ou qualquer item posto pela staff com `/tesouro loot add`. Quantidade maior que uma pilha vem em várias pilhas.
 
 Os spawners e as máquinas saem do comum (spawner de Zumbi e Esqueleto) ao lendário (Golem de Ferro, Lapidadora e Reator Arcano), mais raros quanto mais caros. A máquina que sai acima do rank do jogador pode ser guardada e vendida, mas só é colocada e usada por quem tem o rank dela (ou já fez prestígio): o MaquinasPlugin bloqueia. O spawner não tem trava. **Os itens ainda vão ser calibrados.**
 
@@ -41,7 +41,7 @@ Os spawners e as máquinas saem do comum (spawner de Zumbi e Esqueleto) ao lend�
 | Comando | Quem | O que faz |
 |---|---|---|
 | `/tesouro` | todos | Ajuda |
-| `/tesouro ir` | todos | Vai pro mundo dos tesouros (em combate, o CombatePlugin barra) |
+| `/warp tesouros` | todos | Vai pro mundo dos tesouros (o plugin pega o `/warp` do Essentials; em combate, duelo ou Gladiador, continua barrado) |
 | `/tesouro convidar <jogador>` / `desconvidar` | todos | Deixa (ou tira) um amigo entrar nas suas câmaras |
 | `/tesouro sair` | todos | Sai da câmara depois que o baú destrava |
 | `/tesouro dar <jogador> <raridade> [x z]` | staff | Dá um mapa (coordenadas sorteadas ou escolhidas) |
@@ -60,15 +60,16 @@ O `configurar-mundos.ps1` cria o `tesouros`: superplano de bedrock, 40 de pedra,
 
 ## Integrações
 
-Todas são por reflexão e opcionais: RankupPlugin (mina e fragmento), ClasPlugin (clã), Vault e PixPlugin (coins e extrato) e DiscordPlugin (anúncio). Sem uma delas, só aquela parte fica de fora.
+Todas são por reflexão e opcionais: RankupPlugin (mina e fragmento), ClasPlugin (clã), ChequePlugin (o cheque do dinheiro), SpawnersPlugin e MaquinasPlugin (itens do loot), Vault e PixPlugin (coins e extrato, sem o ChequePlugin) e DiscordPlugin (anúncio). Sem uma delas, só aquela parte fica de fora.
 
 ## Teste
 
 `tools/bots/teste-tesouros.js` cobre:
+- a chegada no templo, com os hologramas;
 - cavar fora do X e no X;
 - o convidado puxado junto e o estranho barrado;
 - o baú trancado, a fuga por teleporte barrada e as ondas;
-- o baú só do dono, as coins e a saída;
+- o baú só do dono, o cheque com o dinheiro e a saída;
 - a morte que perde tudo;
 - o spawner, a máquina e as células no baú;
 - o mapa do boss e o mapa minerando.

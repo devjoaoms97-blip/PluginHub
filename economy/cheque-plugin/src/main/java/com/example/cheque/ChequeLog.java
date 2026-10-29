@@ -116,6 +116,11 @@ public class ChequeLog {
         escrever("EMITIDO   " + emissor + " " + valor(valor) + " id=" + id + (nominal != null ? " para=" + nominal : ""));
     }
 
+    /** Cheque emitido pelo servidor: só o log (não entra em emitidos.yml, porque ninguém pagou por ele). */
+    public void emitidoPeloServidor(String origem, double valor, String id) {
+        escrever("EMITIDO   [" + origem + "] " + valor(valor) + " id=" + id);
+    }
+
     public void resgatado(String quem, double valor, String id) {
         fechar(id);
         if (id != null) {

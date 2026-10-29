@@ -12,6 +12,15 @@ Cheques entre jogadores, com dinheiro de verdade do servidor (via Vault). O cheq
 
 A folha e a taxa somem da economia. `/cheque` é liberado pra todos (`cheque.criar`, padrão true).
 
+## Cheque emitido pelo servidor
+
+Outros plugins entregam dinheiro em cheque, em vez de depositar direto: o prêmio de um tesouro (TesourosPlugin) vem assim. É o `ChequePlugin#chequeDoServidor(valor, origem)`, chamado por reflexão.
+
+- O cheque não sai do saldo de ninguém. O dinheiro só entra na economia quando alguém deposita no Bancário (com a taxa de compensação de sempre).
+- Ele não é nominal: vale pra quem estiver com ele, como dinheiro vivo.
+- "Emitido por" mostra a origem ("Tesouro"), que também aparece no extrato do depósito. No `cheques.log`, a emissão sai como `EMITIDO [Tesouro]`.
+- Ninguém cancela pelo item. A staff cancela pelo ID, como qualquer cheque, mas não há valor pra devolver, porque ninguém pagou por ele.
+
 ## Mine-sena
 
 A loteria do Bancário. No balcão, o botão **Mine-sena** abre os números de 1 a `minesena.numero-maximo` (100), em páginas. Cada clique compra um bilhete daquele número por `minesena.preco-bilhete` (R$ 500). O número fica verde com a quantidade de bilhetes que o jogador tem nele.

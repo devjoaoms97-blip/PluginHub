@@ -14,6 +14,8 @@ import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -37,9 +39,9 @@ import java.util.List;
  * <ul>
  *   <li><b>Área protegida</b>: até {@code end.raio-protegido} blocos do 0, 0 (em qualquer altura),
  *       ninguém quebra, constrói, despeja balde, e explosão não quebra bloco.</li>
- *   <li><b>Chegada</b>: o {@code /end} leva pro quadrado 3x3 verde ({@code end.plataforma}), que o
+ *   <li><b>Chegada</b>: o {@code /warp end} leva pro quadrado 3x3 verde ({@code end.plataforma}), que o
  *       plugin põe no chão da ilha quando o mundo carrega (e depois de cada reset). Em cima dele não
- *       tem PvP.</li>
+ *       tem PvP, e um holograma em cima dele avisa que fora dele o PvP vale.</li>
  *   <li><b>Gaiolas</b>: as grades de ferro em volta dos cristais saem, pra todos caírem com flecha
  *       (dentro da área protegida não dá pra subir até eles).</li>
  *   <li><b>Dragão</b>: renasce todo dia no horário do config, se não estiver vivo, pelo ritual do jogo
@@ -47,6 +49,9 @@ import java.util.List;
  * </ul>
  */
 public class CentroDoEnd implements Listener {
+
+    /** A marca do holograma do aviso de PvP (pra achar e trocar o antigo). */
+    private static final String TAG_AVISO = "recursos_aviso_pvp_end";
 
     private final RecursosPlugin plugin;
     /** O dia em que o dragão já renasceu (ou foi conferido) no horário, pra não repetir. */
@@ -112,7 +117,25 @@ public class CentroDoEnd implements Listener {
             }
         }
         mundo.setSpawnLocation(p[0], y + 1, p[1]);
+        avisoDoPvp(mundo, new Location(mundo, p[0] + 0.5, y + 3.4, p[1] + 0.5));
         removerGaiolas(mundo);
+    }
+
+    /** O holograma em cima do quadrado verde: aqui não tem PvP, fora dele tem. Refaz igual (tira o antigo). */
+    private void avisoDoPvp(World mundo, Location onde) {
+        for (TextDisplay antigo : mundo.getNearbyEntitiesByType(TextDisplay.class, onde, 6)) {
+            if (antigo.getScoreboardTags().contains(TAG_AVISO)) antigo.remove();
+        }
+        String texto = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("end.aviso-pvp",
+                "&a&lSEM PvP &r&fem cima do quadrado verde\n&c&l⚔ PvP LIGADO &r&fem todo o resto do End"));
+        mundo.spawn(onde, TextDisplay.class, t -> {
+            t.addScoreboardTag(TAG_AVISO);
+            t.setBillboard(Display.Billboard.CENTER);
+            t.setShadowed(true);
+            t.setPersistent(true);
+            t.setAlignment(TextDisplay.TextAlignment.CENTER);
+            t.text(LegacyComponentSerializer.legacySection().deserialize(texto));
+        });
     }
 
     /** Em cima do quadrado verde, olhando pro portal. */
@@ -199,7 +222,7 @@ public class CentroDoEnd implements Listener {
             return "O jogo não aceitou o renascimento do dragão.";
         }
         Bukkit.broadcast(LegacyComponentSerializer.legacySection().deserialize(ChatColor.translateAlternateColorCodes('&',
-                plugin.getConfig().getString("end.dragao.mensagem", "&5&l🐉 O Dragão do End renasceu! &dVá com &f/end&d."))));
+                plugin.getConfig().getString("end.dragao.mensagem", "&5&l🐉 O Dragão do End renasceu! &dVá com &f/warp end&d."))));
         return staff ? "Dragão renascendo." : null;
     }
 

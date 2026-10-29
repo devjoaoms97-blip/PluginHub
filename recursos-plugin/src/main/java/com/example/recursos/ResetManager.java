@@ -63,8 +63,9 @@ public class ResetManager {
         return config().getString("nome", mundo);
     }
 
-    public String getComando() {
-        return config().getString("comando", mundo);
+    /** O nome da warp que leva pro mundo ({@code /warp <nome>}). Config antigo: a chave era "comando". */
+    public String getWarp() {
+        return config().getString("warp", config().getString("comando", mundo));
     }
 
     public int getRaio() {
@@ -195,7 +196,7 @@ public class ResetManager {
         plugin.salvarDados();
         plugin.prepararMundo(novo);
         plugin.getMapas().limpar(mundo); // o desenho do mundo antigo some
-        anunciar("§6§l[Recursos] §aO " + getNome() + " foi resetado! §7Vá com §f/" + getComando() + "§7.");
+        anunciar("§6§l[Recursos] §aO " + getNome() + " foi resetado! §7Vá com §f/warp " + getWarp() + "§7.");
         plugin.getLogger().info(mundo + " resetado (ciclo " + ciclo + ").");
     }
 

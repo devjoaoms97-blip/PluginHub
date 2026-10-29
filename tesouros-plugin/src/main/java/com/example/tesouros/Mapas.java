@@ -67,7 +67,7 @@ public class Mapas {
         List<String> lore = new ArrayList<>();
         lore.add("§7Raridade: " + nomeRaridade);
         lore.add("§7Onde cavar: §fX " + x + "§7, §fZ " + z);
-        lore.add("§7No mundo dos tesouros: §e/tesouro ir");
+        lore.add("§7No mundo dos tesouros: §e/warp tesouros");
         lore.add("");
         lore.add("§7Cave o chão no X e enfrente os guardiões.");
         lore.add("§cQuem morre na câmara perde tudo.");

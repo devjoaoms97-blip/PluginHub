@@ -216,7 +216,7 @@ public class Banco implements Listener {
             double taxa = Math.round(valor * taxaPercentual) / 100.0;
             econ.depositPlayer(jogador, valor - taxa);
             log.resgatado(jogador.getName(), valor, id);
-            String deQuem = emissao != null ? Bukkit.getOfflinePlayer(emissao.emissor()).getName() : null;
+            String deQuem = emissao != null ? Bukkit.getOfflinePlayer(emissao.emissor()).getName() : plugin.origemDoCheque(item);
             plugin.getPix().registrar(jogador.getUniqueId(), deQuem != null ? "Cheque de " + deQuem : "Cheque", valor - taxa, true,
                     "Depósito de cheque" + (taxa > 0 ? " (taxa " + dinheiro(taxa) + ")" : ""));
             creditado += valor - taxa;

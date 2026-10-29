@@ -2,6 +2,7 @@ package com.example.tesouros;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
@@ -33,6 +34,7 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
     private Mapas mapas;
     private Loot loot;
     private Camaras camaras;
+    private Templo templo;
     private NamespacedKey chaveGuardiao;
     private final List<Material> camadas = new ArrayList<>();
     private final List<Integer> alturas = new ArrayList<>();
@@ -46,6 +48,7 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
         this.mapas = new Mapas(this);
         this.loot = new Loot(this);
         this.camaras = new Camaras(this);
+        this.templo = new Templo(this);
         getServer().getPluginManager().registerEvents(camaras, this);
         getCommand("tesouro").setExecutor(this);
         getCommand("tesouro").setTabCompleter(this);
@@ -67,6 +70,7 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
         mundo.getWorldBorder().setCenter(0, 0);
         mundo.getWorldBorder().setSize(borda * 2);
         camaras.desfazerPendentes();
+        templo.garantir(mundo);
     }
 
     @Override
@@ -155,7 +159,6 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
         String sub = args.length == 0 ? "ajuda" : args[0].toLowerCase(Locale.ROOT);
         boolean admin = sender.hasPermission("tesouros.admin");
         switch (sub) {
-            case "ir" -> ir(sender);
             case "convidar" -> convidar(sender, args, true);
             case "desconvidar" -> convidar(sender, args, false);
             case "sair" -> {
@@ -196,7 +199,7 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
         sender.sendMessage("§6✦ Mapas do Tesouro");
         sender.sendMessage("§7O boss sempre deixa um mapa quando morre, e as minas dão um de vez em quando.");
         sender.sendMessage("§7Vá até o X do mapa no mundo dos tesouros, cave o chão e derrote os guardiões.");
-        sender.sendMessage("§e/tesouro ir §7- vai pro mundo dos tesouros");
+        sender.sendMessage("§e/warp tesouros §7- vai pro mundo dos tesouros");
         sender.sendMessage("§e/tesouro convidar <jogador> §7- deixa um amigo entrar na sua câmara (o clã já pode)");
         sender.sendMessage("§e/tesouro desconvidar <jogador> §7- tira o convite");
         sender.sendMessage("§e/tesouro sair §7- sai da câmara depois que o baú destrava");
@@ -207,11 +210,8 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
         }
     }
 
-    private void ir(CommandSender sender) {
-        if (!(sender instanceof Player p)) {
-            sender.sendMessage("§cSó jogadores vão pro mundo dos tesouros.");
-            return;
-        }
+    /** {@code /warp tesouros} (o Camaras intercepta o /warp do Essentials). */
+    public void ir(Player p) {
         World mundo = getMundo();
         if (mundo == null) {
             p.sendMessage("§cO mundo dos tesouros não existe no momento.");
@@ -222,7 +222,8 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
             return;
         }
         // como COMMAND, pra o CombatePlugin barrar quem está em combate
-        p.teleport(mundo.getSpawnLocation(), PlayerTeleportEvent.TeleportCause.COMMAND);
+        // no meio do bloco central do templo, olhando pro norte (o spawn do mundo guarda só o canto do bloco)
+        p.teleport(new Location(mundo, 0.5, ySuperficie(mundo) + 1, 0.5, 180f, 0f), PlayerTeleportEvent.TeleportCause.COMMAND);
         p.sendMessage("§6✦ §eBem-vindo ao mundo dos tesouros! §7Ande até o X do seu mapa e cave o chão.");
     }
 
@@ -312,7 +313,7 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
         List<String> opcoes = new ArrayList<>();
         boolean admin = sender.hasPermission("tesouros.admin");
         if (args.length == 1) {
-            opcoes.addAll(List.of("ir", "convidar", "desconvidar", "sair", "ajuda"));
+            opcoes.addAll(List.of("convidar", "desconvidar", "sair", "ajuda"));
             if (admin) opcoes.addAll(List.of("dar", "ativas", "encerrar", "loot", "reload"));
         } else if (args.length == 2 && List.of("convidar", "desconvidar", "dar").contains(args[0].toLowerCase(Locale.ROOT))) {
             Bukkit.getOnlinePlayers().forEach(p -> opcoes.add(p.getName()));
