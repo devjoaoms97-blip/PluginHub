@@ -1,20 +1,21 @@
 # 🔗 Usando o Discord
 
-**Vincular a conta**
-1. No jogo, digite `/vincular` e copie o código (vale 10 minutos).
-2. Aqui, em {#vincular-conta}, clique no botão e cole o código. Ou use `/vincular <código>`.
-Você ganha **5 bilhetes grátis da Mine-sena** (na primeira vez), o cargo **🔗 Vinculado**, o apelido com o seu nick e o cargo do seu **VIP**, sempre em dia. `/conta` mostra a conta vinculada.
+**Vincule sua conta**
+1. No Minecraft, digite `/vincular` e copie o código de 6 letras. Ele vale por 10 minutos.
+2. Em {#vincular-conta}, clique no botão e cole o código; ou use `/vincular <código>` no Discord.
 
-**Avisos**
-Nos botões do {#boas-vindas} você escolhe ser marcado quando:
-🐉 o boss aparecer · ⚔️ o Gladiador abrir · ⚖️ um leilão começar · 📢 sair novidade
+Cada conta do Minecraft pode ser vinculada a uma conta do Discord, e vice-versa. O vínculo aplica o nick do jogo como apelido e sincroniza os cargos **Vinculado** e VIP. `/conta` mostra a conta associada. Se precisar trocar o vínculo, abra um ticket para a staff.
 
-**Suporte**
-Dúvida, bug, denúncia, pagamento ou apelação? Abra um ticket em {#abrir-ticket}. Abre um canal **privado**, só seu e da staff. Mande prints e detalhes lá. Quando fechar, você recebe uma DM com a resolução.
+Na primeira vinculação, contas do Discord com **30 dias ou mais** também ganham 5 bilhetes grátis da Mine-sena. Contas mais novas ainda podem vincular, mas não recebem esse presente. Escolha os números no Bancário dentro do jogo.
 
-**Canais ao vivo**
-🟢 {#status}: servidor online, quem está jogando, próximo boss e pote da Mine-sena
-🐉 {#eventos} · 🏛️ {#mercado} · 🎯 {#bounty} · 🏆 {#conquistas}
+**Avisos que você controla**
+Nos botões de {#boas-vindas}, ative ou remova as menções para boss, Gladiador, leilões e novidades.
 
-**Comunidade**
-💬 {#geral} pra conversar · 📸 {#prints} pra mostrar suas construções · 💰 {#comercio} pra negociar · 💡 {#sugestoes} pra dar ideias
+**Suporte por ticket**
+Em {#abrir-ticket}, escolha Dúvida, Bug, Denúncia, Pagamento, Apelação ou Outro e preencha o formulário. O canal é privado; no caso de pagamento, só a direção da staff tem acesso. Você pode manter até 2 tickets abertos e recebe uma DM quando o atendimento fecha.
+
+**Canais úteis**
+🟢 {#status}: servidor, jogadores, próximo boss e pote da Mine-sena.
+🐉 {#eventos}: agenda e anúncios · 🏛️ {#mercado}: barracas e leilões · 🎯 {#bounty}: recompensas por cabeça · 🏆 {#conquistas}: novidades e vitórias.
+
+💬 {#geral} é para conversar · 📸 {#prints} para construções · 💰 {#comercio} para negociar · 💡 {#sugestoes} para ideias.

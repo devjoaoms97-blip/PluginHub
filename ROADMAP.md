@@ -293,6 +293,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Scoreboard lateral** com o XP da skill em uso (2026-10-27, no PlacarPlugin).
 - [x] **Escudo Perfeito (parry)** (2026-10-27): escudo levantado até 0,3 s antes de um golpe corpo a corpo anula o dano e atordoa quem bateu por 1 s (sem andar e sem bater), com recarga de 3 s.
 - [x] **Corrigido** (2026-10-27): quem morre só de Sangramento agora dá o abate a quem aplicou (Bounty, clãs, missões, Gladiador).
+- [ ] **Revisar XP por dano em jogadores**: o PvP dá XP de skill integral; verificar se treino combinado entre contas pode ser usado para upar skills de forma desonesta e avaliar controles sem prejudicar o PvP legítimo.
 
 ### 🛒 EconomyShopPlugin
 - [x] **Eventos de mercado**: um item sorteado tem o preço multiplicado por algumas horas ("alta do diamante"), com anúncio no chat. A cada `intervalo-horas`, com uma chance, por `duracao-horas`; a staff liga com `/shop admin evento <item> <mult> <horas>`, e `/shop evento` mostra o item em alta.

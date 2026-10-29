@@ -1,21 +1,19 @@
 # ⛏️ Rankup e minas
 
-**Os ranks**
-Camponês → Fazendeiro → Lenhador → Ferreiro → Mercador → Escudeiro → Clérigo → Cavaleiro → Barão → Conde → Duque → **Rei**
+**Ranks e progresso**
+Camponês → Fazendeiro → Lenhador → Ferreiro → Mercador → Escudeiro → Clérigo → Cavaleiro → Barão → Conde → Duque → **Rei**.
 
-Cada rank custa mais que o anterior e dá um **bônus de venda** maior na loja. `/ranks` abre o menu com o preço, o bônus e as minas de cada um. Clique no próximo rank pra subir.
+Cada rank libera a mina correspondente e aumenta o multiplicador de venda. `/ranks` mostra preço, bônus e acesso às minas; clique no próximo rank para subir. `/rankup` sobe um rank e `/rankup max` compra todos os que seu saldo permitir.
 
-**Subindo**
-`/rankup` sobe um rank · `/rankup max` sobe quantos o seu saldo pagar
+**Como funcionam as minas**
+Há 12 minas na Avenida das Minas, uma por rank. `/mina` mostra quais você pode usar, quanto já foi minerado e o tempo até o próximo reset; clique numa opção para ir até lá. O holograma da entrada também informa o estado da mina.
 
-**As minas**
-São 12 minas na **Avenida das Minas**, uma por rank. `/mina` abre o menu (clique pra ir) e mostra o tempo até o reset e quanto já foi minerado.
-• O que você quebra **vira dinheiro na hora**, sem encher o inventário.
-• A mina **reseta** sozinha de tempos em tempos ou quando boa parte foi minerada (o holograma na entrada mostra quando).
-• **Fortuna** na picareta rende mais! A Bruxa, na entrada da avenida, encanta no nível 30.
+Na mina, o que a loja compra é **vendido automaticamente**: o dinheiro aparece na barra de ação. Blocos que a loja não compra vão para seu inventário, e a experiência vai direto para você. O preço de venda varia com a procura; o bônus do rank e do VIP também conta. As minas reiniciam por tempo ou quando atingem o percentual minerado configurado.
 
-**As oficinas** (na entrada da avenida)
-🔨 **Ferreiro** repara seus itens · 🧙 **Bruxa** encanta · ⛏️ **Picareteiro** vende picaretas e machados · 📖 **Sábio** vende níveis de XP
+**Picaretas e oficinas**
+Fortuna aumenta os drops dos minérios que a mina entrega. A Bruxa encanta picaretas na entrada da avenida; o Ferreiro repara itens, o Picareteiro vende picaretas e machados, e o Sábio vende níveis de XP.
 
-**Prestígio**
-Chegou a **Rei**? `/prestigio` volta você pro Camponês, mas você fica com o dinheiro e ganha **+10% de venda pra sempre** por nível (até 10), mais a marca ✦ no chat.
+**Prestígio de rank**
+Ao chegar a **Rei**, `/prestigio` mostra a confirmação. `/prestigio confirmar` volta você ao Camponês, mantém suas coins e dá um nível de prestígio. Cada nível acrescenta **10% permanente à venda na loja**, até 10 níveis. É um novo ciclo de rank; seu progresso de skills tem outro prestígio, explicado em **Skills e combate**.
+
+Para ver o custo, o bônus de venda e a composição de cada mina, consulte **Ranks, minas e novidades**.
