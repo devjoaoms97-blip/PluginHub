@@ -1,9 +1,9 @@
 name: RecursosPlugin
-version: '1.0.0'
+version: '1.1.0'
 main: com.example.recursos.RecursosPlugin
 api-version: '26.2'
 author: Você
-description: Mundo de recursos com teleporte aleatório seguro, borda e reset automático periódico.
+description: Mundos de recursos (normal, Nether e End) com teleporte seguro, borda, reset mensal, mapa de localização e o centro do End.
 depend: [Multiverse-Core]
 
 commands:
@@ -13,11 +13,26 @@ commands:
     aliases: [rtp, recurso]
     permission: recursos.usar
     permission-message: "§cVocê não tem permissão."
+  nether:
+    description: Vai pro Nether de recursos (ponto aleatório seguro).
+    usage: "Uso: /nether [info]"
+    permission: recursos.usar
+    permission-message: "§cVocê não tem permissão."
+  end:
+    description: Vai pro centro do End de recursos.
+    usage: "Uso: /end [info]"
+    permission: recursos.usar
+    permission-message: "§cVocê não tem permissão."
+  mapa:
+    description: Mapa de localização de um mundo de recursos.
+    usage: "Uso: /mapa <recursos|nether|end>"
+    permission: recursos.usar
+    permission-message: "§cVocê não tem permissão."
 
 permissions:
   recursos.usar:
-    description: Usa o /recursos.
+    description: Usa o /recursos, o /nether, o /end e o /mapa.
     default: true
   recursos.admin:
-    description: Reseta o mundo de recursos, cancela o reset marcado e ignora o cooldown do /recursos.
+    description: Reseta os mundos, renasce o dragão, ignora a espera do teleporte e constrói no centro do End (no criativo).
     default: op

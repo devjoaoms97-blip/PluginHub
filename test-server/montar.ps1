@@ -163,6 +163,13 @@ if ($senhaAtual) {
 }
 Set-Propriedades $props $valores
 
+# O End padrão também fica desligado (o allow-end é do bukkit.yml, que o Paper cria na primeira vez que liga).
+$bukkitYml = Join-Path $Destino 'bukkit.yml'
+if (Test-Path -LiteralPath $bukkitYml) {
+    $texto = [IO.File]::ReadAllText($bukkitYml) -replace '(?m)^(\s*allow-end:\s*)true', '${1}false'
+    [IO.File]::WriteAllText($bukkitYml, $texto, (New-Object Text.UTF8Encoding $false))
+}
+
 # 5. Nossos plugins
 & (Join-Path $Destino 'scripts\atualizar-plugins.ps1')
 

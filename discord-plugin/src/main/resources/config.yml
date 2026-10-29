@@ -86,7 +86,7 @@ categorias:
     nome: "Loja"
     titulo: "📈 Mercado"
     cor: "#16a085"
-  # Mundo de recursos resetado (encaminhado do chat).
+  # Mundo de recursos, Nether ou End resetado (encaminhado do chat).
   recursos:
     nome: "Recursos"
     titulo: "🌲 Mundo de recursos"
@@ -119,7 +119,7 @@ encaminhar:
   - categoria: loja
     padrao: "^📈 ALTA "
   - categoria: recursos
-    padrao: "O mundo de recursos foi resetado"
+    padrao: "foi resetado! Vá com /"
 
 status:
   ligou: "🟢 **Servidor online!** Bora jogar."

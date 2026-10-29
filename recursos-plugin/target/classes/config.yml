@@ -1,35 +1,63 @@
 # Configuração do RecursosPlugin
 #
-# Mundo de recursos: minérios, árvores, mobs, pesca e PvP. Ele é resetado de tempos em tempos,
-# pra não crescer sem fim nem virar um queijo suíço. No reset, tudo o que estiver lá some.
-
-# Nome do mundo (criado com o Multiverse: mv create recursos normal).
-mundo: recursos
+# Mundos de recursos: o normal (/recursos), o Nether (/nether) e o End (/end). Cada um é resetado
+# uma vez por mês, num dia diferente, pra não crescer sem fim nem virar um queijo suíço. No reset,
+# tudo o que estiver no mundo some. O Nether e o End padrão do jogo ficam desligados
+# (allow-nether=false no server.properties e allow-end: false no bukkit.yml): só se entra por comando.
 
 reset:
   # Reset automático. Desligado, só a staff reseta (/recursos admin resetar).
   ativado: true
-  # De quantos em quantos dias, contando do último reset.
-  a-cada-dias: 30
-  # Horário do reset no dia em que vence (de preferência quando tem pouca gente).
+  # Horário do reset no dia de cada mundo (de preferência quando tem pouca gente).
   hora: "05:00"
   # Avisos no chat antes do reset, em minutos.
   avisos-minutos: [60, 30, 10, 5, 1]
 
 saida:
-  # Pra onde vão os jogadores que estão no mundo de recursos na hora do reset. Vazio = o
-  # mundo principal do servidor. Quando o mapa novo estiver pronto, ponha "spawn".
+  # Pra onde vão os jogadores que estão num mundo na hora do reset (e quem sai do End pelo portal).
+  # Vazio = o mundo principal do servidor. Com o mapa novo, "spawn".
   mundo: ""
 
-borda:
-  # Lado da borda do mundo, em blocos (6000 = de -3000 a 3000). 0 = sem borda.
-  tamanho: 6000
-  centro-x: 0
-  centro-z: 0
-
 teleporte:
-  # /recursos leva a um ponto aleatório até essa distância do centro (e dentro da borda).
-  raio: 2500
   # Pontos testados antes de desistir (água, lava e afins são pulados).
   tentativas: 20
+  # Espera entre um teleporte e outro (vale pros três comandos juntos).
   cooldown-segundos: 30
+
+# Um por mundo (o nome é o do Multiverse). "comando" é o comando que leva pra ele; "dia-do-mes" é o
+# dia do reset (num mês mais curto, o último dia); "borda" é o lado da borda em blocos (0 = sem);
+# "raio" é até onde o teleporte aleatório vai do centro (no End, o teleporte é sempre pro centro).
+mundos:
+  recursos:
+    nome: "mundo de recursos"
+    comando: recursos
+    dia-do-mes: 30
+    borda: 6000
+    raio: 2500
+  recursos_nether:
+    nome: "Nether"
+    comando: nether
+    dia-do-mes: 20
+    borda: 3000
+    raio: 1400
+  recursos_end:
+    nome: "End"
+    comando: end
+    dia-do-mes: 10
+    borda: 5000
+
+# O centro do End: ninguém quebra nem constrói até "raio-protegido" blocos do 0, 0, e quem chega pelo
+# /end nasce num quadrado 3x3 de blocos verdes, sem PvP em cima dele.
+end:
+  raio-protegido: 100
+  # Centro do quadrado verde (x, z), na ilha principal, fora do portal.
+  plataforma: [0, 25]
+  bloco-plataforma: LIME_CONCRETE
+  # As gaiolas de ferro dos cristais ficam dentro da área protegida, onde não dá pra construir até
+  # elas: o plugin tira as grades, e todos os cristais caem com flecha.
+  remover-gaiolas: true
+  dragao:
+    # O dragão renasce todo dia nesse horário, se não estiver vivo (o ovo é só enfeite: não sai do lugar).
+    renascer: true
+    hora: "21:00"
+    mensagem: "&5&l🐉 O Dragão do End renasceu! &dVá com &f/end&d."

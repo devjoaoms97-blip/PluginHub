@@ -44,11 +44,11 @@ O `tools/bots/montar-mapa.js construir dicas` cria 13 NPCs pelo spawn, com 4 a 7
 
 | Onde | NPC | Assunto |
 |---|---|---|
-| Em volta da fonte | Velho Minerador, Dona Cida (a Mercadora), Veterano Bartolomeu, Zé (o Guia) | minas, rank, Fragmento Arcano e Compactador; barracas e Pix; boss, Wither de domingo e boss elite; diária, X1, Gladiador, terreno, `/achados` e `/montaria` |
+| Em volta da fonte | Velho Minerador, Dona Cida (a Mercadora), Veterano Bartolomeu, Zé (o Guia) | minas, rank, Fragmento Arcano e Compactador; barracas e Pix; boss, Wither de domingo, boss elite e o Dragão do End às 21h; diária, X1, Gladiador, terreno, `/achados` e `/montaria` |
 | Portão das minas | Guarda do Portão, Dona Neusa (a Ranzinza) | `/mina`, a venda automática e o guia de cada mina; `/rankup max`, `/prestigio`, `/missoes` e o Ferreiro |
 | Portão do boss | Sentinela do Portão, Caçador de Tesouros | agenda do boss, tempo limite e maldição, campeão, perda de itens e PvP na arena; mapas do tesouro (`/tesouro`), câmara, clã e convidados, e quem morre perde tudo |
 | Fim das avenidas leste e oeste | Leiloeiro Matias, Mestre de Armas Duda | leilão das barracas ★ e renovação; combate, Escudo Perfeito, prestígio de skill, XP em dobro e `/bounty` |
-| Jardins | Banqueira Rosa, Escriba dos Clãs, Seu Juca do Terreno | `/pix`, `/cheque`, `/shop`, extrato e Mine-sena; `/cla` e `/cc`; `/terreno` e `/recursos` |
+| Jardins | Banqueira Rosa, Escriba dos Clãs, Seu Juca do Terreno | `/pix`, `/cheque`, `/shop`, extrato e Mine-sena; `/cla` e `/cc`; `/terreno`, `/recursos`, `/nether`, `/end` (e os dias dos resets) e `/mapa` |
 
 Pra mudar as falas de vez, mude a lista `DICAS` no script e rode a parte de novo (ela recria todos); pra um ajuste rápido, use o `/dica`.
 

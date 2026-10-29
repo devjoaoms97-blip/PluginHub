@@ -54,7 +54,7 @@ em-combate:
   segundos: 5
   # Sem a barra e sem o "plugin:". Duas palavras ("vip warp") barram só aquele subcomando.
   comandos: [spawn, warp, warps, home, homes, back, return, tpa, tpahere, tpaall, tpaccept, tpyes, tpo, tpohere,
-             tphere, tpauto, call, recursos, mina, minas, vip warp, duelo assistir]
+             tphere, tpauto, call, recursos, nether, end, tesouro ir, mina, minas, vip warp, duelo assistir]
   # Quem sai do servidor em combate morre na hora, com os itens no chão (expulsão e desligamento do
   # servidor não contam). Nos mundos ignorados (as arenas), o Gladiador e o duelo tratam a desconexão.
   morrer-ao-deslogar: true

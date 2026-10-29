@@ -1,55 +1,78 @@
 package com.example.recursos;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 /**
- * Reset do mundo de recursos: a cada {@code reset.a-cada-dias} dias, no horário
- * {@code reset.hora}, com avisos no chat antes. Quem está lá dentro é levado pra fora, o
- * Multiverse regenera o mundo com uma seed nova (mantendo as regras e a borda), e a borda é
- * reaplicada. Cada reset aumenta o "ciclo"; quem estava no mundo antigo e entra depois vai pra um
- * lugar seguro, em vez de aparecer dentro de uma pedra do mundo novo.
+ * Reset de um mundo de recursos: todo mês no dia {@code dia-do-mes} do mundo (num mês mais curto, o
+ * último dia), no horário {@code reset.hora}, com avisos no chat antes. Quem está lá dentro é levado
+ * pra fora, o Multiverse regenera o mundo com uma seed nova (mantendo as regras), e a borda é
+ * reaplicada. Cada reset aumenta o "ciclo" do mundo; quem estava no mundo antigo e entra depois vai
+ * pra um lugar seguro, em vez de aparecer dentro de uma pedra do mundo novo.
  */
 public class ResetManager {
 
-    private static final Pattern OTP = Pattern.compile("confirm (\\d+)");
-
     private final RecursosPlugin plugin;
-    private final File arquivo;
+    /** O nome do mundo (Multiverse) e a chave dele em {@code mundos} e no {@code dados.yml}. */
+    private final String mundo;
     private long ultimoReset;
     private int ciclo;
-    /** Reset marcado pra esse horário (agenda ou staff), ou 0. */
+    /** Reset marcado pela staff pra esse horário, ou 0. */
     private long marcadoPara;
     private final Set<Integer> avisosDados = new HashSet<>();
+    /** Esperando o Multiverse refazer o mundo. */
+    private boolean regenerando;
 
-    public ResetManager(RecursosPlugin plugin) {
+    public ResetManager(RecursosPlugin plugin, String mundo, long ultimoReset, int ciclo) {
         this.plugin = plugin;
-        this.arquivo = new File(plugin.getDataFolder(), "dados.yml");
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(arquivo);
-        this.ultimoReset = yaml.getLong("ultimo-reset", System.currentTimeMillis());
-        this.ciclo = yaml.getInt("ciclo", 1);
-        if (!arquivo.exists()) salvar(); // a contagem começa na instalação
+        this.mundo = mundo;
+        this.ultimoReset = ultimoReset;
+        this.ciclo = ciclo;
+    }
+
+    public String getMundo() {
+        return mundo;
+    }
+
+    public World getWorld() {
+        return Bukkit.getWorld(mundo);
+    }
+
+    private ConfigurationSection config() {
+        ConfigurationSection s = plugin.getConfig().getConfigurationSection("mundos." + mundo);
+        return s != null ? s : plugin.getConfig().createSection("mundos." + mundo);
+    }
+
+    /** Como aparece nas mensagens: "mundo de recursos", "Nether", "End". */
+    public String getNome() {
+        return config().getString("nome", mundo);
+    }
+
+    public String getComando() {
+        return config().getString("comando", mundo);
+    }
+
+    public int getRaio() {
+        return config().getInt("raio", 2500);
+    }
+
+    public long getUltimoReset() {
+        return ultimoReset;
     }
 
     public int getCiclo() {
@@ -60,9 +83,9 @@ public class ResetManager {
         return marcadoPara;
     }
 
-    /** Próximo reset automático: o dia em que vence o intervalo, no horário do config. */
+    /** Próximo reset automático: o primeiro dia do mês do mundo, no horário do config, depois do último reset. */
     public long proximoAutomatico() {
-        int dias = Math.max(1, plugin.getConfig().getInt("reset.a-cada-dias", 30));
+        int dia = Math.max(1, Math.min(31, config().getInt("dia-do-mes", 30)));
         LocalTime hora;
         try {
             hora = LocalTime.parse(plugin.getConfig().getString("reset.hora", "05:00"));
@@ -70,8 +93,13 @@ public class ResetManager {
             hora = LocalTime.of(5, 0);
         }
         ZoneId zona = ZoneId.systemDefault();
-        LocalDateTime base = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(ultimoReset), zona).plusDays(dias);
-        return base.toLocalDate().atTime(hora).atZone(zona).toInstant().toEpochMilli();
+        LocalDateTime ultimo = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(ultimoReset), zona);
+        LocalDate mes = ultimo.toLocalDate().withDayOfMonth(1);
+        for (int i = 0; i < 3; i++, mes = mes.plusMonths(1)) {
+            LocalDateTime candidato = mes.withDayOfMonth(Math.min(dia, mes.lengthOfMonth())).atTime(hora);
+            if (candidato.isAfter(ultimo)) return candidato.atZone(zona).toInstant().toEpochMilli();
+        }
+        return Long.MAX_VALUE; // não acontece: em 3 meses sempre há um dia depois do último reset
     }
 
     /** Quando acontece o próximo: o marcado pela staff, ou o automático. */
@@ -97,94 +125,89 @@ public class ResetManager {
         long faltaMin = (quando - agora + 59_999) / 60_000; // arredonda pra cima
         for (int minutos : plugin.getConfig().getIntegerList("reset.avisos-minutos")) {
             if (faltaMin == minutos && quando - agora > 0 && avisosDados.add(minutos)) {
-                anunciar("§6§l[Recursos] §eO mundo de recursos vai ser §cresetado §eem §f" + minutos + " min§e. Tudo o que estiver lá "
+                anunciar("§6§l[Recursos] §eO " + getNome() + " vai ser §cresetado §eem §f" + minutos + " min§e. Tudo o que estiver lá "
                         + "(construções, baús, itens no chão) vai sumir. §7Leve o que é seu pro terreno.");
             }
         }
-        if (agora >= quando) resetar();
+        if (agora >= quando && !regenerando) resetar();
     }
 
-    /** Reseta agora. */
+    /**
+     * Começa o reset agora: tira quem está no mundo e pede o {@code mv regen <mundo> --seed} (seed nova,
+     * mantendo as regras do mundo) pelo console. O Multiverse refaz o mundo um instante depois, então o
+     * fim (ciclo, borda, centro do End, aviso) espera o mundo novo aparecer, até 30 s. Devolve false se
+     * nem deu pra começar.
+     * <p>
+     * O console precisa do {@code confirm-mode: disable_console} do Multiverse (o configurar-mundos.ps1
+     * liga): senão o regen pede um {@code /mv confirm} que ninguém dá.
+     */
     public boolean resetar() {
-        World mundo = plugin.getMundo();
-        if (mundo == null) {
-            plugin.getLogger().warning("O mundo " + plugin.getNomeMundo() + " não existe; reset pulado.");
+        if (regenerando) return false;
+        World w = getWorld();
+        if (w == null) {
+            plugin.getLogger().warning("O mundo " + mundo + " não existe; reset pulado.");
             marcadoPara = 0;
             ultimoReset = System.currentTimeMillis();
-            salvar();
+            plugin.salvarDados();
             return false;
         }
-        anunciar("§6§l[Recursos] §cResetando o mundo de recursos agora...");
-        World destino = plugin.mundoDeSaida();
-        for (Player p : new ArrayList<>(mundo.getPlayers())) {
-            p.teleport(destino.getSpawnLocation());
-            p.sendMessage("§eVocê foi tirado do mundo de recursos, que está sendo resetado.");
+        if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") == null) {
+            plugin.getLogger().severe("O reset dos mundos de recursos precisa do Multiverse-Core.");
+            return false;
         }
+        anunciar("§6§l[Recursos] §cResetando o " + getNome() + " agora...");
+        World destino = plugin.mundoDeSaida();
+        for (Player p : new ArrayList<>(w.getPlayers())) {
+            p.teleport(destino.getSpawnLocation());
+            p.sendMessage("§eVocê foi tirado do " + getNome() + ", que está sendo resetado.");
+        }
+        UUID idAntes = w.getUID();
+        regenerando = true;
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mv regen " + mundo + " --seed");
+        new BukkitRunnable() {
+            private int ticks;
 
-        if (!regenerarPeloMultiverse()) return false;
+            @Override
+            public void run() {
+                World novo = getWorld();
+                if (novo != null && !novo.getUID().equals(idAntes)) {
+                    cancel();
+                    concluir(novo);
+                } else if (++ticks > 600) {
+                    cancel();
+                    regenerando = false;
+                    marcadoPara = 0;
+                    plugin.getLogger().severe("O regen de " + mundo + " não aconteceu em 30 s. Confira o \"confirm-mode: disable_console\" "
+                            + "no config do Multiverse (mv config confirm-mode disable_console).");
+                    anunciar("§6§l[Recursos] §cO reset do " + getNome() + " falhou. A staff foi avisada.");
+                }
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
+        return true;
+    }
 
+    private void concluir(World novo) {
+        regenerando = false;
         ciclo++;
         ultimoReset = System.currentTimeMillis();
         marcadoPara = 0;
         avisosDados.clear();
-        salvar();
-        World novo = plugin.getMundo();
-        if (novo != null) aplicarBorda(novo);
-        anunciar("§6§l[Recursos] §aO mundo de recursos foi resetado! §7Vá com §f/recursos§7.");
-        plugin.getLogger().info("Mundo de recursos resetado (ciclo " + ciclo + ").");
-        return true;
+        plugin.salvarDados();
+        plugin.prepararMundo(novo);
+        anunciar("§6§l[Recursos] §aO " + getNome() + " foi resetado! §7Vá com §f/" + getComando() + "§7.");
+        plugin.getLogger().info(mundo + " resetado (ciclo " + ciclo + ").");
     }
 
-    /**
-     * {@code mv regen <mundo> --seed} (seed nova, mantendo regras e borda). O Multiverse pede
-     * confirmação com um código que só aparece na resposta do comando, então o comando roda com
-     * um remetente que guarda a resposta e confirma com o código.
-     */
-    private boolean regenerarPeloMultiverse() {
-        if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") == null) {
-            plugin.getLogger().severe("Reset do mundo de recursos precisa do Multiverse-Core.");
-            return false;
-        }
-        List<String> respostas = new ArrayList<>();
-        CommandSender remetente = Bukkit.createCommandSender(c -> respostas.add(texto(c)));
-        Bukkit.dispatchCommand(remetente, "mv regen " + plugin.getNomeMundo() + " --seed");
-        Matcher m = OTP.matcher(String.join(" ", respostas));
-        if (!m.find()) {
-            plugin.getLogger().severe("O Multiverse não pediu confirmação do regen: " + String.join(" | ", respostas));
-            return false;
-        }
-        respostas.clear();
-        Bukkit.dispatchCommand(remetente, "mv confirm " + m.group(1));
-        String resultado = String.join(" | ", respostas);
-        plugin.getLogger().info("Multiverse: " + resultado);
-        return plugin.getMundo() != null;
-    }
-
-    private static String texto(Component c) {
-        return PlainTextComponentSerializer.plainText().serialize(c);
-    }
-
-    /** Borda do mundo, pra ele não crescer sem fim (0 = sem borda). */
-    public void aplicarBorda(World mundo) {
-        double tamanho = plugin.getConfig().getDouble("borda.tamanho", 6000);
+    /** Borda do mundo, centrada no 0, 0 (0 = sem borda). */
+    public void aplicarBorda(World w) {
+        double tamanho = config().getDouble("borda", 0);
         if (tamanho <= 0) return;
-        WorldBorder borda = mundo.getWorldBorder();
-        borda.setCenter(plugin.getConfig().getDouble("borda.centro-x", 0), plugin.getConfig().getDouble("borda.centro-z", 0));
+        WorldBorder borda = w.getWorldBorder();
+        borda.setCenter(0, 0);
         borda.setSize(tamanho);
     }
 
     private static void anunciar(String mensagem) {
         Bukkit.broadcast(LegacyComponentSerializer.legacySection().deserialize(mensagem));
-    }
-
-    private void salvar() {
-        YamlConfiguration yaml = new YamlConfiguration();
-        yaml.set("ultimo-reset", ultimoReset);
-        yaml.set("ciclo", ciclo);
-        try {
-            yaml.save(arquivo);
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Não foi possível salvar dados.yml", e);
-        }
     }
 }

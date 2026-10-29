@@ -1,3 +1,7 @@
 com\example\recursos\RecursosPlugin.class
 com\example\recursos\Teleporte.class
+com\example\recursos\CentroDoEnd.class
+com\example\recursos\Mapas$Desenho.class
+com\example\recursos\Mapas.class
 com\example\recursos\ResetManager.class
+com\example\recursos\ResetManager$1.class

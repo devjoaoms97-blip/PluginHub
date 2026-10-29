@@ -5,7 +5,8 @@
 #             AreasPlugin; sem mobs naturais, sempre de dia)
 #   arenas    vazio, com plataforma: X1, Gladiador e boss (PvP, sem mobs naturais, sempre de dia)
 #   terrenos  grade do TerrenosPlugin (sem PvP nem mobs)
-#   recursos  mundo normal, resetado de tempos em tempos pelo RecursosPlugin (PvP)
+#   recursos  mundo normal, resetado todo mês pelo RecursosPlugin (PvP)
+#   recursos_nether, recursos_end   Nether e End de recursos (/nether e /end), também resetados todo mês (PvP)
 #   tesouros  superplano do TesourosPlugin: chão em y -20, câmaras enterradas embaixo (sem PvP nem
 #             mobs naturais, sempre de dia; as camadas são as do "camadas" no config do plugin)
 #
@@ -27,6 +28,8 @@ function Rodar([string]$comando) {
     $resposta
 }
 
+# o reset dos mundos de recursos roda o "mv regen" pelo console, sem o /mv confirm
+Rodar 'mv config confirm-mode disable_console' | Out-Null
 $existentes = Rodar 'mv list'
 $vazio = '--world-type flat --no-structures --generator-settings {"layers":[{"block":"minecraft:air","height":1}],"biome":"minecraft:the_void"} --force-spawn-position 0.5,65,0.5:0:0'
 $mundos = [ordered]@{
@@ -34,6 +37,8 @@ $mundos = [ordered]@{
     arenas   = "mv create arenas normal $vazio"
     terrenos = 'mv create terrenos normal --generator TerrenosPlugin --no-structures'
     recursos = 'mv create recursos normal'
+    recursos_nether = 'mv create recursos_nether nether'
+    recursos_end = 'mv create recursos_end the_end'
     tesouros = 'mv create tesouros normal --world-type flat --no-structures --generator-settings {"layers":[{"block":"minecraft:bedrock","height":1},{"block":"minecraft:stone","height":40},{"block":"minecraft:dirt","height":3},{"block":"minecraft:grass_block","height":1}],"biome":"minecraft:plains"} --force-spawn-position 0.5,-19,0.5:0:0'
 }
 
@@ -65,6 +70,8 @@ $regras = [ordered]@{
                  'gamerule spawn_mobs false', 'gamerule advance_time false', 'gamerule advance_weather false', 'gamerule keep_inventory false')
     terrenos = @('mv modify terrenos set pvp false', 'gamerule spawn_mobs false')
     recursos = @('mv modify recursos set pvp true')
+    recursos_nether = @('mv modify recursos_nether set pvp true', 'mv modify recursos_nether set difficulty normal')
+    recursos_end = @('mv modify recursos_end set pvp true', 'mv modify recursos_end set difficulty normal')
     tesouros = @('mv modify tesouros set pvp false', 'mv modify tesouros set difficulty normal', 'gamerule spawn_mobs false',
                  'gamerule advance_time false', 'gamerule advance_weather false', 'gamerule keep_inventory false')
 }

@@ -395,6 +395,7 @@ const DICAS = [
     '&fO portão &cBOSS&f, ao sul, desce até a arena. Lá embaixo tem um degrau alto: desceu, só volta com &e/spawn&f!',
     '&fQuem dá o último golpe no boss vira campeão e leva o melhor prêmio. Quem só assiste leva... boas lembranças.',
     '&fTodo &cdomingo&f vem o &8Flagelo das Trevas&f. Quem derrubar ele leva até um VIP de presente... se sobreviver.',
+    '&fE o &5Dragão do End&f renasce toda noite, às 21h. Chegando pelo &e/end&f, o quadradinho verde é o único lugar sem PvP.',
     '&fÀs vezes o boss vem &6✦ ELITE ✦&f: o dobro de vida, o dobro de dano e o dobro de prêmio. Eu, nesses dias, fico em casa.',
   ] },
   { id: 'guia', skin: 'eeaf43c747497e20fe0667d67810aa1f3cb0aeb96fcc94b7ce18f5d165c8284d', nome: '&aZé, o Guia', pos: [6, 6], falas: [
@@ -467,7 +468,9 @@ const DICAS = [
     '&fQuer um lugar só seu? &e/terreno auto&f compra o primeiro terreno livre.',
     '&fTerreno paga imposto! Ligue o &e/terreno autopagar&f e esqueça. Se atrasar muito, o terreno vai a leilão.',
     '&fChame os amigos pra construir junto com &e/terreno amigo&f.',
-    '&fMadeira, bicho e peixe, tem tudo no mundo de &e/recursos&f. Ele é refeito de tempos em tempos, então não construa casa lá!',
+    '&fMadeira, bicho e peixe, tem tudo no mundo de &e/recursos&f. Ele é refeito todo mês, então não construa casa lá!',
+    '&fQuartzo e netherita? &e/nether&f. Élitro e dragão? &e/end&f. Os dois também são refeitos todo mês: o End no dia 10, o Nether no dia 20 e o de recursos no dia 30.',
+    '&fPerdido? &e/mapa&f te dá o mapa do mundo em que você está. A setinha é você.',
   ] },
 ]
 
