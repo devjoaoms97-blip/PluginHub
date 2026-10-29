@@ -43,6 +43,7 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 | `spawn` (vazio) | Spawn fechado com as barracas e os NPCs de dicas, a Avenida das 12 minas (colada no portão norte) e a arena do boss, enterrada (colada no portão sul) | Não |
 | `terrenos` (grade) | Terrenos comprados com coins, com imposto semanal. Servem também para fazendas | Não |
 | `recursos` (normal) | Mobs naturais, pesca, árvores e PvP do Bounty e dos clãs. Resetado a cada 30 dias pelo `recursos-plugin`, com borda de 6.000 blocos e `/recursos` para um ponto aleatório seguro | Sim |
+| `tesouros` (superplano) | Mapas do tesouro (`tesouros-plugin`): cavar no X abre uma câmara de guardiões com o baú. Ninguém quebra nem constrói | Não |
 | `arenas` (vazio) | Arena de X1 e arena do Gladiador, a 1.200 blocos uma da outra. Só se entra por comando ou warp (a plateia por `/warp plateia-x1` e `/warp plateia-gladiador`), com volta ao spawn no fim | Sim |
 
 - **Visual do spawn** ✅ (2026-10-24): em vez de um mapa pronto, as construções saem de código, pelo EstruturasPlugin (`/estrutura construir <id>`), inspiradas em mapas da CurseForge e da BuiltByBit e ajustadas jogando.
@@ -53,7 +54,7 @@ O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividid
 - **Terrenos:** plugin nosso, e não o PlotSquared, para integrar com a economia (imposto, Pix e painel).
 - **Servidor de teste:** o `montar.bat` baixa o Multiverse e o WorldEdit, e o `configurar-mundos.bat` cria os 4 mundos.
 - **Mundo de recursos:** as missões de matar mobs, pescar, colher e cortar árvores precisam dele, porque mob de spawner não conta e o rankup protege o mundo fora das minas.
-- **NPCs**: plugin nosso, com o Mannequin do 26.2 (sem Citizens). Já existem os vendedores das barracas (skin do dono) e 12 NPCs de dicas pelo spawn (DicasPlugin), com balão de fala animado. Na entrada de cada mina, um guia (OficinasPlugin, `mina:<id>`) mostra as informações dela e leva até ela quem tem o rank ✅ (2026-10-27). O NPC da loja saiu do roadmap em 2026-10-27: a Loja Oficial já tem os vendedores.
+- **NPCs**: plugin nosso, com o Mannequin do 26.2 (sem Citizens). Já existem os vendedores das barracas (skin do dono) e 13 NPCs de dicas pelo spawn (DicasPlugin), com balão de fala animado. Na entrada de cada mina, um guia (OficinasPlugin, `mina:<id>`) mostra as informações dela e leva até ela quem tem o rank ✅ (2026-10-27). O NPC da loja saiu do roadmap em 2026-10-27: a Loja Oficial já tem os vendedores.
 - **Arenas:** o X1 é o Duelo com aposta (`duelo-plugin`), e o Gladiador, o `gladiador-plugin`. A arena do boss marca o local dele sozinha ao ser construída. Hoje há uma arena de X1 só, então um duelo por vez; dá pra construir cópias da `axepvp` em outros lugares do mundo `arenas` quando precisar de mais.
 - **Itens nas arenas de PvP (X1 e Gladiador):** cada um luta com o próprio equipamento, e **quem morre perde os itens**.
 
@@ -196,7 +197,7 @@ Constrói estruturas de código, sem WorldEdit (`/estrutura construir <id> [mund
 - [ ] Cópias da arena de X1, pra mais de um duelo ao mesmo tempo. 🟢
 
 ### NPCs de dicas ✅ v1 (`dicas-plugin`)
-NPCs pelo spawn que falam ao receber um clique direito: o balão cresce, escreve letra por letra e some. Cada clique mostra a próxima fala. 12 NPCs com 4 falas cada (`/dica` pra criar e editar).
+NPCs pelo spawn que falam ao receber um clique direito: o balão cresce, escreve letra por letra e some. Cada clique mostra a próxima fala. 13 NPCs com 4 a 7 falas cada (`/dica` pra criar e editar).
 
 ### Oficinas da mina ✅ v1 (`oficinas-plugin`)
 Quatro barraquinhas temáticas na praça de entrada da Avenida das Minas (estrutura `oficinas`), cada uma com um NPC de serviço: **Ferreiro** (repara os itens por uma taxa pelo desgaste, material e encantamentos), **Bruxa** (mesa de encantamento sempre no nível 30, com a câmara de estantes escondida embaixo da barraca), **Picareteiro** (picaretas prontas, encantadas ou não) e **Sábio** (níveis de XP). A bruxa põe o lápis; cada NPC tem skin temática. Desconto de VIP e registro no extrato do Bancário.
@@ -385,3 +386,4 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - **Combate**: golpe com a segunda mão funcionando com o cliente de verdade.
 - **Foco de 2026-10-27**: Sangramento credita o abate, parry com escudo, prestígio de skill, skill em uso no placar, guia em cada mina, Fragmento Arcano nas minas, Cambista e Compactador, missões de reparar e encantar, Boss elite, alerta de Pix suspeito, cancelar cheque, tag do VIP pelo LuckPerms, achados e perdidos e teleporte por comando barrado nas arenas.
 - **Correção**: o menu da loja vendia junto qualquer item do mesmo material (o produto de máquina, que é papel, saía junto com papel comum). Agora só vende item comum, sem nome, encantamento ou marca.
+- **Mapas do tesouro** (2026-10-29, `tesouros-plugin`): o boss sempre deixa um mapa e as minas dão um de vez em quando, nas raridades comum, raro, arcano e lendário. Cavar no X do mundo `tesouros` abre uma câmara de guardiões em ondas, com baú trancado até o último cair. O clã e os convidados ajudam, mas o tesouro é só do dono do mapa. Quem morre perde tudo. Novo NPC Caçador de Tesouros no portão do boss. Coins fixas por raridade (5, 20, 50 e 100 mil) e itens sorteados sem repetir, com chance de spawner, máquina e Células de Combustível. A máquina passou a exigir o rank dela (ou prestígio) pra ser colocada e usada; vender, pode.

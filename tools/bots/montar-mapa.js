@@ -382,6 +382,7 @@ const DICAS = [
     '&fA mina se enche de novo sozinha de tempos em tempos. Tá vazia? Espere um pouco, ou vá incomodar outra mina.',
     '&fDe vez em quando a picareta acha um &dFragmento Arcano&f. Guarde! O &dCambista&f, no fundo da avenida, troca por encantamento acima do máximo.',
     '&fMuito minério ocupando a mochila? O &7Compactador&f, no fundo da avenida, transforma 9 em 1 bloco. De graça, e ainda desfaz.',
+    '&fUma vez minha picareta achou um &6Mapa do Tesouro&f! Fui atrás e quase não voltei. O &6Caçador de Tesouros&f, no portão do boss, explica melhor.',
   ] },
   { id: 'mercadora', skin: 'c57948ce86408ba0ceff3f104b03e6567b0ab07f52c8d261c9a6893d5d92a366', nome: '&dDona Cida, a Mercadora', pos: [6, -6], falas: [
     '&fAs barracas do spawn são de vocês! Alugue uma com &e/barraca alugar&f e um vendedor com a SUA cara trabalha por você.',
@@ -424,6 +425,15 @@ const DICAS = [
     '&fQuem morre na arena deixa os itens lá. Não leve nada que você não aceita perder.',
     '&fA arena tem cara de tóxica, mas pode pisar à vontade. O que mata mesmo é o boss. E o orgulho.',
     '&fAtenção: a arena do boss é o único lugar do spawn com &cPvP&f. Lá dentro, o colega do lado também pode te bater.',
+  ] },
+  { id: 'cacador', nome: '&6Caçador de Tesouros', pos: [6, 38], virado: 'centro', falas: [
+    '&fO boss sempre deixa cair um &6Mapa do Tesouro&f quando morre. Quanto mais raro, mais perigoso e mais rico: &fcomum&f, &9raro&f, &darcano&f e &6lendário&f.',
+    '&fNas minas, a picareta às vezes acha um mapa também. Esse vai direto pra sua mochila.',
+    '&fCom o mapa, é &e/tesouro ir&f. Segure o mapa na mão pra ver quanto falta até o X e cave o chão bem em cima dele.',
+    '&fEmbaixo do X tem uma câmara cheia de guardiões, que vêm em ondas. O baú só destrava quando o último cair.',
+    '&fChame o clã! Quem é do seu clã entra pelo buraco, e os amigos você chama com &e/tesouro convidar&f. Mas o tesouro é só de quem tinha o mapa.',
+    '&fMapa se vende e se troca. Uma barraca cheia de mapas lendários... isso sim é negócio.',
+    '&cQuem morre na câmara perde tudo&f: o mapa, o tesouro e o que estiver carregando. E sair do servidor no meio da luta conta como morrer.',
   ] },
   { id: 'leiloeiro', skin: '78a757b18d9121820b77937c2bd2dab78652941881cf7115cf9f8c96687f8e04', nome: '&6Leiloeiro Matias', pos: [38, -6], virado: 'centro', falas: [
     '&fAs barracas &6★&f vão a leilão quando ficam livres: &e/barraca lance <id> <valor>&f. Cada lance precisa ser 5% maior.',

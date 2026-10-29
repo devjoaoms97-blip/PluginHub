@@ -1,0 +1,81 @@
+# Loot de cada raridade. O dono do mapa recebe as coins (entre o mínimo e o máximo; iguais = valor
+# fixo; dinheiro novo na economia) e "rolagens" itens, cada um sorteado pelo peso
+# (sem repetir: cada item sai no máximo uma vez por baú).
+#
+# Cada item é um destes:
+#   item: MATERIAL                       um item comum
+#   item: fragmento                      Fragmento Arcano (do RankupPlugin)
+#   item: "livro:<encantamento>:<nível>" livro encantado (ex: livro:mending:1)
+#   item: "spawner:<tipo>"               spawner do SpawnersPlugin (zumbi, blaze, golem...)
+#   item: "maquina:<tipo>"               máquina nova do MaquinasPlugin (tear, forja, reator...); só
+#                                        quem tem o rank dela coloca e usa, mas dá pra vender
+#   item: combustivel                    Células de Combustível do MaquinasPlugin
+#   itemstack: ...                       um item qualquer, posto pelo /tesouro loot add (com nome, encantamentos...)
+# qtd: [mínimo, máximo] (padrão [1, 1]).
+
+comum:
+  coins: [5000, 5000]
+  rolagens: 2
+  itens:
+    ferro: {item: IRON_BLOCK, qtd: [4, 8], peso: 25}
+    ouro: {item: GOLD_BLOCK, qtd: [2, 4], peso: 15}
+    maca: {item: GOLDEN_APPLE, qtd: [1, 2], peso: 15}
+    xp: {item: EXPERIENCE_BOTTLE, qtd: [8, 16], peso: 15}
+    fragmento: {item: fragmento, qtd: [1, 1], peso: 10}
+    combustivel: {item: combustivel, qtd: [16, 32], peso: 15}
+    zumbi: {item: "spawner:zumbi", qtd: [1, 1], peso: 3}
+    esqueleto: {item: "spawner:esqueleto", qtd: [1, 1], peso: 2}
+
+raro:
+  coins: [20000, 20000]
+  rolagens: 3
+  itens:
+    diamante: {item: DIAMOND, qtd: [4, 8], peso: 20}
+    esmeralda: {item: EMERALD_BLOCK, qtd: [1, 3], peso: 15}
+    maca: {item: GOLDEN_APPLE, qtd: [2, 4], peso: 10}
+    xp: {item: EXPERIENCE_BOTTLE, qtd: [16, 32], peso: 10}
+    fragmento: {item: fragmento, qtd: [1, 2], peso: 10}
+    eficiencia: {item: "livro:efficiency:5", peso: 4}
+    inquebravel: {item: "livro:unbreaking:3", peso: 4}
+    fortuna: {item: "livro:fortune:3", peso: 4}
+    combustivel: {item: combustivel, qtd: [32, 64], peso: 12}
+    aranha: {item: "spawner:aranha", qtd: [1, 1], peso: 3}
+    creeper: {item: "spawner:creeper", qtd: [1, 1], peso: 3}
+    slime: {item: "spawner:slime", qtd: [1, 1], peso: 3}
+    tear: {item: "maquina:tear", peso: 2}
+
+arcano:
+  coins: [50000, 50000]
+  rolagens: 4
+  itens:
+    diamante: {item: DIAMOND_BLOCK, qtd: [1, 3], peso: 15}
+    sucata: {item: NETHERITE_SCRAP, qtd: [1, 2], peso: 10}
+    maca: {item: ENCHANTED_GOLDEN_APPLE, qtd: [1, 1], peso: 8}
+    fragmento: {item: fragmento, qtd: [2, 4], peso: 15}
+    remendo: {item: "livro:mending:1", peso: 7}
+    protecao: {item: "livro:protection:4", peso: 7}
+    afiacao: {item: "livro:sharpness:5", peso: 7}
+    totem: {item: TOTEM_OF_UNDYING, qtd: [1, 1], peso: 5}
+    combustivel: {item: combustivel, qtd: [64, 128], peso: 10}
+    enderman: {item: "spawner:enderman", qtd: [1, 1], peso: 5}
+    blaze: {item: "spawner:blaze", qtd: [1, 1], peso: 4}
+    forja: {item: "maquina:forja", peso: 4}
+    destilaria: {item: "maquina:destilaria", peso: 3}
+
+lendario:
+  coins: [100000, 100000]
+  rolagens: 5
+  itens:
+    netherite: {item: NETHERITE_INGOT, qtd: [1, 2], peso: 12}
+    diamante: {item: DIAMOND_BLOCK, qtd: [3, 6], peso: 16}
+    maca: {item: ENCHANTED_GOLDEN_APPLE, qtd: [1, 2], peso: 10}
+    fragmento: {item: fragmento, qtd: [5, 8], peso: 15}
+    totem: {item: TOTEM_OF_UNDYING, qtd: [1, 2], peso: 8}
+    remendo: {item: "livro:mending:1", peso: 7}
+    estrela: {item: NETHER_STAR, qtd: [1, 1], peso: 4}
+    elitro: {item: ELYTRA, qtd: [1, 1], peso: 4}
+    combustivel: {item: combustivel, qtd: [128, 256], peso: 10}
+    golem: {item: "spawner:golem", qtd: [1, 1], peso: 4}
+    blaze: {item: "spawner:blaze", qtd: [2, 4], peso: 5}
+    lapidadora: {item: "maquina:lapidadora", peso: 3}
+    reator: {item: "maquina:reator", peso: 2}

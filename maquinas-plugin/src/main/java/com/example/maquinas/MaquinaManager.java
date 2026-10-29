@@ -53,6 +53,8 @@ import java.util.logging.Level;
  *       passa pra coletar, não quem some por dias).</li>
  *   <li><b>Menu</b> (clique direito, só o dono): coletar, abastecer, melhorar velocidade e estoque
  *       (o dinheiro sai de circulação) e recolher (volta o item com os níveis).</li>
+ *   <li><b>Rank</b>: só coloca e mexe na máquina quem tem o rank dela (ou já fez prestígio). A máquina
+ *       que chegou por outro caminho (tesouro, barraca) fica toda bloqueada até lá; vender, pode.</li>
  * </ul>
  */
 public class MaquinaManager implements Listener {
@@ -224,6 +226,11 @@ public class MaquinaManager implements Listener {
             jogador.sendMessage("§cMáquina só pode ser colocada no seu terreno (§f/terreno home§c).");
             return;
         }
+        if (!plugin.getRankup().podeUsar(jogador.getUniqueId(), t.rank())) {
+            evento.setCancelled(true);
+            jogador.sendMessage("§cA máquina " + t.nome() + " §clibera no rank §f" + t.rank() + "§c. Guarde até chegar lá, ou venda na barraca.");
+            return;
+        }
         long minhas = porLugar.values().stream().filter(m -> m.dono.equals(jogador.getUniqueId())).count();
         if (minhas >= plugin.limiteDeMaquinas(jogador)) {
             evento.setCancelled(true);
@@ -304,7 +311,19 @@ public class MaquinaManager implements Listener {
             p.sendMessage("§cEssa máquina é de §f" + Bukkit.getOfflinePlayer(m.dono).getName() + "§c.");
             return;
         }
+        if (bloqueada(p, m)) return;
         abrirMenu(p, m);
+    }
+
+    /**
+     * Máquina acima do rank do jogador fica toda bloqueada pra ele (nem coletar, nem abastecer, nem
+     * recolher), mesmo sendo o dono: pode existir uma colocada antes da trava, ou dada pela staff.
+     */
+    private boolean bloqueada(Player p, Maquina m) {
+        MaquinasPlugin.Tipo t = tipo(m);
+        if (t == null || p.hasPermission("maquinas.admin") || plugin.getRankup().podeUsar(p.getUniqueId(), t.rank())) return false;
+        p.sendMessage("§cA máquina " + t.nome() + " §clibera no rank §f" + t.rank() + "§c: até lá, ela fica bloqueada pra você.");
+        return true;
     }
 
     private void abrirMenu(Player p, Maquina m) {
@@ -347,6 +366,10 @@ public class MaquinaManager implements Listener {
         if (!(evento.getWhoClicked() instanceof Player p) || evento.getClickedInventory() != evento.getView().getTopInventory()) return;
         Maquina m = menu.m;
         if (!porLugar.containsValue(m)) {
+            p.closeInventory();
+            return;
+        }
+        if (bloqueada(p, m)) {
             p.closeInventory();
             return;
         }

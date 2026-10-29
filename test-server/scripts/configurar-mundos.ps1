@@ -6,6 +6,8 @@
 #   arenas    vazio, com plataforma: X1, Gladiador e boss (PvP, sem mobs naturais, sempre de dia)
 #   terrenos  grade do TerrenosPlugin (sem PvP nem mobs)
 #   recursos  mundo normal, resetado de tempos em tempos pelo RecursosPlugin (PvP)
+#   tesouros  superplano do TesourosPlugin: chão em y -20, câmaras enterradas embaixo (sem PvP nem
+#             mobs naturais, sempre de dia; as camadas são as do "camadas" no config do plugin)
 #
 # Não usa o setworldspawn: no 26.2 ele vale pro servidor todo, e os jogadores novos passariam a
 # entrar no mundo em que ele rodou. O ponto de chegada de cada mundo fica no Multiverse.
@@ -32,6 +34,7 @@ $mundos = [ordered]@{
     arenas   = "mv create arenas normal $vazio"
     terrenos = 'mv create terrenos normal --generator TerrenosPlugin --no-structures'
     recursos = 'mv create recursos normal'
+    tesouros = 'mv create tesouros normal --world-type flat --no-structures --generator-settings {"layers":[{"block":"minecraft:bedrock","height":1},{"block":"minecraft:stone","height":40},{"block":"minecraft:dirt","height":3},{"block":"minecraft:grass_block","height":1}],"biome":"minecraft:plains"} --force-spawn-position 0.5,-19,0.5:0:0'
 }
 
 Write-Host 'Criando os mundos que faltam (o de recursos pode levar um minuto)...' -ForegroundColor Cyan
@@ -62,6 +65,8 @@ $regras = [ordered]@{
                  'gamerule spawn_mobs false', 'gamerule advance_time false', 'gamerule advance_weather false', 'gamerule keep_inventory false')
     terrenos = @('mv modify terrenos set pvp false', 'gamerule spawn_mobs false')
     recursos = @('mv modify recursos set pvp true')
+    tesouros = @('mv modify tesouros set pvp false', 'mv modify tesouros set difficulty normal', 'gamerule spawn_mobs false',
+                 'gamerule advance_time false', 'gamerule advance_weather false', 'gamerule keep_inventory false')
 }
 foreach ($nome in $regras.Keys) {
     foreach ($regra in $regras[$nome]) {
@@ -69,7 +74,7 @@ foreach ($nome in $regras.Keys) {
         Rodar $regra | Out-Null
     }
 }
-foreach ($nome in 'spawn', 'arenas') {
+foreach ($nome in 'spawn', 'arenas', 'tesouros') {
     Rodar "time set 6000 $nome" | Out-Null
     Rodar "weather $nome sun" | Out-Null
 }

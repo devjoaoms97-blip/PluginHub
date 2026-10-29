@@ -66,6 +66,11 @@ categorias:
     nome: "Bounty"
     titulo: "🎯 Bounty"
     cor: "#7f1d1d"
+  # Tesouro arcano ou lendário aberto (TesourosPlugin, "anunciar" no config dele).
+  tesouros:
+    nome: "Tesouros"
+    titulo: "🗺️ Tesouro"
+    cor: "#d4ac0d"
   # Mine-sena (sorteio do Bancário).
   minesena:
     nome: "Mine-sena"

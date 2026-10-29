@@ -108,6 +108,28 @@ t.rodar(async () => {
   t.verificar((await t.console(`execute in minecraft:terrenos if block ${x} ${y} ${z} minecraft:air`)).includes('passed')
     && await contar(nome, 'barrier') === 1, 'recolher devolve a máquina e tira o bloco')
 
+  console.log('\n== Trava de rank (máquina que veio de tesouro ou barraca) ==')
+  const colocar = async () => {
+    await bot.equip(bot.inventory.items().find(i => i.name === 'barrier'), 'hand')
+    await t.espera(300)
+    return t.capturar(bot, () => bot.placeBlock(bot.blockAt(lugar.offset(0, -1, 0)), new Vec3(0, 1, 0)).catch(() => {}), 1200)
+  }
+  await t.console(`ranks admin set ${nome} campones`)
+  msgs = await colocar()
+  t.verificar(msgs.some(m => m.includes('libera no rank')) && await contar(nome, 'barrier') === 1,
+    'abaixo do rank, não coloca a máquina (e ela continua no inventário)', msgs.find(m => m.includes('rank')))
+  await t.console(`ranks admin set ${nome} fazendeiro`)
+  await colocar()
+  t.verificar((await t.console(`execute in minecraft:terrenos if block ${x} ${y} ${z} minecraft:barrier`)).includes('passed'), 'com o rank, coloca')
+  await t.console(`ranks admin set ${nome} campones`)
+  let abriu = null
+  msgs = await t.capturar(bot, async () => { abriu = await janela(bot, () => bot.activateBlock(bot.blockAt(lugar))) }, 500)
+  t.verificar(!abriu && msgs.some(m => m.includes('fica bloqueada')), 'abaixo do rank, a máquina no chão fica bloqueada (sem menu)', msgs.find(m => m.includes('rank')))
+  await t.console(`ranks admin set ${nome} fazendeiro`)
+  j = await janela(bot, () => bot.activateBlock(bot.blockAt(lugar)))
+  if (j) await bot.clickWindow(22, 0, 0)
+  await t.espera(1200)
+
   await t.capturar(bot, () => bot.chat('/terreno abandonar confirmar'), 1500)
   await t.console(`ranks admin set ${nome} campones`)
   await t.console(`minecraft:clear ${nome}`)

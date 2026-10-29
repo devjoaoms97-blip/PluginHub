@@ -34,6 +34,22 @@ public class RankupIntegration {
         }
     }
 
+    /**
+     * Pode usar (colocar e mexer) uma máquina desse rank? Tem o rank, ou já fez prestígio (já passou
+     * pelo Rei, e o prestígio volta o rank pro começo). Sem o RankupPlugin, pode.
+     */
+    public boolean podeUsar(UUID jogador, String rankMinimo) {
+        if (rankMinimo == null || temAcesso(jogador, rankMinimo)) return true;
+        Plugin rankup = Bukkit.getPluginManager().getPlugin("RankupPlugin");
+        if (rankup == null || !rankup.isEnabled()) return true;
+        try {
+            Object nivel = rankup.getClass().getMethod("prestigioDe", UUID.class).invoke(rankup, jogador);
+            return nivel instanceof Number n && n.intValue() > 0;
+        } catch (ReflectiveOperationException e) {
+            return false;
+        }
+    }
+
     /** O bônus de venda do rank (com prestígio), como na loja: 1.25 = vende 25% mais caro. Sem o RankupPlugin, 1. */
     public double multiplicadorVenda(UUID jogador) {
         Plugin rankup = Bukkit.getPluginManager().getPlugin("RankupPlugin");

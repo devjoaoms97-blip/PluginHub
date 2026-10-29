@@ -9,6 +9,7 @@ Máquinas nos terrenos que fabricam **produtos** (itens que não existem no vani
 - **Produção:** pelo relógio, mesmo com o dono offline ou o terreno descarregado. A cada intervalo sai um produto, gastando uma fração de Célula, até acabar o combustível (tanque de 64) ou encher o estoque (96, mais 64 por nível de melhoria). Como o estoque enche em uma a duas horas, a máquina recompensa quem passa pra coletar, não quem some por dias.
 - **Menu** (clique direito, só o dono): **Coletar**, **Abastecer** (põe as Células do inventário no tanque), **Melhorar velocidade** (-5% de tempo por nível: no nível 5, 1,33× mais produtos), **Melhorar estoque** (+64 por nível), até o nível 5, e **Recolher** (coleta, devolve a máquina com os níveis e o combustível que sobrou).
 - **Venda dos produtos:** clique no produto no balcão vende tudo o que você tem dele. Igual à loja: cada unidade vendida baixa o preço (`passo`), que volta pra âncora com o tempo. Valem o bônus do rank e o do VIP (+3/6/9/12%), menos o imposto.
+- **Rank:** só coloca e mexe numa máquina quem tem o rank dela, ou quem já fez prestígio (o prestígio volta o rank pro começo, mas o jogador já passou pelo Rei). A máquina que chega por outro caminho (tesouro, barraca) pode ser guardada e vendida, mas fica toda bloqueada até lá: não se coloca, e a que já estiver no chão não abre o menu (coletar, abastecer, melhorar, recolher).
 - **Proteção:** o produto, a Célula e a máquina são marcados por dentro: não dá pra falsificar, e não entram em receita nenhuma.
 
 ## Máquinas

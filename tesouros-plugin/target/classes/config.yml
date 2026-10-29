@@ -1,0 +1,88 @@
+# Mundo superplano dos tesouros. Ninguém quebra nem coloca bloco nele (só a staff), sem mobs
+# naturais e sem PvP: o único bloco que se cava é o do X de um mapa do tesouro.
+mundo: tesouros
+
+# As camadas do superplano, de baixo pra cima (MATERIAL:altura), iguais às do configurar-mundos.ps1.
+# O plugin usa pra saber onde fica o chão e pra devolver o terreno depois que a câmara fecha.
+camadas: ["BEDROCK:1", "STONE:40", "DIRT:3", "GRASS_BLOCK:1"]
+
+# As coordenadas dos mapas são sorteadas entre esses raios, em volta do 0, 0. A borda do mundo fica
+# um pouco depois do raio máximo.
+coordenadas:
+  raio-minimo: 150
+  raio-maximo: 1500
+
+# De onde vêm os mapas. Os pesos sorteiam a raridade (não precisam somar 100).
+drops:
+  # O boss sempre deixa 1 mapa no chão quando morre.
+  boss:
+    ativado: true
+    pesos: {comum: 45, raro: 30, arcano: 18, lendario: 7}
+  # Cada bloco quebrado numa mina (RankupPlugin) tem essa chance de dar um mapa, que vai direto pro
+  # inventário. Com uns 4.000 blocos por hora, 0.00005 (1 em 20.000) dá cerca de 1 a cada 5 horas.
+  mina:
+    ativado: true
+    chance-por-bloco: 0.00005
+    pesos: {comum: 70, raro: 22, arcano: 7, lendario: 1}
+
+camara:
+  # Interior de (2 x raio + 1) blocos de lado, com essa altura, e o chão tantos blocos abaixo da superfície.
+  raio: 7
+  altura: 6
+  profundidade: 18
+  # Quem cava puxa junto quem pode entrar (clã e convidados) e está até essa distância.
+  raio-puxar: 6
+  # Tempo pra matar todos os guardiões. Acabou, a câmara desaba e o tesouro se perde (sem morrer).
+  tempo-limite-segundos: 600
+  # Depois que o baú destrava, quanto tempo a câmara fica aberta pra pegar o tesouro. O que sobrar no
+  # baú vai pro inventário do dono do mapa no fim.
+  tempo-para-pegar-segundos: 90
+  # Pausa entre uma onda e a próxima.
+  segundos-entre-ondas: 4
+
+# Os guardiões de cada raridade. Cada onda é "TIPO:quantidade, ...". A vida e o dano são
+# multiplicadores sobre os do mob. O chefe (opcional) entra sozinho depois da última onda.
+raridades:
+  comum:
+    nome: "&fComum"
+    ondas:
+      - "ZOMBIE:4, SKELETON:2"
+      - "ZOMBIE:3, SKELETON:2, SPIDER:2"
+    vida: 1.0
+    dano: 1.0
+  raro:
+    nome: "&9Raro"
+    ondas:
+      - "ZOMBIE:5, SKELETON:3"
+      - "HUSK:4, STRAY:3, SPIDER:2"
+      - "VINDICATOR:2, SKELETON:4"
+    vida: 1.5
+    dano: 1.25
+  arcano:
+    nome: "&dArcano"
+    ondas:
+      - "ZOMBIE:6, SKELETON:4"
+      - "WITCH:2, VINDICATOR:3, STRAY:3"
+      - "WITHER_SKELETON:3, BLAZE:2, PILLAGER:3"
+    vida: 2.0
+    dano: 1.5
+    chefe:
+      tipo: WITHER_SKELETON
+      nome: "&5Guardião Arcano"
+      vida: 150
+  lendario:
+    nome: "&6Lendário"
+    ondas:
+      - "ZOMBIE:6, SKELETON:5"
+      - "VINDICATOR:4, WITCH:2, STRAY:4"
+      - "WITHER_SKELETON:4, BLAZE:3, PILLAGER:3"
+      - "WITHER_SKELETON:5, VINDICATOR:4, BLAZE:2"
+    vida: 2.5
+    dano: 2.0
+    chefe:
+      tipo: RAVAGER
+      nome: "&6&lGuardião Ancestral"
+      vida: 400
+
+# Anúncio no chat e no Discord (categoria "tesouros") quando um tesouro dessas raridades é aberto.
+anunciar: [arcano, lendario]

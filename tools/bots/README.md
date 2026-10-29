@@ -48,6 +48,7 @@ node teste-boss-vip.js      # só o campeão do Wither ganha o código de VIP de
 node teste-vip-evento.js    # código de VIP de evento: só 3/7/15 dias, sem bônus nem kit mensal, não vende, quem tem VIP resgata depois
 node teste-creditos.js      # loja de créditos: créditos pelo console, cosmético com confirmação, cor na tab, VIP e código, apoiador
 node teste-montaria.js      # montaria do VIP (velocidade, some ao descer, não entra na arena do boss) e PvP só na arena do boss
+node teste-tesouros.js      # mapas do tesouro: cavar no X, câmara, convidado, ondas, baú do dono, spawner/máquina/células no loot, sair, morte, mapa do boss e da mina (precisa do mundo tesouros)
 node teste-foco.js          # Bancário e cheque, Cambista, Compactador, achados, /tpa nas arenas, prestígio, parry e Boss elite
 ```
 ### Mapa funcional (`montar-mapa.js`)
@@ -62,7 +63,7 @@ Monta o spawn (a estrutura `spring` do EstruturasPlugin, que já cadastra as bar
 
 | Onde | O que tem |
 |---|---|
-| `spawn`, spawn (centro em 0, 43; z -20..106) | Spawn fechado: o jogador nasce na fonte (0, 65, 43), com o painel "Como começar" (um holograma grande no fim da avenida oeste, sobre os arbustos) e 12 NPCs de dicas. 32 barracas pelas avenidas (28 normais e 4 especiais), com NPC de quem aluga. Só dois portões: "MINAS" ao norte e "BOSS" ao sul, colados nas vizinhas |
+| `spawn`, spawn (centro em 0, 43; z -20..106) | Spawn fechado: o jogador nasce na fonte (0, 65, 43), com o painel "Como começar" (um holograma grande no fim da avenida oeste, sobre os arbustos) e 13 NPCs de dicas. 32 barracas pelas avenidas (28 normais e 4 especiais), com NPC de quem aluga. Só dois portões: "MINAS" ao norte e "BOSS" ao sul, colados nas vizinhas |
 | `spawn`, sul (z 107..253) | Arena do boss (estrutura `toxica`), enterrada: escadaria fechada a partir do portão sul, piso em y 32, centro em (0, 33, 195). `/warp boss` leva pra dentro dela |
 | `spawn`, norte (z -21..-185) | Avenida das Minas (estrutura `minas`): recinto fechado com os 12 poços de mina de 21 x 21 (15 de profundidade, cheios de pedra), em ordem de rank, alternando oeste e leste. O portão dela fica colado no caminho que sai do spawn |
 | `arenas` | Saguão com portal de volta, X1 `axepvp` (centro -600, 0, cadastrada como `axe`) e Gladiador `coliseu` (centro 600, 0, com 16 pontos de entrada), longe um do outro. A plateia entra por `/warp plateia-x1` e `/warp plateia-gladiador` e sai com `/spawn` |
@@ -93,7 +94,7 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-loja.js` | Loja Oficial: os 7 vendedores colocados, `/shop` e `/sell` fechados pros jogadores, `/warp loja`, vender e comprar no menu do fazendeiro, 12% de desconto do VIP Diamante a trava da venda (último rank + VIP: o diamante não passa de 90% do menor preço de compra) e o Armeiro (balcão PvP) vendendo a Poção de Força II |
 | `teste-warp-mobs.js` | Warp mobs: com o jogador no salão, as estátuas perto dele ganham mobs (as do fundo só com ele lá), nenhum mob no vestíbulo nem no túnel, o zumbi não pega fogo no sol, não some de longe, morto a estátua repõe, e ninguém passa de 4 vivos |
 | `teste-spawners.js` | Spawners: o Domador da loja vende, no spawn não entra, no terreno entra, empilha clicando (x2), a pilha de mobs aparece em cima (x2), matar tira um (x1) e derruba o drop, e quebrar devolve os spawners |
-| `teste-maquinas.js` | Máquinas: o pacote de texturas é servido, o Maquinista vende o Tear e as Células, a máquina entra no terreno desenhada pelo modelo do pacote, abastece, faz 30 Tecidos em 30 minutos (`/maquinas acelerar`), coleta, vende no balcão e recolhe |
+| `teste-maquinas.js` | Máquinas: o pacote de texturas é servido, o Maquinista vende o Tear e as Células, a máquina entra no terreno desenhada pelo modelo do pacote, abastece, faz 30 Tecidos em 30 minutos (`/maquinas acelerar`), coleta, vende no balcão e recolhe; abaixo do rank, a máquina não entra e a que está no chão fica bloqueada |
 | `teste-areas.js` | Áreas fechadas: no spawn a pérola não sai nem é gasta e o `/fly` não liga; num terreno (fora das áreas) a pérola funciona |
 
 O `teste-vip.js` e o `teste-terrenos.js` usam jogadores novos a cada execução (`Vip`, `Ter` ou `Viz` + um código): o kit mensal e o bônus de ativação só valem uma vez por jogador, e cada um só compra um terreno. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.
