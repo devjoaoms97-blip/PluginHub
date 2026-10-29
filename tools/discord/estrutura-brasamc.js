@@ -95,7 +95,6 @@ module.exports = {
       chave: 'comunidade', nome: '💬 COMUNIDADE', acesso: 'publico',
       canais: [
         { chave: 'geral', nome: '💬・geral', adotar: ['💬•chat'], topico: 'Papo livre.' },
-        { chave: 'chat-do-jogo', nome: '⛏️・chat-do-jogo', topico: 'Ponte com o chat do servidor: o que se fala aqui aparece no jogo e vice-versa.' },
         { chave: 'prints', nome: '📸・prints', topico: 'Prints e vídeos do servidor.' },
         { chave: 'comercio', nome: '💰・comercio', topico: 'Compra, venda e troca entre jogadores (só coins do jogo).' },
         { chave: 'recrutamento-clas', nome: '🛡️・recrutamento-clas', tipo: 'forum', topico: 'Clãs recrutando e jogadores procurando clã. Um post por clã.' },
@@ -136,6 +135,9 @@ module.exports = {
       ],
     },
   ],
+
+  // Canais que existiam e saem (pela chave do estado). O #chat-do-jogo era da ponte de chat, que não vai ter.
+  apagarCanais: ['chat-do-jogo'],
 
   // Categoria do DiscordPlugin → canal. O estrutura.js cria um webhook por categoria e grava as URLs.
   webhooks: {

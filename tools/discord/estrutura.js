@@ -213,6 +213,16 @@ async function canais(servidor, lista) {
     const idCat = c ? c.id : `(nova:${cat.chave})`;
     for (const canal of cat.canais) await garantirCanal(canal, lista, idCat, cat.acesso, comunidade, adiados);
   }
+  for (const chave of E.apagarCanais || []) {
+    const atual = lista.find((c) => c.id === estado.canais[chave]);
+    if (atual) {
+      await fazer(`- apagar #${atual.name} (com as mensagens)`, async () => {
+        await api('DELETE', `/channels/${atual.id}`);
+        lista.splice(lista.indexOf(atual), 1);
+      });
+    }
+    if (APLICAR || !atual) delete estado.canais[chave];
+  }
   return adiados;
 }
 
