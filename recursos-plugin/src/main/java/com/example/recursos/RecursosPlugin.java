@@ -70,6 +70,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         carregarDados();
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(centroDoEnd, this);
+        getServer().getPluginManager().registerEvents(mapas, this);
         for (String comando : List.of("recursos", "nether", "end", "mapa")) {
             getCommand(comando).setExecutor(this);
             getCommand(comando).setTabCompleter(this);
@@ -78,6 +79,8 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
             resets.values().forEach(ResetManager::tick);
             centroDoEnd.tick();
         }, 20L, 20L);
+        getServer().getScheduler().runTaskTimer(this, () -> mapas.tick(), 40L, 1L);
+        getServer().getScheduler().runTaskTimer(this, () -> mapas.salvar(), 6000L, 6000L); // a cada 5 min
         // os mundos podem ter sido carregados antes deste plugin
         getServer().getScheduler().runTask(this, () -> {
             for (ResetManager m : resets.values()) {
@@ -88,7 +91,13 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
                     prepararMundo(w);
                 }
             }
+            mapas.prepararTerrenos();
         });
+    }
+
+    @Override
+    public void onDisable() {
+        if (mapas != null) mapas.salvar();
     }
 
     /**
@@ -123,7 +132,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         Map<String, Integer> ids = new HashMap<>();
         ConfigurationSection secaoMapas = yaml.getConfigurationSection("mapas");
         if (secaoMapas != null) for (String nome : secaoMapas.getKeys(false)) ids.put(nome, secaoMapas.getInt(nome));
-        this.mapas = new Mapas(this, ids);
+        if (mapas == null) this.mapas = new Mapas(this, ids); // uma vez só: é um Listener registrado
         if (novo || yaml.contains("ultimo-reset")) salvarDados(); // a contagem começa na instalação
     }
 
@@ -156,6 +165,10 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
 
     public Map<String, ResetManager> getResets() {
         return resets;
+    }
+
+    public Mapas getMapas() {
+        return mapas;
     }
 
     public CentroDoEnd getCentroDoEnd() {
@@ -387,6 +400,10 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
                 String r = w == null ? "Nenhum End carregado." : centroDoEnd.renascerDragao(w, true);
                 sender.sendMessage("§e" + r);
             }
+            case "mapa" -> {
+                for (String nome : resets.keySet()) sender.sendMessage("§e" + mapas.resumo(nome));
+                mapas.salvar();
+            }
             case "reload" -> {
                 reloadConfig();
                 carregarDados();
@@ -394,7 +411,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
                 sender.sendMessage("§aConfig recarregado e mundos preparados de novo (borda e centro do End).");
             }
             default -> sender.sendMessage("§cUso: §f/recursos admin resetar [mundo] [minutos|agora] §7| §fcancelar [mundo] §7| "
-                    + "§flevar [mundo] <jogador> §7| §fdragao §7| §freload");
+                    + "§flevar [mundo] <jogador> §7| §fdragao §7| §fmapa §7| §freload");
         }
     }
 
@@ -416,7 +433,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
             opcoes.addAll(List.of("ir", "info"));
             if (admin && cmd.equals("recursos")) opcoes.add("admin");
         } else if (admin && cmd.equals("recursos") && args[0].equalsIgnoreCase("admin")) {
-            if (args.length == 2) opcoes.addAll(List.of("resetar", "cancelar", "levar", "dragao", "reload"));
+            if (args.length == 2) opcoes.addAll(List.of("resetar", "cancelar", "levar", "dragao", "mapa", "reload"));
             else if (args.length == 3) {
                 resets.values().forEach(m -> opcoes.add(m.getComando()));
                 if (args[1].equalsIgnoreCase("resetar")) opcoes.addAll(List.of("agora", "5", "30"));

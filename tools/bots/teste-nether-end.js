@@ -110,13 +110,22 @@ t.rodar(async () => {
     'o ovo não teleporta nem quebra', ovo?.name)
   await t.console(`${E} setblock 3 ${yOvo} 25 minecraft:air`)
 
+  console.log('\n== Terreno no mapa ==')
+  const pixels = async mundo => Number(((await t.console('recursos admin mapa')).match(new RegExp(`${mundo}: (\\d+) de`)) || [, -1])[1])
+  const noEnd = await pixels('recursos_end')
+  t.verificar(noEnd > 0, 'o mapa do End já tem terreno, de onde os bots andaram', `${noEnd} pixels`)
+
   console.log('\n== Reset do Nether ==')
   await t.console(`${N} minecraft:tp ${nomeB} ${marca[0] + 0.5} ${marca[1] + 1} ${marca[2] + 1.5}`)
-  await t.espera(1500)
+  await t.espera(3000)
+  const antesReset = await pixels('recursos_nether')
+  t.verificar(antesReset > 0, 'o mapa do Nether tem terreno antes do reset', `${antesReset} pixels`)
   b.quit()
   await t.espera(1000)
   msgs = await t.capturar(a, () => t.console('recursos admin resetar nether agora'), 8000)
   t.verificar(msgs.some(m => m.includes('O Nether foi resetado')), 'o Nether foi resetado, com aviso no chat', msgs.find(m => m.includes('resetado')))
+  const depoisReset = await pixels('recursos_nether')
+  t.verificar(depoisReset < antesReset, 'o reset apagou o terreno do mapa do Nether (o novo começa quase em branco)', `${antesReset} → ${depoisReset}`)
   await t.console(`${N} forceload add ${marca[0]} ${marca[2]}`)
   await t.espera(2000)
   t.verificar(!(await t.console(`${N} execute if block ${marca[0]} ${marca[1]} ${marca[2]} minecraft:diamond_block`)).includes('passed'),

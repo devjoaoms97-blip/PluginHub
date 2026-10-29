@@ -18,7 +18,8 @@ O Nether e o End padrão do jogo ficam desligados (`allow-nether=false` no `serv
   2. quem está no mundo é levado pra fora (`saida.mundo`, ou o mundo principal);
   3. o Multiverse refaz o mundo com uma seed nova, mantendo as regras (`mv regen <mundo> --seed`, pelo console). O plugin espera o mundo novo aparecer, até 30 s, e então reaplica a borda, refaz o centro do End e anuncia ("O Nether foi resetado!", que vai pro Discord).
 - **Quem saiu do servidor dentro de um desses mundos** e volta depois do reset é levado a um ponto seguro do mundo novo, com um aviso. Sem isso, apareceria no mundo principal nas coordenadas antigas.
-- **`/mapa [recursos|nether|end]`** (sem argumento, o mundo em que você está) dá o mapa de localização daquele mundo, uma vez só. O mapa mostra o mundo inteiro, com a borda como moldura, uma grade a cada 500 blocos e o centro. No End, mostra também a área protegida e o quadrado verde. Com ele na mão, dentro daquele mundo, a seta é você, e embaixo aparecem as coordenadas. Ele não desenha o terreno: é só pra se localizar.
+- **`/mapa [recursos|nether|end]`** (sem argumento, o mundo em que você está) dá o mapa de localização daquele mundo, uma vez só. O mapa mostra o mundo inteiro, com a borda como moldura, uma grade a cada 500 blocos e o centro. No End, mostra também a área protegida e o quadrado verde. Com ele na mão, dentro daquele mundo, a seta é você, e embaixo aparecem as coordenadas.
+- **Terreno do mapa:** cada pixel é a cor (a do mapa do jogo) de um ponto do mundo, a cada 47 blocos no de recursos, 23 no Nether e 39 no End. No Nether, é o chão debaixo do teto; no End, o vazio fica escuro. O mapa só lê chunk que já existe, sem gerar nada: ele se preenche conforme os jogadores exploram, e o que ninguém visitou fica em branco. Cada chunk que carrega pinta o pedaço dele. Quando o plugin liga sem o desenho salvo, ele lê aos poucos os chunks já gerados. O desenho fica em `mapa-<mundo>.dat` (salvo a cada 5 min e ao desligar). **No reset, o desenho é apagado**, e o mapa do mundo novo começa em branco.
 
 ## O centro do End
 
@@ -40,6 +41,7 @@ O Nether e o End padrão do jogo ficam desligados (`allow-nether=false` no `serv
 | `/recursos admin cancelar [mundo]` | Cancela o reset marcado (o automático continua) |
 | `/recursos admin levar [mundo] <jogador\|seletor>` | Leva o jogador (ou `@p[distance=..2]`, num bloco de comando) pro mundo. É o que o portal do spawn usa |
 | `/recursos admin dragao` | Renasce o dragão do End agora (se ele não estiver vivo) |
+| `/recursos admin mapa` | Quanto do mapa de cada mundo já tem terreno, e salva os desenhos |
 | `/recursos admin reload` | Recarrega o config e prepara os mundos de novo (borda e centro do End) |
 
 `recursos.admin` (op) também ignora a espera do teleporte e constrói no centro do End, no criativo.
@@ -72,13 +74,13 @@ Um config de antes do Nether e do End é atualizado sozinho quando o plugin liga
 
 ## Requisitos
 
-Multiverse-Core: cria os mundos e faz o regen. O `configurar-mundos.bat` do servidor de teste cria os três e liga o `confirm-mode: disable_console` do Multiverse (`mv config confirm-mode disable_console`). **Sem essa opção o reset não acontece**, porque o regen pede um `/mv confirm` que ninguém dá. O último reset e o ciclo de cada mundo, e o id do mapa de cada um, ficam em `dados.yml`.
+Multiverse-Core: cria os mundos e faz o regen. O `configurar-mundos.bat` do servidor de teste cria os três e liga o `confirm-mode: disable_console` do Multiverse (`mv config confirm-mode disable_console`). **Sem essa opção o reset não acontece**, porque o regen pede um `/mv confirm` que ninguém dá. O último reset e o ciclo de cada mundo, e o id do mapa de cada um, ficam em `dados.yml`. Na ida pra VPS, ver [docs/producao-vps.md](../docs/producao-vps.md).
 
 ## Testes
 
 `tools/bots/teste-recursos.js` (o mundo normal e o reset) e `tools/bots/teste-nether-end.js`:
 - `/nether` abaixo do teto e `/end` no quadrado verde, com as bordas;
-- o `/mapa`;
+- o `/mapa` e o terreno dele (apagado no reset);
 - o centro protegido e o PvP só fora do quadrado;
 - as gaiolas, o dragão renascendo e o ovo parado;
 - o reset do Nether e o resgate de quem saiu lá dentro.

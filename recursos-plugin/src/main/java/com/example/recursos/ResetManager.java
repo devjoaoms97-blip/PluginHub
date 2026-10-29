@@ -194,6 +194,7 @@ public class ResetManager {
         avisosDados.clear();
         plugin.salvarDados();
         plugin.prepararMundo(novo);
+        plugin.getMapas().limpar(mundo); // o desenho do mundo antigo some
         anunciar("§6§l[Recursos] §aO " + getNome() + " foi resetado! §7Vá com §f/" + getComando() + "§7.");
         plugin.getLogger().info(mundo + " resetado (ciclo " + ciclo + ").");
     }
