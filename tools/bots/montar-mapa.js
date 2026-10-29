@@ -401,7 +401,7 @@ const DICAS = [
   { id: 'guia', skin: 'eeaf43c747497e20fe0667d67810aa1f3cb0aeb96fcc94b7ce18f5d165c8284d', nome: '&aZé, o Guia', pos: [6, 6], falas: [
     '&fBem-vindo! Pegue sua recompensa de todo dia com &e/diaria&f. Quanto mais dias seguidos, melhor.',
     '&fQuer um X1? &e/duelo <jogador> <valor>&f. Quem perde, perde os itens. Quem ganha, ganha o meu respeito.',
-    '&fNa agenda atual: Gladiador por clã sábado às 19h e individual domingo às 19h. A borda fecha no centro!',
+    '&fNa agenda atual: &6Gladiador&f por &bclã&f sábado às &e19h&f e &6individual&f domingo às &e19h&f. A borda fecha no centro!',
     '&fQuer um cantinho seu? &e/terreno&f. Madeira e bicho você acha no mundo de &e/recursos&f.',
     '&fMorreu e não achou suas coisas? Olhe o &e/achados&f: o que a limpeza recolheu do chão fica guardado por 3 dias, por uma taxinha.',
     '&fVIP tem &e/montaria&f: um cavalo na hora, bem mais rápido que a pé. Só não entra nas minas nem na arena do boss.',
@@ -425,7 +425,7 @@ const DICAS = [
     '&fO boss só espera &c1 hora&f. Se ninguém derrotar, ele vai embora e o mal reina: XP de skill &c-10%&f até alguém derrubar o próximo.',
     '&fQuem morre na arena deixa os itens lá. Não leve nada que você não aceita perder.',
     '&fA arena tem cara de tóxica, mas pode pisar à vontade. O que mata mesmo é o boss. E o orgulho.',
-    '&fNo spawn, o PvP fica sempre na arena do boss e na warp mobs quando o ciclo está ligado. O resto é seguro.',
+    '&fNo spawn, o PvP fica sempre na &carena do boss&f e na &bwarp mobs&f quando o ciclo está ligado. O resto é seguro.',
   ] },
   { id: 'cacador', nome: '&6Caçador de Tesouros', pos: [6, 38], virado: 'centro', falas: [
     '&fO boss sempre deixa cair um &6Mapa do Tesouro&f quando morre. Quanto mais raro, mais perigoso e mais rico: &fcomum&f, &9raro&f, &darcano&f e &6lendário&f.',
