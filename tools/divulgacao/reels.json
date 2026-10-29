@@ -1,0 +1,74 @@
+{
+  "_leia": "Cada reel: cenas com [arquivo em public/brutos, segundo do bruto onde começa, frames a 30 fps, linhas de texto [texto, tamanho, cor]]. Frames em múltiplos de 15 (meia batida a 120 BPM) pra trilha cair nos cortes. Depois de mudar, rode python audio/sintetizar.py.",
+  "final": 90,
+  "reels": {
+    "ReelBoss": {
+      "clima": "sombrio",
+      "trovao": 4,
+      "cenas": [
+        ["tita.mp4", 8, 90, [["O BOSS", 120, "branco"], ["ACORDOU", 170, "vermelho"]]],
+        ["feiticeira.mp4", 4, 75, [["7 BOSSES", 130, "amarelo"], ["cada um com seus ataques", 54, "branco"]]],
+        ["tita.mp4", 40, 60, [["TOP 3 DE DANO", 110, "amarelo"]]],
+        ["tita.mp4", 52, 60, [["LEVA O PRÊMIO", 110, "amarelo"]]],
+        ["wither.mp4", 6, 90, [["DOMINGO", 80, "laranja"], ["O FLAGELO", 130, "branco"], ["DAS TREVAS", 130, "vermelho"]]],
+        ["wither.mp4", 26, 75, [["1 hora pra derrotar.", 60, "branco"], ["Senão, o servidor", 60, "laranja"], ["é amaldiçoado.", 60, "laranja"]]]
+      ]
+    },
+    "ReelTour": {
+      "clima": "epico",
+      "cenas": [
+        ["n3.mp4", 8.5, 75, [["BEM-VINDO À", 80, "branco"], ["BRASAMC", 170, "amarelo"]]],
+        ["n6.mp4", 7, 75, [["12 MINAS", 140, "amarelo"], ["que se regeneram sozinhas", 54, "branco"]]],
+        ["n7.mp4", 13, 45, [["SPAWN MEDIEVAL", 100, "branco"]]],
+        ["n5.mp4", 0, 60, [["LOJA OFICIAL", 120, "amarelo"]]],
+        ["n4.mp4", 2, 75, [["WARP MOBS", 130, "amarelo"], ["estátuas gigantes", 60, "branco"]]],
+        ["n7.mp4", 20.8, 75, [["E LÁ EMBAIXO...", 80, "branco"], ["O BOSS", 150, "vermelho"]]]
+      ]
+    },
+    "ReelMinas": {
+      "clima": "epico",
+      "cenas": [
+        ["n6.mp4", 6, 75, [["12 MINAS", 150, "amarelo"]]],
+        ["n6.mp4", 11, 60, [["12 RANKS", 130, "amarelo"], ["MEDIEVAIS", 100, "branco"]]],
+        ["n7.mp4", 2, 60, [["DE CAMPONÊS", 100, "branco"], ["A REI", 150, "amarelo"]]],
+        ["n1.mp4", 2, 75, [["Tudo que você minera", 64, "branco"], ["vira dinheiro na hora", 64, "amarelo"]]],
+        ["n6.mp4", 15, 60, [["Suba de rank", 70, "branco"], ["e libere minas novas", 64, "amarelo"]]],
+        ["n6.mp4", 20, 45, [["MINE-SENA", 120, "amarelo"], ["sorteio todo dia às 18h", 54, "branco"]]]
+      ]
+    },
+    "ReelLoja": {
+      "clima": "epico",
+      "cenas": [
+        ["n5.mp4", 0, 60, [["LOJA OFICIAL", 130, "amarelo"]]],
+        ["n5.mp4", 6, 75, [["10 BALCÕES", 120, "amarelo"], ["compre e venda de tudo", 56, "branco"]]],
+        ["n5.mp4", 24, 60, [["PREÇO DINÂMICO", 100, "amarelo"], ["o mercado decide", 56, "branco"]]],
+        ["n3.mp4", 10, 60, [["32 BARRACAS", 130, "amarelo"], ["de jogadores", 60, "branco"]]],
+        ["n2.mp4", 0, 75, [["Um NPC com a sua skin", 60, "branco"], ["vende por você", 70, "amarelo"]]],
+        ["n7.mp4", 18, 60, [["Aluguel de 6h", 70, "branco"], ["e leilão das especiais", 60, "amarelo"]]]
+      ]
+    },
+    "ReelGladiador": {
+      "clima": "epico",
+      "cenas": [
+        ["g3.mp4", 17.2, 60, [["8 ENTRAM.", 150, "branco"]]],
+        ["g1.mp4", 6.5, 75, [["SÓ 1 SAI.", 160, "vermelho"]]],
+        ["g2.mp4", 8, 60, [["GLADIADOR", 150, "amarelo"]]],
+        ["g3.mp4", 10, 75, [["Cada um luta com", 64, "branco"], ["o próprio equipamento", 64, "amarelo"]]],
+        ["g3.mp4", 21, 60, [["Quem morre", 80, "branco"], ["perde tudo", 110, "vermelho"]]],
+        ["g3.mp4", 28, 60, [["E a borda", 80, "branco"], ["vai fechando", 100, "laranja"]]],
+        ["g3.mp4", 36, 60, [["Desta vez, quem venceu", 58, "branco"], ["foi o [FUJÃO]", 100, "amarelo"]]]
+      ]
+    },
+    "ReelMobs": {
+      "clima": "sombrio",
+      "cenas": [
+        ["n4.mp4", 0, 75, [["WARP MOBS", 150, "amarelo"]]],
+        ["n4.mp4", 4, 60, [["ESTÁTUAS", 130, "branco"], ["GIGANTES", 130, "amarelo"]]],
+        ["n4.mp4", 11, 75, [["que geram", 70, "branco"], ["mobs de verdade", 90, "amarelo"]]],
+        ["n4.mp4", 18, 60, [["drops, XP e skills", 70, "amarelo"], ["cheios", 90, "branco"]]],
+        ["n4.mp4", 22, 60, [["mas cuidado...", 80, "branco"]]],
+        ["n4.mp4", 29.4, 45, [["PVP EM CICLOS", 110, "vermelho"]]]
+      ]
+    }
+  }
+}
