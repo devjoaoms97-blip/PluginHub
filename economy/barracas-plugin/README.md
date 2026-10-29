@@ -73,7 +73,7 @@ Clicar nele mostra o `/barraca info`. O tempo restante é atualizado a cada 30s,
 
 ## Preço por barraca
 
-Cada barraca pode ter o próprio preço, com `/barraca preco <id> <valor>`: as maiores ou mais bem localizadas podem custar mais. Nas especiais, esse preço é o lance mínimo do leilão. Sem preço próprio, vale o `aluguel.preco` do config. O `/barraca lista` e o `/barraca info` mostram o preço de cada uma.
+Cada barraca pode ter o próprio preço, com `/barraca preco <id> <valor>`: as maiores ou mais bem localizadas podem custar mais. Nas especiais, esse preço é o lance mínimo do leilão. Sem preço próprio, a normal custa o `aluguel.preco` do config (R$ 2.000) e a especial o `aluguel.preco-especial` (R$ 5.000, também o lance mínimo do leilão). O `/barraca lista` e o `/barraca info` mostram o preço de cada uma.
 
 ## Renovação automática
 

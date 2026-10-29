@@ -16,7 +16,11 @@ Dentro de uma área fechada:
 | Carga de vento | Não sai e não é gasta |
 | Construção | Ninguém quebra nem coloca bloco, usa balde, põe fogo, pisoteia plantação nem mexe em moldura, quadro e suporte de armadura. Explosão, fogo que espalha e mob (enderman) também não mexem em nada. As minas do RankupPlugin ficam de fora: lá quem cuida é ele |
 
-**PvP só na arena do boss e, em ciclos, na warp mobs.** No mundo `spawn`, o PvP do Minecraft fica ligado, mas um jogador só machuca outro se os dois estiverem dentro de uma das caixas de `pvp-so-nas-caixas`: a arena do boss, com a escadaria (PvP sempre), e a warp mobs da linha vermelha pra dentro (o vestíbulo nunca tem).
+**PvP só na arena do boss e, em ciclos, na warp mobs.** No mundo `spawn`, o PvP do Minecraft fica ligado, mas um jogador só machuca outro se os dois estiverem dentro de uma das caixas de `pvp-so-nas-caixas`: a arena do boss, depois do pulo do túnel (PvP sempre; a escadaria e o túnel não têm), e a warp mobs da linha vermelha pra dentro (o vestíbulo nunca tem).
+
+**Nas arenas, PvP só no piso de luta.** No mundo `arenas`, as caixas são o piso do X1 e o do coliseu: lá dentro, o Gladiador e o duelo decidem quem bate em quem. As plateias (a galeria do X1, em y 80, e o deck de vidro do coliseu, em y 77) e o saguão ficam sem PvP.
+
+**Mensagem.** O que é barrado nas áreas fechadas avisa "⛔ Área protegida: aqui não dá pra %coisa%." (`mensagem`).
 
 **Aviso na entrada da arena do boss.** Uma caixa sem ciclo pode ter `paineis` (lista de `[x, y, z]`): hologramas avisando "⚔ PvP LIGADO ⚔ o tempo todo, daqui pra frente". A arena do boss tem um, no fim do túnel da muralha, na borda do pulo: a caixa de PvP começa ali (a escadaria e o túnel não têm PvP). Mudou a posição no config, o `/areas reload` apaga o holograma antigo. O texto muda com `texto-painel` (`%nome%` é o nome da caixa).
 

@@ -24,7 +24,7 @@ final class PainelFixo {
 
     private static final LegacyComponentSerializer LEGADO = LegacyComponentSerializer.legacySection();
     private static final String TAG = "areas-painel-fixo";
-    private static final String PADRAO = "&c&l⚔ PvP LIGADO ⚔\n&fo tempo todo, daqui pra frente\n&7%nome%";
+    private static final String PADRAO = "&c&l⚔ PvP LIGADO ⚔\n&fo tempo todo, daqui pra frente";
 
     private final String mundo;
     private final double x, y, z;

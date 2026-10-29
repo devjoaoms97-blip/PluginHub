@@ -192,8 +192,8 @@ final class CicloPvp {
             });
         }
         holograma.text(LEGADO.deserialize(on
-                ? "§c§l⚔ PvP LIGADO ⚔\n§fdesliga em §e" + tempo(resta) + "\n§7da linha vermelha pra dentro"
-                : "§a§lPvP DESLIGADO\n§fliga em §e" + tempo(resta) + "\n§7da linha vermelha pra dentro"));
+                ? "§c§l⚔ PvP LIGADO ⚔\n§fdesliga em §e" + tempo(resta)
+                : "§a§lPvP DESLIGADO\n§fliga em §e" + tempo(resta)));
     }
 
     /** Troca o concreto da moldura: verde sem PvP, vermelho com. */

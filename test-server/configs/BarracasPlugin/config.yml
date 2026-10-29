@@ -1,11 +1,13 @@
 # Configuração do BarracasPlugin
 
 aluguel:
-  # Preço do aluguel das barracas normais. Também é o LANCE MÍNIMO do leilão das especiais.
+  # Preço do aluguel das barracas normais e das especiais (que também é o LANCE MÍNIMO do leilão
+  # delas). Uma barraca com preço próprio (/barraca preco) ignora esses dois.
   # O dinheiro do aluguel vai pro servidor (some da economia) — funciona como sink.
-  preco: 500.0
+  preco: 2000.0
+  preco-especial: 5000.0
   # Quanto tempo vale um aluguel (e cada renovação).
-  duracao-horas: 1
+  duracao-horas: 6
   # Até quanto tempo de aluguel dá pra acumular renovando antes de vencer (só normais).
   # Ex: com 6h de duração e 12 aqui, só dá pra renovar quando faltar menos de 6h.
   renovacao-maxima-horas: 12

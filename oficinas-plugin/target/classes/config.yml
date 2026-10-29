@@ -9,7 +9,7 @@ tipos:
     skin: "textura:99978656517591349a1dc51b55212948d0978f4651d8a6c64da33c282f8b8513"   # ferreiro de avental
   bruxa:
     nome: "&5&l✦ Bruxa"
-    descricao: "&7Clique: encantar (nível 30, sem lápis)"
+    descricao: "&7Clique: encantar (nível 30)"
     skin: "textura:19c5d75f9426d887b817d2b8d191788450d0e7ee7e00541b6ad879da84995f32"   # bruxa de cabelo roxo
   picareteiro:
     nome: "&b&l⛏ Picareteiro"

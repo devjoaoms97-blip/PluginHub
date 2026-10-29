@@ -52,6 +52,13 @@ pvp-so-nas-caixas:
       painel: [-84.3, 64.6, 43.5]
       moldura: {min: [-83, 62, 31], max: [-83, 70, 55]}
 
+  # Mundo das arenas: PvP só no piso de luta (o Gladiador e o duelo decidem quem bate em quem lá
+  # dentro). A plateia do X1 (galeria em y 80), a do coliseu (deck de vidro em y 77) e o saguão ficam
+  # sem PvP: antes, dois espectadores se batiam na arquibancada.
+  arenas:
+    - {nome: "piso do X1", min: [-625, 60, -14], max: [-575, 77, 14]}
+    - {nome: "piso do coliseu", min: [524, 60, -64], max: [676, 75, 64]}
+
 # Nas áreas listadas, os comandos abaixo não funcionam lá dentro, e o teleporte que um deles acabou
 # de pedir (até 10 s) não leva ninguém pra lá: /tpa de fora pra quem está dentro (o /tpaccept lá
 # dentro é barrado), /back pro lugar em que morreu na arena, casa antiga marcada lá. /spawn e /warp
@@ -62,4 +69,4 @@ teleporte-por-comando:
              back, return, home, homes, sethome, createhome, delhome, remhome, rmhome]
 
 # %coisa% vira o que foi barrado ("voar", "usar pérola do fim"...).
-mensagem: "&cAqui não dá pra %coisa%: saia pelos portões."
+mensagem: "&c⛔ Área protegida: aqui não dá pra %coisa%."

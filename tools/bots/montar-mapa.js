@@ -342,7 +342,7 @@ async function construirSalaoMobs() {
   const [x, y, z] = [-90, MOBS_PISO + 7, SPAWN.z]
   await t.console(`execute in minecraft:spawn positioned ${x} ${y} ${z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..4]`)
   const linhas = [['⚔ WARP MOBS ⚔', 'gold', true], ['Mate os mobs das estátuas: drops, XP e skills', 'white'],
-    ['Os mobs não passam da linha vermelha', 'gray'], ['Voltar: a escadaria atrás de você ou /spawn', 'gray']]
+    ['Os mobs não passam da linha vermelha', 'gray']]
   const partes = linhas.map(([s, cor, negrito]) => `{text:"${s}",color:"${cor}"${negrito ? ',bold:1b' : ''}}`).join(',"\\n",')
   await t.console(`execute in minecraft:spawn run summon minecraft:text_display ${x + 0.5} ${y} ${z + 0.5} `
     + `{Tags:["mapa"],billboard:"vertical",shadow:1b,line_width:300,`

@@ -66,7 +66,9 @@ public class Banco implements Listener {
         ItemStack item = new ItemStack(Material.PAPER, Math.max(1, quantidade));
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.WHITE + "Folha de cheque");
-        meta.setLore(List.of(ChatColor.GRAY + "Em branco. Com ela na mão:", ChatColor.YELLOW + "/cheque <valor> [jogador]",
+        meta.setLore(List.of(ChatColor.GRAY + "Em branco. Com ela na mão:",
+                ChatColor.YELLOW + "/cheque <valor>" + ChatColor.GRAY + " (qualquer um deposita)",
+                ChatColor.YELLOW + "/cheque <valor> <jogador>" + ChatColor.GRAY + " (só ele)",
                 ChatColor.GRAY + "O valor sai do seu saldo."));
         meta.getPersistentDataContainer().set(plugin.getFolhaKey(), PersistentDataType.BYTE, (byte) 1);
         item.setItemMeta(meta);
@@ -117,8 +119,10 @@ public class Banco implements Listener {
         menu.inventario.setItem(SLOT_EXTRATO, icone(Material.WRITTEN_BOOK, "§b§lExtrato",
                 "§7Suas últimas movimentações de dinheiro:", "§7Pix, loja, oficinas, rankup, cheques,", "§7Mine-sena, boss e o resto.", "§eClique"));
         menu.inventario.setItem(22, icone(Material.WRITABLE_BOOK, "§6Como funciona",
-                "§71. Compre uma folha de cheque.", "§72. Com ela na mão: §f/cheque <valor> [jogador]",
-                "§7   O valor sai do seu saldo.", "§73. Quem recebe deposita aqui.",
+                "§71. Compre uma folha de cheque.", "§72. Com ela na mão: §f/cheque <valor>",
+                "§7   (ao portador: qualquer um deposita)", "§7   ou §f/cheque <valor> <jogador>",
+                "§7   (nominal: só esse jogador deposita).", "§7   O valor sai do seu saldo.",
+                "§73. Quem recebe deposita aqui.",
                 "§7Errou? §f/cheque cancelar §7com ele na mão devolve."));
         jogador.openInventory(menu.inventario);
     }
