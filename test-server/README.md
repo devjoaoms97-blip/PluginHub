@@ -78,7 +78,8 @@ Só os plugins com valores mudados têm config aqui. Subpastas são copiadas tam
 | Plugin | Mudança | Por quê |
 |---|---|---|
 | BountyPlugin | `anti-farm.mesmo-ip: false`, `cooldown-horas: 0`, anúncios a partir de R$ 100 | Todas as contas de teste têm o mesmo IP |
-| BarracasPlugin | Aluguel de 1 h, aviso 5 min antes, leilão de 2 min | Ver vencimento e renovação automática sem esperar 6 h |
+| BarracasPlugin | Aluguel de 6 h, aviso 5 min antes e leilão de 2 min | Mantém o prazo normal e reduz a espera para conferir o aviso e o leilão após o vencimento |
+| GladiadorPlugin | Clãs sábado às 19 h; individual domingo às 19 h | Exercita os dois modos em horários separados do boss diário das 20 h |
 | PainelEconomiaPlugin | `alerta.minimo: 100` | Conseguir disparar o alerta |
 | BossPlugin | Vida de 500 (800 no Wither) | Matar rápido |
 | MissoesPlugin | Quantidades em cerca de 1/10 | Completar rápido |

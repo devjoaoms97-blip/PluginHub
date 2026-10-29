@@ -14,7 +14,9 @@ São 13 skills que sobem lutando: **Espadas, Machado, Arqueiro, Porradeiro, Trid
 • Carregar **besta** ou puxar o **arco** trava a espada por um instante.
 
 **Onde tem PvP**
-✅ Mundo de recursos, arenas de duelo e Gladiador
-❌ Spawn, minas, loja, terrenos e arena do boss
+✅ Mundo de recursos e arena do boss (a partir do fim do túnel)
+✅ Warp mobs quando o ciclo indicar PvP ligado
+✅ Só no piso de luta do X1 e do Gladiador; as plateias e o saguão ficam seguros
+❌ Avenida das Minas, Loja Oficial e terrenos
 
-**Itens nas arenas:** no **duelo** e no **Gladiador**, cada um luta com o próprio equipamento, e **quem morre perde os itens**. Pense bem no que leva!
+**Atenção ao equipamento:** na arena do boss, no mundo de recursos e no **duelo** ou **Gladiador**, você pode perder o que estiver carregando ao morrer. No duelo e no Gladiador, cada um entra com o próprio equipamento. Leve só o que aceita arriscar!

@@ -8,7 +8,7 @@ Um chefe aparece na **arena do boss** (portão sul do spawn) nos horários da ag
 
 **Gladiador**
 A staff (ou a agenda) abre as inscrições, e todo mundo luta na arena. Uma borda vai fechando pra luta não se arrastar. Os destaques ganham tag até o próximo: **[Ceifador]** (mais abates), **[Top Damage]** (mais dano) e **[Fujão]**... você sabe por quê. 😄
-`/gladiador entrar` quando as inscrições estiverem abertas.
+Na agenda atual do servidor de teste, o evento por **clã** abre aos **sábados, às 19h**; o individual, aos **domingos, às 19h**. Use `/gladiador entrar` durante as inscrições.
 
 **Mine-sena**
 A loteria do Bancário, sorteada todo dia às 18:00. O pote acumula enquanto ninguém acerta!
