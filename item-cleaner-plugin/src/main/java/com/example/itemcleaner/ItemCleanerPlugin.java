@@ -88,8 +88,9 @@ public class ItemCleanerPlugin extends JavaPlugin {
 
     /**
      * Remove todos os itens no chão (e os orbes de XP, se {@code limpar-orbes-xp}) que passam
-     * pelos filtros configurados (itens nomeados, perto de jogador, mundos alvo). Não há idade
-     * mínima: o que tem dono vai pros achados e perdidos, então nada se perde de vez.
+     * pelos filtros configurados (itens nomeados, mundos alvo). Não há idade mínima nem proteção perto
+     * de jogador pros itens: o que tem dono vai pros achados e perdidos, então nada se perde de vez.
+     * Só os orbes de XP perto de alguém ficam (ele está pegando).
      * Retorna quantos foram removidos.
      */
     public int limparItens() {
@@ -111,10 +112,6 @@ public class ItemCleanerPlugin extends JavaPlugin {
                     continue;
                 }
                 if (!(entidade instanceof Item item)) {
-                    continue;
-                }
-                // drops de quem está ali do lado (minerando, lutando) ficam
-                if (pertoDeJogador(item, jogadores, raio2)) {
                     continue;
                 }
                 if (ignorarNomeados && item.getItemStack().hasItemMeta()

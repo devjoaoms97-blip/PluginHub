@@ -38,6 +38,12 @@ agenda:
 # Quanto tempo o boss fica vivo (0 = até alguém derrotar). Passou disso, ele vai embora e o servidor
 # fica amaldiçoado (veja "maldicao"). Vale pra agenda e pro /boss start; o /boss stop não amaldiçoa.
 tempo-limite-minutos: 60
+
+# O boss fica preso na arena: passou desse raio (em blocos, na horizontal, a partir do local do
+# /boss setlocal) ou de arena-altura acima dele, volta pro centro. O piso da arena "toxica" tem raio
+# 48. Também limita o teleporte de ataque a quem está dentro da arena. 0 desliga.
+arena-raio: 46
+arena-altura: 55
 # Avisos no chat antes de ele ir embora, em minutos.
 avisos-fuga-minutos: [10, 1]
 mensagem-fuga: "&c&l⚠ &cO boss vai embora em &f%minutos% min&c! Se ninguém derrotar, o mal reina sobre o servidor."

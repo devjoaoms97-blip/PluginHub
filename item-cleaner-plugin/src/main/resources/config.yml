@@ -14,8 +14,8 @@ ignorar-itens-nomeados: true
 # Também remove os orbes de XP soltos no chão.
 limpar-orbes-xp: true
 
-# Não remove nada num raio de tantos blocos de qualquer jogador (o drop de quem está minerando ou
-# lutando ali do lado fica). 0 desativa.
+# Os orbes de XP num raio de tantos blocos de um jogador ficam (ele está pegando). 0 desativa.
+# Os itens não têm essa proteção: a limpeza leva todos, e o que tem dono vai pros achados e perdidos.
 protecao-perto-de-jogador: 8
 
 # /limparchao (sem argumento): espera tantos segundos depois do aviso antes de limpar.

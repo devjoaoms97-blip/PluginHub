@@ -1,5 +1,6 @@
 name: vip_bronze
 permissions:
+- essentials.teleport.timer.bypass
 - vip.desconto.bronze
 - vip.perk.feed
 - vip.perk.heal

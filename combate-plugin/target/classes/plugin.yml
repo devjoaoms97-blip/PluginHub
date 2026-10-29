@@ -3,6 +3,7 @@ version: '1.0.0'
 main: com.example.combate.CombatePlugin
 api-version: '26.2'
 author: Você
+softdepend: [Essentials]
 description: Combate no estilo da 1.8 - sem recarga de ataque, bloqueio com a espada e golpe com a segunda mão.
 
 commands:

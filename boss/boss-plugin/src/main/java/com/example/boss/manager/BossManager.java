@@ -387,6 +387,7 @@ public class BossManager {
         }
 
         suprimirBarraNativa();
+        prenderNaArena();
 
         verificarFasesPercentuais(percentual);
         verificarFasesTempo();
@@ -417,6 +418,30 @@ public class BossManager {
                         .replace("%minutos%", String.valueOf(aviso))));
             }
         }
+    }
+
+    /**
+     * O boss não sai da arena: passou de {@code arena-raio} blocos do centro (na horizontal) ou de
+     * {@code arena-altura} acima do piso, volta pro centro. Sem isso o Wither, que voa, subia a
+     * escadaria da entrada e ia parar no spawn (o degrau da chegada só segura quem anda).
+     */
+    private void prenderNaArena() {
+        double raio = plugin.getConfig().getDouble("arena-raio", 46);
+        Location centro = plugin.getArenaManager().getLocalizacao();
+        if (raio <= 0 || centro == null) return;
+        if (dentroDaArena(bossAtivo.getLocation(), centro, raio)) return;
+        bossAtivo.getWorld().spawnParticle(Particle.PORTAL, bossAtivo.getLocation(), 40, 1, 1, 1);
+        bossAtivo.setVelocity(new Vector());
+        bossAtivo.teleport(centro);
+        centro.getWorld().spawnParticle(Particle.PORTAL, centro, 40, 1, 1, 1);
+        centro.getWorld().playSound(centro, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 0.6f);
+    }
+
+    private boolean dentroDaArena(Location local, Location centro, double raio) {
+        if (!local.getWorld().equals(centro.getWorld())) return false;
+        double dx = local.getX() - centro.getX(), dz = local.getZ() - centro.getZ();
+        double dy = local.getY() - centro.getY();
+        return dx * dx + dz * dz <= raio * raio && dy >= -5 && dy <= plugin.getConfig().getDouble("arena-altura", 55);
     }
 
     private void suprimirBarraNativa() {
@@ -517,7 +542,8 @@ public class BossManager {
         }
 
         for (Player p : bossAtivo.getWorld().getPlayers()) {
-            if (p.getLocation().distance(bossAtivo.getLocation()) <= raio) {
+            // quem está na tela de morte fica de fora: o efeito posto no morto atravessava o renascimento
+            if (!p.isDead() && p.getLocation().distance(bossAtivo.getLocation()) <= raio) {
                 p.addPotionEffect(new PotionEffect(tipo, duracaoTicks, amplificador));
             }
         }
@@ -609,9 +635,14 @@ public class BossManager {
         bossAtivo.getWorld().spawnParticle(Particle.HEART, bossAtivo.getLocation().add(0, 2, 0), 10, 0.5, 0.5, 0.5);
     }
 
-    /** Teleporta o boss pra perto de um jogador aleatório e desfere um golpe surpresa. */
+    /** Teleporta o boss pra perto de um jogador aleatório da arena e desfere um golpe surpresa. */
     private void executarTeleporteAtaque(FaseConfig fase) {
-        List<Player> jogadores = bossAtivo.getWorld().getPlayers();
+        // só quem está na arena: antes valia qualquer jogador do mundo, e o boss ia parar no spawn
+        Location centro = plugin.getArenaManager().getLocalizacao();
+        double raio = plugin.getConfig().getDouble("arena-raio", 46);
+        List<Player> jogadores = bossAtivo.getWorld().getPlayers().stream()
+                .filter(p -> centro == null || raio <= 0 || dentroDaArena(p.getLocation(), centro, raio))
+                .toList();
         if (jogadores.isEmpty()) return;
 
         Player alvo = jogadores.get(ThreadLocalRandom.current().nextInt(jogadores.size()));

@@ -45,3 +45,31 @@ arma-de-longe:
   ativado: true
   armas: [BOW, CROSSBOW]
   trava-depois-de-disparar-ms: 500
+
+em-combate:
+  # Quem bate ou apanha de outro jogador fica em combate por "segundos" (VIP ou não). Só conta o
+  # golpe que valeu: no spawn sem PvP nada marca. Em combate, os comandos abaixo não funcionam, e
+  # nenhum teleporte por comando leva o jogador (o /tpaccept de outro, o fim da espera do Essentials).
+  ativado: true
+  segundos: 5
+  # Sem a barra e sem o "plugin:". Duas palavras ("vip warp") barram só aquele subcomando.
+  comandos: [spawn, warp, warps, home, homes, back, return, tpa, tpahere, tpaall, tpaccept, tpyes, tpo, tpohere,
+             tphere, tpauto, call, recursos, mina, minas, vip warp, duelo assistir]
+  # Quem sai do servidor em combate morre na hora, com os itens no chão (expulsão e desligamento do
+  # servidor não contam). Nos mundos ignorados (as arenas), o Gladiador e o duelo tratam a desconexão.
+  morrer-ao-deslogar: true
+  mundos-ignorados: [arenas]
+  mensagens:
+    entrou: "&c⚔ Em combate! &7Sem teleporte, e quem desloga morre."
+    comando: "&c⚔ Você está em combate! Espere &f%s s &cpra teleportar."
+    deslogou: "&c☠ &f%jogador% &cdeslogou em combate e morreu."
+
+contagem-teleporte:
+  # A espera do teleporte do Essentials (teleport-delay, 3 s pra quem não é VIP) ganha um aviso a cada
+  # segundo que falta, e qualquer dano na espera cancela (sozinho, o Essentials só cancela no ataque de
+  # uma entidade de quem pode andar). O primeiro aviso ("Teleporte em 3 segundos.") e o "Teleportando..."
+  # são mensagens do próprio Essentials (plugins/Essentials/messages).
+  ativado: true
+  segundos: "&6Teleporte em &c%s segundos&6."
+  um-segundo: "&6Teleporte em &c1 segundo&6."
+  cancelado: "&cTeleporte cancelado."

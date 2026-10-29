@@ -5,3 +5,5 @@ com\example\combate\ArmaDeLonge.class
 com\example\combate\CombateCommand.class
 com\example\combate\BloqueioEspada.class
 com\example\combate\Invulnerabilidade.class
+com\example\combate\ContagemTeleporte.class
+com\example\combate\EmCombate.class

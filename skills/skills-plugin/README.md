@@ -117,6 +117,8 @@ Bônus de dano "normais" (Espadas, Machado, Arqueiro, Lanceiro, Marreteiro, Trid
 
 4. **Atordoamento do Marreteiro (stun de verdade)**: implementado cancelando qualquer mudança de posição no `PlayerMoveEvent` enquanto o efeito está ativo — o jogador consegue olhar em volta livremente, mas não anda, não pula, e **não cai por gravidade** (fica "flutuando" no lugar durante o stun, já que qualquer mudança de Y também é bloqueada). Isso só funciona em jogadores (mobs não disparam `PlayerMoveEvent`); contra mobs, aplicamos uma Lentidão bem forte como substituto.
 
+5. **Quem morre renasce limpo** (`MorteListener`): o Sangramento e o Atordoamento param na hora da morte (as tarefas só conferiam a morte uma vez por segundo, e quem renascia antes seguia sangrando no spawn), e um tique depois de renascer qualquer poção que sobrou sai (a que é aplicada com o jogador já na tela de morte, como o Wither em área do boss, atravessava o renascimento).
+
 2. **Lança usa o material nativo do jogo** (`_SPEAR`, do drop "Mounts of Mayhem") — não precisou de item marcado tipo a Adaga, já que a lança é uma arma de verdade no jogo agora.
 
 3. **Ordem de aplicação de dano**: aplico os modificadores (bônus de arma, crítico da skill, esquiva, bloqueio, defesa) diretamente em `event.setDamage()`, sem usar o sistema interno de `DamageModifier` do Bukkit (que separa dano base/armadura/encantamento/etc). Isso é mais simples de manter e funciona bem na prática, mas significa que os bônus das skills se aplicam **depois** da armadura/encantamentos vanilla já terem sido calculados pelo jogo.

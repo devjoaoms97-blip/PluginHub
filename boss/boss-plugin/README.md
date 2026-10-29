@@ -71,6 +71,8 @@ A cada boss aleatório (agenda ou `/boss start` sem id), há `elite.chance` (10%
 
 A arena do boss pode ser construída pelo EstruturasPlugin: `/estrutura construir toxica`. Quando termina, ele já roda o `/boss setlocal` no centro dela.
 
+O boss não sai da arena: se passar de `arena-raio` (46) blocos do centro, na horizontal, ou de `arena-altura` (55) acima dele, volta pro centro com partículas de portal. Isso segura o Wither, que voa e escapava pela escadaria da entrada (o degrau da chegada só segura quem anda). O teleporte de ataque também só mira quem está dentro da arena. `arena-raio: 0` desliga.
+
 ## Tipos de ação disponíveis (fases e arsenal aleatório usam os mesmos)
 
 | Ação | O que faz |

@@ -13,7 +13,8 @@ Limpa periodicamente os itens dropados no chão (drops de mob, blocos minerados,
 ## Orbes de XP, perto de jogador e aviso manual
 
 - `limpar-orbes-xp` (padrão true): os orbes de XP soltos também saem.
-- `protecao-perto-de-jogador` (padrão 8 blocos): nada num raio desses de qualquer jogador é removido. O drop de quem está minerando ou lutando ali do lado fica. 0 desliga.
+- `protecao-perto-de-jogador` (padrão 8 blocos): os **orbes de XP** num raio desses de um jogador ficam (ele está pegando). 0 desliga.
+- **Os itens não têm proteção nenhuma perto de jogador** (decisão de 2026-10-28): a limpeza leva todos. O que tem dono vai pros achados e perdidos, então quem perdeu algo valioso resgata por lá. Antes, qualquer jogador perto segurava os itens no chão, e depois do Gladiador quem assistia deixava os itens dos eliminados na arena.
 - `aviso-manual-segundos` e `mensagens.aviso-manual`: o tempo e a mensagem do `/limparchao` sem argumento (antes eram fixos em 10s, com a mensagem da automática).
 
 ## Achados e perdidos
@@ -57,4 +58,4 @@ O `.jar` sai em `target/ItemCleanerPlugin.jar`.
 1. **Só remove entidades do tipo `Item`** (itens dropados no chão) — não mexe em orbes de experiência, minecarts, boats, item frames, armor stands ou qualquer outra entidade. Se quiser incluir orbes de XP também (outra fonte comum de lag), é só pedir.
 2. **A contagem regressiva roda a cada segundo (1 tick a cada 20 ticks do servidor)**, então o timing dos avisos é preciso o suficiente pra esse uso, mas não é "tempo real" milissegundo a milissegundo.
 3. **Limpeza manual (`/limparchao` sem argumento) sempre avisa 10s antes** — esse valor é fixo no código, não configurável via `config.yml` (só o intervalo automático é). Se quiser deixar configurável também, é rápido de adicionar.
-4. **Sem idade mínima** — antes, o item precisava estar no chão há `idade-minima-segundos`; isso saiu com os achados e perdidos. Os filtros que ficam são o nome customizado (`ignorar-itens-nomeados`) e a distância de jogador (`protecao-perto-de-jogador`).
+4. **Sem idade mínima** — antes, o item precisava estar no chão há `idade-minima-segundos`; isso saiu com os achados e perdidos. O filtro que fica é o nome customizado (`ignorar-itens-nomeados`).

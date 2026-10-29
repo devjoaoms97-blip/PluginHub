@@ -92,6 +92,12 @@ public class SangramentoManager {
         tarefasAtivas.put(id, tarefa);
     }
 
+    /** Para o sangramento de quem morreu: o tique só confere a morte uma vez por segundo, e quem renascia antes seguia sangrando. */
+    public void cancelar(UUID vitima) {
+        BukkitTask tarefa = tarefasAtivas.remove(vitima);
+        if (tarefa != null) tarefa.cancel();
+    }
+
     public void cancelarTodas() {
         tarefasAtivas.values().forEach(BukkitTask::cancel);
         tarefasAtivas.clear();

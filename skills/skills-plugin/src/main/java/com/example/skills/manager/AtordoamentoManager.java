@@ -76,6 +76,12 @@ public class AtordoamentoManager {
         tarefasAtivas.put(id, tarefa);
     }
 
+    /** Tira o atordoamento de quem morreu (mesmo motivo do {@link SangramentoManager#cancelar}). */
+    public void cancelar(UUID vitima) {
+        BukkitTask tarefa = tarefasAtivas.remove(vitima);
+        if (tarefa != null) tarefa.cancel();
+    }
+
     public void cancelarTodas() {
         tarefasAtivas.values().forEach(BukkitTask::cancel);
         tarefasAtivas.clear();

@@ -7,7 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Combate no estilo da 1.8, só no que foi escolhido: sem recarga de ataque, tempo entre golpes
  * configurável, bloqueio com a espada (sem escudo na outra mão) e golpe com a arma da segunda
  * mão. O resto (ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado)
- * continua como no jogo atual.
+ * continua como no jogo atual. E o "em combate" ({@link EmCombate}): sem teleporte por 5 s depois
+ * de bater ou apanhar de jogador, e quem desloga nesse tempo morre.
  */
 public class CombatePlugin extends JavaPlugin {
 
@@ -42,6 +43,13 @@ public class CombatePlugin extends JavaPlugin {
         }
         if (getConfig().getBoolean("arma-de-longe.ativado", true)) {
             getServer().getPluginManager().registerEvents(new ArmaDeLonge(this), this);
+        }
+        if (getConfig().getBoolean("em-combate.ativado", true)) {
+            getServer().getPluginManager().registerEvents(new EmCombate(this), this);
+        }
+        if (getConfig().getBoolean("contagem-teleporte.ativado", true) && getServer().getPluginManager().getPlugin("Essentials") != null
+                && !new ContagemTeleporte(this).registrar()) {
+            getLogger().warning("Não achei o TeleportWarmupEvent do Essentials: o teleporte fica sem a contagem a cada segundo.");
         }
     }
 

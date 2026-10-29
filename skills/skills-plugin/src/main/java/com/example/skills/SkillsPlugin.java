@@ -6,6 +6,7 @@ import com.example.skills.gui.SkillsGUIListener;
 import com.example.skills.listener.CombatListener;
 import com.example.skills.listener.PlayerConnectionListener;
 import com.example.skills.listener.RegenListener;
+import com.example.skills.listener.MorteListener;
 import com.example.skills.listener.StunListener;
 import com.example.skills.item.AdagaUtil;
 import com.example.skills.manager.EventoXp;
@@ -83,6 +84,7 @@ public class SkillsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerConnectionListener(this), this);
         getServer().getPluginManager().registerEvents(new SkillsGUIListener(), this);
         getServer().getPluginManager().registerEvents(new StunListener(this), this);
+        getServer().getPluginManager().registerEvents(new MorteListener(this), this);
 
         this.passiveSkillsTask = new PassiveSkillsTask(this);
         int intervaloSegundos = getConfig().getInt("passivas.intervalo-segundos", 10);

@@ -71,7 +71,8 @@ import java.util.UUID;
  * <p>
  * PvP só em partes de um mundo ({@code pvp-so-nas-caixas}): no mundo spawn o PvP do jogo fica ligado,
  * mas um jogador só machuca outro se os dois estiverem dentro de uma das caixas (a arena do boss, sempre,
- * e a warp mobs da linha vermelha pra dentro, em ciclos: veja {@link CicloPvp}).
+ * e a warp mobs da linha vermelha pra dentro, em ciclos: veja {@link CicloPvp}). Na entrada de uma caixa
+ * sem ciclo, os {@code paineis} avisam que dali pra frente o PvP fica ligado o tempo todo ({@link PainelFixo}).
  */
 public class AreasPlugin extends JavaPlugin implements Listener {
 
@@ -94,6 +95,8 @@ public class AreasPlugin extends JavaPlugin implements Listener {
     private boolean avisouFalhaRankup;
     /** As caixas de PvP com ciclo (liga e desliga sozinho), pelo id. */
     private final Map<String, CicloPvp> ciclos = new HashMap<>();
+    /** Os hologramas fixos das caixas de PvP sem ciclo ("PvP ligado o tempo todo"). */
+    private final List<PainelFixo> paineis = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -107,7 +110,10 @@ public class AreasPlugin extends JavaPlugin implements Listener {
         // quem entra voando ou planando (pelo portão, por teleporte) cai na hora
         getServer().getScheduler().runTaskTimer(this, this::conferirVoo, 10L, 10L);
         // ciclos de PvP: barra, holograma, moldura e avisos
-        getServer().getScheduler().runTaskTimer(this, () -> ciclos.values().forEach(CicloPvp::tick), 20L, 20L);
+        getServer().getScheduler().runTaskTimer(this, () -> {
+            ciclos.values().forEach(CicloPvp::tick);
+            paineis.forEach(PainelFixo::tick);
+        }, 20L, 20L);
         getLogger().info("AreasPlugin ativado! " + areas.size() + " área(s) fechada(s).");
     }
 
@@ -119,12 +125,15 @@ public class AreasPlugin extends JavaPlugin implements Listener {
     private void carregar() {
         ciclos.values().forEach(CicloPvp::desligar);
         ciclos.clear();
+        paineis.clear();
+        PainelFixo.apagarTodos();
         ConfigurationSection pvp = getConfig().getConfigurationSection("pvp-so-nas-caixas");
         if (pvp != null) {
             for (String mundo : pvp.getKeys(false)) {
                 for (Map<?, ?> m : pvp.getMapList(mundo)) {
                     CicloPvp c = CicloPvp.de(mundo, m);
                     if (c != null) ciclos.put(c.id, c);
+                    paineis.addAll(PainelFixo.de(mundo, m));
                 }
             }
         }

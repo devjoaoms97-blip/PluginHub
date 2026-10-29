@@ -1,0 +1,6 @@
+name: default
+permissions:
+- essentials.spawn
+- essentials.teleport.timer.move
+- essentials.warp
+- essentials.warp.list

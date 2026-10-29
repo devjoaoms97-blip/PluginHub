@@ -10,6 +10,8 @@ const { Vec3 } = require('vec3')
 const PASTA = process.env.MC_TESTE || 'C:\\mc-teste'
 // o Mineflayer ainda não fala o protocolo do servidor: entra por uma versão anterior via ViaBackwards
 const VERSAO = process.env.MC_VERSAO_BOT || '26.1'
+// senha dos bots no AuthMe (só existe no servidor de teste)
+const SENHA_BOT = process.env.MC_SENHA_BOT || 'botteste123'
 
 const espera = ms => new Promise(r => setTimeout(r, ms))
 const semCor = s => String(s).replace(/§./g, '')
@@ -56,7 +58,16 @@ function criarBot(nome) {
     bot.on('resourcePack', () => { try { bot.acceptResourcePack() } catch {} })
     bot.on('kicked', r => console.log(`  [${nome} kickado] ${JSON.stringify(r)}`))
     bot.on('error', e => console.log(`  [${nome} erro] ${e.message}`))
-    bot.once('spawn', async () => { await espera(1500); ok(bot) })
+    // AuthMe: sem login o bot não anda nem usa comando. Registra (na primeira vez) e loga com a senha de
+    // teste; sem o AuthMe no servidor, os dois comandos só dão "comando desconhecido".
+    bot.once('spawn', async () => {
+      await espera(1000)
+      bot.chat(`/register ${SENHA_BOT} ${SENHA_BOT}`)
+      await espera(800)
+      bot.chat(`/login ${SENHA_BOT}`)
+      await espera(1200)
+      ok(bot)
+    })
     setTimeout(() => falha(new Error(`${nome} não entrou em 30 s (servidor ligado? ViaVersion e ViaBackwards instalados?)`)), 30000)
   })
 }

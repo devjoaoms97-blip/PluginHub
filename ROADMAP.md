@@ -256,6 +256,13 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Sem construção** (2026-10-25): ninguém quebra nem coloca bloco no spawn, na loja, na arena do boss e nas arenas de X1 e Gladiador (balde, fogo, molduras e explosão também). As minas ficam de fora.
 - [x] Comandos de teleporte (`/tpa`, `/tpaccept`, `/back`, `/home`, `/sethome`...) barrados no mundo `arenas` (2026-10-27), e o teleporte que um deles pediu não entra lá (o `/back` pro lugar da morte, uma casa antiga). `/spawn` e `/warp` continuam.
 
+### Login e regras de combate (pedidos de 2026-10-28)
+- [x] **Login no servidor** (2026-10-28): AuthMe Reloaded 6.0.1 (`/register` e `/login`), baixado pelo `montar.ps1`, com mensagens em português, senha em BCRYPT (as antigas em SHA256 continuam valendo e viram BCRYPT no login) e sessão de 30 min no mesmo IP. No servidor de teste, sem limite de contas por IP e sem a janela de login durante a conexão, por causa dos bots (que agora registram e logam sozinhos). **No servidor de verdade:** `maxRegPerIp: 2` e pode ligar a janela (`dialog.preJoin`). Pular o login de quem tem conta original fica pra depois. 🟡
+- [x] **Espera de 3 s no teleporte pra quem não é VIP** (2026-10-28): `teleport-delay: 3` no Essentials, com `essentials.teleport.timer.move` no grupo `default` (pode andar) e `essentials.teleport.timer.bypass` nos grupos VIP (teleporta na hora). Contagem a cada segundo ("Teleporte em 3 segundos." → 2 → 1 → "Teleportando...") e qualquer dano cancela, até queda e fogo (CombatePlugin, `ContagemTeleporte`; sozinho, o Essentials só cancelava no ataque de uma entidade).
+- [x] **Sem teleporte depois de bater ou apanhar de jogador** (2026-10-28): 5 s pra todo mundo, VIP ou não (CombatePlugin, `EmCombate`). Os comandos de teleporte da lista são barrados e nenhum teleporte por comando leva quem está em combate.
+- [x] **Deslogar em combate mata** (2026-10-28): morre na hora, com os itens no chão e aviso no chat. Expulsão e desligamento do servidor não contam, e no mundo `arenas` não vale (o Gladiador e o duelo já tratam a desconexão).
+- [x] **Arena do boss com PvP só depois do pulo** (2026-10-28): a escadaria e o túnel ficaram sem PvP, e um holograma na borda do pulo avisa "PvP LIGADO o tempo todo, daqui pra frente" (AreasPlugin, `paineis`).
+
 ---
 
 ## 🔧 Features nos plugins atuais
@@ -272,6 +279,8 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Corrigido** (2026-10-27): reiniciar com o boss vivo deixava um boss órfão na arena (sem barra nem ranking, matando quem chegasse). Agora o boss sai do mundo ao desligar, e qualquer boss órfão some quando a arena carrega.
 - [x] **Boss "elite"** (2026-10-27): 10% de chance a cada boss aleatório (ou `/boss start [id] elite`), com 2× de vida e de dano, recompensas em dobro e o loot do chão sorteado duas vezes.
 - [x] **Recompensa em dinheiro** pro campeão, além do item.
+- [x] **Corrigido (2026-10-28): o Wither fugia da arena.** Ele voa, e o degrau de 4 blocos da chegada só segura quem anda: subiu a escadaria e foi parar no spawn. Agora todo boss que passa de `arena-raio` (46) blocos do centro, ou de `arena-altura` acima dele, volta pro centro, e o teleporte de ataque só mira quem está dentro da arena (antes, qualquer jogador do mundo).
+- [x] **Corrigido (2026-10-28): efeitos continuavam depois da morte.** Quem morreu pro Wither renascia tomando o dano dele: o efeito em área do boss pegava quem já estava na tela de morte, e isso atravessava o renascimento. E o Sangramento e o Atordoamento só conferiam a morte uma vez por segundo. Agora os dois param na morte, o efeito em área pula os mortos e, um tique depois de renascer, qualquer poção que sobrou sai (SkillsPlugin, `MorteListener`).
 
 ### ⚔️ SkillsPlugin
 - [x] **`/skills top <skill>`**: ranking global por skill.
@@ -325,6 +334,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Limpar orbes de XP** também.
 - [x] **Aviso da limpeza manual configurável** (hoje é fixo em 10s).
 - [x] **Não limpar itens perto de jogadores.** `protecao-perto-de-jogador` (8 blocos).
+- [x] **A limpeza leva todos os itens do chão** (2026-10-28). Antes, qualquer jogador a menos de 8 blocos segurava os itens (depois do Gladiador, quem assistia deixou os itens dos eliminados na arena). Agora não tem proteção nenhuma pros itens: o que tem dono vai pros achados e perdidos. Só os orbes de XP perto de alguém ficam.
 
 ---
 

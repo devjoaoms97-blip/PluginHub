@@ -50,7 +50,12 @@ $downloads = @(
        sha256 = 'bab94b846e1d2bf516c070562d0271b32382afd41870bf0d3a7993b73a36f791' },
     @{ arquivo = 'plugins\ViaBackwards-5.12.1.jar'; remover = 'ViaBackwards-*.jar'
        url = 'https://hangarcdn.papermc.io/plugins/ViaVersion/ViaBackwards/versions/5.12.1/PAPER/ViaBackwards-5.12.1.jar'
-       sha256 = '4b9dd5cb7662f532b44627f8491255bf96f586cbd00280d1480442590ad4450d' }
+       sha256 = '4b9dd5cb7662f532b44627f8491255bf96f586cbd00280d1480442590ad4450d' },
+    # login (/registrar e /logar): o servidor aceita conta não original, então sem senha qualquer um entra
+    # com o nick de outro. Build Paper oficial (github.com/AuthMe/AuthMeReloaded).
+    @{ arquivo = 'plugins\AuthMe-6.0.1-Paper.jar'; remover = 'AuthMe-*.jar'
+       url = 'https://cdn.modrinth.com/data/9js4IEHC/versions/fPuH4uYs/AuthMe-6.0.1-Paper.jar'
+       sha256 = '7704335e9e73a634d9d926344f77897f4c74f78f82453a59f5aa0f8d2722450a' }
 )
 
 function Get-Sha256([string]$caminho) {
@@ -184,6 +189,39 @@ if (-not (Test-Path -LiteralPath $lp)) {
     $texto = (Get-Content -LiteralPath $lp -Raw -Encoding UTF8) -replace '(?m)^storage-method: h2', 'storage-method: yaml'
     [IO.File]::WriteAllText($lp, $texto, (New-Object Text.UTF8Encoding $false))
     Write-Host '  config: LuckPerms trocado de h2 pra yaml (grupos e permissões antigos ficam no .mv.db e não são migrados)' -ForegroundColor Yellow
+}
+
+# 8. Essentials: quem não é VIP espera 3 s pra teleportar (/spawn, /warp, /home, /tpa, /back...). Pode andar
+#    (essentials.teleport.timer.move no grupo default), só tomar dano cancela; os VIPs têm
+#    essentials.teleport.timer.bypass (grupos do LuckPerms acima). O config só existe depois do primeiro boot.
+$ess = Join-Path $Destino 'plugins\Essentials\config.yml'
+if ((Test-Path -LiteralPath $ess) -and (Get-Content -LiteralPath $ess -Raw) -match '(?m)^teleport-delay: 0\s*$') {
+    $texto = (Get-Content -LiteralPath $ess -Raw -Encoding UTF8) -replace '(?m)^teleport-delay: 0\s*$', 'teleport-delay: 3'
+    [IO.File]::WriteAllText($ess, $texto, (New-Object Text.UTF8Encoding $false))
+    Write-Host '  config: Essentials teleport-delay: 3'
+}
+
+# 9. AuthMe: mensagens em português, sessão de 30 min no mesmo IP, senha em BCRYPT e registro sem limite
+#    por IP (os bots de teste entram todos de 127.0.0.1; no servidor de verdade, 2). Sem a janela de login
+#    durante a conexão (dialog.preJoin): o Mineflayer dos bots não sabe responder e fica parado antes de
+#    entrar; o login segue obrigatório depois de entrar (janela ou /login). As senhas registradas antes da
+#    troca pro BCRYPT (no SHA256 padrão) continuam valendo pelo legacyHashes e viram BCRYPT no próximo
+#    login. Também só depois do primeiro boot, e só troca o que ainda está no padrão.
+$auth = Join-Path $Destino 'plugins\AuthMe\config.yml'
+if (Test-Path -LiteralPath $auth) {
+    $texto = Get-Content -LiteralPath $auth -Raw -Encoding UTF8
+    $novo = $texto -replace '(?m)^(\s+)messagesLanguage: en\s*$', '$1messagesLanguage: br' `
+                   -replace '(?m)^(\s+)perPlayerLocale: true\s*$', '$1perPlayerLocale: false' `
+                   -replace '(?m)^(\s+)maxRegPerIp: 1\s*$', '$1maxRegPerIp: 0' `
+                   -replace '(?m)^(\s+)passwordHash: SHA256\s*$', '$1passwordHash: BCRYPT' `
+                   -replace '(?m)^(\s+)legacyHashes: \[\]\s*$', "`$1legacyHashes:`n`$1- SHA256" `
+                   -replace '(?ms)^(\s+sessions:.*?enabled: )false', '${1}true' `
+                   -replace '(?ms)^(\s+sessions:.*?timeout: )10', '${1}30' `
+                   -replace '(?ms)^(\s+preJoin:.*?enable: )true', '${1}false'
+    if ($novo -ne $texto) {
+        [IO.File]::WriteAllText($auth, $novo, (New-Object Text.UTF8Encoding $false))
+        Write-Host '  config: AuthMe (português, sessão de 30 min, BCRYPT, registro sem limite por IP)'
+    }
 }
 
 Write-Host ''

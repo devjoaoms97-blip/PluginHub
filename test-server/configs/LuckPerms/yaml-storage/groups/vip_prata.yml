@@ -1,5 +1,6 @@
 name: vip_prata
 permissions:
+- essentials.teleport.timer.bypass
 - vip.desconto.prata
 - vip.perk.feed
 - vip.perk.fly
