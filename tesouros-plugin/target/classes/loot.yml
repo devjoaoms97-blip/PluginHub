@@ -1,6 +1,6 @@
 # Loot de cada raridade. O dono do mapa recebe as coins (entre o mínimo e o máximo; iguais = valor
-# fixo) num cheque, que vira dinheiro novo na economia quando é depositado no Bancário, e "rolagens" itens, cada um sorteado pelo peso
-# (sem repetir: cada item sai no máximo uma vez por baú).
+# fixo) num cheque, que vira dinheiro novo na economia quando é depositado no Bancário, e "rolagens"
+# itens, cada um sorteado pelo peso (sem repetir: cada item sai no máximo uma vez por baú).
 #
 # Cada item é um destes:
 #   item: MATERIAL                       um item comum

@@ -4,13 +4,14 @@
 
 **Derrotando o boss:** cada boss deixa cair exatamente 1 Mapa do Tesouro. A raridade é sorteada assim: **Comum 45% · Raro 30% · Arcano 18% · Lendário 7%**.
 
-**Minerando:** cada bloco quebrado dentro de uma mina válida tem **0,005% de chance (1 em 20.000)** de dar um mapa diretamente no inventário. A média é cerca de 1 mapa a cada 20.000 blocos — aproximadamente 5 horas se você minerar 4.000 blocos por hora. É uma média, não uma garantia.
+**Minerando:** cada bloco quebrado dentro de uma mina válida tem **2,5% de chance (1 em 40, em média)** de dar um mapa diretamente no inventário. A 4.000 blocos por hora, isso dá cerca de **100 mapas por hora**, ou um a cada 36 segundos em média. É uma média, não uma garantia.
 
-Quando o mapa sai da mina, a raridade é sorteada: **Comum 70% · Raro 22% · Arcano 7% · Lendário 1%**. Juntando as duas etapas, a chance por bloco minerado é aproximadamente:
-- Comum: 1 em 28.571 blocos
-- Raro: 1 em 90.909
-- Arcano: 1 em 285.714
-- Lendário: 1 em 2.000.000
+Quando o mapa sai da mina, a raridade é sorteada: **Comum 70% · Raro 22% · Arcano 7% · Lendário 1%**. Juntando as duas etapas, a chance por bloco minerado fica aproximadamente:
+
+- Comum: 1,75% (cerca de 1 em 57 blocos)
+- Raro: 0,55% (cerca de 1 em 182)
+- Arcano: 0,175% (cerca de 1 em 571)
+- Lendário: 0,025% (1 em 4.000)
 
 ## Como encontrar o X
 

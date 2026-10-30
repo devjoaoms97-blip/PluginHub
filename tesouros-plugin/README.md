@@ -5,7 +5,7 @@ Mapas do tesouro. O mapa traz as coordenadas de um ponto do mundo superplano `te
 ## De onde vêm os mapas
 
 - **Boss:** sempre deixa 1 mapa no chão quando morre. A raridade é sorteada pelos pesos de `drops.boss.pesos`. O plugin reconhece o boss pela marca `pluginhub:boss_mob`, sem dependência do BossPlugin.
-- **Minas:** cada bloco quebrado numa mina do RankupPlugin tem a chance `drops.mina.chance-por-bloco` (padrão 1 em 20.000, uns 5 h de mina) de dar um mapa, que vai direto pro inventário. O lendário é anunciado no chat.
+- **Minas:** cada bloco quebrado numa mina do RankupPlugin tem a chance `drops.mina.chance-por-bloco` (padrão 2,5%, ou 1 em 40 blocos em média) de dar um mapa, que vai direto pro inventário. Com 4.000 blocos minerados por hora, são cerca de 100 mapas por hora em média. O lendário é anunciado no chat.
 - **Staff:** `/tesouro dar <jogador> <raridade> [x z]`.
 
 As raridades são **comum**, **raro**, **arcano** e **lendário**. O item é um papel com a cara de mapa, marcado com id, raridade e coordenadas: renomear outro item não falsifica. O mapa pode ser vendido, trocado e posto em barraca, e quem estiver com ele cava. Cada id abre uma câmara só (`usados.yml`), então um mapa duplicado por bug não vale de novo.

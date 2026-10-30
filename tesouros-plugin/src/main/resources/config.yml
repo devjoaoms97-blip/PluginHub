@@ -19,10 +19,10 @@ drops:
     ativado: true
     pesos: {comum: 45, raro: 30, arcano: 18, lendario: 7}
   # Cada bloco quebrado numa mina (RankupPlugin) tem essa chance de dar um mapa, que vai direto pro
-  # inventário. Com uns 4.000 blocos por hora, 0.00005 (1 em 20.000) dá cerca de 1 a cada 5 horas.
+  # inventário. Com uns 4.000 blocos por hora, 0.025 (1 em 40) dá em média cerca de 100 mapas por hora.
   mina:
     ativado: true
-    chance-por-bloco: 0.00005
+    chance-por-bloco: 0.025
     pesos: {comum: 70, raro: 22, arcano: 7, lendario: 1}
 
 camara:

@@ -538,7 +538,7 @@ public class Camaras implements Listener {
         if (!plugin.getConfig().getBoolean("drops.mina.ativado", true)) return;
         Player p = evento.getPlayer();
         if (p.getGameMode() != GameMode.SURVIVAL) return;
-        if (ThreadLocalRandom.current().nextDouble() >= plugin.getConfig().getDouble("drops.mina.chance-por-bloco", 0.00005)) return;
+        if (ThreadLocalRandom.current().nextDouble() >= plugin.getConfig().getDouble("drops.mina.chance-por-bloco", 0.025)) return;
         if (!plugin.getIntegracoes().emMina(evento.getBlock().getLocation())) return;
         String raridade = plugin.getMapas().sortearRaridade(plugin.getConfig().getConfigurationSection("drops.mina.pesos"));
         p.getInventory().addItem(plugin.getMapas().criar(raridade)).values().forEach(i -> p.getWorld().dropItem(p.getLocation(), i));
