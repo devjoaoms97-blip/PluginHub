@@ -50,6 +50,7 @@ public class SkillsPlugin extends JavaPlugin {
     private ParryManager parryManager;
     private EventoXp eventoXp;
     private RankingSkills rankingSkills;
+    private PvpXpLimitador pvpXpLimitador;
 
     @Override
     public void onEnable() {
@@ -65,6 +66,7 @@ public class SkillsPlugin extends JavaPlugin {
         this.skillDataManager = new SkillDataManager(this);
         this.rewardManager = new RewardManager(this);
         this.xpManager = new XpManager(this, skillDataManager, rewardManager);
+        this.pvpXpLimitador = new PvpXpLimitador(this);
         this.combatTagManager = new CombatTagManager();
         this.bonusCalculator = new BonusCalculator(this, skillDataManager);
         this.skillsGUI = new SkillsGUI(this);
@@ -98,6 +100,9 @@ public class SkillsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (pvpXpLimitador != null) {
+            pvpXpLimitador.salvar();
+        }
         if (skillDataManager != null) {
             skillDataManager.salvarTodos();
         }
@@ -239,6 +244,10 @@ public class SkillsPlugin extends JavaPlugin {
 
     public XpManager getXpManager() {
         return xpManager;
+    }
+
+    public PvpXpLimitador getPvpXpLimitador() {
+        return pvpXpLimitador;
     }
 
     public CombatTagManager getCombatTagManager() {

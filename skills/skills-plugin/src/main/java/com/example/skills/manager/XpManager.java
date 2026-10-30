@@ -40,6 +40,15 @@ public class XpManager {
         adicionar(jogador, skill, quantidade * multiplicador, true);
     }
 
+    /** XP de arma em PvP: aplica os bônus primeiro para o teto diário contar XP efetivamente recebido. */
+    public void adicionarXpPvP(Player atacante, Player vitima, Skill skill, double quantidade) {
+        if (quantidade <= 0) return;
+        double multiplicador = (1 + bonusVipPercentual(atacante) / 100.0) * plugin.getEventoXp().multiplicador()
+                * plugin.fatorMaldicaoBoss();
+        double concedido = plugin.getPvpXpLimitador().limitar(atacante, vitima, quantidade * multiplicador);
+        if (concedido > 0) adicionar(atacante, skill, concedido, true);
+    }
+
     /** Chamado a cada golpe com arma: é a skill "em uso" que o placar mostra. */
     public void marcarEmUso(UUID jogadorId, Skill skill) {
         ultimaSkill.put(jogadorId, skill);

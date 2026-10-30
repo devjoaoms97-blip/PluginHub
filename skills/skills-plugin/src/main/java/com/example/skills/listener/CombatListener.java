@@ -71,7 +71,11 @@ public class CombatListener implements Listener {
             Skill skillArma = detectarSkillDeArma(atacante, event.getDamager());
             if (skillArma != null) {
                 double xpArma = event.getDamage() * xpPorDano * multiplicadorXp;
-                xpManager.adicionarXp(atacante, skillArma, xpArma);
+                if (ehPvP) {
+                    xpManager.adicionarXpPvP(atacante, (Player) vitimaEntity, skillArma, xpArma);
+                } else {
+                    xpManager.adicionarXp(atacante, skillArma, xpArma);
+                }
                 xpManager.marcarEmUso(atacante.getUniqueId(), skillArma);
 
                 // Crítico não tem "bônus por nível" genérico (é chance + multiplicador fixo),

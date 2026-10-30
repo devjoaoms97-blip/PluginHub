@@ -20,7 +20,8 @@ Sistema de skills de combate estilo RPG, com 11 skills, progressão por nível, 
 | Regeneração | Tempo em combate recente | +50% velocidade de regen natural |
 | Agilidade | Se mover durante combate | +10% velocidade de movimento |
 
-- **PvP conta XP cheio; PvE (mobs) conta metade** — configurável em `xp.multiplicador-pve`
+- **XP de arma em PvP tem redução progressiva por vítima**: primeiros 250 XP integrais, até 500 XP pela metade e depois a 25%, com teto de 1.000 XP por atacante/vítima ao dia. O registro persiste em `plugins/SkillsPlugin/xp-pvp.yml` e reinicia à meia-noite no fuso do servidor; faixas, multiplicadores e limite são configuráveis em `xp.pvp`.
+- **PvE (mobs) conta metade do XP de arma** — configurável em `xp.multiplicador-pve`
 - **Nível máximo: 50** por skill, com curva de XP progressiva — configurável em `config.yml`
 - **Persistência real**: os dados ficam salvos em `plugins/SkillsPlugin/playerdata/<uuid>.yml`, sobrevivem a reinício do servidor
 

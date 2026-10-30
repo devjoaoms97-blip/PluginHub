@@ -17,6 +17,7 @@ com\example\skills\manager\RankingSkills$Posicao.class
 com\example\skills\manager\AtordoamentoManager$1.class
 com\example\skills\manager\PassiveSkillsTask.class
 com\example\skills\listener\MorteListener.class
+com\example\skills\PvpXpLimitador.class
 com\example\skills\gui\SkillsGUIListener.class
 com\example\skills\manager\BonusCalculator.class
 com\example\skills\listener\PlayerConnectionListener.class
