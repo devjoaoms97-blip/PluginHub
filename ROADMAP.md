@@ -270,6 +270,34 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 
 ## 🔧 Features nos plugins atuais
 
+### Pedidos novos para avaliar (2026-10-30)
+
+#### Discord e orientação de jogadores
+- [ ] **Permissões dos botões de ticket**: quem abriu o próprio ticket não pode assumir nem fechar por meio dos botões; essas ações ficam restritas à equipe autorizada.
+- [ ] **Tutorial inicial com recompensa**: criar `/tutorial` no servidor, registrar a conclusão por jogador e entregar a recompensa uma única vez. Definir etapas e prêmio antes de implementar.
+- [ ] **Ajuda para iniciantes**: criar `/comandos` com uma lista inicial e páginas de explicação, incluindo exemplos como `/comando amigo` e `/comando terreno`.
+- [ ] **Aceitar `/tpa` com clique**: incluir botão/link para aceitar a solicitação pendente, preservando expiração e validação do destinatário.
+
+#### Mundos, arenas e eventos
+- [ ] **Montarias no mundo `tesouros`**: permitir `/montaria` no `/warp tesouros`, mantendo as restrições dos outros mundos.
+- [ ] **Recompensa do dragão do End**: conceder tag e prêmio ao responsável pela morte e fazer o dragão dropar um tesouro; definir elegibilidade, conteúdo e chance, inclusive para mortes indiretas e disputas pelo último golpe.
+- [ ] **Acesso às estruturas do `/boss`**: inserir escadas e trechos de parkour nas estruturas da arena.
+- [ ] **Referências visuais no Gladiador**: adicionar marcos que ajudem os jogadores a diferenciar as áreas da arena.
+- [ ] **`/sethome` nas arenas**: bloquear a definição de homes dentro das arenas do `/boss` e do Gladiador, verificando os limites das áreas.
+- [ ] **Toque Suave em spawners**: permitir que spawners de todos os mundos sejam coletados com picareta com Toque Suave, conforme as regras de proteção de cada mundo.
+
+#### Terrenos, lojas e economia
+- [ ] **Limite compartilhado de máquinas por terreno**: substituir os limites por jogador (atualmente 4, ou 7 para VIP) por até 10 máquinas no terreno, somando todos os tipos (por exemplo, 10 forjas ou 5 forjas e 5 teares).
+- [ ] **Limite compartilhado de spawners por terreno**: permitir até 100 por terreno, somando todos os tipos, com a mesma regra de contagem compartilhada.
+- [ ] **Destino público para barraca alugada**: criar um destino de teleporte enquanto a barraca estiver alugada e permitir anunciá-lo junto a itens no chat global; remover o destino ao encerrar o aluguel. Definir a sintaxe, por exemplo `/loja <jogador>`.
+- [ ] **Corrigir nome das lojas**: investigar e corrigir o nome bugado exibido nas lojas, cobrindo NPC, menus e demais telas afetadas.
+- [ ] **Cobrança Pix entre jogadores com QR Code**: permitir informar um jogador e um valor para gerar a cobrança; validar o pagamento antes de transferir e impedir cobrança duplicada. Definir se o QR representa saldo do jogo ou pagamento externo.
+
+#### Limpeza e nomes
+- [ ] **Limpeza do chão nas minas**: corrigir a limpeza para remover itens caídos em todas as minas sem afetar itens protegidos.
+- [ ] **Achados e perdidos**: fazer `/achados` limpar os registros a cada hora e alterar o valor de resgate de cada pilha para R$ 10.000; definir se a expiração também vale para registros anteriores.
+- [ ] **Tags e decoração nos nomes**: corrigir o nome acima dos jogadores, que está aparecendo branco e sem as tags/decorações; conferir diferentes grupos e permissões.
+
 ### 🐉 BossPlugin
 - [x] **Ranking de dano com prêmio**: o top 3 recebe coins proporcionais ao dano, e não só o último hit.
 - [x] **XP de skill por participar**, conforme o dano causado.
@@ -293,7 +321,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Scoreboard lateral** com o XP da skill em uso (2026-10-27, no PlacarPlugin).
 - [x] **Escudo Perfeito (parry)** (2026-10-27): escudo levantado até 0,3 s antes de um golpe corpo a corpo anula o dano e atordoa quem bateu por 1 s (sem andar e sem bater), com recarga de 3 s.
 - [x] **Corrigido** (2026-10-27): quem morre só de Sangramento agora dá o abate a quem aplicou (Bounty, clãs, missões, Gladiador).
-- [ ] **Revisar XP por dano em jogadores**: o PvP dá XP de skill integral; verificar se treino combinado entre contas pode ser usado para upar skills de forma desonesta e avaliar controles sem prejudicar o PvP legítimo.
+- [x] **Limite diário de XP no PvP** (2026-10-30): cada par atacante/vítima pode gerar até 1.000 XP efetivos por dia; o ganho diminui após 250 e 500 XP. O total é persistido e reinicia diariamente.
 
 ### 🛒 EconomyShopPlugin
 - [x] **Eventos de mercado**: um item sorteado tem o preço multiplicado por algumas horas ("alta do diamante"), com anúncio no chat. A cada `intervalo-horas`, com uma chance, por `duracao-horas`; a staff liga com `/shop admin evento <item> <mult> <horas>`, e `/shop evento` mostra o item em alta.
