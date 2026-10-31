@@ -132,6 +132,23 @@ public class SpawnerManager implements Listener {
         return b.getWorld().getName() + ";" + b.getX() + ";" + b.getY() + ";" + b.getZ();
     }
 
+    /** Spawners em cada terreno, somando todos os tipos (os empilhados contam um por um). */
+    private int limitePorTerreno() {
+        return Math.max(1, plugin.getConfig().getInt("limite-por-terreno", 100));
+    }
+
+    /**
+     * Quantos spawners já tem no terreno (de qualquer tipo e dono). Sem o TerrenosPlugin (terreno
+     * null), conta os do mesmo dono, pra o limite continuar valendo.
+     */
+    private int noTerreno(String terreno, UUID dono) {
+        int total = 0;
+        for (Colocado c : porLugar.values()) {
+            if (terreno == null ? c.dono.equals(dono) : terreno.equals(plugin.getTerrenos().terrenoEm(c.bloco()))) total += c.quantidade;
+        }
+        return total;
+    }
+
     private int limitePorBloco() {
         return Math.max(1, plugin.getConfig().getInt("limite-por-bloco", 64));
     }
@@ -149,6 +166,17 @@ public class SpawnerManager implements Listener {
         if (!plugin.getConfig().getStringList("mundos").contains(bloco.getWorld().getName())) {
             evento.setCancelled(true);
             jogador.sendMessage("§cSpawner só pode ser colocado no seu terreno (§f/terreno home§c).");
+            return;
+        }
+        String terreno = plugin.getTerrenos().terrenoEm(bloco.getLocation());
+        if (plugin.getTerrenos().disponivel() && terreno == null) {
+            evento.setCancelled(true);
+            jogador.sendMessage("§cSpawner só pode ser colocado dentro de um terreno.");
+            return;
+        }
+        if (noTerreno(terreno, jogador.getUniqueId()) >= limitePorTerreno()) {
+            evento.setCancelled(true);
+            jogador.sendMessage("§cEsse terreno já tem o máximo de spawners (§f" + limitePorTerreno() + "§c, somando todos os tipos).");
             return;
         }
         // o bloco: mostra o mob girando, mas o spawn do vanilla fica desligado (quem gera é o ciclo)
@@ -200,7 +228,13 @@ public class SpawnerManager implements Listener {
             jogador.sendMessage("§cEsse bloco já tem o máximo (§f" + limitePorBloco() + "§c). Coloque outro ao lado.");
             return;
         }
-        int adicionar = Math.min(cabe, jogador.isSneaking() ? mao.getAmount() : 1);
+        String terreno = plugin.getTerrenos().terrenoEm(c.bloco());
+        int livresNoTerreno = limitePorTerreno() - noTerreno(terreno, c.dono);
+        if (livresNoTerreno <= 0) {
+            jogador.sendMessage("§cEsse terreno já tem o máximo de spawners (§f" + limitePorTerreno() + "§c, somando todos os tipos).");
+            return;
+        }
+        int adicionar = Math.min(Math.min(cabe, livresNoTerreno), jogador.isSneaking() ? mao.getAmount() : 1);
         mao.setAmount(mao.getAmount() - adicionar);
         c.quantidade += adicionar;
         sujo = true;

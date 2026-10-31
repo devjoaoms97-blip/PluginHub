@@ -1,10 +1,11 @@
-com\example\spawners\SpawnersPlugin.class
 com\example\spawners\WarpMobs$Ponto.class
-com\example\spawners\LojaSpawners.class
 com\example\spawners\SpawnerManager$Colocado.class
-com\example\spawners\LojaSpawners$Menu.class
 com\example\spawners\PixIntegration.class
 com\example\spawners\SpawnersPlugin$Tipo.class
+com\example\spawners\TerrenosIntegration.class
 com\example\spawners\SpawnerManager.class
 com\example\spawners\RankupIntegration.class
+com\example\spawners\SpawnersPlugin.class
+com\example\spawners\LojaSpawners.class
+com\example\spawners\LojaSpawners$Menu.class
 com\example\spawners\WarpMobs.class

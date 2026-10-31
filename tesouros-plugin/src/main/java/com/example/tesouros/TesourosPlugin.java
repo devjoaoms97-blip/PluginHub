@@ -105,6 +105,11 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
         return mapas;
     }
 
+    /** A câmara ativa que contém o local, usado por integrações de regiões e comandos. */
+    public boolean dentroDeCamara(Location local) {
+        return camaras != null && camaras.camaraDe(local) != null;
+    }
+
     public Loot getLoot() {
         return loot;
     }

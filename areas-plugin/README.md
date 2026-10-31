@@ -28,7 +28,9 @@ Dentro de uma área fechada:
 
 Com uma config de uma versão antiga, as seções que faltam (como a `pvp-so-nas-caixas`) entram no arquivo quando o plugin liga. Antes, a seção que faltava voltava vazia, e o PvP passava no spawn inteiro. No resto do spawn, na Avenida das Minas e na loja, nada passa: nem golpe, nem flecha, nem poção de arremesso. Por isso o `configurar-mundos.bat` liga o PvP do mundo `spawn`. Mundo que não está na lista segue o PvP do próprio mundo.
 
-**Teleporte por comando (só nas arenas).** No mundo `arenas`, os comandos de `teleporte-por-comando.comandos` (`/tpa`, `/tpahere`, `/tpaccept`, `/back`, `/home`, `/sethome` e os apelidos do EssentialsX) não funcionam. E o teleporte que um deles acabou de pedir, até 10 s antes, não leva ninguém pra lá: nem o `/back` pro lugar em que o jogador morreu na arena, nem uma casa antiga marcada lá, nem o `/tpa` aceito antes de alguém entrar. `/spawn` e `/warp` (a plateia) continuam. As áreas com essa regra ficam em `teleporte-por-comando.areas`.
+**Teleporte por comando (só nas arenas).** No mundo `arenas`, os comandos de `teleporte-por-comando.comandos` (`/tpa`, `/tpahere`, `/tpaccept`, `/back`, `/home` e os apelidos do EssentialsX) não funcionam. E o teleporte que um deles acabou de pedir, até 10 s antes, não leva ninguém pra lá: nem o `/back` pro lugar em que o jogador morreu na arena, nem uma casa antiga marcada lá, nem o `/tpa` aceito antes de alguém entrar. `/spawn` e `/warp` (a plateia) continuam. As áreas com essa regra ficam em `teleporte-por-comando.areas`.
+
+**Criar homes nas arenas.** `/sethome` e `/createhome` (`sethome.comandos`) são bloqueados somente dentro da caixa da arena do boss, do piso do X1, do piso do Gladiador e de uma câmara ativa do tesouro. As três caixas fixas usam os limites de `pvp-so-nas-caixas`; a câmara usa os limites reais gerados pelo TesourosPlugin. Fora dessas áreas, a criação continua permitida, inclusive no saguão e nas plateias do mundo `arenas`.
 
 Cada um liga e desliga em `bloquear`. Os admins (`areas.ignorar`) e quem está no criativo passam. Os jogadores que assistem (plateia do X1 e do Gladiador) seguem as mesmas regras de quem joga.
 
@@ -40,6 +42,7 @@ Em `areas` no config, cada uma é um mundo inteiro ou uma caixa (`min` e `max`).
 
 - **spawn:** o mundo `spawn` inteiro (o spawn, a avenida das minas, a arena do boss e a Loja Oficial);
 - **arenas:** o mundo `arenas` inteiro (o saguão, o X1, o Gladiador e as plateias).
+- **Câmaras do tesouro:** áreas dinâmicas geradas durante cada mapa; só a câmara ativa fica protegida contra `/sethome`.
 
 O mundo dos terrenos e o de recursos ficam livres.
 

@@ -130,6 +130,39 @@ t.rodar(async () => {
   if (j) await bot.clickWindow(22, 0, 0)
   await t.espera(1200)
 
+  console.log('\n== Limite de 10 máquinas por terreno ==')
+  await t.console(`ranks admin set ${nome} ferreiro`) // a Forja libera no Ferreiro
+  await t.console(`minecraft:clear ${nome}`)
+  // o /maquinas dar entrega uma por vez
+  for (let i = 0; i < 5; i++) await t.console(`maquinas dar ${nome} tear`)
+  for (let i = 0; i < 6; i++) await t.console(`maquinas dar ${nome} forja`)
+  await t.console(`execute in minecraft:terrenos run minecraft:tp ${nome} ${gx * CELULA + 16.5} 65 ${gz * CELULA + 12.5} 0 0`)
+  await t.espera(1500)
+  const base = bot.entity.position.floored()
+  const vagas = []
+  for (const dz of [2, 3]) for (let dx = -2; dx <= 2; dx++) vagas.push(base.offset(dx, 0, dz))
+  const colocarEm = async l => {
+    const item = bot.inventory.items().find(i => i.name === 'barrier')
+    if (!item) return []
+    await bot.equip(item, 'hand')
+    await t.espera(250)
+    return t.capturar(bot, () => bot.placeBlock(bot.blockAt(l.offset(0, -1, 0)), new Vec3(0, 1, 0)).catch(() => {}), 700)
+  }
+  for (const l of vagas) await colocarEm(l)
+  const minhas = t.semCor(await t.console('maquinas lista')).split(/\r?\n|\|/).filter(l => l.includes(nome))
+  const teares = minhas.filter(l => /\btear\b/.test(l)).length, forjas = minhas.filter(l => /\bforja\b/.test(l)).length
+  t.verificar(teares === 5 && forjas === 5, 'o terreno aceita 10 máquinas somando os tipos (5 teares e 5 forjas)', `${teares} teares, ${forjas} forjas`)
+  msgs = await colocarEm(base.offset(0, 0, -2))
+  t.verificar(msgs.some(m => m.includes('máximo de máquinas')) && bot.blockAt(base.offset(0, 0, -2))?.name !== 'barrier',
+    'a 11ª máquina não entra', msgs.find(m => m.includes('máquina')))
+  for (const l of vagas) {
+    const menu = await janela(bot, () => bot.activateBlock(bot.blockAt(l)))
+    if (menu) await bot.clickWindow(22, 0, 0) // recolher
+    await t.espera(500)
+  }
+  const sobraram = t.semCor(await t.console('maquinas lista')).split(/\r?\n|\|/).filter(l => l.includes(nome)).length
+  t.verificar(sobraram === 0, 'recolheu as 10 (o terreno fica limpo)', `${sobraram} sobrando`)
+
   await t.capturar(bot, () => bot.chat('/terreno abandonar confirmar'), 1500)
   await t.console(`ranks admin set ${nome} campones`)
   await t.console(`minecraft:clear ${nome}`)

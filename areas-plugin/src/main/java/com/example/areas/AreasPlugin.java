@@ -63,8 +63,9 @@ import java.util.UUID;
  * <p>
  * Cada área é um mundo inteiro ou uma caixa nele ({@code areas} no config).
  * <p>
+ * A criação de homes é barrada apenas nos limites das arenas configuradas e nas câmaras ativas do tesouro.
  * Nas áreas de {@code teleporte-por-comando.areas} (as arenas), os comandos de teleporte entre
- * jogadores e de casa ({@code /tpa}, {@code /tpaccept}, {@code /back}, {@code /home}, {@code /sethome}...)
+ * jogadores e de casa ({@code /tpa}, {@code /tpaccept}, {@code /back}, {@code /home}...)
  * não funcionam lá dentro, e o teleporte que um deles acabou de pedir não leva ninguém pra lá
  * (um {@code /back} pro lugar em que morreu na arena, uma casa antiga marcada lá). /spawn e /warp
  * (a plateia) continuam valendo.
@@ -93,6 +94,9 @@ public class AreasPlugin extends JavaPlugin implements Listener {
     /** RankupPlugin.getMinaManager() e MinaManager.getMinaEm(Location), achados por reflexão. */
     private Method getMinaManager, getMinaEm;
     private boolean avisouFalhaRankup;
+    /** Consulta a região dinâmica de uma câmara aberta no TesourosPlugin. */
+    private Method dentroDeCamaraTesouro;
+    private boolean avisouFalhaTesouros;
     /** As caixas de PvP com ciclo (liga e desliga sozinho), pelo id. */
     private final Map<String, CicloPvp> ciclos = new HashMap<>();
     /** Os hologramas fixos das caixas de PvP sem ciclo ("PvP ligado o tempo todo"). */
@@ -313,16 +317,81 @@ public class AreasPlugin extends JavaPlugin implements Listener {
 
     /** O comando (sem a barra e sem o "plugin:" na frente) é da lista de teleporte? */
     private boolean comandoDeTeleporte(String mensagem) {
-        String rotulo = mensagem.substring(1).split(" ", 2)[0].toLowerCase(Locale.ROOT);
-        rotulo = rotulo.substring(rotulo.indexOf(':') + 1);
+        String rotulo = rotuloComando(mensagem);
+        // Configs antigas barravam sethome em todo o mundo arenas; agora usamos as caixas específicas.
+        if (getConfig().getStringList("sethome.comandos").contains(rotulo)) return false;
         return getConfig().getStringList("teleporte-por-comando.comandos").contains(rotulo);
+    }
+
+    /** O rótulo sem barra, argumentos ou namespace (ex.: "essentials:sethome" → "sethome"). */
+    private String rotuloComando(String mensagem) {
+        String rotulo = mensagem.substring(1).split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
+        int namespace = rotulo.lastIndexOf(':');
+        return namespace >= 0 ? rotulo.substring(namespace + 1) : rotulo;
+    }
+
+    /** Caixa de PvP com o nome informado, usando exatamente os limites já configurados para a arena. */
+    private boolean dentroDaCaixaDaArena(Location local, String nome) {
+        if (local == null || local.getWorld() == null) return false;
+        String mundo = local.getWorld().getName();
+        for (Map<?, ?> m : getConfig().getMapList("pvp-so-nas-caixas." + mundo)) {
+            if (!nome.equals(String.valueOf(m.get("nome")))) continue;
+            if (!(m.get("min") instanceof List<?> min) || !(m.get("max") instanceof List<?> max)
+                    || min.size() != 3 || max.size() != 3) return false;
+            int[] a = new int[3], b = new int[3];
+            for (int i = 0; i < 3; i++) {
+                if (!(min.get(i) instanceof Number n1) || !(max.get(i) instanceof Number n2)) return false;
+                a[i] = Math.min(n1.intValue(), n2.intValue());
+                b[i] = Math.max(n1.intValue(), n2.intValue());
+            }
+            return new Area(nome, mundo, a, b).contem(local);
+        }
+        return false;
+    }
+
+    /** Nome da arena onde não se pode marcar home, ou null fora das áreas bloqueadas. */
+    private String arenaSemHome(Location local) {
+        for (String nome : getConfig().getStringList("sethome.caixas-pvp")) {
+            if (dentroDaCaixaDaArena(local, nome)) return nome;
+        }
+        if (getConfig().getBoolean("sethome.camaras-do-tesouro", true) && dentroDeCamaraTesouro(local)) {
+            return "câmara do tesouro";
+        }
+        return null;
+    }
+
+    /** Consulta a caixa ativa no TesourosPlugin; as câmaras são geradas em coordenadas variáveis. */
+    private boolean dentroDeCamaraTesouro(Location local) {
+        if (local == null || local.getWorld() == null) return false;
+        Plugin tesouros = getServer().getPluginManager().getPlugin("TesourosPlugin");
+        if (tesouros == null || !tesouros.isEnabled()) return false;
+        try {
+            if (dentroDeCamaraTesouro == null) {
+                dentroDeCamaraTesouro = tesouros.getClass().getMethod("dentroDeCamara", Location.class);
+            }
+            return Boolean.TRUE.equals(dentroDeCamaraTesouro.invoke(tesouros, local));
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            if (!avisouFalhaTesouros) {
+                getLogger().warning("Não foi possível consultar as câmaras no TesourosPlugin: " + e.getMessage());
+                avisouFalhaTesouros = true;
+            }
+            return false;
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void aoUsarComando(PlayerCommandPreprocessEvent evento) {
-        if (!comandoDeTeleporte(evento.getMessage())) return;
         Player p = evento.getPlayer();
         if (p.hasPermission("areas.ignorar")) return;
+        if (getConfig().getStringList("sethome.comandos").contains(rotuloComando(evento.getMessage()))) {
+            String arena = arenaSemHome(p.getLocation());
+            if (arena != null) {
+                evento.setCancelled(true);
+                avisar(p, "marcar uma home dentro de " + arena);
+                return;
+            }
+        }
+        if (!comandoDeTeleporte(evento.getMessage())) return;
         if (semTeleporte(p.getLocation()) != null) {
             evento.setCancelled(true);
             avisar(p, "usar esse comando de teleporte");

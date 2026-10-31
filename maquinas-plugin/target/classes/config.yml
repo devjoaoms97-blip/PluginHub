@@ -3,17 +3,9 @@
 # Máquina só nos mundos abaixo (o dos terrenos: cada um no seu).
 mundos: [terrenos]
 
-# Máquinas por jogador (vale o maior: o da lista de VIP ou este).
-limite-por-jogador: 4
-limite-vip:
-  - permissao: "vip.desconto.diamante"
-    limite: 7
-  - permissao: "vip.desconto.ouro"
-    limite: 6
-  - permissao: "vip.desconto.prata"
-    limite: 5
-  - permissao: "vip.desconto.bronze"
-    limite: 5
+# Máquinas em cada terreno, somando todos os tipos e todos os donos (10 forjas, ou 5 forjas e 5
+# teares...). Sem o TerrenosPlugin, o limite vale por jogador.
+limite-por-terreno: 10
 
 # Tanque de cada máquina, em Células de Combustível.
 tanque: 64
@@ -22,8 +14,8 @@ tanque: 64
 estoque-base: 96
 estoque-por-nivel: 64
 # Cada nível de velocidade tira essa % do tempo por produto (nível 5 com 5%: 25% menos tempo, 1,33x
-# mais produtos). Com o limite de máquinas, tudo no máximo fica perto de ~55% da mina sem VIP e ~95%
-# no VIP Diamante (tools/economia/maquinas.py): a mina continua sendo a renda principal.
+# mais produtos). Com as 10 máquinas de um terreno no máximo, fica perto de ~134% da mina
+# (tools/economia/maquinas.py).
 velocidade-por-nivel: 5
 nivel-maximo: 5
 # Melhoria custa: preço da máquina × este fator × (nível atual + 1). O dinheiro sai de circulação.

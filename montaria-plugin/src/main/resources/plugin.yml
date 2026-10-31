@@ -3,7 +3,7 @@ version: '1.0.0'
 main: com.example.montaria.MontariaPlugin
 api-version: '26.2'
 author: Você
-description: Montaria do VIP no spawn (/montaria), mais rápida que a pé, fora das minas e da arena do boss.
+description: Montaria do VIP no spawn e no mundo dos tesouros (/montaria), mais rápida que a pé, fora das minas e da arena do boss.
 softdepend: [RankupPlugin, CreditosPlugin, FreeMinecraftModels]
 
 commands:
@@ -14,7 +14,7 @@ commands:
 
 permissions:
   vip.perk.montaria:
-    description: Usa a montaria no spawn (os grupos de VIP do LuckPerms dão).
+    description: Usa a montaria no spawn e no mundo dos tesouros (os grupos de VIP do LuckPerms dão).
     default: op
   montaria.admin:
     description: Recarrega o config da montaria.

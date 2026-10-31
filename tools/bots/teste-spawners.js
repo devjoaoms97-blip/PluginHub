@@ -120,6 +120,37 @@ t.rodar(async () => {
   t.verificar((noChao.some(n => String(n) === 'spawnerx2') || naMao === 2) && depois === antesDeQuebrar - 1, 'quebrar devolve os 2 spawners',
     `chão ${noChao} | inventário ${naMao} | colocados ${antesDeQuebrar} → ${depois}`)
 
+  console.log('\n== Limite de 100 spawners por terreno ==')
+  await t.console(`minecraft:clear ${nome}`)
+  const comSpawner = async () => { await bot.equip(bot.inventory.items().find(i => i.name === 'spawner'), 'hand'); await t.espera(300) }
+  // bloco A: 1 zumbi colocado + 63 empilhados (x64); bloco B: 1 esqueleto + o que couber até 100.
+  // Um tipo de cada vez no inventário, pra não errar o tipo na mão.
+  const lugarA = lugar, lugarB = lugar.offset(2, 0, 0)
+  const colocarEEmpilhar = async (tipo, l) => {
+    await t.console(`spawners dar ${nome} ${tipo} 64`)
+    await t.espera(500)
+    await comSpawner()
+    await bot.placeBlock(bot.blockAt(l.offset(0, -1, 0)), new Vec3(0, 1, 0)).catch(() => {})
+    await t.espera(600)
+    await comSpawner()
+    bot.setControlState('sneak', true)
+    await t.capturar(bot, () => bot.activateBlock(bot.blockAt(l)), 800)
+    bot.setControlState('sneak', false)
+  }
+  await colocarEEmpilhar('zumbi', lugarA)
+  await colocarEEmpilhar('esqueleto', lugarB)
+  const listaLimite = t.semCor(await t.console('spawners lista'))
+  t.verificar(/x64 em terrenos/.test(listaLimite) && /x36 em terrenos/.test(listaLimite),
+    'somando os tipos, o terreno parou em 100 (x64 de zumbi + x36 de esqueleto)', listaLimite.slice(0, 200))
+  msgs = await t.capturar(bot, () => bot.activateBlock(bot.blockAt(lugarB)), 800)
+  t.verificar(msgs.some(m => m.includes('máximo de spawners')), 'com 100 no terreno, não empilha mais', msgs[0])
+  msgs = await t.capturar(bot, () => bot.placeBlock(bot.blockAt(lugarA.offset(-2, -1, 0)), new Vec3(0, 1, 0)).catch(() => {}), 1000)
+  t.verificar(msgs.some(m => m.includes('máximo de spawners')) && bot.blockAt(lugarA.offset(-2, 0, 0))?.name !== 'spawner',
+    'com 100 no terreno, não coloca outro bloco', msgs[0])
+  for (const l of [lugarA, lugarB]) await bot.dig(bot.blockAt(l), true).catch(() => {})
+  await t.espera(1000)
+  await t.console(`minecraft:kill @e[type=item,distance=..20,x=${lugar.x},y=${lugar.y},z=${lugar.z}]`)
+
   await t.capturar(bot, () => bot.chat('/terreno abandonar confirmar'), 1500)
   await t.console(`minecraft:clear ${nome}`)
   await t.terminar(bot)

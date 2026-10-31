@@ -16,6 +16,10 @@ limite-pilha: 300
 # Máximo de spawners empilhados num bloco.
 limite-por-bloco: 64
 
+# Máximo de spawners em cada terreno, somando todos os tipos e todos os donos (os empilhados contam um
+# por um: um bloco com x64 vale 64). Sem o TerrenosPlugin, o limite vale por jogador.
+limite-por-terreno: 100
+
 # Os tipos à venda no balcão Spawners da Loja Oficial, na ordem do menu. entidade: o mob do
 # Minecraft; rank: o rank que libera (id do RankupPlugin). Os drops vendem no Caçador, e o preço
 # dinâmico da loja regula: o que muita gente farma vale menos. Com 1 spawner (180 mobs por hora,

@@ -5,7 +5,7 @@ Máquinas nos terrenos que fabricam **produtos** (itens que não existem no vani
 ## Como funciona
 
 - **Compra:** no balcão Máquinas da Loja Oficial (o vendedor "Maquinista" abre o `/maquinas loja`). Cada máquina libera num rank. Lá também se compra a Célula de Combustível e se vendem os produtos.
-- **No terreno:** só no mundo dos terrenos (`mundos`), até `limite-por-jogador` máquinas (4; VIP de 5 a 7). A máquina é um bloco de barreira (colisão e clique) com um item display por cima desenhando o modelo dela, do resource pack, de frente pra quem colocou. Em cima, um holograma mostra o estoque, o combustível e se está produzindo, cheia ou sem combustível.
+- **No terreno:** só no mundo dos terrenos (`mundos`), até `limite-por-terreno` máquinas **em cada terreno** (10), somando todos os tipos e todos os donos: 10 forjas, ou 5 forjas e 5 teares. Quem tem dois terrenos põe 10 em cada. Fora de um terreno, a máquina não entra. Sem o TerrenosPlugin, o limite vale por jogador. A máquina é um bloco de barreira (colisão e clique) com um item display por cima desenhando o modelo dela, do resource pack, de frente pra quem colocou. Em cima, um holograma mostra o estoque, o combustível e se está produzindo, cheia ou sem combustível.
 - **Produção:** pelo relógio, mesmo com o dono offline ou o terreno descarregado. A cada intervalo sai um produto, gastando uma fração de Célula, até acabar o combustível (tanque de 64) ou encher o estoque (96, mais 64 por nível de melhoria). Como o estoque enche em uma a duas horas, a máquina recompensa quem passa pra coletar, não quem some por dias.
 - **Menu** (clique direito, só o dono): **Coletar**, **Abastecer** (põe as Células do inventário no tanque), **Melhorar velocidade** (-5% de tempo por nível: no nível 5, 1,33× mais produtos), **Melhorar estoque** (+64 por nível), até o nível 5, e **Recolher** (coleta, devolve a máquina com os níveis e o combustível que sobrou).
 - **Venda dos produtos:** clique no produto no balcão vende tudo o que você tem dele. Igual à loja: cada unidade vendida baixa o preço (`passo`), que volta pra âncora com o tempo. Valem o bônus do rank e o do VIP (+3/6/9/12%), menos o imposto.
@@ -14,7 +14,7 @@ Máquinas nos terrenos que fabricam **produtos** (itens que não existem no vani
 
 ## Máquinas
 
-Calibradas pelo `tools/economia/maquinas.py`: cada máquina rende ~10% da mina no rank em que libera (no preço de âncora, já tirando o combustível, no nível 0) e se paga em umas 20 h de produção. Com a velocidade no máximo, ~13%; com o limite todo usado no máximo, ~54% da mina sem VIP e ~94% no VIP Diamante. A mina continua sendo a renda principal.
+Calibradas pelo `tools/economia/maquinas.py`: cada máquina rende ~10% da mina no rank em que libera (no preço de âncora, já tirando o combustível, no nível 0) e se paga em umas 20 h de produção. Com a velocidade no máximo, ~13%; com as 10 máquinas de um terreno no máximo, ~134% da mina (~268% com dois terrenos). Com o limite por terreno, as máquinas passam a render mais que a mina: a recalibração está pendente.
 
 | Máquina | Produto | Rank | Preço | Por hora | Lucro/h |
 |---|---|---|---|---|---|

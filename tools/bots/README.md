@@ -49,6 +49,7 @@ node teste-boss-vip.js      # só o campeão do Wither ganha o código de VIP de
 node teste-vip-evento.js    # código de VIP de evento: só 3/7/15 dias, sem bônus nem kit mensal, não vende, quem tem VIP resgata depois
 node teste-creditos.js      # loja de créditos: créditos pelo console, cosmético com confirmação, cor na tab, VIP e código, apoiador
 node teste-montaria.js      # montaria do VIP (velocidade, some ao descer, não entra na arena do boss) e PvP só na arena do boss
+node teste-sethome-arenas.js # /sethome bloqueado dentro das arenas e câmaras do tesouro, liberado logo fora dos limites
 node teste-tesouros.js      # mapas do tesouro: /warp tesouros e o templo, cavar no X, câmara, convidado, ondas, baú do dono, spawner/máquina/células no loot, sair, morte, mapa do boss e da mina (precisa do mundo tesouros)
 node teste-foco.js          # Bancário e cheque, Cambista, Compactador, achados, /tpa nas arenas, prestígio, parry e Boss elite
 ```
@@ -95,8 +96,8 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-oficinas.js` | As 4 oficinas da mina: Ferreiro repara e cobra, Picareteiro vende, Sábio vende XP, Bruxa abre a mesa no nível 30 com o lápis dela (encanta sem lápis, e o lápis não vai pro inventário), e as linhas da scoreboard lateral (`/placar ver`) |
 | `teste-loja.js` | Loja Oficial: os 7 vendedores colocados, `/shop` e `/sell` fechados pros jogadores, `/warp loja`, vender e comprar no menu do fazendeiro, 12% de desconto do VIP Diamante a trava da venda (último rank + VIP: o diamante não passa de 90% do menor preço de compra) e o Armeiro (balcão PvP) vendendo a Poção de Força II |
 | `teste-warp-mobs.js` | Warp mobs: com o jogador no salão, as estátuas perto dele ganham mobs (as do fundo só com ele lá), nenhum mob no vestíbulo nem no túnel, o zumbi não pega fogo no sol, não some de longe, morto a estátua repõe, e ninguém passa de 4 vivos |
-| `teste-spawners.js` | Spawners: o Domador da loja vende, no spawn não entra, no terreno entra, empilha clicando (x2), a pilha de mobs aparece em cima (x2), matar tira um (x1) e derruba o drop, e quebrar devolve os spawners |
-| `teste-maquinas.js` | Máquinas: o pacote de texturas é servido, o Maquinista vende o Tear e as Células, a máquina entra no terreno desenhada pelo modelo do pacote, abastece, faz 30 Tecidos em 30 minutos (`/maquinas acelerar`), coleta, vende no balcão e recolhe; abaixo do rank, a máquina não entra e a que está no chão fica bloqueada |
+| `teste-spawners.js` | Spawners: o Domador da loja vende, no spawn não entra, no terreno entra, empilha clicando (x2), a pilha de mobs aparece em cima (x2), matar tira um (x1) e derruba o drop, e quebrar devolve os spawners; 100 spawners por terreno somando os tipos (x64 de zumbi + x36 de esqueleto), sem empilhar nem colocar mais |
+| `teste-maquinas.js` | Máquinas: o pacote de texturas é servido, o Maquinista vende o Tear e as Células, a máquina entra no terreno desenhada pelo modelo do pacote, abastece, faz 30 Tecidos em 30 minutos (`/maquinas acelerar`), coleta, vende no balcão e recolhe; abaixo do rank, a máquina não entra e a que está no chão fica bloqueada; 10 máquinas por terreno (5 teares e 5 forjas), a 11ª barrada |
 | `teste-areas.js` | Áreas fechadas: no spawn a pérola não sai nem é gasta e o `/fly` não liga; num terreno (fora das áreas) a pérola funciona |
 
 O `teste-vip.js` e o `teste-terrenos.js` usam jogadores novos a cada execução (`Vip`, `Ter` ou `Viz` + um código): o kit mensal e o bônus de ativação só valem uma vez por jogador, e cada um só compra um terreno. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.

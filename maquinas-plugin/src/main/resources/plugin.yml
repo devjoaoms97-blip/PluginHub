@@ -4,7 +4,7 @@ main: com.example.maquinas.MaquinasPlugin
 api-version: '26.2'
 author: Você
 description: Máquinas nos terrenos que fabricam produtos (texturas próprias) com Células de Combustível.
-softdepend: [Vault, RankupPlugin, PixPlugin, PacotePlugin]
+softdepend: [Vault, RankupPlugin, PixPlugin, PacotePlugin, TerrenosPlugin]
 
 commands:
   maquinas:

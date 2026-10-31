@@ -4,7 +4,7 @@ main: com.example.areas.AreasPlugin
 api-version: '26.2'
 author: Você
 description: Áreas fechadas (spawn, minas, loja, arenas) sem voo, elytra, pérola do fim nem construção.
-softdepend: [RankupPlugin]
+softdepend: [RankupPlugin, TesourosPlugin]
 
 commands:
   areas:

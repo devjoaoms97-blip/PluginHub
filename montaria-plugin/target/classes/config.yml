@@ -1,11 +1,11 @@
-# Configuração do MontariaPlugin (montaria do VIP no spawn)
+# Configuração do MontariaPlugin (montaria do VIP no spawn e no mundo dos tesouros)
 #
 # /montaria chama a montaria (e de novo manda ela embora). Precisa da permissão vip.perk.montaria,
 # que os grupos de VIP do LuckPerms dão. Ela some quando o jogador desce, sai, se teleporta, troca de
 # mundo, toma dano ou entra num lugar proibido.
 
 # Mundos onde dá pra usar. Fora deles, a montaria nem aparece.
-mundos: [spawn]
+mundos: [spawn, tesouros]
 
 # Caixas proibidas ([x, y, z] dos cantos): ao entrar, a montaria some e o jogador segue a pé. Os poços
 # das minas do RankupPlugin já são proibidos sozinhos (não precisa pôr aqui).
@@ -42,7 +42,7 @@ tipo-padrao: HORSE
 skins:
   rena: {escala-do-cavalo: 1.0, fmm-modelo: reindeer}
   bode: {escala-do-cavalo: 1.0, fmm-modelo: goated}
-  caranguejo: {escala-do-cavalo: 1.0, fmm-modelo: krab}
+  caranguejo: {escala-do-cavalo: 0.5, fmm-modelo: krab}
   peixe: {escala-do-cavalo: 1.0, fmm-modelo: styx_fish}
   aviao: {escala-do-cavalo: 1.0, fmm-modelo: biplane1}
   arara: {escala-do-cavalo: 1.0}

@@ -53,6 +53,8 @@ import java.util.logging.Level;
  *       passa pra coletar, não quem some por dias).</li>
  *   <li><b>Menu</b> (clique direito, só o dono): coletar, abastecer, melhorar velocidade e estoque
  *       (o dinheiro sai de circulação) e recolher (volta o item com os níveis).</li>
+ *   <li><b>Limite</b>: até {@code limite-por-terreno} máquinas em cada terreno (TerrenosPlugin), somando
+ *       todos os tipos e todos os donos.</li>
  *   <li><b>Rank</b>: só coloca e mexe na máquina quem tem o rank dela (ou já fez prestígio). A máquina
  *       que chegou por outro caminho (tesouro, barraca) fica toda bloqueada até lá; vender, pode.</li>
  * </ul>
@@ -231,10 +233,18 @@ public class MaquinaManager implements Listener {
             jogador.sendMessage("§cA máquina " + t.nome() + " §clibera no rank §f" + t.rank() + "§c. Guarde até chegar lá, ou venda na barraca.");
             return;
         }
-        long minhas = porLugar.values().stream().filter(m -> m.dono.equals(jogador.getUniqueId())).count();
-        if (minhas >= plugin.limiteDeMaquinas(jogador)) {
+        // o limite é do terreno: todas as máquinas dele, de qualquer tipo e de qualquer dono
+        String terreno = plugin.getTerrenos().terrenoEm(bloco.getLocation());
+        if (plugin.getTerrenos().disponivel() && terreno == null) {
             evento.setCancelled(true);
-            jogador.sendMessage("§cVocê já tem o máximo de máquinas (§f" + plugin.limiteDeMaquinas(jogador) + "§c). VIP pode ter mais.");
+            jogador.sendMessage("§cMáquina só pode ser colocada dentro de um terreno.");
+            return;
+        }
+        long noTerreno = porLugar.values().stream().filter(m -> mesmoTerreno(m, terreno, jogador.getUniqueId())).count();
+        if (noTerreno >= plugin.limitePorTerreno()) {
+            evento.setCancelled(true);
+            jogador.sendMessage("§cEsse terreno já tem o máximo de máquinas (§f" + plugin.limitePorTerreno()
+                    + "§c, somando todos os tipos). Recolha uma pra pôr outra.");
             return;
         }
         // a frente da máquina olha pra quem colocou: o ângulo (em torno do Y) que leva a frente do
@@ -255,6 +265,16 @@ public class MaquinaManager implements Listener {
         atualizarHolograma(m);
         sujo = true;
         jogador.sendMessage("§a" + t.nome() + " §acolocada! §7Clique nela pra abastecer com Células de Combustível.");
+    }
+
+    /**
+     * A máquina conta no limite desse terreno? Sem o TerrenosPlugin (terreno null), conta as do mesmo
+     * dono, pra o limite continuar valendo.
+     */
+    private boolean mesmoTerreno(Maquina m, String terreno, UUID dono) {
+        if (terreno == null) return m.dono.equals(dono);
+        Location b = m.bloco();
+        return b != null && terreno.equals(plugin.getTerrenos().terrenoEm(b));
     }
 
     private void criarDisplay(Maquina m) {

@@ -223,7 +223,7 @@ Spawners empilhados nos terrenos, comprados no balcão Spawners da Loja Oficial 
 - [ ] Ver no `analisar.py` quanto os spawners rendem de verdade e calibrar os preços (agora com a pilha morrendo de uma vez e farms possíveis). 🟡
 
 ### Máquinas e produtos ✅ v1 (`maquinas-plugin` + `pacote-plugin`)
-Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcano), cada uma liberada num rank, que com **Células de Combustível** compradas na loja fabricam **produtos** (Tecido Fino, Barra de Aço, Essência Destilada, Gema Lapidada e Cristal de Energia). Produzem pelo relógio, mesmo offline, até encher o estoque (uma a duas horas). Melhorias de velocidade (5% por nível) e estoque, e até 4 máquinas por jogador (VIP até 7). O Maquinista (balcão Máquinas) vende as máquinas e o combustível e compra os produtos por preço dinâmico, com o bônus do rank e do VIP. Cada máquina rende ~10% da mina do rank dela (`tools/economia/maquinas.py`).
+Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcano), cada uma liberada num rank, que com **Células de Combustível** compradas na loja fabricam **produtos** (Tecido Fino, Barra de Aço, Essência Destilada, Gema Lapidada e Cristal de Energia). Produzem pelo relógio, mesmo offline, até encher o estoque (uma a duas horas). Melhorias de velocidade (5% por nível) e estoque, e até 10 máquinas por terreno, somando todos os tipos (era 4 por jogador, VIP até 7; mudou em 2026-10-31). O Maquinista (balcão Máquinas) vende as máquinas e o combustível e compra os produtos por preço dinâmico, com o bônus do rank e do VIP. Cada máquina rende ~10% da mina do rank dela (`tools/economia/maquinas.py`); com 10 no máximo num terreno, ~134% da mina.
 - [x] **Textura própria do servidor**: resource pack servido pelo PacotePlugin (HTTP embutido, mandado ao entrar), com as texturas geradas pelo `tools/pacote/gerar.py` no estilo do spawn.
 - [x] Produtos com ID próprio marcado no item (não dá pra falsificar, não entram em receita).
 - [ ] Cadeias de produção (a saída de uma máquina é entrada de outra). 🟡
@@ -231,10 +231,10 @@ Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcan
 - [x] Balcão **PvP** da loja: o Armeiro (OficinasPlugin) vende todas as armaduras e armas sem encantamento (couro a netherita), escudo, flechas e poções. Só compra.
 
 ### Montaria no spawn ✅ v1 (`montaria-plugin`)
-`/montaria` (ou `/cavalo`) chama um cavalo pra andar mais rápido pelo mundo spawn (decisões de 2026-10-27):
+`/montaria` (ou `/cavalo`) chama um cavalo pra andar mais rápido pelo mundo spawn e pelo mundo dos tesouros (decisões de 2026-10-27; tesouros em 2026-10-30):
 - **Só VIP** (permissão `vip.perk.montaria`, em todos os tiers).
 - **3× a corrida a pé** (era 1,6×; mudado em 2026-10-27), com pulo baixo (não pula balcão nem barraca).
-- **No mundo spawn todo, menos os poços das minas e a arena do boss**: quem entra montado desce e segue a pé.
+- **No mundo spawn todo, menos os poços das minas e a arena do boss, e no mundo `tesouros`**: quem entra montado num lugar barrado desce e segue a pé.
 - Some ao descer, sair, se teleportar, trocar de mundo ou tomar dano. Ninguém mais monta nela.
 - [ ] Montaria diferente por tier (`tipos` no config já aceita), se quiser variar.
 
@@ -279,16 +279,16 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [ ] **Aceitar `/tpa` com clique**: incluir botão/link para aceitar a solicitação pendente, preservando expiração e validação do destinatário.
 
 #### Mundos, arenas e eventos
-- [ ] **Montarias no mundo `tesouros`**: permitir `/montaria` no `/warp tesouros`, mantendo as restrições dos outros mundos.
+- [x] **Montarias no mundo `tesouros`** (2026-10-30): `/montaria` liberado no `/warp tesouros`; as restrições das minas, da arena do boss e dos demais mundos foram mantidas.
 - [ ] **Recompensa do dragão do End**: conceder tag e prêmio ao responsável pela morte e fazer o dragão dropar um tesouro; definir elegibilidade, conteúdo e chance, inclusive para mortes indiretas e disputas pelo último golpe.
 - [ ] **Acesso às estruturas do `/boss`**: inserir escadas e trechos de parkour nas estruturas da arena.
 - [ ] **Referências visuais no Gladiador**: adicionar marcos que ajudem os jogadores a diferenciar as áreas da arena.
-- [ ] **`/sethome` nas arenas**: bloquear a definição de homes dentro das arenas do `/boss` e do Gladiador, verificando os limites das áreas.
+- [x] **`/sethome` nas arenas** (2026-10-31): `/sethome` e `/createhome` barrados dentro da arena do boss, do piso do X1, do piso do Gladiador e da câmara ativa do tesouro (limites reais de cada uma); logo fora, liberado. `teste-sethome-arenas.js`.
 - [ ] **Toque Suave em spawners**: permitir que spawners de todos os mundos sejam coletados com picareta com Toque Suave, conforme as regras de proteção de cada mundo.
 
 #### Terrenos, lojas e economia
-- [ ] **Limite compartilhado de máquinas por terreno**: substituir os limites por jogador (atualmente 4, ou 7 para VIP) por até 10 máquinas no terreno, somando todos os tipos (por exemplo, 10 forjas ou 5 forjas e 5 teares).
-- [ ] **Limite compartilhado de spawners por terreno**: permitir até 100 por terreno, somando todos os tipos, com a mesma regra de contagem compartilhada.
+- [x] **Limite compartilhado de máquinas por terreno** (2026-10-31): até 10 máquinas em cada terreno, somando todos os tipos e donos (`limite-por-terreno`); saíram o limite por jogador (4) e o do VIP (5 a 7).
+- [x] **Limite compartilhado de spawners por terreno** (2026-10-31): até 100 spawners em cada terreno, somando todos os tipos e donos (os empilhados contam um por um).
 - [ ] **Destino público para barraca alugada**: criar um destino de teleporte enquanto a barraca estiver alugada e permitir anunciá-lo junto a itens no chat global; remover o destino ao encerrar o aluguel. Definir a sintaxe, por exemplo `/loja <jogador>`.
 - [ ] **Corrigir nome das lojas**: investigar e corrigir o nome bugado exibido nas lojas, cobrindo NPC, menus e demais telas afetadas.
 - [ ] **Cobrança Pix entre jogadores com QR Code**: permitir informar um jogador e um valor para gerar a cobrança; validar o pagamento antes de transferir e impedir cobrança duplicada. Definir se o QR representa saldo do jogo ou pagamento externo.

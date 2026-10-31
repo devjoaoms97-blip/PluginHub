@@ -48,6 +48,7 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
     private LojaMaquinas loja;
     private PixIntegration pix;
     private RankupIntegration rankup;
+    private TerrenosIntegration terrenos;
 
     @Override
     public void onEnable() {
@@ -62,6 +63,7 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
         carregarConfig();
         pix = new PixIntegration(this);
         rankup = new RankupIntegration(this);
+        terrenos = new TerrenosIntegration(this);
         mercado = new Mercado(this);
         maquinas = new MaquinaManager(this);
         loja = new LojaMaquinas(this);
@@ -194,8 +196,9 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
         return maiorDaLista("vip-bonus-venda", "percentual", p, 0);
     }
 
-    int limiteDeMaquinas(Player p) {
-        return (int) maiorDaLista("limite-vip", "limite", p, getConfig().getInt("limite-por-jogador", 4));
+    /** Máquinas por terreno, somando todos os tipos e todos os donos. */
+    int limitePorTerreno() {
+        return Math.max(1, getConfig().getInt("limite-por-terreno", 10));
     }
 
     private double maiorDaLista(String caminho, String campo, Player p, double base) {
@@ -311,6 +314,10 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
 
     RankupIntegration getRankup() {
         return rankup;
+    }
+
+    TerrenosIntegration getTerrenos() {
+        return terrenos;
     }
 
     Mercado getMercado() {

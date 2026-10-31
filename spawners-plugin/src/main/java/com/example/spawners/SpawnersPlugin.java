@@ -42,6 +42,7 @@ public class SpawnersPlugin extends JavaPlugin {
     private LojaSpawners loja;
     private PixIntegration pix;
     private RankupIntegration rankup;
+    private TerrenosIntegration terrenos;
 
     @Override
     public void onEnable() {
@@ -52,6 +53,7 @@ public class SpawnersPlugin extends JavaPlugin {
         carregarTipos();
         pix = new PixIntegration(this);
         rankup = new RankupIntegration(this);
+        terrenos = new TerrenosIntegration(this);
         spawners = new SpawnerManager(this);
         loja = new LojaSpawners(this);
         warpMobs = new WarpMobs(this);
@@ -203,6 +205,10 @@ public class SpawnersPlugin extends JavaPlugin {
 
     RankupIntegration getRankup() {
         return rankup;
+    }
+
+    TerrenosIntegration getTerrenos() {
+        return terrenos;
     }
 
     SpawnerManager getSpawners() {

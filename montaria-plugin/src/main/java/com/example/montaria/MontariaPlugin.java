@@ -46,8 +46,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Montaria do VIP no spawn: {@code /montaria} chama um cavalo (ou outra montaria do config) pra andar
- * mais rápido pelo mundo spawn, onde não dá pra voar. Repetir o comando manda ela embora.
+ * Montaria do VIP: {@code /montaria} chama um cavalo (ou outra montaria do config) pra andar mais rápido
+ * nos mundos permitidos pela configuração. Repetir o comando manda ela embora.
  * <p>
  * É descartável: some quando o jogador desce, sai do servidor, se teleporta, troca de mundo, toma dano
  * ou entra num lugar proibido (os poços das minas do RankupPlugin e as caixas de {@code proibido}, como
@@ -406,7 +406,7 @@ public class MontariaPlugin extends JavaPlugin implements Listener {
     /** Por que não pode usar a montaria aqui (o nome do lugar), ou null se pode. */
     private String motivoProibido(Location l) {
         List<String> mundos = getConfig().getStringList("mundos");
-        if (!mundos.contains(l.getWorld().getName())) return "só no spawn";
+        if (!mundos.contains(l.getWorld().getName())) return "mundo não permitido";
         if (emMina(l)) return "dentro da mina";
         for (Map<?, ?> m : getConfig().getMapList("proibido")) {
             Caixa c = caixa(m);

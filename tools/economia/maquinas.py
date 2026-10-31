@@ -7,7 +7,7 @@ Lê o config do MaquinasPlugin e a simulação da mina (simular.py, jogador de r
 máquina: produtos por hora, lucro por hora no preço de âncora (venda menos combustível, sem bônus),
 em quantas horas ela se paga e quanto o lucro é da renda da mina naquele rank. Meta: uma máquina
 rende uns 10% da mina do rank no nível 0. A coluna "nível máx" é com a velocidade no máximo, e as
-duas últimas, com o limite de máquinas todo usado nesse nível (sem VIP e no VIP Diamante).
+duas últimas, com o limite do terreno todo usado nesse nível (num terreno só, e pra quem tem dois).
 """
 import argparse
 import sys
@@ -33,11 +33,12 @@ def main():
     renda_no_rank[ranks[-1]["id"]] = linhas[-1][2]
     preco_cel = cfg["combustivel"]["preco"]
     fator_max = 1 / (1 - cfg["velocidade-por-nivel"] / 100 * cfg["nivel-maximo"])
-    lim = cfg["limite-por-jogador"]
-    lim_vip = max(v["limite"] for v in cfg.get("limite-vip", [])) if cfg.get("limite-vip") else lim
-    print(f"velocidade no máximo: x{fator_max:.2f} | limite: {lim} sem VIP, {lim_vip} no Diamante")
+    # o limite é por terreno, somando todos os tipos (config antigo: por jogador)
+    lim = cfg.get("limite-por-terreno", cfg.get("limite-por-jogador", 10))
+    lim_vip = 2 * lim
+    print(f"velocidade no máximo: x{fator_max:.2f} | limite: {lim} por terreno ({lim_vip} com dois terrenos)")
     print(f"{'máquina':<12}{'rank':<12}{'prod/h':>8}{'lucro/h':>12}{'se paga':>9}{'mina/h':>12}{'% mina':>8}"
-          f"{'nível máx':>10}{'todas':>8}{'todas VIP':>11}")
+          f"{'nível máx':>10}{'1 terr.':>8}{'2 terr.':>11}")
     for mid, m in cfg["maquinas"].items():
         prod = cfg["produtos"][m["produto"]]
         por_hora = 3600 / m["intervalo-segundos"]

@@ -39,6 +39,19 @@ t.rodar(async () => {
   msgs = await t.capturar(bot, () => bot.chat('/montaria'))
   const naArena = await t.console(`execute in minecraft:spawn positioned 0.5 33 195.5 if entity @e[type=horse,distance=..6]`)
   t.verificar(msgs.some(m => /arena do boss/.test(m)) && !/passed|Count/.test(naArena), 'na arena do boss a montaria não sai', msgs[0])
+
+  // no mundo dos tesouros sai; no de recursos, não
+  await t.console(`execute in minecraft:tesouros run minecraft:tp ${nome} 40.5 -19 40.5`)
+  await t.espera(6000) // a recarga de 5 s
+  await t.capturar(bot, () => bot.chat('/montaria'), 2000)
+  const noTesouro = await t.console(`execute in minecraft:tesouros positioned 40.5 -19 40.5 if entity @e[type=horse,distance=..6]`)
+  t.verificar(/passed|Count/.test(noTesouro), 'no mundo dos tesouros a montaria sai', noTesouro)
+  await t.console(`ride ${nome} dismount`)
+  await t.console(`execute in minecraft:recursos run minecraft:tp ${nome} 0.5 200 0.5`)
+  await t.espera(6000)
+  msgs = await t.capturar(bot, () => bot.chat('/montaria'))
+  t.verificar(msgs.some(m => /não permitido/.test(m)), 'no mundo de recursos a montaria não sai', msgs[0])
+  await t.console(`execute in minecraft:spawn run minecraft:tp ${nome} 0.5 65 20.5`)
   await t.console(`lp user ${nome} permission unset vip.perk.montaria`)
 
   console.log('\n== PvP só na arena do boss ==')

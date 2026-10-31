@@ -1,6 +1,6 @@
 # MontariaPlugin
 
-Montaria do VIP no spawn. No mundo `spawn` não dá pra voar, planar nem usar pérola (AreasPlugin), e a Avenida das Minas tem uns 230 blocos: a montaria deixa quem é VIP andar mais rápido entre o spawn, as minas, a loja e a warp mobs.
+Montaria do VIP no spawn e no mundo dos tesouros. No mundo `spawn` não dá pra voar, planar nem usar pérola (AreasPlugin), e a Avenida das Minas tem uns 230 blocos: a montaria deixa quem é VIP andar mais rápido entre o spawn, as minas, a loja e a warp mobs. No mundo `tesouros`, pode ser usada para atravessar a área de exploração.
 
 ## Como funciona
 
@@ -8,7 +8,7 @@ Montaria do VIP no spawn. No mundo `spawn` não dá pra voar, planar nem usar p�
 - **Só VIP:** precisa da permissão `vip.perk.montaria`, que os grupos de VIP do LuckPerms dão (todos os tiers).
 - **Velocidade:** `velocidade-vezes-corrida` (3) vezes a corrida a pé, 16,8 blocos por segundo, bem mais que qualquer cavalo do jogo. O fim da avenida das minas fica a uns 13 s do spawn, em vez de 40 s.
 - **Pulo baixo** (`pulo`: 0.5): sobe um degrau, mas não pula balcão nem barraca.
-- **Onde:** só nos `mundos` do config (o `spawn`). Nos poços das minas do RankupPlugin e nas caixas de `proibido` (a arena do boss, que tem PvP) ela não é chamada, e quem entra montado desce na hora e segue a pé.
+- **Onde:** só nos `mundos` do config (`spawn` e `tesouros`). Nos poços das minas do RankupPlugin e nas caixas de `proibido` (a arena do boss, que tem PvP) ela não é chamada, e quem entra montado desce na hora e segue a pé. Os demais mundos continuam bloqueados.
 - **É descartável:** some quando o jogador desce, sai do servidor, se teleporta, troca de mundo ou toma dano. Ninguém mais monta nela, ela não tem baú nem inventário, não toma dano e não fica salva no mundo.
 - **Recarga:** `recarga-segundos` (5) entre chamar uma e outra.
 - **Tipo:** cavalo pra todos. `tipos` no config permite trocar por tier (permissão → `HORSE`, `SKELETON_HORSE`, `ZOMBIE_HORSE`, `DONKEY`, `MULE`, `CAMEL`).
