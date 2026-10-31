@@ -159,6 +159,11 @@ public class Banco implements Listener {
     private void comprarFolhas(Player jogador, int quantas) {
         Economy econ = plugin.getEconomy();
         double preco = plugin.getConfig().getDouble("banco.preco-folha", 50) * quantas;
+        if (!ChequeCommand.cabe(jogador, folha(quantas))) {
+            jogador.sendMessage(ChatColor.RED + "Seu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
+            jogador.playSound(jogador.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.8f, 1f);
+            return;
+        }
         if (preco > 0) {
             if (econ == null || !econ.has(jogador, preco)) {
                 jogador.sendMessage(ChatColor.RED + "Saldo insuficiente: " + quantas + " folha(s) custam " + dinheiro(preco) + ".");

@@ -3,7 +3,7 @@
 **Loja Oficial** · `/warp loja`
 Há sete vendedores: Minerador, Construtor, Lenhador, Fazendeiro, Caçador, Jardineiro e Alquimista. Clique com o botão direito no vendedor para abrir a categoria. No menu, clique esquerdo vende 1 item; **Shift + esquerdo** vende os aceitos do inventário; clique direito compra 1; **Shift + direito** compra até 64.
 
-O preço de compra do servidor é fixo. O preço de venda é dinâmico: cada venda reduz o preço daquele item, que se recupera com o tempo. Bônus de rank e VIP e o imposto da loja entram no valor final, mostrado na venda. Em eventos de **📈 ALTA**, alguns itens pagam mais; acompanhe {#eventos}. Máquinas e spawners têm balcões próprios (`/maquinas loja` e `/spawners loja`).
+O preço de compra do servidor é fixo. O preço de venda é dinâmico: cada venda reduz o preço daquele item, que se recupera com o tempo. Bônus de rank e VIP e o imposto da loja entram no valor final, mostrado na venda. Em eventos de **📈 ALTA**, alguns itens pagam mais; acompanhe {#eventos}. O Fazendeiro também compra carnes cozidas (assadas no forno valem mais que cruas, que vão pro Caçador) e lã branca. Máquinas e spawners têm balcões próprios (`/maquinas loja` e `/spawners loja`).
 
 **Pix entre jogadores**
 `/pix pagar <jogador> <valor> [motivo]` transfere na hora. Para cobrar, use `/pix receber <jogador> <valor> [motivo]`; a outra pessoa paga com `/pix aceitar <jogador>`. A cobrança expira em 5 minutos. `/pix qrcode <valor>` publica um botão para alguém te pagar.

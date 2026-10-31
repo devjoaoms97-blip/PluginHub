@@ -501,6 +501,9 @@ async function marcarComBot() {
   await t.console('lp group default permission set essentials.spawn true')
   await t.console('lp group default permission set essentials.warp true')
   await t.console('lp group default permission set essentials.warp.list true')
+  for (const p of ['tpa', 'tpahere', 'tpaccept', 'tpdeny', 'home', 'sethome', 'delhome']) {
+    await t.console(`lp group default permission set essentials.${p} true`)
+  }
   const staff = await t.criarBot('BotStaff')
   await t.console('op BotStaff')
   await t.console('gamemode creative BotStaff')

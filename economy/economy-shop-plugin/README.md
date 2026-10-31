@@ -16,7 +16,7 @@ A loja é um prédio: a **Loja Oficial**, do lado de fora do portão LESTE do sp
 
 ### O catálogo (`tools/economia/loja.py`)
 
-O `itens.yml` sai do script, que confere se nenhum preço abre brecha antes de gravar: compra sempre acima da venda no pior caso, e nenhum lucro comprando ingredientes, craftando, fundindo, cortando ou quebrando o bloco e vendendo o resultado (receitas do Minecraft pelo minecraft-data). São 356 itens em 7 categorias; os vendedores compram 96 (minérios, toras, farm e drops), e o resto (blocos, tábuas, natureza, alquimia) só a loja vende, tirando dinheiro de circulação. Os itens da mina mantêm os preços que a simulação de 150 h usa.
+O `itens.yml` sai do script, que confere se nenhum preço abre brecha antes de gravar: compra sempre acima da venda no pior caso, e nenhum lucro comprando ingredientes, craftando, fundindo, cortando ou quebrando o bloco e vendendo o resultado (receitas do Minecraft pelo minecraft-data). São 357 itens em 7 categorias; os vendedores compram 102 (minérios, toras, farm, carnes cozidas, lã branca e drops), e o resto (blocos, tábuas, natureza, alquimia) só a loja vende, tirando dinheiro de circulação. Os itens da mina mantêm os preços que a simulação de 150 h usa. Carne crua (boi, porco, frango, carneiro e coelho) o Caçador só compra: se a loja vendesse, comprar crua, assar e vender a cozida pro Fazendeiro dava lucro.
 
 ```
 python tools/economia/loja.py                          # confere

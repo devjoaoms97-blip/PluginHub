@@ -263,6 +263,10 @@ public class Servicos implements Listener {
         if (produto == null) return;
         double preco = precoComDesconto(jogador, numero(dados.get("preco")));
         String quem = menu.tipo == Oficina.Tipo.ARMEIRO ? "Armeiro" : "Picareteiro";
+        if (!cabe(jogador, produto)) {
+            jogador.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
+            return;
+        }
         if (!cobrar(jogador, preco, "Compra no " + quem)) return;
         entregar(jogador, produto);
         jogador.playSound(jogador.getLocation(), Sound.ENTITY_VILLAGER_YES, 0.8f, 1f);
@@ -419,6 +423,13 @@ public class Servicos implements Listener {
         econ.withdrawPlayer(jogador, valor);
         plugin.getPix().registrarComServidor(jogador.getUniqueId(), valor, false, tipo);
         return true;
+    }
+
+    /** O item cabe inteiro no inventário (somando nas pilhas que já tem)? Confere antes de cobrar. */
+    static boolean cabe(Player p, ItemStack item) {
+        org.bukkit.inventory.Inventory copia = org.bukkit.Bukkit.createInventory(null, 36);
+        copia.setContents(p.getInventory().getStorageContents());
+        return copia.addItem(item.clone()).isEmpty();
     }
 
     private static void entregar(Player jogador, ItemStack item) {

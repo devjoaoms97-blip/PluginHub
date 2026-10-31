@@ -4,3 +4,10 @@ permissions:
 - essentials.teleport.timer.move
 - essentials.warp
 - essentials.warp.list
+- essentials.tpa
+- essentials.tpahere
+- essentials.tpaccept
+- essentials.tpdeny
+- essentials.home
+- essentials.sethome
+- essentials.delhome

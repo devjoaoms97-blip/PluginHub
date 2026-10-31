@@ -1,0 +1,27 @@
+name: AjudaPlugin
+version: '1.0.0'
+main: com.example.ajuda.AjudaPlugin
+api-version: '26.2'
+author: Você
+description: Ajuda pra quem está começando - /tutorial com prêmio, /comandos por tema e /tpa com clique.
+softdepend: [Essentials, RankupPlugin, TesourosPlugin, EconomyShopPlugin]
+
+commands:
+  tutorial:
+    description: Começa o tutorial ou mostra a etapa atual (prêmio no fim, uma vez).
+    usage: "Uso: /tutorial | /tutorial admin <ver|resetar|etapa> <jogador> [número]"
+    aliases: [tutoriais]
+    permission: ajuda.usar
+  comandos:
+    description: Os comandos do servidor, por tema.
+    usage: "Uso: /comandos [tema]"
+    aliases: [comando, cmds]
+    permission: ajuda.usar
+
+permissions:
+  ajuda.usar:
+    description: Usa o /tutorial e o /comandos.
+    default: true
+  ajuda.admin:
+    description: Vê e zera o tutorial dos jogadores e recarrega o config.
+    default: op

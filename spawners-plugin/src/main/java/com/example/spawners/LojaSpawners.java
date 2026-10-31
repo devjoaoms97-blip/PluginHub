@@ -69,6 +69,13 @@ public class LojaSpawners implements Listener {
         jogador.openInventory(menu.inventario);
     }
 
+    /** O item cabe inteiro no inventário (somando nas pilhas que já tem)? Confere antes de cobrar. */
+    static boolean cabe(Player p, ItemStack item) {
+        org.bukkit.inventory.Inventory copia = org.bukkit.Bukkit.createInventory(null, 36);
+        copia.setContents(p.getInventory().getStorageContents());
+        return copia.addItem(item.clone()).isEmpty();
+    }
+
     @EventHandler
     public void aoClicar(InventoryClickEvent evento) {
         if (!(evento.getInventory().getHolder() instanceof Menu menu)) return;
@@ -82,6 +89,10 @@ public class LojaSpawners implements Listener {
         }
         int quantidade = evento.getClick() == ClickType.SHIFT_LEFT || evento.getClick() == ClickType.SHIFT_RIGHT ? 8 : 1;
         double total = tipo.preco() * quantidade;
+        if (!cabe(jogador, plugin.item(tipo, quantidade))) {
+            jogador.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
+            return;
+        }
         var econ = plugin.getEconomy();
         if (econ == null || !econ.has(jogador, total)) {
             jogador.sendMessage("§cSaldo insuficiente: custa §f" + SpawnersPlugin.dinheiro(total) + "§c.");

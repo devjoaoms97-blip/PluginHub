@@ -101,6 +101,7 @@ public class Precificacao {
         double liquido = bruto * (1 - imposto / 100.0);
         plugin.getEconomy().depositPlayer(jogador, liquido);
         plugin.getMissoesIntegration().vendeu(jogador, item.getMaterial(), vendidas);
+        if (doInventario) plugin.getAjudaIntegration().vendeu(jogador); // a venda automática das minas não conta
         return new Venda(vendidas, bruto, liquido, multiplicador, travou);
     }
 

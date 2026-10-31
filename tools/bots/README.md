@@ -50,6 +50,9 @@ node teste-vip-evento.js    # código de VIP de evento: só 3/7/15 dias, sem bô
 node teste-creditos.js      # loja de créditos: créditos pelo console, cosmético com confirmação, cor na tab, VIP e código, apoiador
 node teste-montaria.js      # montaria do VIP (velocidade, some ao descer, não entra na arena do boss) e PvP só na arena do boss
 node teste-sethome-arenas.js # /sethome bloqueado dentro das arenas e câmaras do tesouro, liberado logo fora dos limites
+node teste-inventario-cheio.js # inventário cheio: Maquinista, Domador e /buy recusam a compra sem cobrar nem jogar no chão
+node teste-ajuda.js         # /tutorial (etapas e prêmio uma vez), /comandos e /tpa com clique
+node teste-creeper.js       # creepers da pilha de spawner e da /warp mobs não explodem (o comum, de controle, explode)
 node teste-tesouros.js      # mapas do tesouro: /warp tesouros e o templo, cavar no X, câmara, convidado, ondas, baú do dono, spawner/máquina/células no loot, sair, morte, mapa do boss e da mina (precisa do mundo tesouros)
 node teste-foco.js          # Bancário e cheque, Cambista, Compactador, achados, /tpa nas arenas, prestígio, parry e Boss elite
 ```
@@ -98,6 +101,9 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-warp-mobs.js` | Warp mobs: com o jogador no salão, as estátuas perto dele ganham mobs (as do fundo só com ele lá), nenhum mob no vestíbulo nem no túnel, o zumbi não pega fogo no sol, não some de longe, morto a estátua repõe, e ninguém passa de 4 vivos |
 | `teste-spawners.js` | Spawners: o Domador da loja vende, no spawn não entra, no terreno entra, empilha clicando (x2), a pilha de mobs aparece em cima (x2), matar tira um (x1) e derruba o drop, e quebrar devolve os spawners; 100 spawners por terreno somando os tipos (x64 de zumbi + x36 de esqueleto), sem empilhar nem colocar mais |
 | `teste-maquinas.js` | Máquinas: o pacote de texturas é servido, o Maquinista vende o Tear e as Células, a máquina entra no terreno desenhada pelo modelo do pacote, abastece, faz 30 Tecidos em 30 minutos (`/maquinas acelerar`), coleta, vende no balcão e recolhe; abaixo do rank, a máquina não entra e a que está no chão fica bloqueada; 10 máquinas por terreno (5 teares e 5 forjas), a 11ª barrada |
+| `teste-inventario-cheio.js` | Inventário cheio nas lojas: o Maquinista (máquina e combustível), o Domador (spawner) e o `/buy` da Loja Oficial recusam a compra com aviso, sem cobrar e sem jogar nada no chão; com um espaço livre, compram |
+| `teste-ajuda.js` | AjudaPlugin: convite do `/tutorial` ao entrar, `/comandos` (índice, página, apelido e tema inexistente), o tutorial inteiro (sem pular etapa, 64 blocos na mina, `/warp loja`, `/ranks`, `/terreno auto`, `/diaria`), o mapa guardado com o inventário cheio e entregue uma vez só, e os botões do `/tpa` |
+| `teste-creeper.js` | Creepers marcados como da pilha de spawner e da `/warp mobs` ficam do lado do jogador sem explodir; o creeper comum, de controle, explode |
 | `teste-areas.js` | Áreas fechadas: no spawn a pérola não sai nem é gasta e o `/fly` não liga; num terreno (fora das áreas) a pérola funciona |
 
 O `teste-vip.js` e o `teste-terrenos.js` usam jogadores novos a cada execução (`Vip`, `Ter` ou `Viz` + um código): o kit mensal e o bônus de ativação só valem uma vez por jogador, e cada um só compra um terreno. Esses jogadores ficam salvos no servidor e entram na contagem de jogadores do painel da economia. O `BotDois` só existe para receber o Pix.

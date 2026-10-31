@@ -28,7 +28,7 @@ import java.util.logging.Level;
 public class Templo {
 
     /** Sobe quando o desenho muda, pra reconstruir nos servidores que já têm o templo. */
-    private static final int VERSAO = 1;
+    private static final int VERSAO = 2;
     private static final String TAG = "tesouros_templo";
 
     private final TesourosPlugin plugin;
@@ -93,15 +93,15 @@ public class Templo {
             }
         }
 
-        // hologramas
+        // hologramas: quem lê está no centro, olhando pra aquele lado, então a seta de todos aponta pra frente
         for (TextDisplay t : mundo.getEntitiesByClass(TextDisplay.class)) if (t.getScoreboardTags().contains(TAG)) t.remove();
         holograma(mundo, new Location(mundo, 0.5, y + 3.2, 0.5), 1.0f,
                 "&6&l✦ Mundo dos Tesouros ✦\n&fAnde até o X do seu mapa e cave o chão.\n"
                         + "&7Com o mapa na mão, a barra mostra quanto falta.\n&cNa câmara, quem morre perde tudo.");
         holograma(mundo, new Location(mundo, 0.5, y + 2.6, -7.5), 1.4f, "&b&l⬆ NORTE\n&fpra lá o &bZ diminui\n&7(Z negativo)");
-        holograma(mundo, new Location(mundo, 0.5, y + 2.6, 8.5), 1.4f, "&c&l⬇ SUL\n&fpra lá o &cZ aumenta\n&7(Z positivo)");
-        holograma(mundo, new Location(mundo, 8.5, y + 2.6, 0.5), 1.4f, "&e&l➡ LESTE\n&fpra lá o &eX aumenta\n&7(X positivo)");
-        holograma(mundo, new Location(mundo, -7.5, y + 2.6, 0.5), 1.4f, "&a&l⬅ OESTE\n&fpra lá o &aX diminui\n&7(X negativo)");
+        holograma(mundo, new Location(mundo, 0.5, y + 2.6, 8.5), 1.4f, "&c&l⬆ SUL\n&fpra lá o &cZ aumenta\n&7(Z positivo)");
+        holograma(mundo, new Location(mundo, 8.5, y + 2.6, 0.5), 1.4f, "&e&l⬆ LESTE\n&fpra lá o &eX aumenta\n&7(X positivo)");
+        holograma(mundo, new Location(mundo, -7.5, y + 2.6, 0.5), 1.4f, "&a&l⬆ OESTE\n&fpra lá o &aX diminui\n&7(X negativo)");
 
         // a chegada é no centro, olhando pro norte
         mundo.setSpawnLocation(new Location(mundo, 0.5, y, 0.5, 180f, 0f));

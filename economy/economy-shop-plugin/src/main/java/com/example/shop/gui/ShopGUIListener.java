@@ -121,9 +121,14 @@ public class ShopGUIListener implements Listener {
             return;
         }
 
+        ItemStack pilha = new ItemStack(item.getMaterial(), quantidade);
+        if (!com.example.shop.command.BuyCommand.cabe(jogador, pilha)) {
+            jogador.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
+            return;
+        }
+
         econ.withdrawPlayer(jogador, custoTotal);
 
-        ItemStack pilha = new ItemStack(item.getMaterial(), quantidade);
         Map<Integer, ItemStack> sobras = jogador.getInventory().addItem(pilha);
         sobras.values().forEach(sobra -> jogador.getWorld().dropItemNaturally(jogador.getLocation(), sobra));
 

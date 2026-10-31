@@ -1,0 +1,194 @@
+# Configuração do AjudaPlugin. Textos aceitam cores com &.
+
+# ------------------------------------------------------------------ /tutorial
+# Etapas em ordem, cada uma detectada sozinha. Tipos:
+#   minerar-mina  quebrar "quantidade" blocos dentro de uma mina do RankupPlugin
+#   vender-loja   vender do inventário pra Loja Oficial (o EconomyShopPlugin avisa; a venda automática das
+#                 minas não conta, então quem acabou de chegar não tem o que vender)
+#   comando       usar um dos "comandos" (sem a barra; "terreno auto" vale também com argumentos depois)
+# "dica" vira um botão que roda o comando.
+tutorial:
+  convite-ao-entrar: true          # quem nunca começou recebe o convite com o botão [COMEÇAR]
+  atraso-convite-segundos: 8       # depois de entrar (dá tempo do login do AuthMe)
+  etapas:
+    - tipo: minerar-mina
+      quantidade: 64
+      titulo: "Minere na mina"
+      texto: "Use &f/mina&7, escolha a mina do seu rank e quebre &f64 blocos &7nela. O que você quebra já é vendido na hora: o dinheiro aparece na barra (&f+R$&7)."
+      dica: "/mina"
+    - tipo: comando
+      comandos: ["warp loja"]
+      titulo: "Conheça a Loja Oficial"
+      texto: "Na Loja Oficial (&f/warp loja&7) você compra ferramentas e blocos e vende o que pegar fora das minas."
+      dica: "/warp loja"
+    - tipo: comando
+      comandos: [ranks, rank, rankup]
+      titulo: "Conheça os ranks"
+      texto: "Abra &f/ranks &7pra ver o preço do próximo rank e o bônus de venda de cada um. Com o dinheiro, &f/rankup &7sobe."
+      dica: "/ranks"
+    - tipo: comando
+      comandos: ["terreno auto", "terrenos auto", "plot auto"]
+      titulo: "Ache um terreno"
+      texto: "&f/terreno auto &7leva ao terreno à venda mais perto. Lá, &f/terreno comprar &7compra (é a sua base, pras máquinas e spawners)."
+      dica: "/terreno auto"
+    - tipo: comando
+      comandos: [diaria, daily, recompensa]
+      titulo: "Pegue a recompensa diária"
+      texto: "Todo dia tem uma recompensa em &f/diaria&7: entrando 7 dias seguidos, ela cresce."
+      dica: "/diaria"
+  premio:
+    mapa: comum                    # raridade do Mapa do Tesouro (TesourosPlugin); vazio: sem mapa
+    comandos: []                   # rodados pelo console no fim, com {jogador}
+    mensagem: "&a✦ Você ganhou um &fMapa do Tesouro Comum&a! Segure ele e use &f/warp tesouros &apra achar o X."
+
+# ------------------------------------------------------------------ /tpa com clique
+tpa-clique:
+  ativado: true                    # botões [ACEITAR] e [RECUSAR] pra quem recebe um /tpa ou /tpahere
+
+# ------------------------------------------------------------------ /comandos
+# Cada página: titulo, resumo (aparece ao passar o mouse no índice), texto (linhas de explicação) e
+# comandos ("comando | explicação"; clicar digita o comando no chat, até o primeiro argumento).
+comandos:
+  titulo: "&6&l✦ Comandos do servidor"
+  paginas:
+    inicio:
+      titulo: "Começo"
+      resumo: "Os primeiros passos"
+      texto:
+        - "Minere, venda na loja e suba de rank: cada rank libera uma mina melhor."
+      comandos:
+        - "/tutorial | Tutorial com prêmio no fim"
+        - "/spawn | Volta pro spawn"
+        - "/mina | Menu das minas do seu rank"
+        - "/warp loja | Loja Oficial, onde se vende o que minerou"
+        - "/ranks | Ranks, preços e bônus de venda"
+        - "/rankup | Sobe de rank"
+        - "/diaria | Recompensa diária"
+        - "/missoes | Missões de hoje"
+    rankup:
+      titulo: "Rankup"
+      resumo: "Ranks, minas e prestígio"
+      comandos:
+        - "/rankup | Paga e sobe pro próximo rank"
+        - "/rankup max | Sobe quantos ranks o saldo pagar"
+        - "/ranks | Menu dos ranks"
+        - "/ranks <jogador> | Rank de outro jogador"
+        - "/mina | Menu das minas (clicar teleporta)"
+        - "/mina <id> | Vai direto pra uma mina"
+        - "/prestigio | No último rank, recomeça com bônus de venda"
+    dinheiro:
+      titulo: "Dinheiro"
+      resumo: "Pix, cheques e loja"
+      texto:
+        - "Venda nos NPCs da &f/warp loja&7. O Bancário (no spawn) vende folhas de cheque e mostra o extrato."
+      comandos:
+        - "/pix pagar <jogador> <valor> | Paga alguém"
+        - "/pix receber <jogador> <valor> | Cobra alguém (ele aceita)"
+        - "/pix pendentes | Cobranças em aberto"
+        - "/pix qrcode <valor> | Pedido de pagamento que qualquer um paga com um clique"
+        - "/cheque <valor> [jogador] | Transforma a folha da mão num cheque"
+        - "/minesena | Loteria do Bancário"
+        - "/achados | Itens seus que a limpeza tirou do chão"
+    terreno:
+      titulo: "Terreno"
+      resumo: "Sua base: comprar, imposto e mais"
+      texto:
+        - "Cada terreno tem 32x32 e cabe até 10 máquinas e 100 spawners."
+      comandos:
+        - "/terreno auto | Leva ao terreno à venda mais perto"
+        - "/terreno comprar | Compra o terreno em que você está"
+        - "/terreno home | Vai pro seu terreno"
+        - "/terreno lista | Seus terrenos e o imposto"
+        - "/terreno imposto pagar | Paga uma semana de imposto"
+        - "/terreno autopagar | Liga e desliga o pagamento automático"
+        - "/terreno info | Dono e amigos do terreno"
+        - "/terreno ir <x;z> | Visita um terreno"
+        - "/terreno leiloes | Leilões de terreno"
+        - "/terreno abandonar confirmar | Devolve o terreno (apaga o que tem nele)"
+    amigo:
+      titulo: "Amigos"
+      resumo: "Dividir o terreno com amigos"
+      texto:
+        - "No seu terreno, dê permissão a um amigo. Sem escolher nada, ele ganha todas."
+        - "&fconstruir&7: colocar e quebrar · &fbaus&7: abrir baús · &fusar&7: portas, botões e máquinas."
+      comandos:
+        - "/terreno amigo add <jogador> | Amigo com todas as permissões"
+        - "/terreno amigo add <jogador> [construir] [baus] [usar] | Só as permissões escolhidas"
+        - "/terreno amigo remover <jogador> | Tira o amigo"
+        - "/terreno info | Quem é amigo no terreno"
+    teleporte:
+      titulo: "Teleporte"
+      resumo: "Warps, tpa e casas"
+      texto:
+        - "Warps: loja, mercado, minas, mobs, terrenos, arenas, boss, recursos, nether, end e tesouros."
+      comandos:
+        - "/spawn | Volta pro spawn"
+        - "/warp | Lista as warps"
+        - "/warp <nome> | Vai pra uma warp"
+        - "/tpa <jogador> | Pede pra ir até alguém"
+        - "/tpahere <jogador> | Pede pra alguém vir até você"
+        - "/tpaccept | Aceita o pedido (ou clique em [ACEITAR])"
+        - "/tpdeny | Recusa o pedido"
+        - "/sethome <nome> | Marca uma casa onde você está"
+        - "/home <nome> | Vai pra casa"
+    combate:
+      titulo: "Combate"
+      resumo: "Skills, X1, Gladiador, boss e recompensas"
+      comandos:
+        - "/skills | Menu das skills"
+        - "/duelo <jogador> [valor] | Desafia pro X1, com aposta"
+        - "/duelo aceitar | Aceita o desafio"
+        - "/duelo assistir <jogador> | Assiste um duelo"
+        - "/gladiador | Evento Gladiador: inscritos e pote"
+        - "/gladiador entrar | Se inscreve no Gladiador"
+        - "/boss proximo | Quando o próximo boss aparece"
+        - "/bounty colocar <jogador> <valor> | Recompensa pela cabeça de alguém"
+        - "/bounty lista | Maiores recompensas"
+    clas:
+      titulo: "Clãs"
+      resumo: "Criar e gerenciar clãs"
+      comandos:
+        - "/cla criar <tag> <nome> | Funda um clã"
+        - "/cla convidar <jogador> | Convida alguém"
+        - "/cla aceitar | Aceita o convite"
+        - "/cla info | Informações do clã"
+        - "/cla membros | Membros e quem está online"
+        - "/cla top | Ranking de clãs"
+        - "/cla depositar <valor> | Dinheiro pro banco do clã"
+        - "/cla sair | Sai do clã"
+        - "/cc <mensagem> | Chat do clã"
+    producao:
+      titulo: "Máquinas"
+      resumo: "Máquinas, spawners e mercado"
+      texto:
+        - "Máquinas e spawners vão no seu terreno e liberam pelo rank."
+      comandos:
+        - "/maquinas loja | Loja das máquinas e do combustível"
+        - "/spawners loja | Loja dos spawners"
+        - "/barraca lista | Barracas do mercado de jogadores"
+        - "/barraca alugar <id> | Aluga uma barraca"
+        - "/barraca vender <quantidade> <preço> | Anuncia o item da mão na sua barraca"
+    mundos:
+      titulo: "Mundos"
+      resumo: "Recursos, Nether, End e tesouros"
+      texto:
+        - "Recursos, Nether e End têm PvP e são renovados todo mês."
+      comandos:
+        - "/warp recursos | Mundo de recursos"
+        - "/warp nether | Nether"
+        - "/warp end | End"
+        - "/recursos | Datas dos próximos resets"
+        - "/mapa <recursos|nether|end> | Mapa de um mundo"
+        - "/luz | Liga e desliga a visão noturna"
+        - "/warp tesouros | Mundo dos tesouros (com o mapa na mão)"
+        - "/tesouro convidar <jogador> | Leva um amigo pra sua câmara"
+    outros:
+      titulo: "Outros"
+      resumo: "VIP, créditos, Discord e ajustes"
+      comandos:
+        - "/vip | Benefícios do VIP"
+        - "/creditos | Seus créditos e a loja de cosméticos"
+        - "/montaria | Montaria (VIP)"
+        - "/vincular | Vincula sua conta ao Discord"
+        - "/placar | Liga e desliga o placar lateral"
+        - "/pacote | Manda o pacote de texturas de novo"

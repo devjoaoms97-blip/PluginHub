@@ -95,13 +95,23 @@ public class LojaMaquinas implements Listener {
                 p.sendMessage("§cA " + t.nome() + " §clibera no rank §f" + t.rank() + "§c.");
                 return;
             }
+            ItemStack maquina = plugin.maquina(t, 0, 0);
+            if (!cabe(p, maquina)) {
+                p.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
+                return;
+            }
             if (!cobrar(p, t.preco(), "Máquina: " + ChatColor.stripColor(t.nome()))) return;
-            entregar(p, plugin.maquina(t, 0, 0));
+            entregar(p, maquina);
             p.sendMessage("§aVocê comprou a " + t.nome() + "§a! Coloque no seu terreno (§f/terreno home§a).");
         } else if (slot == SLOT_COMBUSTIVEL) {
             int q = evento.getClick() == ClickType.SHIFT_LEFT || evento.getClick() == ClickType.SHIFT_RIGHT ? 64 : 16;
+            ItemStack celulas = plugin.combustivel(q);
+            if (!cabe(p, celulas)) {
+                p.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
+                return;
+            }
             if (!cobrar(p, q * plugin.getConfig().getDouble("combustivel.preco", 25), "Células de Combustível")) return;
-            entregar(p, plugin.combustivel(q));
+            entregar(p, celulas);
             p.sendMessage("§aVocê comprou §f" + q + " §aCélulas de Combustível.");
         } else if (menu.produtos.containsKey(slot)) {
             MaquinasPlugin.Produto prod = plugin.getProdutos().get(menu.produtos.get(slot));
@@ -148,6 +158,13 @@ public class LojaMaquinas implements Listener {
             }
         }
         return n;
+    }
+
+    /** O item cabe inteiro no inventário (somando nas pilhas que já tem)? Confere antes de cobrar. */
+    static boolean cabe(Player p, ItemStack item) {
+        org.bukkit.inventory.Inventory copia = org.bukkit.Bukkit.createInventory(null, 36);
+        copia.setContents(p.getInventory().getStorageContents());
+        return copia.addItem(item.clone()).isEmpty();
     }
 
     private static void entregar(Player p, ItemStack item) {

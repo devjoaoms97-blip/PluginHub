@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
@@ -28,6 +29,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -428,7 +430,15 @@ public class SpawnerManager implements Listener {
         return null;
     }
 
-    /** O creeper da pilha chia, mas não explode: a explosão some com a pilha inteira, sem drop nenhum. */
+    /**
+     * O creeper da pilha nunca explode (a explosão sumiria com a pilha inteira, sem drop, e quebraria o
+     * terreno): ele nem mira no jogador, então não chega perto nem chia. Cancelar a explosão é a garantia.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void aoMirar(EntityTargetEvent evento) {
+        if (evento.getEntity() instanceof Creeper && evento.getEntity().getPersistentDataContainer().has(chavePilha)) evento.setCancelled(true);
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void aoArmarExplosao(ExplosionPrimeEvent evento) {
         if (evento.getEntity().getPersistentDataContainer().has(chavePilha)) evento.setCancelled(true);

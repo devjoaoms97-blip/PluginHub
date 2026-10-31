@@ -97,7 +97,8 @@ def catalogo():
     for cor in CORES:
         add(B, f"{cor}_concrete", 4)
         add(B, f"{cor}_terracotta", 4.5)
-        add(B, f"{cor}_wool", 4)
+        if cor != "white":
+            add(B, f"{cor}_wool", 4)
         add(B, f"{cor}_stained_glass", 3)
 
     # -- Madeiras (lenhador): as toras vendem (carvalho e pinheiro vêm da mina, preço 7); o resto só compra.
@@ -112,7 +113,7 @@ def catalogo():
                         ("stick", 1)]:
         add(W, nome, preco)
 
-    # -- Farm (fazendeiro): o vendedor compra a colheita; comida pronta só a loja vende.
+    # -- Farm (fazendeiro): o vendedor compra a colheita e as carnes cozidas; o resto da comida pronta só a loja vende.
     F = "Farm"
     for nome, preco, _ in [("wheat", 4, 512), ("carrot", 3, 512), ("potato", 3, 512), ("beetroot", 3, 512),
                                 ("pumpkin", 6, 256), ("melon_slice", 1, 1024), ("sugar_cane", 2, 512),
@@ -125,10 +126,15 @@ def catalogo():
     for nome, preco in [("wheat_seeds", 0.5), ("beetroot_seeds", 0.5), ("melon_seeds", 2), ("pumpkin_seeds", 2),
                         ("bread", 13), ("baked_potato", 3.5), ("cookie", 2.5), ("pumpkin_pie", 9),
                         ("golden_carrot", 30), ("hay_block", 38), ("melon", 9.5), ("sugar", 2.2),
-                        ("dried_kelp", 1.2), ("cooked_beef", 5), ("cooked_porkchop", 5), ("cooked_chicken", 4),
-                        ("cooked_mutton", 4), ("cooked_cod", 3.5), ("cooked_salmon", 4.5), ("cake", 40),
+                        ("dried_kelp", 1.2), ("cooked_cod", 3.5), ("cooked_salmon", 4.5), ("cake", 40),
                         ("bone_meal", 0.8)]:
         add(F, nome, preco)
+    # carnes cozidas: o fazendeiro também compra (vêm dos spawners e da caça, assadas no forno)
+    for nome, preco in [("cooked_beef", 5), ("cooked_porkchop", 5), ("cooked_chicken", 4), ("cooked_mutton", 4),
+                        ("cooked_rabbit", 4)]:
+        add(F, nome, preco, venda="sim")
+    # lã branca: o fazendeiro compra (vem dos spawners de ovelha; as coloridas só a loja vende)
+    add(F, "white_wool", 4, venda="sim")
 
     # -- Drops (caçador): o vendedor compra os drops de mob.
     D = "Drops"
@@ -141,7 +147,9 @@ def catalogo():
                                 ("rabbit_hide", 2, 128), ("rabbit_foot", 15, 16), ("beef", 3, 256),
                                 ("porkchop", 3, 256), ("chicken", 2, 256), ("mutton", 2, 256), ("rabbit", 2, 128),
                                 ("cod", 2, 256), ("salmon", 3, 256), ("arrow", 1, 256), ("breeze_rod", 25, 32)]:
-        add(D, nome, preco, venda="sim")
+        # carne crua: a loja só compra (vendendo, comprar crua, assar e vender cozida dava lucro)
+        cru = nome in ("beef", "porkchop", "chicken", "mutton", "rabbit")
+        add(D, nome, preco, venda="sim", **({"compra": False} if cru else {}))
     for nome, preco in [("shulker_shell", 300), ("turtle_scute", 60), ("nautilus_shell", 80), ("totem_of_undying", 2500)]:
         add(D, nome, preco)
 
@@ -189,7 +197,7 @@ TRANSFORMACOES = [
     ("netherrack", 1, "nether_brick", 1), ("cactus", 1, "green_dye", 1), ("kelp", 1, "dried_kelp", 1),
     ("ancient_debris", 1, "netherite_scrap", 1), ("potato", 1, "baked_potato", 1), ("beef", 1, "cooked_beef", 1),
     ("porkchop", 1, "cooked_porkchop", 1), ("chicken", 1, "cooked_chicken", 1), ("mutton", 1, "cooked_mutton", 1),
-    ("cod", 1, "cooked_cod", 1), ("salmon", 1, "cooked_salmon", 1), ("chorus_fruit", 1, "popped_chorus_fruit", 1),
+    ("cod", 1, "cooked_cod", 1), ("salmon", 1, "cooked_salmon", 1), ("rabbit", 1, "cooked_rabbit", 1), ("chorus_fruit", 1, "popped_chorus_fruit", 1),
     ("oak_log", 1, "charcoal", 1), ("sandstone", 1, "smooth_sandstone", 1), ("quartz_block", 1, "smooth_quartz", 1),
     ("stone_bricks", 1, "cracked_stone_bricks", 1), ("cobbled_deepslate", 1, "deepslate", 1),
     # quebrar o bloco (Fortuna III no máximo)

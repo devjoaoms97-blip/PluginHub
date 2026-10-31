@@ -273,10 +273,10 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 ### Pedidos novos para avaliar (2026-10-30)
 
 #### Discord e orientação de jogadores
-- [ ] **Permissões dos botões de ticket**: quem abriu o próprio ticket não pode assumir nem fechar por meio dos botões; essas ações ficam restritas à equipe autorizada.
-- [ ] **Tutorial inicial com recompensa**: criar `/tutorial` no servidor, registrar a conclusão por jogador e entregar a recompensa uma única vez. Definir etapas e prêmio antes de implementar.
-- [ ] **Ajuda para iniciantes**: criar `/comandos` com uma lista inicial e páginas de explicação, incluindo exemplos como `/comando amigo` e `/comando terreno`.
-- [ ] **Aceitar `/tpa` com clique**: incluir botão/link para aceitar a solicitação pendente, preservando expiração e validação do destinatário.
+- [x] **Permissões dos botões de ticket** (2026-10-31): Assumir e Fechar são só da staff, e quem abriu o ticket não usa nenhum dos dois, nem se for da staff (`discord-bot/src/tickets.js`).
+- [x] **Tutorial inicial com recompensa** (2026-10-31, `ajuda-plugin`): `/tutorial` com 5 etapas detectadas sozinhas (minerar 64 blocos na mina, `/warp loja`, `/ranks`, `/terreno auto`, `/diaria`) e um Mapa do Tesouro Comum no fim, uma vez por jogador (guardado se o inventário estiver cheio). Convite com botão ao entrar.
+- [x] **Ajuda para iniciantes** (2026-10-31, `ajuda-plugin`): `/comandos` com o índice clicável e 11 páginas (`/comandos amigo`, `/comandos terreno`...); clicar num comando o digita no chat.
+- [x] **Aceitar `/tpa` com clique** (2026-10-31, `ajuda-plugin`): botões [ACEITAR] e [RECUSAR] pra quem recebe o pedido; o Essentials continua validando o pedido e a expiração. Falta dar as permissões do `/tpa` ao grupo padrão (hoje ele só tem `/spawn` e `/warp`).
 
 #### Mundos, arenas e eventos
 - [x] **Montarias no mundo `tesouros`** (2026-10-30): `/montaria` liberado no `/warp tesouros`; as restrições das minas, da arena do boss e dos demais mundos foram mantidas.
@@ -287,10 +287,14 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [ ] **Toque Suave em spawners**: permitir que spawners de todos os mundos sejam coletados com picareta com Toque Suave, conforme as regras de proteção de cada mundo.
 
 #### Terrenos, lojas e economia
+- [x] **Carnes cozidas no Fazendeiro** (2026-10-31): o Fazendeiro compra boi, porco, frango, carneiro e coelho assados. A carne crua a loja deixou de vender (o Caçador continua comprando): comprar crua, assar e vender cozida dava lucro (`loja.py`).
+- [x] **Creepers que não explodem** (2026-10-31): os da pilha de spawner e os da `/warp mobs` não miram no jogador nem explodem. `teste-creeper.js`.
+- [x] **Recalibrar os spawners** (análise de 2026-10-31, `tools/economia/spawners.py`): o preço foi feito pra se pagar em ~20 h sem Pilhagem; com Pilhagem III a renda dobra ou triplica (se paga em 5 a 10 h), e isso fica como está (decisão de 2026-10-31). A ovelha, que só rendia o carneiro e se pagava em 45 h, agora vende a lã branca pro Fazendeiro e se paga em ~19 h, como os outros animais.
 - [x] **Limite compartilhado de máquinas por terreno** (2026-10-31): até 10 máquinas em cada terreno, somando todos os tipos e donos (`limite-por-terreno`); saíram o limite por jogador (4) e o do VIP (5 a 7).
 - [x] **Limite compartilhado de spawners por terreno** (2026-10-31): até 100 spawners em cada terreno, somando todos os tipos e donos (os empilhados contam um por um).
 - [ ] **Destino público para barraca alugada**: criar um destino de teleporte enquanto a barraca estiver alugada e permitir anunciá-lo junto a itens no chat global; remover o destino ao encerrar o aluguel. Definir a sintaxe, por exemplo `/loja <jogador>`.
 - [ ] **Corrigir nome das lojas**: investigar e corrigir o nome bugado exibido nas lojas, cobrindo NPC, menus e demais telas afetadas.
+- [x] **Compras com o inventário cheio** (bug corrigido em 2026-10-31): a loja cobrava e jogava no chão o que não cabia, e a Limpeza levava (aconteceu com o Tear). Agora, sem espaço, a compra é recusada antes de cobrar, com o aviso "Seu inventário está cheio". Vale pro Maquinista (máquina e combustível), o Domador (spawners), a Loja Oficial (menu e `/buy`), o Armeiro e o Picareteiro, as folhas do Bancário, a emissão de cheque e o resgate do `/achados`. `teste-inventario-cheio.js`.
 - [ ] **Cobrança Pix entre jogadores com QR Code**: permitir informar um jogador e um valor para gerar a cobrança; validar o pagamento antes de transferir e impedir cobrança duplicada. Definir se o QR representa saldo do jogo ou pagamento externo.
 
 #### Limpeza e nomes

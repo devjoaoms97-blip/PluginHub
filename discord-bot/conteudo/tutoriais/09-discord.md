@@ -12,7 +12,7 @@ Na primeira vinculação, contas do Discord com **30 dias ou mais** também ganh
 Nos botões de {#boas-vindas}, ative ou remova as menções para boss, Gladiador, leilões e novidades.
 
 **Suporte por ticket**
-Em {#abrir-ticket}, escolha Dúvida, Bug, Denúncia, Pagamento, Apelação ou Outro e preencha o formulário. O canal é privado; no caso de pagamento, só a direção da staff tem acesso. Você pode manter até 2 tickets abertos e recebe uma DM quando o atendimento fecha.
+Em {#abrir-ticket}, escolha Dúvida, Bug, Denúncia, Pagamento, Apelação ou Outro e preencha o formulário. O canal é privado; no caso de pagamento, só a direção da staff tem acesso. Você pode manter até 2 tickets abertos. Quem fecha o ticket é a staff, quando o atendimento termina, e você recebe uma DM com a resolução.
 
 **Canais úteis**
 🟢 {#status}: servidor, jogadores, próximo boss e pote da Mine-sena.

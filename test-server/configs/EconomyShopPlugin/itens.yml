@@ -737,14 +737,6 @@ itens:
     maximo: 2.25
     passo: 1.0
     venda: false
-  WHITE_WOOL:
-    categoria: Blocos
-    preco-base: 4.0
-    margem: 50.0
-    minimo: 0.4
-    maximo: 2.0
-    passo: 1.0
-    venda: false
   WHITE_STAINED_GLASS:
     categoria: Blocos
     preco-base: 3.0
@@ -1659,38 +1651,6 @@ itens:
     maximo: 0.6
     passo: 1.0
     venda: false
-  COOKED_BEEF:
-    categoria: Farm
-    preco-base: 5.0
-    margem: 50.0
-    minimo: 0.5
-    maximo: 2.5
-    passo: 1.0
-    venda: false
-  COOKED_PORKCHOP:
-    categoria: Farm
-    preco-base: 5.0
-    margem: 50.0
-    minimo: 0.5
-    maximo: 2.5
-    passo: 1.0
-    venda: false
-  COOKED_CHICKEN:
-    categoria: Farm
-    preco-base: 4.0
-    margem: 50.0
-    minimo: 0.4
-    maximo: 2.0
-    passo: 1.0
-    venda: false
-  COOKED_MUTTON:
-    categoria: Farm
-    preco-base: 4.0
-    margem: 50.0
-    minimo: 0.4
-    maximo: 2.0
-    passo: 1.0
-    venda: false
   COOKED_COD:
     categoria: Farm
     preco-base: 3.5
@@ -1723,6 +1683,48 @@ itens:
     maximo: 0.4
     passo: 1.0
     venda: false
+  COOKED_BEEF:
+    categoria: Farm
+    preco-base: 5.0
+    margem: 60.0
+    minimo: 0.5
+    maximo: 2.0
+    passo: 0.5
+  COOKED_PORKCHOP:
+    categoria: Farm
+    preco-base: 5.0
+    margem: 60.0
+    minimo: 0.5
+    maximo: 2.0
+    passo: 0.5
+  COOKED_CHICKEN:
+    categoria: Farm
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  COOKED_MUTTON:
+    categoria: Farm
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  COOKED_RABBIT:
+    categoria: Farm
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
+  WHITE_WOOL:
+    categoria: Farm
+    preco-base: 4.0
+    margem: 60.0
+    minimo: 0.4
+    maximo: 1.6
+    passo: 0.5
   ROTTEN_FLESH:
     categoria: Drops
     preco-base: 1.0
@@ -1863,6 +1865,7 @@ itens:
     minimo: 0.3
     maximo: 1.2
     passo: 0.5
+    compra: false
   PORKCHOP:
     categoria: Drops
     preco-base: 3.0
@@ -1870,6 +1873,7 @@ itens:
     minimo: 0.3
     maximo: 1.2
     passo: 0.5
+    compra: false
   CHICKEN:
     categoria: Drops
     preco-base: 2.0
@@ -1877,6 +1881,7 @@ itens:
     minimo: 0.2
     maximo: 0.8
     passo: 0.5
+    compra: false
   MUTTON:
     categoria: Drops
     preco-base: 2.0
@@ -1884,6 +1889,7 @@ itens:
     minimo: 0.2
     maximo: 0.8
     passo: 0.5
+    compra: false
   RABBIT:
     categoria: Drops
     preco-base: 2.0
@@ -1891,6 +1897,7 @@ itens:
     minimo: 0.2
     maximo: 0.8
     passo: 0.5
+    compra: false
   COD:
     categoria: Drops
     preco-base: 2.0

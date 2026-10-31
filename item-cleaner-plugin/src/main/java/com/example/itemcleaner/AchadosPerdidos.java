@@ -182,6 +182,13 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
         jogador.openInventory(menu.inventario);
     }
 
+    /** O item cabe inteiro no inventário (somando nas pilhas que já tem)? Confere antes de cobrar. */
+    static boolean cabe(Player p, ItemStack item) {
+        org.bukkit.inventory.Inventory copia = org.bukkit.Bukkit.createInventory(null, 36);
+        copia.setContents(p.getInventory().getStorageContents());
+        return copia.addItem(item.clone()).isEmpty();
+    }
+
     @EventHandler
     public void aoClicar(InventoryClickEvent evento) {
         if (!(evento.getInventory().getHolder() instanceof Menu menu)) return;
@@ -192,6 +199,10 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
         List<Guardado> caixa = caixas.get(jogador.getUniqueId());
         if (indice == null || caixa == null || indice >= caixa.size()) return;
 
+        if (!cabe(jogador, caixa.get(indice).item())) {
+            jogador.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
+            return;
+        }
         double taxa = plugin.getConfig().getDouble("achados.taxa-por-pilha", 100);
         Economy econ = economia();
         if (taxa > 0) {

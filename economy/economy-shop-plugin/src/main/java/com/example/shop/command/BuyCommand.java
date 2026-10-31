@@ -80,9 +80,14 @@ public class BuyCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        ItemStack pilha = new ItemStack(material, quantidade);
+        if (!cabe(jogador, pilha)) {
+            jogador.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
+            return true;
+        }
+
         econ.withdrawPlayer(jogador, custoTotal);
 
-        ItemStack pilha = new ItemStack(material, quantidade);
         Map<Integer, ItemStack> sobras = jogador.getInventory().addItem(pilha);
         sobras.values().forEach(sobra -> jogador.getWorld().dropItemNaturally(jogador.getLocation(), sobra));
 
@@ -120,5 +125,12 @@ public class BuyCommand implements CommandExecutor, TabCompleter {
             return List.of("1", "16", "32", "64");
         }
         return List.of();
+    }
+
+    /** O item cabe inteiro no inventário (somando nas pilhas que já tem)? Confere antes de cobrar. */
+    public static boolean cabe(Player p, ItemStack item) {
+        org.bukkit.inventory.Inventory copia = org.bukkit.Bukkit.createInventory(null, 36);
+        copia.setContents(p.getInventory().getStorageContents());
+        return copia.addItem(item.clone()).isEmpty();
     }
 }

@@ -22,4 +22,5 @@ com\example\shop\command\ShopCommand.class
 com\example\shop\manager\AutoVenda.class
 com\example\shop\gui\ShopGUI.class
 com\example\shop\gui\ShopGUIHolder.class
+com\example\shop\util\AjudaIntegration.class
 com\example\shop\util\MissoesIntegration.class

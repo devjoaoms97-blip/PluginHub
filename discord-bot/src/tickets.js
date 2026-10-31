@@ -1,7 +1,7 @@
 // Tickets de suporte. O painel em #abrir-ticket tem um menu com os tipos; o membro escolhe, preenche
 // um formulário e ganha um canal privado em "📂 TICKETS ABERTOS", que só ele e a staff veem (os de
-// pagamento, só a direção). A staff assume pelo botão; o dono ou a staff fecha, e a conversa vai
-// em .txt pro #log-tickets (só a staff vê); o dono recebe na DM só o aviso com a resolução. O canal some 5 s depois.
+// pagamento, só a direção). Os botões Assumir e Fechar são só da staff, e nunca de quem abriu o
+// ticket (nem se for da staff). Ao fechar, a conversa vai em .txt pro #log-tickets (só a staff vê); o dono recebe na DM só o aviso com a resolução. O canal some 5 s depois.
 const {
   ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, MessageFlags,
   ModalBuilder, PermissionFlagsBits, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle,
@@ -135,10 +135,18 @@ function ehStaff(membro, ticket) {
   return chaves.some((k) => membro.roles.cache.has(config.cargo(k))) || membro.permissions.has(PermissionFlagsBits.Administrator);
 }
 
+/** Pode usar os botões do ticket? Só a staff que atende, e não quem abriu (nem se for da staff). */
+function podeAtender(interacao, ticket) {
+  return interacao.user.id !== ticket.dono && ehStaff(interacao.member, ticket);
+}
+
 async function assumir(interacao) {
   const ticket = tickets()[interacao.channelId];
   if (!ticket) return interacao.reply({ content: 'Este canal não é um ticket aberto.', flags: MessageFlags.Ephemeral });
-  if (!ehStaff(interacao.member, ticket)) return interacao.reply({ content: 'Só a staff assume tickets.', flags: MessageFlags.Ephemeral });
+  if (!podeAtender(interacao, ticket)) {
+    const msg = interacao.user.id === ticket.dono ? 'Você não pode assumir o próprio ticket.' : 'Só a staff assume tickets.';
+    return interacao.reply({ content: msg, flags: MessageFlags.Ephemeral });
+  }
   ticket.assumido = interacao.user.id;
   config.salvarMemoria();
   await interacao.reply({ content: `🙋 ${interacao.user} assumiu este ticket.`, allowedMentions: { parse: [] } });
@@ -147,8 +155,9 @@ async function assumir(interacao) {
 function pedirFechamento(interacao) {
   const ticket = tickets()[interacao.channelId];
   if (!ticket) return interacao.reply({ content: 'Este canal não é um ticket aberto.', flags: MessageFlags.Ephemeral });
-  if (interacao.user.id !== ticket.dono && !ehStaff(interacao.member, ticket)) {
-    return interacao.reply({ content: 'Só quem abriu ou a staff fecha o ticket.', flags: MessageFlags.Ephemeral });
+  if (!podeAtender(interacao, ticket)) {
+    const msg = interacao.user.id === ticket.dono ? 'Você não pode fechar o próprio ticket: a staff fecha quando resolver.' : 'Só a staff fecha tickets.';
+    return interacao.reply({ content: msg, flags: MessageFlags.Ephemeral });
   }
   return interacao.showModal(new ModalBuilder().setCustomId('ticket:fechar').setTitle('Fechar ticket').addComponents(
     new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('motivo').setLabel('Motivo ou resolução (opcional)')
@@ -188,6 +197,7 @@ async function fechar(interacao) {
   const canal = interacao.channel;
   const ticket = tickets()[canal.id];
   if (!ticket) return interacao.reply({ content: 'Este canal não é um ticket aberto.', flags: MessageFlags.Ephemeral });
+  if (!podeAtender(interacao, ticket)) return interacao.reply({ content: 'Só a staff fecha tickets.', flags: MessageFlags.Ephemeral });
   const motivo = interacao.fields.getTextInputValue('motivo').trim() || 'sem motivo';
   await interacao.reply({ content: `🔒 Ticket fechado por ${interacao.user}. Este canal some em 5 segundos.`, allowedMentions: { parse: [] } });
 

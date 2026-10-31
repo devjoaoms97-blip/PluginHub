@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Ageable;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -25,7 +26,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.BoundingBox;
@@ -216,6 +219,17 @@ public class WarpMobs implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void aoTeleportar(EntityTeleportEvent evento) {
         if (evento.getTo() != null && ehDaWarp(evento.getEntity()) && !naArea(evento.getTo())) evento.setCancelled(true);
+    }
+
+    /** O creeper do salão não explode: nem mira no jogador (não chega perto nem chia), e a explosão é cancelada. */
+    @EventHandler(ignoreCancelled = true)
+    public void aoMirar(EntityTargetEvent evento) {
+        if (evento.getEntity() instanceof Creeper && ehDaWarp(evento.getEntity())) evento.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void aoArmarExplosao(ExplosionPrimeEvent evento) {
+        if (ehDaWarp(evento.getEntity())) evento.setCancelled(true);
     }
 
     /** O sol entra pelo teto de vidro: zumbi e esqueleto não queimam (fogo de verdade ainda queima). */

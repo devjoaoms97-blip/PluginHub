@@ -11,6 +11,7 @@ import com.example.shop.manager.PriceHistoryManager;
 import com.example.shop.manager.PriceRegenTask;
 import com.example.shop.manager.ShopManager;
 import com.example.shop.manager.VendasDiariasManager;
+import com.example.shop.util.AjudaIntegration;
 import com.example.shop.util.MissoesIntegration;
 import com.example.shop.util.RankupIntegration;
 import com.example.shop.util.PixIntegration;
@@ -36,6 +37,7 @@ public class ShopPlugin extends JavaPlugin {
     private com.example.shop.manager.VendedoresManager vendedores;
     private PixIntegration pixIntegration;
     private MissoesIntegration missoesIntegration;
+    private AjudaIntegration ajudaIntegration;
     private RankupIntegration rankupIntegration;
 
     @Override
@@ -62,6 +64,7 @@ public class ShopPlugin extends JavaPlugin {
         getServer().getScheduler().runTaskTimer(this, vendedores::conferir, 100L, 100L);
         this.pixIntegration = new PixIntegration(this);
         this.missoesIntegration = new MissoesIntegration(this);
+        this.ajudaIntegration = new AjudaIntegration(this);
         this.rankupIntegration = new RankupIntegration(this);
 
         ShopCommand shopCommand = new ShopCommand(this);
@@ -208,6 +211,10 @@ public class ShopPlugin extends JavaPlugin {
 
     public MissoesIntegration getMissoesIntegration() {
         return missoesIntegration;
+    }
+
+    public AjudaIntegration getAjudaIntegration() {
+        return ajudaIntegration;
     }
 
     public RankupIntegration getRankupIntegration() {

@@ -105,6 +105,10 @@ public class ChequeCommand implements CommandExecutor {
                     + " sai do seu saldo, e você tem " + formatarValor(econ.getBalance(player)) + ".");
             return true;
         }
+        if (itemNaMao.getAmount() > 1 && player.getInventory().firstEmpty() == -1) {
+            player.sendMessage(ChatColor.RED + "Seu inventário está cheio: libere um espaço pro cheque e tente de novo. Nada foi cobrado.");
+            return true;
+        }
         if (!econ.withdrawPlayer(player, valor).transactionSuccess()) {
             player.sendMessage(ChatColor.RED + "Não foi possível tirar o valor do seu saldo.");
             return true;
@@ -213,5 +217,12 @@ public class ChequeCommand implements CommandExecutor {
 
     private String formatarValor(double valor) {
         return ChequePlugin.formatarValor(valor);
+    }
+
+    /** O item cabe inteiro no inventário (somando nas pilhas que já tem)? Confere antes de cobrar. */
+    public static boolean cabe(Player p, ItemStack item) {
+        org.bukkit.inventory.Inventory copia = org.bukkit.Bukkit.createInventory(null, 36);
+        copia.setContents(p.getInventory().getStorageContents());
+        return copia.addItem(item.clone()).isEmpty();
     }
 }

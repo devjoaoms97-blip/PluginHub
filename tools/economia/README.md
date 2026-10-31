@@ -7,6 +7,8 @@ Dois scripts em Python pra calibrar e acompanhar a economia do rankup. Precisam 
 | `simular.py` | Antes de ter jogadores: quantas horas leva cada rank, com os preços e as minas atuais |
 | `loja.py` | O catálogo da Loja Oficial: gera o `itens.yml` e confere se nenhum preço abre brecha (comprar e revender, craftar, fundir, quebrar o bloco). Veja o README da loja |
 | `minas-planejadas.yml` | As minas que a simulação usa. Monte as minas no jogo com essas composições |
+| `maquinas.py` | Quanto cada máquina rende, comparado com a mina do rank em que libera |
+| `spawners.py` | Quanto cada spawner rende (1 e o terreno cheio, no preço de equilíbrio), comparado com a mina do rank. `--pilhagem 3` e `--terrenos N` |
 | `analisar.py` | Com o servidor rodando: resumo da semana a partir dos dados que os plugins gravam |
 
 ## Meta

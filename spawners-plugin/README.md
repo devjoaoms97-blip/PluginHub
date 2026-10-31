@@ -8,7 +8,7 @@ Spawners empilhados nos terrenos: outra fonte de renda além da mina.
 - **Onde:** só no mundo dos terrenos (`mundos` no config). A proteção dos terrenos cuida de quem pode colocar e quebrar; fora dele, o spawner não entra.
 - **Empilhar:** com outro spawner igual na mão, clique direito no spawner (shift empilha a mão inteira), até `limite-por-bloco` (64). Só o dono empilha.
 - **Limite por terreno:** até `limite-por-terreno` (100) spawners em cada terreno, somando todos os tipos e todos os donos. Os empilhados contam um por um: um bloco com x64 vale 64. Com o terreno cheio, não entra bloco novo nem se empilha mais (o empilhamento para no que couber). Fora de um terreno, o spawner não entra. Sem o TerrenosPlugin, o limite vale por jogador.
-- **A pilha de mobs:** a cada `ciclo-segundos` (20), cada spawner com algum jogador a até `raio-ativacao` (16) blocos soma tantos mobs quanto spawners empilhados, numa entidade só ("x37 Zumbi"), até `limite-pilha` (300). Ela nasce num lugar livre em cima ou em volta do spawner (nunca dentro de bloco) e é um mob normal: anda, a água arrasta, ataca, queima no sol e toma dano de tudo, então dá pra montar farm. Só não some de longe, não pega item, não deixa cair o equipamento e o creeper não explode (levaria a pilha toda sem drop).
+- **A pilha de mobs:** a cada `ciclo-segundos` (20), cada spawner com algum jogador a até `raio-ativacao` (16) blocos soma tantos mobs quanto spawners empilhados, numa entidade só ("x37 Zumbi"), até `limite-pilha` (300). Ela nasce num lugar livre em cima ou em volta do spawner (nunca dentro de bloco) e é um mob normal: anda, a água arrasta, ataca, queima no sol e toma dano de tudo, então dá pra montar farm. Só não some de longe, não pega item, não deixa cair o equipamento e o creeper não explode (levaria a pilha toda sem drop): ele nem mira no jogador, então não chega perto nem chia.
 - **Abate:** a morte, por jogador ou não, vale pela pilha inteira: derruba os drops (com Pilhagem) e o XP de cada mob da pilha de uma vez, e o spawner começa uma pilha nova no ciclo seguinte. Os drops vendem no **Caçador**, e o preço dinâmico regula: o que muita gente farma vale menos.
 - **Pilha que volta com o chunk:** se o spawner já começou outra enquanto ela estava descarregada, as duas viram uma só.
 - **Quebrar:** devolve todos os spawners do bloco (em itens de até 64), sem precisar de Toque Suave.
@@ -18,7 +18,7 @@ O bloco mostra o mob girando, mas o spawn do vanilla fica desligado: quem gera �
 
 ## Warp mobs
 
-A `/warp mobs` é o salão de estátuas a oeste do spawn (estrutura `mobs` do EstruturasPlugin). Na frente de cada estátua tem um spawner no chão, e em volta dele nascem **mobs normais, um por vez** (sem pilha), do tipo da estátua: galinha, porco, vaca, ovelha, zumbi, esqueleto, aranha, creeper, slime, blaze e enderman.
+A `/warp mobs` é o salão de estátuas a oeste do spawn (estrutura `mobs` do EstruturasPlugin). Na frente de cada estátua tem um spawner no chão, e em volta dele nascem **mobs normais, um por vez** (sem pilha), do tipo da estátua: galinha, porco, vaca, ovelha, zumbi, esqueleto, aranha, creeper, slime, blaze e enderman. O creeper do salão não explode: não mira no jogador, e a explosão é cancelada.
 
 - A cada `warp-mobs.ciclo-segundos` (6), cada estátua com jogador a até `raio-ativacao` (32) blocos ganha um mob, até `limite-por-estatua` (4) vivos.
 - Qualquer um mata: drops, XP e **XP de skill cheio** (não é pilha). As missões não contam (o mob nasce com o motivo "spawner").

@@ -4,6 +4,7 @@
 No Minecraft Java, abra **Multijogador → Adicionar servidor** e informe `{ip}`. Aceite o **pacote de recursos**: ele mostra os modelos das máquinas e dos produtos.
 
 **2. Faça seu primeiro ciclo**
+O `/tutorial` guia esses primeiros passos e dá um **Mapa do Tesouro** no fim (uma vez por conta).
 1. Resgate `/diaria` e veja suas tarefas em `/missoes`.
 2. Use `/mina` e escolha uma mina liberada para seu rank. O que a loja aceita é vendido automaticamente; o restante vai para o inventário e a experiência chega direto a você.
 3. Consulte `/ranks` para ver o preço do próximo rank. Use `/rankup` para subir um ou `/rankup max` para subir todos que seu saldo pagar.
@@ -16,6 +17,6 @@ No spawn, o portão **norte** leva à Avenida das Minas e o **sul** à arena do 
 O spawn, a Loja Oficial, a Avenida das Minas e os terrenos são seguros. Há PvP na arena do boss (depois do túnel), na `/warp mobs` quando o ciclo estiver ligado, nos mundos de recursos e nas lutas de X1 e Gladiador. No End, o quadrado verde de chegada é seguro. Em áreas de risco, a morte pode fazer você perder o equipamento. Veja **Skills e combate** antes de levar itens valiosos.
 
 **Comandos para guardar**
-`/spawn` volta ao spawn · `/warp` mostra as warps · `/mina` escolhe uma mina · `/ranks` mostra os ranks · `/skills` abre suas skills.
+`/comandos` lista os comandos por tema · `/spawn` volta ao spawn · `/warp` mostra as warps · `/mina` escolhe uma mina · `/ranks` mostra os ranks · `/skills` abre suas skills.
 
 Os próximos tutoriais explicam minas, economia, terrenos, combate, clãs, eventos, VIP e Discord.
