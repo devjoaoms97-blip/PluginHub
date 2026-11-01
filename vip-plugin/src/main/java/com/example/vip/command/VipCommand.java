@@ -240,7 +240,8 @@ public class VipCommand implements CommandExecutor, TabCompleter {
 
         String dataFormatada = plugin.getVipManager().adicionar(player.getUniqueId(), code.getTier());
         player.sendMessage("§aCódigo resgatado! Você recebeu VIP " + plugin.getNomeExibicao(code.getTier())
-                + " §apor §f" + VipManager.DIAS_VIP + " dias§a, válido até §f" + dataFormatada + "§a.");
+                + " §apor §f" + VipManager.DIAS_VIP + " dias§a, válido até §f" + dataFormatada + "§a."
+                + (code.getPreco() > 0 ? " Pago: §f" + formatarCoins(code.getPreco()) + "§a." : ""));
         plugin.refrescarTagJogador(player);
         plugin.getBonusAtivacao().conceder(player, code.getTier());
         plugin.getDiscord().enviar("vip", "💎 " + player.getName() + " ativou VIP "
@@ -325,25 +326,11 @@ public class VipCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // faixa de preço por tier (revenda.precos.<tier>.minimo/maximo; 0 = sem limite)
+        // o preço é livre: a revenda é economia entre jogadores, sem mínimo nem máximo (decisão de 2026-10-31)
         VipCode consultado = plugin.getCodeManager().buscar(args[2]);
         if (consultado != null && consultado.ehEvento()) {
             player.sendMessage("§cCódigo de evento é prêmio: não dá pra vender.");
             return;
-        }
-        if (consultado != null) {
-            String chaveTier = "revenda.precos." + consultado.getTier().name().toLowerCase(Locale.ROOT);
-            // sem valor explícito pra cair no padrão do config.yml do jar (configs antigos não têm a seção)
-            double minimo = plugin.getConfig().getDouble(chaveTier + ".minimo");
-            double maximo = plugin.getConfig().getDouble(chaveTier + ".maximo");
-            if (minimo > 0 && preco < minimo) {
-                player.sendMessage("§cO preço mínimo pra revender VIP " + plugin.getNomeExibicao(consultado.getTier()) + " §cé §f" + formatarCoins(minimo) + "§c.");
-                return;
-            }
-            if (maximo > 0 && preco > maximo) {
-                player.sendMessage("§cO preço máximo pra revender VIP " + plugin.getNomeExibicao(consultado.getTier()) + " §cé §f" + formatarCoins(maximo) + "§c.");
-                return;
-            }
         }
 
         if (plugin.getCodeManager().buscarCodigoDeVenda(player.getUniqueId()) != null) {
@@ -364,7 +351,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         anunciarVenda(player, code);
     }
 
-    /** Anuncia publicamente um botão clicável que roda `/vip resgatar <codigo>` — igual o `/pix qrcode`. */
+    /** Anuncia publicamente um botão clicável que roda `/vip resgatar <codigo>`. */
     private void anunciarVenda(Player vendedor, VipCode code) {
         if (!plugin.getConfig().getBoolean("revenda.anunciar-publicamente", true)) {
             avisarApenasVendedor(vendedor, code);

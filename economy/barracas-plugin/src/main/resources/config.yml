@@ -55,6 +55,12 @@ vip-descontos:
     - permissao: "vip.desconto.bronze"
       percentual: 5
 
+loja:
+  # /loja anunciar: um anúncio da barraca no chat a cada tantos minutos por jogador (a staff também espera),
+  # com a mensagem do dono cortada em tantos caracteres.
+  anuncio-intervalo-minutos: 10
+  anuncio-max-caracteres: 60
+
 holograma:
   # Altura do texto do holograma de entrada (/barraca holograma), em blocos acima do ponto marcado.
   altura: 2.0

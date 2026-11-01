@@ -8,7 +8,9 @@ Máquinas nos terrenos que fabricam **produtos** (itens que não existem no vani
 - **No terreno:** só no mundo dos terrenos (`mundos`), até `limite-por-terreno` máquinas **em cada terreno** (10), somando todos os tipos e todos os donos: 10 forjas, ou 5 forjas e 5 teares. Quem tem dois terrenos põe 10 em cada. Fora de um terreno, a máquina não entra. Sem o TerrenosPlugin, o limite vale por jogador. A máquina é um bloco de barreira (colisão e clique) com um item display por cima desenhando o modelo dela, do resource pack, de frente pra quem colocou. Em cima, um holograma mostra o estoque, o combustível e se está produzindo, cheia ou sem combustível.
 - **Produção:** pelo relógio, mesmo com o dono offline ou o terreno descarregado. A cada intervalo sai um produto, gastando uma fração de Célula, até acabar o combustível (tanque de 64) ou encher o estoque (96, mais 64 por nível de melhoria). Como o estoque enche em uma a duas horas, a máquina recompensa quem passa pra coletar, não quem some por dias.
 - **Menu** (clique direito, só o dono): **Coletar**, **Abastecer** (põe as Células do inventário no tanque), **Melhorar velocidade** (-5% de tempo por nível: no nível 5, 1,33× mais produtos), **Melhorar estoque** (+64 por nível), até o nível 5, e **Recolher** (coleta, devolve a máquina com os níveis e o combustível que sobrou).
-- **Venda dos produtos:** clique no produto no balcão vende tudo o que você tem dele. Igual à loja: cada unidade vendida baixa o preço (`passo`), que volta pra âncora com o tempo. Valem o bônus do rank e o do VIP (+3/6/9/12%), menos o imposto.
+- **Venda dos produtos:** clique no produto no balcão vende tudo o que você tem dele. **O preço é de cada jogador:** cada unidade que você vende baixa o seu preço (`passo`), que volta pra âncora com o tempo (2% da diferença por minuto), e as suas vendas não mexem no preço dos outros. O `minimo` de cada produto fica 25% acima do combustível de uma unidade, então vender nunca dá prejuízo, e o `passo` faz quem tem o terreno cheio de uma máquina, na velocidade máxima, vender a ~75% da âncora (`tools/economia/maquinas.py`, segunda tabela). Valem o bônus do rank e o do VIP (+3/6/9/12%), menos o imposto. O balcão mostra o gasto de combustível com duas casas ("0,25 Célula") e quanto ele custa em reais por unidade.
+
+  Até 2026-10-31 o preço era um só pro servidor, com mínimo abaixo do combustível no Tecido, na Barra e na Essência: com uns 15 teares vendendo, o Tecido ficava abaixo do custo pra todo mundo.
 - **Rank:** só coloca e mexe numa máquina quem tem o rank dela, ou quem já fez prestígio (o prestígio volta o rank pro começo, mas o jogador já passou pelo Rei). A máquina que chega por outro caminho (tesouro, barraca) pode ser guardada e vendida, mas fica toda bloqueada até lá: não se coloca, e a que já estiver no chão não abre o menu (coletar, abastecer, melhorar, recolher).
 - **Proteção:** o produto, a Célula e a máquina são marcados por dentro: não dá pra falsificar, e não entram em receita nenhuma.
 
@@ -44,7 +46,7 @@ Permissão da staff: `maquinas.admin`.
 
 ## Dados
 
-`maquinas.yml` (as máquinas colocadas: tipo, dono, níveis, combustível, estoque e o relógio) e `precos.yml` (o preço atual de cada produto).
+`maquinas.yml` (as máquinas colocadas: tipo, dono, níveis, combustível, estoque e o relógio) e `precos.yml` (o preço atual de cada produto pra cada jogador que vendeu; quem volta à âncora sai do arquivo. O formato antigo, um preço pro servidor todo, é ignorado).
 
 ## Como compilar
 

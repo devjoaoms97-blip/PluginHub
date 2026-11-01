@@ -413,7 +413,7 @@ public class MaquinaManager implements Listener {
                 else m.nivelEst++;
                 sujo = true;
                 p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 0.7f, 1.3f);
-                p.sendMessage("§a" + (vel ? "Velocidade" : "Estoque") + " da " + t.nome() + " §ano nível §f" + (nivel + 1) + "§a.");
+                p.sendMessage("§a" + (vel ? "Velocidade" : "Estoque") + " da " + t.nome() + " §ano nível §f" + (nivel + 1) + " §apor §f" + MaquinasPlugin.dinheiro(custo) + "§a.");
             }
             case SLOT_RECOLHER -> {
                 recolher(p, m);
@@ -509,7 +509,9 @@ public class MaquinaManager implements Listener {
     }
 
     private static String fmt(double v) {
-        return v == Math.rint(v) ? String.valueOf((long) v) : String.format(Locale.ROOT, "%.1f", v).replace('.', ',');
+        // até duas casas, sem zeros sobrando ("0,25", "0,5", "2"): com uma casa, 0,25 aparecia como 0,3
+        return new java.math.BigDecimal(v).setScale(2, java.math.RoundingMode.HALF_UP).stripTrailingZeros()
+                .toPlainString().replace('.', ',');
     }
 
     // ---------------------------------------------------------------------

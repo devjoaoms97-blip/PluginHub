@@ -116,9 +116,9 @@ codigos:
 
 Isso usa exatamente a mesma peça de código de resgate da seção anterior — só muda quem anexa o preço (o próprio jogador que tem o código em mãos, não a staff). `revenda.ativado: false` no `config.yml` desliga essa feature inteira se não quiser esse tipo de comércio no seu servidor. Precisa de Vault instalado — sem ele, `/vip vender` avisa e não deixa continuar.
 
-### Faixa de preço e aviso de vencimento
+### Preço livre e aviso de vencimento
 
-`revenda.precos.<tier>.minimo/maximo` limita o preço no `/vip vender` (0 = sem limite). Isso evita lavar dinheiro entre contas com um VIP vendido por 1 milhão, ou derrubar o mercado vendendo por 1 coin. Se o código à venda vence sem ninguém comprar, o vendedor é avisado: na hora, se estiver online, ou quando entrar (o aviso fica guardado no `codigos.yml`).
+O preço no `/vip vender` é livre, sem mínimo nem máximo: a revenda é economia entre jogadores (decisão de 2026-10-31; antes havia uma faixa por tier em `revenda.precos`, que saiu). Se o código à venda vence sem ninguém comprar, o vendedor é avisado: na hora, se estiver online, ou quando entrar (o aviso fica guardado no `codigos.yml`).
 
 ### Discord
 
@@ -331,4 +331,4 @@ A tag de apoiador e a cor do nome compradas com créditos entram depois da tag d
 5. **A validade do código vem desligada** (`codigos.validade-padrao-dias: 0`). Por padrão, um código só some quando é totalmente usado ou revogado. Ligue no `config.yml` se quiser um prazo pra resgatar (veja "Validade do código").
 6. **A integração com o site é via RCON, ainda não construída** — quando o site existir de verdade, ele precisa só rodar `vip gerarcodigo <tier>` via RCON depois de confirmar o pagamento. Nenhuma mudança no plugin é necessária pra isso funcionar; se quiser, mais pra frente, uma API HTTP própria em vez de RCON, é um projeto à parte.
 7. **Um jogador só pode ter um código à venda por vez** — checado explicitamente (`buscarCodigoDeVenda`), não uma consequência de outra coisa. Se quiser permitir múltiplas vendas simultâneas, é só tirar essa checagem.
-8. **Não tem preço mínimo/máximo pra `/vip vender`** — um jogador pode colocar por 1 coin ou 1 milhão, a critério dele. Se quiser limites (ex: não deixar vender por menos que X% do preço de tabela do tier), dá pra adicionar uma checagem usando `desconto-loja-percentual` ou um novo campo de "preço sugerido" por tier.
+8. **Não tem preço mínimo/máximo pra `/vip vender`**, de propósito — um jogador pode colocar por 1 coin ou 1 milhão, a critério dele. A taxa de revenda (`revenda.taxa-percentual`) continua.

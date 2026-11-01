@@ -13,6 +13,12 @@ commands:
     aliases: [barracas, mercado]
     permission: barracas.usar
     permission-message: "§cVocê não tem permissão para usar as barracas."
+  loja:
+    description: Lista as lojas das barracas, leva até a de um jogador ou anuncia a sua no chat.
+    usage: "Uso: /loja [jogador|anunciar [mensagem]]"
+    aliases: [lojas]
+    permission: barracas.usar
+    permission-message: "§cVocê não tem permissão para usar as barracas."
 
 permissions:
   barracas.usar:

@@ -20,13 +20,15 @@ import java.util.stream.Collectors;
  * Funciona com uma contagem regressiva em segundos: a cada segundo, {@link #tick()} decrementa
  * {@link #segundosRestantes}; quando bate num dos valores de {@code avisos-segundos}, avisa no
  * chat; quando chega a zero, executa a limpeza e reinicia a contagem. O item com dono vai pros
- * achados e perdidos dele ({@link AchadosPerdidos}) em vez de sumir.
+ * achados e perdidos dele ({@link AchadosPerdidos}) em vez de sumir. O item que estava num chunk
+ * descarregado na hora da limpeza sai quando o chunk carrega ({@link LimpezaAtrasada}).
  */
 public class ItemCleanerPlugin extends JavaPlugin {
 
     private int segundosRestantes;
     private BukkitTask tarefa;
     private AchadosPerdidos achados;
+    private LimpezaAtrasada atrasada;
 
     @Override
     public void onEnable() {
@@ -38,6 +40,8 @@ public class ItemCleanerPlugin extends JavaPlugin {
         achados = new AchadosPerdidos(this);
         getServer().getPluginManager().registerEvents(achados, this);
         getCommand("achados").setExecutor(achados);
+        atrasada = new LimpezaAtrasada(this);
+        getServer().getPluginManager().registerEvents(atrasada, this);
 
         iniciarTarefa();
 
@@ -95,8 +99,6 @@ public class ItemCleanerPlugin extends JavaPlugin {
      */
     public int limparItens() {
         int removidos = 0;
-        boolean guardou = false;
-        boolean ignorarNomeados = getConfig().getBoolean("ignorar-itens-nomeados", true);
         boolean orbes = getConfig().getBoolean("limpar-orbes-xp", true);
         double raio = getConfig().getDouble("protecao-perto-de-jogador"); // padrão do jar em configs antigos
         double raio2 = raio * raio;
@@ -111,20 +113,35 @@ public class ItemCleanerPlugin extends JavaPlugin {
                     }
                     continue;
                 }
-                if (!(entidade instanceof Item item)) {
-                    continue;
-                }
-                if (ignorarNomeados && item.getItemStack().hasItemMeta()
-                        && item.getItemStack().getItemMeta().hasDisplayName()) {
-                    continue;
-                }
-                guardou |= achados.guardar(item);
-                item.remove();
-                removidos++;
+                if (entidade instanceof Item item && limparItem(item)) removidos++;
             }
         }
-        if (guardou) achados.salvar();
+        achados.salvar();
+        atrasada.limpou();
         return removidos;
+    }
+
+    /**
+     * Tira um item do chão (o que tem dono vai pros achados e perdidos). Devolve false se ele fica
+     * (nomeado, com {@code ignorar-itens-nomeados}). Quem chama salva os achados depois.
+     */
+    boolean limparItem(Item item) {
+        if (getConfig().getBoolean("ignorar-itens-nomeados", true) && item.getItemStack().hasItemMeta()
+                && item.getItemStack().getItemMeta().hasDisplayName()) {
+            return false;
+        }
+        achados.guardar(item);
+        item.remove();
+        return true;
+    }
+
+    void salvarAchados() {
+        achados.salvar();
+    }
+
+    /** A limpeza vale nesse mundo (mundos.modo e mundos.lista)? */
+    boolean mundoAlvo(World mundo) {
+        return mundosAlvo().contains(mundo);
     }
 
     private static boolean pertoDeJogador(Entity entidade, List<Player> jogadores, double raio2) {

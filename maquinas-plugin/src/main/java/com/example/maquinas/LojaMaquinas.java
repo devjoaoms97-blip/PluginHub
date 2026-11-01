@@ -49,6 +49,7 @@ public class LojaMaquinas implements Listener {
         Menu menu = new Menu();
         menu.inventario = Bukkit.createInventory(menu, 54, "§8§l⚙ Máquinas");
         int slot = 2;
+        double precoCel = plugin.getConfig().getDouble("combustivel.preco", 25);
         for (MaquinasPlugin.Tipo t : plugin.getTipos().values()) {
             if (slot > 6) break;
             boolean libera = t.rank() == null || plugin.getRankup().temAcesso(p.getUniqueId(), t.rank());
@@ -56,24 +57,26 @@ public class LojaMaquinas implements Listener {
             double porHora = 3600 / t.intervaloSegundos();
             menu.inventario.setItem(slot, icone(plugin.maquina(t, 0, 0), (libera ? "§e⚙ " : "§7⚙ ") + t.nome(),
                     "§7Fabrica: §f" + prod.nome() + " §7(" + fmt(porHora) + " por hora)",
-                    "§7Gasta §f" + fmt(t.combustivelPorProduto()) + " §7Célula por produto",
+                    "§7Gasta §f" + fmt(t.combustivelPorProduto()) + " §7Célula por produto §8("
+                            + MaquinasPlugin.dinheiro(t.combustivelPorProduto() * precoCel) + ")",
                     "§7Preço: §a" + MaquinasPlugin.dinheiro(t.preco()),
                     t.rank() == null ? "" : (libera ? "§7" : "§c") + "A partir do rank: §f" + t.rank(),
                     "", libera ? "§eClique pra comprar" : "§cAinda não liberada pro seu rank"));
             menu.maquinas.put(slot, t.id());
             slot++;
         }
-        double precoCel = plugin.getConfig().getDouble("combustivel.preco", 25);
         menu.inventario.setItem(SLOT_COMBUSTIVEL, icone(plugin.combustivel(16), plugin.combustivel(1).getItemMeta().getDisplayName(),
                 "§7Preço: §a" + MaquinasPlugin.dinheiro(precoCel) + " §7cada", "", "§eClique: 16 §7| §eShift: 64"));
         slot = 38;
         double mult = plugin.getMercado().multiplicador(p);
         for (MaquinasPlugin.Produto prod : plugin.getProdutos().values()) {
             if (slot > 42) break;
-            double unidade = plugin.getMercado().atual(prod) * mult * (1 - plugin.getConfig().getDouble("imposto-venda", 2) / 100.0);
+            double unidade = plugin.getMercado().atual(p.getUniqueId(), prod) * mult * (1 - plugin.getConfig().getDouble("imposto-venda", 2) / 100.0);
             int tem = contar(p, prod);
             menu.inventario.setItem(slot, icone(plugin.produto(prod, 1), "§f" + prod.nome(),
                     "§7A loja paga §a" + MaquinasPlugin.dinheiro(unidade) + " §7cada §8(varia)",
+                    "§7Combustível por unidade: §f" + MaquinasPlugin.dinheiro(combustivelPorUnidade(prod) * precoCel),
+                    "§8Cada venda sua baixa o seu preço,", "§8que volta sozinho com o tempo",
                     "§7Você tem: §f" + tem, "", tem > 0 ? "§eClique: vender tudo" : "§8Nada pra vender"));
             menu.produtos.put(slot, prod.id());
             slot++;
@@ -102,7 +105,8 @@ public class LojaMaquinas implements Listener {
             }
             if (!cobrar(p, t.preco(), "Máquina: " + ChatColor.stripColor(t.nome()))) return;
             entregar(p, maquina);
-            p.sendMessage("§aVocê comprou a " + t.nome() + "§a! Coloque no seu terreno (§f/terreno home§a).");
+            p.sendMessage("§aVocê comprou a " + t.nome() + " §apor §f" + MaquinasPlugin.dinheiro(t.preco())
+                    + "§a! Coloque no seu terreno (§f/terreno home§a).");
         } else if (slot == SLOT_COMBUSTIVEL) {
             int q = evento.getClick() == ClickType.SHIFT_LEFT || evento.getClick() == ClickType.SHIFT_RIGHT ? 64 : 16;
             ItemStack celulas = plugin.combustivel(q);
@@ -110,9 +114,10 @@ public class LojaMaquinas implements Listener {
                 p.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
                 return;
             }
-            if (!cobrar(p, q * plugin.getConfig().getDouble("combustivel.preco", 25), "Células de Combustível")) return;
+            double total = q * plugin.getConfig().getDouble("combustivel.preco", 25);
+            if (!cobrar(p, total, "Células de Combustível")) return;
             entregar(p, celulas);
-            p.sendMessage("§aVocê comprou §f" + q + " §aCélulas de Combustível.");
+            p.sendMessage("§aVocê comprou §f" + q + " §aCélulas de Combustível por §f" + MaquinasPlugin.dinheiro(total) + "§a.");
         } else if (menu.produtos.containsKey(slot)) {
             MaquinasPlugin.Produto prod = plugin.getProdutos().get(menu.produtos.get(slot));
             int quantidade = remover(p, prod);
@@ -182,7 +187,17 @@ public class LojaMaquinas implements Listener {
         return item;
     }
 
+    /** Células gastas por unidade desse produto (a máquina que o fabrica; 0 se nenhuma). */
+    private double combustivelPorUnidade(MaquinasPlugin.Produto prod) {
+        for (MaquinasPlugin.Tipo t : plugin.getTipos().values()) {
+            if (t.produto().equals(prod.id())) return t.combustivelPorProduto();
+        }
+        return 0;
+    }
+
     private static String fmt(double v) {
-        return v == Math.rint(v) ? String.valueOf((long) v) : String.format(Locale.ROOT, "%.1f", v).replace('.', ',');
+        // até duas casas, sem zeros sobrando ("0,25", "0,5", "2"): com uma casa, 0,25 aparecia como 0,3
+        return new java.math.BigDecimal(v).setScale(2, java.math.RoundingMode.HALF_UP).stripTrailingZeros()
+                .toPlainString().replace('.', ',');
     }
 }

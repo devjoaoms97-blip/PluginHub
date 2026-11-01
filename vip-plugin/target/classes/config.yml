@@ -197,7 +197,7 @@ revenda:
   # (ex: recebido da staff numa compra no Discord) — nunca um VIP já ativo (/vip vender).
   ativado: true
   # Quando um jogador coloca um código à venda, anuncia pra TODO o servidor uma mensagem
-  # clicável (igual o /pix qrcode) que já roda /vip resgatar na hora do clique. Se false, o
+  # clicável que já roda /vip resgatar na hora do clique. Se false, o
   # vendedor só recebe o código em privado pra repassar manualmente (ex: combinado no Discord).
   anunciar-publicamente: true
   # Percentual descontado de toda revenda entre jogadores — o dinheiro simplesmente some,
@@ -205,21 +205,7 @@ revenda:
   # isso, comprar código de staff e revender pro servidor inteiro viraria uma forma de
   # imprimir coins do nada. 0 desativa.
   taxa-percentual: 10.0
-  # Faixa de preço permitida no /vip vender, por tier (0 = sem limite). Evita "lavar" dinheiro
-  # entre contas com um VIP vendido por 1 milhão, ou derrubar o mercado vendendo por 1 coin.
-  precos:
-    bronze:
-      minimo: 5000
-      maximo: 100000
-    prata:
-      minimo: 10000
-      maximo: 200000
-    ouro:
-      minimo: 20000
-      maximo: 400000
-    diamante:
-      minimo: 40000
-      maximo: 800000
+  # O preço no /vip vender é livre (sem mínimo nem máximo): é economia entre jogadores.
 
 mensagens:
   vip-adicionado: "&aVocê recebeu o VIP &f{tier}&a! Válido até &f{data}&a."

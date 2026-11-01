@@ -1,5 +1,5 @@
-// Mapa funcional (montar-mapa.js): um jogador novo nasce na fonte do spawn, usa /spawn e /warp, vê
-// o painel "Como começar", os poços das minas estão cheios (e, se a staff já criou a pedreira, dá pra minerar),
+// Mapa funcional (montar-mapa.js): um jogador novo nasce na fonte do spawn, usa /spawn e /warp, não
+// vê mais o painel "Como começar", os poços das minas estão cheios (e, se a staff já criou a pedreira, dá pra minerar),
 // o spawn é protegido e a saída dele encosta na avenida das minas, o portal do saguão das arenas
 // traz de volta, as 32 barracas (com holograma e o NPC de quem aluga) e as arenas estão cadastradas.
 // Uso: node teste-mapa.js
@@ -29,23 +29,24 @@ t.rodar(async () => {
   console.log('\n== Chegada ==')
   t.verificar(await dimensao(nome) === 'spawn' && bot.entity.position.distanceTo(SPAWN) < 4,
     'o jogador novo nasce na fonte do spawn', `${await dimensao(nome)} ${bot.entity.position}`)
-  let msgs = await t.capturar(bot, () => bot.chat('/warp minas'), 2000)
+  // os teleportes por comando esperam 3 s pra quem não é VIP (Essentials teleport-delay)
+  let msgs = await t.capturar(bot, () => bot.chat('/warp minas'), 4500)
   t.verificar(bot.entity.position.distanceTo(new Vec3(0.5, 65, -24.5)) < 3, '/warp minas leva à avenida das minas', `${bot.entity.position}`)
-  msgs = await t.capturar(bot, () => bot.chat('/spawn'), 2000)
+  msgs = await t.capturar(bot, () => bot.chat('/spawn'), 4500)
   t.verificar(bot.entity.position.distanceTo(SPAWN) < 3, '/spawn volta pra fonte', `${bot.entity.position} ${msgs.join(' ')}`)
   msgs = await t.capturar(bot, () => bot.chat('/warp'))
   t.verificar(msgs.some(m => ['minas', 'mercado', 'boss', 'plateia-x1', 'plateia-gladiador'].every(w => m.includes(w))),
     'lista de warps', msgs.join(' ').slice(0, 160))
 
-  // um painel "Como começar" só, no fim da avenida oeste (do lado do portão "MOBS"), no lugar dos hologramas espalhados
+  // o painel "Como começar" saiu (2026-10-31): nenhum holograma do mapa em volta da fonte nem no fim da avenida oeste
   await t.console('execute in minecraft:spawn run forceload add -41 53')
   await t.espera(1000)
   const holos = await t.console('execute in minecraft:spawn positioned 0 65 43 run execute if entity @e[type=text_display,tag=mapa,distance=..16]')
-  const painel = await t.console('execute in minecraft:spawn positioned -40.5 66.2 53.5 run data get entity @e[type=text_display,tag=mapa,limit=1,sort=nearest,distance=..1] text.text')
-  t.verificar(!holos.includes('passed') && painel.includes('COMO COME'), 'o painel "Como começar" no fim da avenida oeste, sem hologramas espalhados', `${holos} | ${painel}`)
+  const painel = await t.console('execute in minecraft:spawn positioned -42 66 43 run execute if entity @e[type=text_display,tag=mapa,distance=..14]')
+  t.verificar(!holos.includes('passed') && !painel.includes('passed'), 'sem o painel "Como começar" e sem hologramas espalhados', `${holos} | ${painel}`)
 
   console.log('\n== Warp mobs ==')
-  msgs = await t.capturar(bot, () => bot.chat('/warp mobs'), 2000)
+  msgs = await t.capturar(bot, () => bot.chat('/warp mobs'), 4500)
   t.verificar(bot.entity.position.distanceTo(new Vec3(-85.5, 49, 43.5)) < 3, '/warp mobs leva ao vestíbulo do salão', `${bot.entity.position} ${msgs.join(' ')}`)
   t.verificar(await blocoE('spawn', -54, 65, 43, 'air') && await blocoE('spawn', -75, 55, 43, 'stone_brick_stairs') && await blocoE('spawn', -67, 69, 43, 'air'),
     'o portão oeste do spawn está aberto e a escadaria desce até o salão')
@@ -53,7 +54,7 @@ t.rodar(async () => {
     'o salão fica meio enterrado: teto de vidro em y 84, nada por cima (nem sobra das versões antigas)')
   const estatuas = await t.console('spawners mobs lista')
   t.verificar(/11 estátuas/.test(estatuas), 'as 11 estátuas da warp mobs estão cadastradas', estatuas.slice(0, 120))
-  await t.capturar(bot, () => bot.chat('/spawn'), 2000)
+  await t.capturar(bot, () => bot.chat('/spawn'), 4500)
 
   console.log('\n== Minas ==')
   t.verificar(!(await blocoE('spawn', -19, 64, -40, 'air')) && !(await blocoE('spawn', 19, 50, -165, 'air')),
@@ -88,7 +89,7 @@ t.rodar(async () => {
   t.verificar(await blocoE('spawn', 63, 65, 43, 'air') && await blocoE('spawn', 64, 65, 43, 'air')
     && await blocoE('spawn', 64, 64, 43, 'polished_andesite') && !(await blocoE('spawn', 64, 64, 30, 'air')),
     'o portão leste do spawn está colado na porta da loja')
-  await t.capturar(bot, () => bot.chat('/warp arenas'), 2000)
+  await t.capturar(bot, () => bot.chat('/warp arenas'), 4500)
   t.verificar(await pisar(bot, 'arenas', 0, 5, 'spawn'), 'o portal do saguão das arenas volta pro spawn')
 
   console.log('\n== Cadastros ==')

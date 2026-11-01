@@ -1,0 +1,63 @@
+# Configuração do ChatPlugin
+#
+# Canais: a mensagem normal é local (só quem está no mesmo mundo vê) e /g <mensagem> é global.
+# A staff (chat.espiar) vê o local dos outros mundos, com o nome do mundo na frente.
+canais:
+  ativado: true
+  prefixo-local: "&7[L] "
+  prefixo-global: "&6[G] "
+  # Avisa quem falou no local sem ninguém no mundo pra ouvir, lembrando do /g.
+  avisar-sozinho: true
+
+# Anti-flood. Vale pro chat e pros comandos de mensagem abaixo, juntos (quem manda no chat e no /msg conta no
+# mesmo limite). Ninguém fica de fora, nem a staff, a não ser quem tem chat.antiflood.ignorar.
+
+chat:
+  # Tempo mínimo entre duas mensagens.
+  intervalo-segundos: 2
+  # A mesma mensagem (sem diferença de maiúsculas, acentos, espaços e pontuação) não pode ser
+  # mandada de novo nesse tempo.
+  repetida-segundos: 30
+  # Rajada: mais de "mensagens" em "segundos" deixa o jogador sem falar por "silencio-segundos".
+  rajada:
+    mensagens: 5
+    segundos: 15
+    silencio-segundos: 30
+
+# Comandos que contam como chat (o texto conta pra mensagem repetida). Uma ou duas palavras, sem a
+# barra, pelo nome do comando (os aliases contam: /clan c é o mesmo que /cla c). O número é quantas
+# palavras antes do texto são puladas: "msg" pula o destinatário.
+comandos-de-mensagem:
+  g: 0
+  cc: 0
+  "cla c": 0
+  msg: 1
+  tell: 1
+  w: 1
+  whisper: 1
+  m: 1
+  t: 1
+  pm: 1
+  r: 0
+  reply: 0
+  me: 0
+
+# Comandos que anunciam ou cobram outros jogadores: um a cada tantos segundos por jogador. Uma ou
+# duas palavras, sem a barra ("vip vender" vale só pra esse subcomando). O /loja anunciar tem o
+# próprio intervalo (10 min, no BarracasPlugin).
+comandos-com-intervalo:
+  "vip vender": 60
+  "pix qrcode": 10
+  "pix receber": 10
+  "pix cobrar": 10
+  "pix agendar": 10
+  tpa: 10
+  tpahere: 10
+  "cla convidar": 10
+  "bounty colocar": 30
+
+mensagens:
+  intervalo: "&cCalma! Espere &f%s s &cpra mandar outra mensagem."
+  repetida: "&cVocê acabou de mandar essa mensagem. Espere &f%s s &cpra repetir."
+  silenciado: "&cMuitas mensagens seguidas: você pode falar de novo em &f%s s&c."
+  comando: "&cEspere &f%s s &cpra usar esse comando de novo."

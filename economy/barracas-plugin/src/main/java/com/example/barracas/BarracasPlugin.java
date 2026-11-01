@@ -54,6 +54,9 @@ public class BarracasPlugin extends JavaPlugin {
         BarracaCommand comando = new BarracaCommand(this);
         getCommand("barraca").setExecutor(comando);
         getCommand("barraca").setTabCompleter(comando);
+        com.example.barracas.command.LojaCommand lojas = new com.example.barracas.command.LojaCommand(this);
+        getCommand("loja").setExecutor(lojas);
+        getCommand("loja").setTabCompleter(lojas);
 
         getServer().getPluginManager().registerEvents(new ProtecaoListener(this), this);
         this.loja = new LojaListener(this);

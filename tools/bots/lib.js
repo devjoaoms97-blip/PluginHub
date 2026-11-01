@@ -36,8 +36,12 @@ async function console_(cmd) {
   return r
 }
 
-/** Bot conectado e já no mundo. bot.mensagens guarda o chat e a barra acima do inventário. */
-function criarBot(nome) {
+/**
+ * Bot conectado e já no mundo. bot.mensagens guarda o chat e a barra acima do inventário. Os bots
+ * passam pelo anti-flood do ChatPlugin (chat.antiflood.ignorar), senão os testes que mandam comandos
+ * em sequência esbarram nele; { antiflood: true } deixa o bot sujeito a ele (teste-chat.js).
+ */
+function criarBot(nome, { antiflood = false } = {}) {
   return new Promise((ok, falha) => {
     const bot = mineflayer.createBot({ host: 'localhost', port: Number(props['server-port'] || 25565), username: nome, version: VERSAO })
     bot.mensagens = []
@@ -66,6 +70,7 @@ function criarBot(nome) {
       await espera(800)
       bot.chat(`/login ${SENHA_BOT}`)
       await espera(1200)
+      await console_(`lp user ${nome} permission set chat.antiflood.ignorar ${!antiflood}`)
       ok(bot)
     })
     setTimeout(() => falha(new Error(`${nome} não entrou em 30 s (servidor ligado? ViaVersion e ViaBackwards instalados?)`)), 30000)

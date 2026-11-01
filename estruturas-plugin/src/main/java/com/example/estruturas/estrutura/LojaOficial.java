@@ -559,8 +559,10 @@ public class LojaOficial implements Estrutura {
     // ------------------------------------------------------------------ integração
 
     /**
-     * Os vendedores (EconomyShopPlugin), o nome de cada balcão em cima do toldo e os quadros com o que
-     * cada um vende. {@code oz} é o z do centro do spawn (43): os dz daqui viram absolutos.
+     * Os vendedores (EconomyShopPlugin) e os quadros com o que cada um vende. {@code oz} é o z do centro
+     * do spawn (43): os dz daqui viram absolutos. O nome de cada balcão em cima do toldo (um holograma)
+     * saiu em 2026-10-31: ficava atravessado no telhado, os emojis não apareciam, e o NPC já diz de que
+     * é a loja. O kill de text_display com a tag "loja" fica, pra apagar os de mapas antigos.
      */
     @Override
     public List<String> getComandos(String mundo, int ox, int oy, int oz) {
@@ -575,27 +577,17 @@ public class LojaOficial implements Estrutura {
                 "cacador", new String[]{"bone", "bow"}, "alquimista", new String[]{"brewing_stand", "redstone"},
                 "minerador", new String[]{"diamond", "iron_pickaxe"}, "spawners", new String[]{"spawner", "pig_spawn_egg"},
                 "maquinas", new String[]{"piston", "observer"}, "pvp", new String[]{"diamond_sword", "shield"});
-        Map<String, String> titulos = Map.of(
-                "construtor", "\"🧱 CONSTRUTOR\",color:\"gold\"", "lenhador", "\"🪓 LENHADOR\",color:\"red\"",
-                "jardineiro", "\"🌸 JARDINEIRO\",color:\"green\"", "fazendeiro", "\"🌾 FAZENDEIRO\",color:\"yellow\"",
-                "cacador", "\"🏹 CAÇADOR\",color:\"dark_red\"", "alquimista", "\"⚗ ALQUIMISTA\",color:\"light_purple\"",
-                "minerador", "\"⛏ MINERADOR\",color:\"aqua\"", "spawners", "\"🐷 SPAWNERS\",color:\"dark_aqua\"",
-                "maquinas", "\"⚙ MÁQUINAS\",color:\"gold\"", "pvp", "\"⚔ PVP\",color:\"red\"");
         for (Balcao b : BALCOES) {
-            double nx, nz, tx, tz;
+            double nx, nz;
             int yaw;
             if (b.lado() == 0) {
                 // 2 atrás do balcão: o jogador alcança (o clique em entidade vai até ~3 blocos)
                 nx = X_FUNDO - 8 + 2 + 0.5;
                 nz = oz + b.meio() + 0.5;
-                tx = X_FUNDO - 8 - 1 + 0.5;
-                tz = nz;
                 yaw = 90;
             } else {
                 nx = b.meio() + 0.5;
                 nz = oz + b.lado() * 14 + 0.5;
-                tx = nx;
-                tz = oz + b.lado() * 11 + 0.5;
                 yaw = b.lado() < 0 ? 0 : 180;
             }
             if (b.id().equals("pvp")) {
@@ -604,9 +596,6 @@ public class LojaOficial implements Estrutura {
             } else if (!b.reservado()) {
                 c.add("shop admin npc " + b.id() + " " + mundo + " " + nx + " " + yPe + " " + nz + " " + yaw);
             }
-            c.add(em + "summon minecraft:text_display " + tx + " " + (oy + 6.6) + " " + tz + " {Tags:[\"loja\"],billboard:\"center\","
-                    + "shadow:1b,transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],"
-                    + "scale:[1.4f,1.4f,1.4f]},text:{text:" + titulos.get(b.id()) + ",bold:1b}}");
             // quadros na vitrine (f = 7, em cima da decoração), presos na parede do salão, olhando pra nave
             String[] itens = quadros.get(b.id());
             int facing = b.lado() == 0 ? 4 : (b.lado() < 0 ? 3 : 2); // 4 oeste, 3 sul, 2 norte

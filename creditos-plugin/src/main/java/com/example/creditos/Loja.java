@@ -398,7 +398,7 @@ public class Loja implements Listener {
                 return;
             }
             plugin.getDados().mudar(jogador.getUniqueId(), jogador.getName(), -preco, "código " + nomeTier + " " + gerado);
-            jogador.sendMessage("§a✦ Código de " + nomeTier + " (30 dias, 1 uso): §f§l" + gerado);
+            jogador.sendMessage("§a✦ Código de " + nomeTier + " (30 dias, 1 uso) por §b" + preco + " créditos§a: §f§l" + gerado);
             jogador.sendMessage("§7Use com §f/vip resgatar " + gerado + "§7, dê pra alguém ou venda com §f/vip vender§7.");
         } else {
             plugin.getDados().mudar(jogador.getUniqueId(), jogador.getName(), -preco, "ativou " + nomeTier);
@@ -430,7 +430,7 @@ public class Loja implements Listener {
             plugin.getDados().mudar(uuid, jogador.getName(), -preco, "cosmético " + chave);
             plugin.getDados().darCosmetico(uuid, chave);
             plugin.getDados().usar(uuid, categoria, id);
-            jogador.sendMessage("§a✦ Você comprou " + nome + "§a, e ele já está em uso.");
+            jogador.sendMessage("§a✦ Você comprou " + nome + " §apor §b" + preco + " créditos§a, e ele já está em uso.");
             jogador.playSound(jogador.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.4f);
         }
         if (categoria == Dados.Categoria.COR) plugin.refrescarTag(jogador);
@@ -451,7 +451,7 @@ public class Loja implements Listener {
             if (!confirmado(jogador, "skin:" + colecao, "Comprar " + nome + "§e", preco)) return;
             plugin.getDados().mudar(uuid, jogador.getName(), -preco, "skin " + colecao);
             plugin.getDados().darCosmetico(uuid, chaveSkin(colecao));
-            jogador.sendMessage("§a✦ Você comprou " + nome + "§a! Segure um item e clique nela pra pôr a skin.");
+            jogador.sendMessage("§a✦ Você comprou " + nome + " §apor §b" + preco + " créditos§a! Segure um item e clique nela pra pôr a skin.");
             jogador.playSound(jogador.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.4f);
             abrir(jogador, Tela.SKINS);
             return;
@@ -507,7 +507,7 @@ public class Loja implements Listener {
             if (!confirmado(jogador, "chapeu:" + chapeu, "Comprar " + nome + "§e", preco)) return;
             plugin.getDados().mudar(uuid, jogador.getName(), -preco, "chapéu " + chapeu);
             plugin.getDados().darCosmetico(uuid, chaveChapeu(chapeu));
-            jogador.sendMessage("§a✦ Você comprou " + nome + "§a! Segure um capacete e clique nele pra pôr.");
+            jogador.sendMessage("§a✦ Você comprou " + nome + " §apor §b" + preco + " créditos§a! Segure um capacete e clique nele pra pôr.");
             jogador.playSound(jogador.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.4f);
             abrir(jogador, Tela.CHAPEUS);
             return;

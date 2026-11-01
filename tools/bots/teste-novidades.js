@@ -1,13 +1,13 @@
 // Novidades do bloco 🟢 do roadmap: /skills top e XP em dobro, eventos de mercado e categorias da
 // loja, chave Pix + extrato da staff + taxa no extrato, cheque nominal/limite/anti-cópia,
-// faixa de preço do /vip vender e warp por tier, /boss proximo, ItemCleaner com orbes e raio.
+// preço livre no /vip vender e warp por tier, /boss proximo, ItemCleaner com orbes e raio.
 // Uso: node teste-novidades.js
 const t = require('./lib')
 
 t.rodar(async () => {
   const a = await t.criarBot(t.nomeNovo('Nov'))
   const b = await t.criarBot(t.nomeNovo('Nov'))
-  await t.espera(1000)
+  await t.espera(3000) // logo depois de entrar, o primeiro comando às vezes ficava sem resposta
 
   console.log('\n== Skills ==')
   let msgs = await t.capturar(a, () => a.chat('/skills top'), 2500)
@@ -71,7 +71,8 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => m.includes('marcado aqui')), '/vip setwarp diamante', msgs[0])
   const codigo = (await t.console('vip gerarcodigo bronze')).match(/VIP-([A-Z0-9-]+)/)?.[1]
   msgs = await t.capturar(a, () => a.chat(`/vip vender 1 ${codigo}`))
-  t.verificar(msgs.some(m => m.includes('preço mínimo')), 'preço mínimo na revenda', `${codigo} ${msgs[0]}`)
+  // o preço da revenda é livre desde 2026-10-31 (sem mínimo nem máximo)
+  t.verificar(msgs.some(m => m.includes('colocado à venda')), 'revenda com preço livre (R$ 1 aceito)', `${codigo} ${msgs[0]}`)
   if (codigo) await t.console(`vip revogarcodigo ${codigo}`)
 
   console.log('\n== Boss ==')
@@ -79,7 +80,7 @@ t.rodar(async () => {
   t.verificar(msgs.length > 0 && !msgs.some(m => m.includes('permissão')), '/boss proximo aberto a todos', msgs[0])
 
   console.log('\n== ItemCleaner ==')
-  // item longe de todo mundo some; item do lado do jogador fica
+  // desde 2026-10-28 a limpeza leva todo item, mesmo do lado do jogador; só o orbe de XP perto de alguém fica
   const p = a.entity.position
   await t.console(`execute in minecraft:spawn run summon minecraft:item ${Math.floor(p.x)} ${Math.floor(p.y)} ${Math.floor(p.z)} {Item:{id:"minecraft:stick",count:1},Age:-32768s,PickupDelay:32767s,Tags:["teste_cleaner"]}`)
   await t.console(`execute in minecraft:spawn run summon minecraft:experience_orb ${Math.floor(p.x) + 40} ${Math.floor(p.y)} ${Math.floor(p.z)} {Value:5,Tags:["teste_cleaner"]}`)
@@ -87,7 +88,7 @@ t.rodar(async () => {
   const res = await t.console('limparchao agora')
   const ficou = await t.console('execute if entity @e[type=item,tag=teste_cleaner]')
   const orbe = await t.console('execute if entity @e[type=experience_orb,tag=teste_cleaner]')
-  t.verificar(ficou.includes('passed') && !orbe.includes('passed'), 'item perto do jogador fica, orbe de XP longe some', `${res} | ${ficou} | ${orbe}`)
+  t.verificar(!ficou.includes('passed') && !orbe.includes('passed'), 'item do lado do jogador e orbe de XP longe somem', `${res} | ${ficou} | ${orbe}`)
   await t.console('minecraft:kill @e[tag=teste_cleaner]')
 
   await t.console(`deop ${a.username}`)

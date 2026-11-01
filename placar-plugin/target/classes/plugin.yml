@@ -4,7 +4,7 @@ main: com.example.placar.PlacarPlugin
 api-version: '26.2'
 author: Você
 description: Scoreboard lateral com saldo, rank, progresso, clã, missões, skill em uso, próximo boss e jogadores online.
-softdepend: [Vault, RankupPlugin, ClasPlugin, MissoesPlugin, SkillsPlugin, BossPlugin]
+softdepend: [Vault, RankupPlugin, ClasPlugin, MissoesPlugin, SkillsPlugin, BossPlugin, VipPlugin]
 
 commands:
   placar:

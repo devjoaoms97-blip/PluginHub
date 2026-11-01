@@ -12,7 +12,7 @@ Sistema de pagamentos entre jogadores, com pagamento direto e cobranças aceitá
 | `/pix recusar <jogador>` | Recusa a cobrança enviada por esse jogador |
 | `/pix cancelar <jogador>` | Cancela a cobrança que você enviou para esse jogador |
 | `/pix pendentes` | Lista cobranças enviadas e recebidas em aberto |
-| `/pix qrcode <valor> [motivo]` | Anuncia publicamente um pagamento — qualquer um pode clicar para te pagar |
+| `/pix qrcode <jogador> <valor> [motivo]` | A mesma cobrança do `/pix receber`, mostrada como QR Code Pix com o botão [PAGAR]. Só vale pra um jogador, e pagar a encerra: clicar de novo não paga duas vezes. (Até 2026-10-31 era um anúncio público que qualquer um pagava, quantas vezes clicasse.) |
 | `/pix limite` | Mostra seu limite diário, quanto já enviou hoje e quanto ainda pode enviar |
 | `/pix agendar <jogador> <valor> <dias> [motivo]` | Paga agora e repete a cada N dias, sozinho (até 5 agendamentos por jogador, de 1 a 30 dias) |
 | `/pix agendamentos [cancelar <nº>]` | Seus Pix agendados, pagando ou recebendo. Os dois lados podem cancelar |
@@ -59,7 +59,7 @@ taxa:
 - Quem paga (`/pix pagar`) sempre perde o valor cheio da conta.
 - Quem recebe fica com `valor − taxa`. O dinheiro da taxa **desaparece** da economia — não vai pro servidor nem pra ninguém — funcionando como mais um sink, igual ao imposto sobre venda do `EconomyShopPlugin`.
 - `0` em `percentual-transacao` desativa a taxa completamente.
-- `/pix qrcode` usa o mesmo caminho de código de `/pix pagar` (é um botão clicável que roda `/pix pagar`), então já sai taxado automaticamente sem nenhuma mudança extra.
+- `/pix qrcode` é uma cobrança como a do `/pix receber`: o [PAGAR] roda `/pix aceitar`, então já sai taxado.
 
 No extrato, quem pagou vê o valor cheio e quem recebeu vê o que entrou de fato, com a taxa ao lado.
 
@@ -76,7 +76,7 @@ limite:
   diario: 0   # 0 = desativado (padrão)
 ```
 
-- Conta o que sai em `/pix pagar` e `/pix aceitar`, inclusive pelos botões do `/pix qrcode`, sempre pelo **valor bruto**, antes da taxa. Receber dinheiro não conta, e compra na loja também não.
+- Conta o que sai em `/pix pagar` e `/pix aceitar`, inclusive pelo botão do `/pix qrcode`, sempre pelo **valor bruto**, antes da taxa. Receber dinheiro não conta, e compra na loja também não.
 - Um envio que passaria do teto é recusado inteiro, e a mensagem mostra quanto ainda dá pra mandar. Se for uma cobrança, ela **continua pendente** (até expirar nos 5 min).
 - Zera à meia-noite, no horário do servidor. O total do dia fica salvo em `plugins/PixPlugin/limites.yml`, então reiniciar o servidor não zera o limite.
 - Quem tem `pix.limite.ignorar` não tem limite (padrão: op). A staff pode zerar o dia de alguém com `/pix admin resetlimite <jogador>`, por exemplo pra liberar uma transação grande e legítima.

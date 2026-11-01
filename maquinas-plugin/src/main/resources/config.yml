@@ -25,8 +25,9 @@ combustivel:
   nome: "&6Célula de Combustível"
   preco: 25
 
-# Venda dos produtos: igual à loja. Cada unidade vendida baixa o preço em "passo"% (até o mínimo) e
-# ele volta pra âncora com o tempo. A venda tem o bônus do rank e o do VIP abaixo, menos o imposto.
+# Venda dos produtos: o preço é de cada jogador. Cada unidade que ele vende baixa o preço DELE em
+# "passo"% (até o mínimo), e ele volta pra âncora com o tempo; as vendas de um não mexem no preço dos
+# outros. A venda tem o bônus do rank e o do VIP abaixo, menos o imposto.
 imposto-venda: 2
 regeneracao:
   intervalo-segundos: 60
@@ -41,33 +42,38 @@ vip-bonus-venda:
   - permissao: "vip.desconto.bronze"
     percentual: 3
 
-# Os produtos (o id é o nome da textura no resource pack: servidor:<id>).
+# Os produtos (o id é o nome da textura no resource pack: servidor:<id>). Calibrados pelo
+# tools/economia/maquinas.py (2026-10-31):
+# - minimo: 25% acima do combustível de uma unidade, já pagando o imposto. Vender no mínimo ainda dá
+#   lucro (antes, o Tecido, a Barra e a Essência tinham o mínimo abaixo do combustível);
+# - passo: com o terreno cheio de uma máquina, na velocidade máxima e vendendo tudo, o preço do
+#   jogador se estabiliza em ~75% da âncora (com 0,2% em todos, o Tecido ia pra ~R$ 7, quase o custo).
 produtos:
   tecido_fino:
     nome: "&cTecido Fino"
     ancora: 16
-    minimo: 3
-    passo: 0.2
+    minimo: 8
+    passo: 0.05
   barra_de_aco:
     nome: "&7Barra de Aço"
     ancora: 42
-    minimo: 8
-    passo: 0.2
+    minimo: 16
+    passo: 0.05
   essencia_destilada:
     nome: "&dEssência Destilada"
     ancora: 100
-    minimo: 20
-    passo: 0.2
+    minimo: 32
+    passo: 0.08
   gema_lapidada:
     nome: "&5Gema Lapidada"
     ancora: 280
-    minimo: 56
-    passo: 0.2
+    minimo: 64
+    passo: 0.1
   cristal_de_energia:
     nome: "&bCristal de Energia"
     ancora: 1850
     minimo: 370
-    passo: 0.2
+    passo: 0.15
 
 # As máquinas (o id é o modelo no resource pack: servidor:maquina_<id>), na ordem da loja.
 # Calibradas pelo tools/economia/maquinas.py: cada máquina rende ~10% da mina no rank em que libera

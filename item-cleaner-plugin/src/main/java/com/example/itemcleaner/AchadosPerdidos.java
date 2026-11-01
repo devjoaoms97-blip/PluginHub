@@ -39,7 +39,8 @@ import java.util.logging.Level;
  * Achados e perdidos: o item que a limpeza tiraria do chão e que tem dono (quem jogou, ou quem morreu
  * ali) vai pra caixa desse jogador, em vez de sumir. {@code /achados} abre a caixa, e cada pilha volta
  * pagando {@code achados.taxa-por-pilha} (as coins somem da economia). A caixa guarda até
- * {@code achados.maximo-por-jogador} pilhas por {@code achados.dias} dias; o que passa disso some.
+ * {@code achados.maximo-por-jogador} pilhas por {@code achados.horas} horas; o que passa disso some.
+ * A cada minuto, as pilhas vencidas de todas as caixas saem, mesmo de quem nunca abre o /achados.
  * <p>
  * Quem morreu: os drops nascem no mesmo tick da morte, perto do corpo, sem "quem jogou". Por isso a
  * morte fica marcada por um instante e o item que nasce ali ganha o morto como dono. Nos mundos de
@@ -73,6 +74,23 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
         this.pix = new PixIntegration(plugin);
         this.arquivo = new File(plugin.getDataFolder(), "achados.yml");
         carregar();
+        Bukkit.getScheduler().runTaskTimer(plugin, this::vencerTodas, 20L * 60, 20L * 60);
+    }
+
+    /** Tira as pilhas vencidas de todas as caixas e salva, se alguma saiu. */
+    private void vencerTodas() {
+        boolean mudou = false;
+        for (List<Guardado> caixa : caixas.values()) {
+            int antes = caixa.size();
+            vencer(caixa);
+            mudou |= caixa.size() != antes;
+        }
+        caixas.values().removeIf(List::isEmpty);
+        if (mudou) salvar();
+    }
+
+    private long validade() {
+        return (long) (plugin.getConfig().getDouble("achados.horas", 1) * 60 * 60 * 1000);
     }
 
     boolean ativado() {
@@ -128,7 +146,7 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
     }
 
     private void vencer(List<Guardado> caixa) {
-        long validade = (long) (plugin.getConfig().getDouble("achados.dias", 3) * 24 * 60 * 60 * 1000);
+        long validade = validade();
         long agora = System.currentTimeMillis();
         caixa.removeIf(g -> agora - g.quando() > validade);
     }
@@ -156,8 +174,8 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
         vencer(caixa);
         Menu menu = new Menu();
         menu.inventario = Bukkit.createInventory(menu, 54, "§8Achados e perdidos");
-        double taxa = plugin.getConfig().getDouble("achados.taxa-por-pilha", 100);
-        long validade = (long) (plugin.getConfig().getDouble("achados.dias", 3) * 24 * 60 * 60 * 1000);
+        double taxa = plugin.getConfig().getDouble("achados.taxa-por-pilha", 10000);
+        long validade = validade();
         for (int i = 0; i < caixa.size() && i < 45; i++) {
             ItemStack icone = caixa.get(i).item().clone();
             ItemMeta meta = icone.getItemMeta();
@@ -165,7 +183,7 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
             long resta = validade - (System.currentTimeMillis() - caixa.get(i).quando());
             lore.add("");
             lore.add("§7Recuperar: §a" + dinheiro(taxa));
-            lore.add("§7Some em §f" + Math.max(1, resta / 3_600_000) + " h");
+            lore.add("§7Some em §f" + tempo(resta));
             lore.add("§eClique pra recuperar");
             meta.setLore(lore);
             icone.setItemMeta(meta);
@@ -203,7 +221,7 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
             jogador.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
             return;
         }
-        double taxa = plugin.getConfig().getDouble("achados.taxa-por-pilha", 100);
+        double taxa = plugin.getConfig().getDouble("achados.taxa-por-pilha", 10000);
         Economy econ = economia();
         if (taxa > 0) {
             if (econ == null) {
@@ -242,19 +260,29 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
         return rsp == null ? null : rsp.getProvider();
     }
 
+    /** "45 min", "1 h 20 min" (no mínimo 1 min). */
+    private static String tempo(long ms) {
+        long min = Math.max(1, ms / 60_000);
+        return min < 60 ? min + " min" : min / 60 + " h" + (min % 60 > 0 ? " " + min % 60 + " min" : "");
+    }
+
     private static String dinheiro(double v) {
         return String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", v);
     }
 
     private void carregar() {
         if (!arquivo.exists()) return;
-        ConfigurationSection secao = YamlConfiguration.loadConfiguration(arquivo).getConfigurationSection("caixas");
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(arquivo);
+        ConfigurationSection secao = yaml.getConfigurationSection("caixas");
         if (secao == null) return;
+        // até a versão 2 a caixa guardava por dias: o que já estava guardado conta o prazo novo a partir de agora
+        boolean antigo = yaml.getInt("formato", 1) < 2;
+        long agora = System.currentTimeMillis();
         for (String id : secao.getKeys(false)) {
             List<Guardado> caixa = new ArrayList<>();
             for (Map<?, ?> m : secao.getMapList(id)) {
                 if (m.get("item") instanceof ItemStack item && m.get("quando") instanceof Number quando) {
-                    caixa.add(new Guardado(item, quando.longValue()));
+                    caixa.add(new Guardado(item, antigo ? agora : quando.longValue()));
                 }
             }
             try {
@@ -267,6 +295,7 @@ public class AchadosPerdidos implements Listener, CommandExecutor {
 
     void salvar() {
         YamlConfiguration yaml = new YamlConfiguration();
+        yaml.set("formato", 2);
         for (Map.Entry<UUID, List<Guardado>> e : caixas.entrySet()) {
             vencer(e.getValue());
             if (e.getValue().isEmpty()) continue;

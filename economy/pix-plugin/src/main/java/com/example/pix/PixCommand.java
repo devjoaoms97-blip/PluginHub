@@ -52,14 +52,14 @@ public class PixCommand implements CommandExecutor, TabCompleter {
 
         switch (sub) {
             case "pagar" -> pagar(jogador, resto);
-            case "receber", "cobrar" -> receber(jogador, resto);
+            case "receber", "cobrar" -> receber(jogador, resto, false);
             case "aceitar" -> aceitar(jogador, resto);
             case "recusar" -> recusar(jogador, resto);
             case "pendentes" -> pendentes(jogador);
             case "cancelar" -> cancelar(jogador, resto);
             // o extrato saiu do /pix: quem entrega é o Bancário, no spawn
             case "historico", "extrato" -> jogador.sendMessage(cor("§eO extrato agora é com o §6Bancário§e, no spawn: clique nele e escolha §fExtrato§e."));
-            case "qrcode" -> qrcode(jogador, resto);
+            case "qrcode" -> receber(jogador, resto, true);
             case "limite" -> limite(jogador);
             case "agendar" -> agendar(jogador, resto);
             case "agendamentos", "agendados" -> agendamentos(jogador, resto);
@@ -128,10 +128,15 @@ public class PixCommand implements CommandExecutor, TabCompleter {
 
     // ---------------------------------------------------------------------
     // /pix receber <jogador> <valor> [motivo]   (envia uma cobrança)
+    // /pix qrcode <jogador> <valor> [motivo]    (a mesma cobrança, mostrada como QR Code Pix)
+    //
+    // O QR Code é só pra um jogador: a cobrança é uma por par (não dá pra mandar outra enquanto essa
+    // estiver aberta), e pagar a remove, então clicar de novo no [PAGAR] não paga duas vezes.
+    // Antes, o /pix qrcode <valor> era um anúncio público que qualquer um pagava, quantas vezes clicasse.
     // ---------------------------------------------------------------------
-    private void receber(Player cobrador, String[] args) {
+    private void receber(Player cobrador, String[] args, boolean qr) {
         if (args.length < 2) {
-            cobrador.sendMessage(cor("§cUso: §f/pix receber <jogador> <valor> [motivo]"));
+            cobrador.sendMessage(cor("§cUso: §f/pix " + (qr ? "qrcode" : "receber") + " <jogador> <valor> [motivo]"));
             return;
         }
 
@@ -159,10 +164,10 @@ public class PixCommand implements CommandExecutor, TabCompleter {
 
         PixCharge charge = plugin.getChargeManager().criarCobranca(cobrador.getUniqueId(), alvo.getUniqueId(), valor, motivo);
 
-        cobrador.sendMessage(cor("§aCobrança enviada para §f" + alvo.getName()
+        cobrador.sendMessage(cor("§a" + (qr ? "QR Code Pix enviado" : "Cobrança enviada") + " para §f" + alvo.getName()
                 + " §ano valor de §f" + formatarValor(valor) + " §a(expira em 5 min)"));
 
-        Component aceitar = Component.text("[ACEITAR]")
+        Component aceitar = Component.text(qr ? "[PAGAR]" : "[ACEITAR]")
                 .color(NamedTextColor.GREEN)
                 .decorate(TextDecoration.BOLD)
                 .clickEvent(ClickEvent.runCommand("/pix aceitar " + cobrador.getName()))
@@ -174,7 +179,8 @@ public class PixCommand implements CommandExecutor, TabCompleter {
                 .clickEvent(ClickEvent.runCommand("/pix recusar " + cobrador.getName()))
                 .hoverEvent(HoverEvent.showText(Component.text("Clique para recusar")));
 
-        Component mensagem = Component.text(alvo.getName() + " está te cobrando " + formatarValor(valor)
+        Component mensagem = Component.text((qr ? "QR Code Pix de " + cobrador.getName() + ": " + formatarValor(valor)
+                        : cobrador.getName() + " está te cobrando " + formatarValor(valor))
                         + (motivo != null ? " (" + motivo + ")" : "") + "  ")
                 .color(NamedTextColor.YELLOW)
                 .append(aceitar)
@@ -338,34 +344,6 @@ public class PixCommand implements CommandExecutor, TabCompleter {
     }
 
     // ---------------------------------------------------------------------
-    // /pix qrcode <valor> [motivo]   (mensagem clicável que qualquer um pode clicar pra te pagar)
-    // ---------------------------------------------------------------------
-    private void qrcode(Player jogador, String[] args) {
-        if (args.length < 1) {
-            jogador.sendMessage(cor("§cUso: §f/pix qrcode <valor> [motivo]"));
-            return;
-        }
-
-        Double valor = parseValor(jogador, args[0]);
-        if (valor == null) return;
-
-        String motivo = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : null;
-
-        Component botao = Component.text("[ PAGAR " + formatarValor(valor) + " ]")
-                .color(NamedTextColor.GOLD)
-                .decorate(TextDecoration.BOLD)
-                .clickEvent(ClickEvent.runCommand("/pix pagar " + jogador.getName() + " " + valor))
-                .hoverEvent(HoverEvent.showText(Component.text("Clique para pagar " + jogador.getName())));
-
-        Component mensagem = Component.text(jogador.getName() + " está pedindo pagamentos"
-                        + (motivo != null ? " (" + motivo + ")" : "") + ":  ")
-                .color(NamedTextColor.AQUA)
-                .append(botao);
-
-        Bukkit.broadcast(mensagem);
-    }
-
-    // ---------------------------------------------------------------------
     // /pix limite
     // ---------------------------------------------------------------------
     private void limite(Player jogador) {
@@ -452,12 +430,12 @@ public class PixCommand implements CommandExecutor, TabCompleter {
         jogador.sendMessage(cor("§e§l--- Comandos do Pix ---"));
         jogador.sendMessage(cor("§f/pix pagar <jogador> <valor> [motivo] §7- paga alguém direto"));
         jogador.sendMessage(cor("§f/pix receber <jogador> <valor> [motivo] §7- cobra alguém (expira em 5 min)"));
+        jogador.sendMessage(cor("§f/pix qrcode <jogador> <valor> [motivo] §7- a mesma cobrança, com um botão PAGAR"));
         jogador.sendMessage(cor("§f/pix aceitar <jogador> §7- aceita e paga a cobrança desse jogador"));
         jogador.sendMessage(cor("§f/pix recusar <jogador> §7- recusa a cobrança desse jogador"));
         jogador.sendMessage(cor("§f/pix cancelar <jogador> §7- cancela a cobrança que você enviou a esse jogador"));
         jogador.sendMessage(cor("§f/pix pendentes §7- lista cobranças em aberto"));
         jogador.sendMessage(cor("§7Seu extrato (todas as movimentações): com o §6Bancário§7, no spawn"));
-        jogador.sendMessage(cor("§f/pix qrcode <valor> [motivo] §7- anuncia um pagamento pra qualquer um clicar"));
         jogador.sendMessage(cor("§f/pix limite §7- quanto você ainda pode enviar hoje"));
         jogador.sendMessage(cor("§f/pix agendar <jogador> <valor> <dias> [motivo] §7- paga agora e repete a cada N dias"));
         jogador.sendMessage(cor("§f/pix agendamentos [cancelar <nº>] §7- seus Pix agendados"));
@@ -637,7 +615,7 @@ public class PixCommand implements CommandExecutor, TabCompleter {
                 opcoes.add("cancelar");
             } else if (sub.equals("chave")) {
                 opcoes.add("remover");
-            } else if (sub.equals("pagar") || sub.equals("agendar") || sub.equals("receber") || sub.equals("cobrar")
+            } else if (sub.equals("pagar") || sub.equals("agendar") || sub.equals("receber") || sub.equals("cobrar") || sub.equals("qrcode")
                     || sub.equals("aceitar") || sub.equals("recusar") || sub.equals("cancelar")) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     opcoes.add(p.getName());

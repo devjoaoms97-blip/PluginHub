@@ -24,13 +24,13 @@ aviso-manual-segundos: 10
 # Achados e perdidos: o item com dono (jogado por um jogador, ou que caiu do corpo dele) que a
 # limpeza tiraria do chão vai pra caixa desse jogador (/achados), em vez de sumir. Cada pilha volta
 # pagando taxa-por-pilha (as coins somem da economia). Guarda até maximo-por-jogador pilhas por
-# "dias" dias; o que passa disso some como antes. Nos mundos-sem-caixa (as arenas, onde quem morre
+# "horas" horas; o que passa disso some como antes (as vencidas saem a cada minuto). Nos mundos-sem-caixa (as arenas, onde quem morre
 # perde os itens pro vencedor) nada vai pra caixa.
 achados:
   ativado: true
-  taxa-por-pilha: 100
+  taxa-por-pilha: 10000
   maximo-por-jogador: 45
-  dias: 3
+  horas: 1
   mundos-sem-caixa: [arenas]
   # Aviso na barra de ação quando um item vai pra caixa de quem está online.
   avisar: true

@@ -50,6 +50,10 @@ Tudo é lido por reflexão: sem o plugin, a linha mostra "—". `intervalo-ticks
 
 Cada jogador tem a própria scoreboard (as linhas são diferentes pra cada um), com os números da direita escondidos (`NumberFormat.blank()`). Ao sair do placar (`/placar` ou mundo sem placar), o jogador volta pra scoreboard principal do servidor.
 
+## Tags no nome acima da cabeça
+
+O Minecraft só decora o nome acima da cabeça pelo time da scoreboard, e cada jogador vê a própria. Então, em cada scoreboard em uso (a de cada jogador e a principal, de quem desligou o placar), fica um time por jogador online (`nome_<uuid>`) com o mesmo prefixo da tab: rank, clã, VIP e apoiador, como o VipPlugin monta. A última cor antes do nome vira a cor do nome (a comprada no CreditosPlugin). Atualiza junto com o placar e só reenvia o time que mudou. `nome-na-cabeca.ativado: false` tira os times.
+
 ## Como compilar
 
 ```bash

@@ -213,7 +213,7 @@ t.rodar(async () => {
     await t.espera(1200)
     bot.closeWindow(janela)
   }
-  t.verificar(await quantos(nome, 'diamond') === 3 && await saldo(nome) === antesAchados - 100, 'e voltou por R$ 100',
+  t.verificar(await quantos(nome, 'diamond') === 3 && await saldo(nome) === antesAchados - 10000, 'e voltou por R$ 10.000',
     `${await quantos(nome, 'diamond')} diamantes, ${antesAchados} → ${await saldo(nome)}`)
 
   console.log('\n== Extrato no Bancário ==')

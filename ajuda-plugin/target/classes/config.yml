@@ -65,6 +65,7 @@ comandos:
         - "/rankup | Sobe de rank"
         - "/diaria | Recompensa diária"
         - "/missoes | Missões de hoje"
+        - "/g <mensagem> | Chat global (sem o /g, só quem está no seu mundo vê)"
     rankup:
       titulo: "Rankup"
       resumo: "Ranks, minas e prestígio"
@@ -85,7 +86,7 @@ comandos:
         - "/pix pagar <jogador> <valor> | Paga alguém"
         - "/pix receber <jogador> <valor> | Cobra alguém (ele aceita)"
         - "/pix pendentes | Cobranças em aberto"
-        - "/pix qrcode <valor> | Pedido de pagamento que qualquer um paga com um clique"
+        - "/pix qrcode <jogador> <valor> | Cobra um jogador com um botão PAGAR"
         - "/cheque <valor> [jogador] | Transforma a folha da mão num cheque"
         - "/minesena | Loteria do Bancário"
         - "/achados | Itens seus que a limpeza tirou do chão"
@@ -168,6 +169,8 @@ comandos:
         - "/barraca lista | Barracas do mercado de jogadores"
         - "/barraca alugar <id> | Aluga uma barraca"
         - "/barraca vender <quantidade> <preço> | Anuncia o item da mão na sua barraca"
+        - "/loja | Lojas abertas; /loja <jogador> leva até a dele"
+        - "/loja anunciar [mensagem] | Anuncia a sua barraca no chat"
     mundos:
       titulo: "Mundos"
       resumo: "Recursos, Nether, End e tesouros"

@@ -26,6 +26,10 @@ linhas:
   - "&fOnline: &a{online}&7/{max}"
   - "&8&m                    "
 
+# As tags no nome acima da cabeça: as mesmas da tab (rank, clã, VIP, apoiador e a cor do nome).
+nome-na-cabeca:
+  ativado: true
+
 textos:
   sem-cla: "&7nenhum"
   sem-skill: "&7nenhuma"

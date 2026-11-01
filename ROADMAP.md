@@ -279,6 +279,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Aceitar `/tpa` com clique** (2026-10-31, `ajuda-plugin`): botões [ACEITAR] e [RECUSAR] pra quem recebe o pedido; o Essentials continua validando o pedido e a expiração. Falta dar as permissões do `/tpa` ao grupo padrão (hoje ele só tem `/spawn` e `/warp`).
 
 #### Mundos, arenas e eventos
+- [x] **Painel "Como começar" removido** (2026-10-31): o holograma do fim da avenida oeste saiu (o `/tutorial` e o `/comandos` fazem esse papel). `node montar-mapa.js construir tutorial` apaga o painel de um mapa que ainda o tem.
 - [x] **Montarias no mundo `tesouros`** (2026-10-30): `/montaria` liberado no `/warp tesouros`; as restrições das minas, da arena do boss e dos demais mundos foram mantidas.
 - [ ] **Recompensa do dragão do End**: conceder tag e prêmio ao responsável pela morte e fazer o dragão dropar um tesouro; definir elegibilidade, conteúdo e chance, inclusive para mortes indiretas e disputas pelo último golpe.
 - [ ] **Acesso às estruturas do `/boss`**: inserir escadas e trechos de parkour nas estruturas da arena.
@@ -292,15 +293,21 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Recalibrar os spawners** (análise de 2026-10-31, `tools/economia/spawners.py`): o preço foi feito pra se pagar em ~20 h sem Pilhagem; com Pilhagem III a renda dobra ou triplica (se paga em 5 a 10 h), e isso fica como está (decisão de 2026-10-31). A ovelha, que só rendia o carneiro e se pagava em 45 h, agora vende a lã branca pro Fazendeiro e se paga em ~19 h, como os outros animais.
 - [x] **Limite compartilhado de máquinas por terreno** (2026-10-31): até 10 máquinas em cada terreno, somando todos os tipos e donos (`limite-por-terreno`); saíram o limite por jogador (4) e o do VIP (5 a 7).
 - [x] **Limite compartilhado de spawners por terreno** (2026-10-31): até 100 spawners em cada terreno, somando todos os tipos e donos (os empilhados contam um por um).
-- [ ] **Destino público para barraca alugada**: criar um destino de teleporte enquanto a barraca estiver alugada e permitir anunciá-lo junto a itens no chat global; remover o destino ao encerrar o aluguel. Definir a sintaxe, por exemplo `/loja <jogador>`.
-- [ ] **Corrigir nome das lojas**: investigar e corrigir o nome bugado exibido nas lojas, cobrindo NPC, menus e demais telas afetadas.
+- [x] **Destino público para barraca alugada** (2026-10-31, BarracasPlugin): `/loja` lista as lojas abertas, `/loja <jogador>` leva à frente do vendedor dele (só enquanto a barraca está alugada; barrado em combate) e `/loja anunciar [mensagem]` anuncia no chat, com os itens no mouse e um [VISITAR], uma vez a cada 10 min.
+- [x] **Nome das lojas** (2026-10-31): o nome bugado era o holograma de cada balcão da Loja Oficial, atravessado no telhado e com emoji que o Minecraft não desenha. Os hologramas saíram (o NPC já diz de que é a loja); reconstruir a `loja` apaga os que existem.
 - [x] **Compras com o inventário cheio** (bug corrigido em 2026-10-31): a loja cobrava e jogava no chão o que não cabia, e a Limpeza levava (aconteceu com o Tear). Agora, sem espaço, a compra é recusada antes de cobrar, com o aviso "Seu inventário está cheio". Vale pro Maquinista (máquina e combustível), o Domador (spawners), a Loja Oficial (menu e `/buy`), o Armeiro e o Picareteiro, as folhas do Bancário, a emissão de cheque e o resgate do `/achados`. `teste-inventario-cheio.js`.
-- [ ] **Cobrança Pix entre jogadores com QR Code**: permitir informar um jogador e um valor para gerar a cobrança; validar o pagamento antes de transferir e impedir cobrança duplicada. Definir se o QR representa saldo do jogo ou pagamento externo.
+- [x] **Cobrança Pix entre jogadores com QR Code** (2026-10-31): `/pix qrcode <jogador> <valor> [motivo]` é a cobrança do `/pix receber` (saldo do jogo) com o botão [PAGAR]: uma por par, paga pelo `/pix aceitar` (saldo e limite conferidos antes), e pagar a encerra, então clicar de novo não paga duas vezes. Saiu o `/pix qrcode <valor>` público, que qualquer um pagava quantas vezes clicasse. Corrigido também: a cobrança mostrava o nome de quem recebia no lugar de quem cobrava.
+
+- [x] **Máquinas sem prejuízo** (2026-10-31): o Tecido vendia a ~R$ 7 com R$ 6,25 de combustível por unidade. O preço passou a ser de cada jogador (as vendas de um não derrubam o dos outros), o mínimo de cada produto cobre o combustível com 25% de folga (Tecido 8, Barra 16, Essência 32, Gema 64) e o `passo` caiu pra quem enche o terreno de uma máquina vender a ~75% da âncora. O balcão mostra o gasto com duas casas ("0,25", antes "0,3") e o custo do combustível em reais. O `maquinas.py` ganhou a tabela do mercado.
+- [x] **Valor total nas mensagens de compra** (2026-10-31): a compra de células de combustível (16 ou 64) não dizia quanto custou. Agora dizem o valor: o Maquinista (máquina, células e melhoria), a loja de créditos (cosmético, skin, chapéu e código de VIP), o `/rankup` de um rank só (antes só o de vários ranks mostrava o total) e o `/vip resgatar` de código comprado de outro jogador.
+
+- [x] **Chat local e global** (2026-10-31, `chat-plugin`): a mensagem normal só chega a quem está no mesmo mundo (`[L]`) e `/g <mensagem>` chega a todos (`[G]`); a staff (`chat.espiar`) vê o local dos outros mundos. Antes o chat era um só.
+- [x] **Anti-flood no chat** (2026-10-31, `chat-plugin`, novo): o chat e os comandos de mensagem (`/msg`, `/r`, `/cc`...) têm intervalo de 2 s, a mesma mensagem não repete por 30 s e mais de 5 em 15 s silencia por 30 s; `/vip vender`, `/pix qrcode`, `/pix receber`, `/tpa`, `/cla convidar` e `/bounty colocar` têm intervalo próprio. Vale pra staff também (só quem tem `chat.antiflood.ignorar` passa). O `/loja anunciar` deixou de isentar a staff, que era o que inundava o chat.
 
 #### Limpeza e nomes
-- [ ] **Limpeza do chão nas minas**: corrigir a limpeza para remover itens caídos em todas as minas sem afetar itens protegidos.
-- [ ] **Achados e perdidos**: fazer `/achados` limpar os registros a cada hora e alterar o valor de resgate de cada pilha para R$ 10.000; definir se a expiração também vale para registros anteriores.
-- [ ] **Tags e decoração nos nomes**: corrigir o nome acima dos jogadores, que está aparecendo branco e sem as tags/decorações; conferir diferentes grupos e permissões.
+- [x] **Limpeza do chão nas minas** (2026-10-31): a limpeza só alcançava chunks carregados, e as minas do fundo da avenida (até z -175) ficavam descarregadas sem ninguém por perto: os itens voltavam quando alguém chegava. Agora o item que nasceu antes da última limpeza sai quando o chunk dele carrega (com dono, vai pros achados). Os nomeados continuam protegidos (`ignorar-itens-nomeados`).
+- [x] **Achados e perdidos** (2026-10-31): cada pilha fica 1 hora (`achados.horas`) e volta por R$ 10.000; as vencidas saem a cada minuto, mesmo de quem não abre o `/achados`, e o menu mostra os minutos que faltam. O que já estava guardado ganhou 1 hora a partir da atualização.
+- [x] **Tags no nome acima da cabeça** (2026-10-31, PlacarPlugin): não havia time de scoreboard, e é só por ele que o Minecraft decora esse nome. Agora cada scoreboard em uso (o placar de cada jogador e o principal) tem um time por jogador com o mesmo prefixo da tab (rank, clã, VIP, apoiador) e a cor do nome comprada. `nome-na-cabeca.ativado` desliga.
 
 ### 🐉 BossPlugin
 - [x] **Ranking de dano com prêmio**: o top 3 recebe coins proporcionais ao dano, e não só o último hit.
@@ -355,7 +362,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 
 ### 👑 VipPlugin
 - [ ] **Integração com o site via RCON**: o plugin já está pronto, falta construir o site. 🔴 (fora do plugin)
-- [x] **Preço mínimo e máximo** no `/vip vender`.
+- [x] ~~**Preço mínimo e máximo** no `/vip vender`.~~ Saiu em 2026-10-31: o preço da revenda é livre (economia entre jogadores, 100% orgânica).
 - [x] **Um warp diferente para cada tier.** `/vip setwarp <tier>`; o tier sem área própria vai pra área geral.
 - [x] **Saque fora do kit mensal do Ouro e do Diamante** (2026-10-27): o Cambista vende até Saque VI. Os kits ainda vão ser revistos.
 - [x] **Códigos de evento** (2026-10-27): `/vip gerarevento <tier> <3|7|15>` gera VIP de 3, 7 ou 15 dias só pra premiação de eventos. Não é vendido nem revendido, e o VIP que dá tem só os benefícios passivos (desconto, venda, XP, montaria...), e o kit diário, sem bônus de ativação (coins e XP) e sem o kit mensal. Quem já tem VIP resgata depois; comprar o mesmo tier por cima soma os dias. O campeão do boss recebe esse tipo.

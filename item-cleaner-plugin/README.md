@@ -17,9 +17,13 @@ Limpa periodicamente os itens dropados no chão (drops de mob, blocos minerados,
 - **Os itens não têm proteção nenhuma perto de jogador** (decisão de 2026-10-28): a limpeza leva todos. O que tem dono vai pros achados e perdidos, então quem perdeu algo valioso resgata por lá. Antes, qualquer jogador perto segurava os itens no chão, e depois do Gladiador quem assistia deixava os itens dos eliminados na arena.
 - `aviso-manual-segundos` e `mensagens.aviso-manual`: o tempo e a mensagem do `/limparchao` sem argumento (antes eram fixos em 10s, com a mensagem da automática).
 
+## Chunks descarregados
+
+A limpeza só alcança os chunks carregados. Antes, item num chunk sem ninguém por perto (as minas do fundo da avenida, um terreno vazio) ficava guardado no chunk e voltava inteiro quando alguém chegava. Agora cada item ganha a hora em que nasceu, e a hora da última limpeza fica em `limpeza.yml`: quando um chunk carrega, o item que nasceu antes da última limpeza sai na hora, pelo mesmo caminho (o que tem dono vai pros achados e perdidos; o nomeado fica, com `ignorar-itens-nomeados`). Item de antes dessa versão, sem a hora, conta como velho.
+
 ## Achados e perdidos
 
-O item que a limpeza tiraria do chão e que tem dono não some: vai pra caixa do dono, que abre com `/achados` (ou `/perdidos`). Dono é quem jogou o item ou, nos drops de morte, quem morreu (os drops que nascem perto do corpo no mesmo instante da morte ganham o morto como dono). Cada pilha volta pagando `achados.taxa-por-pilha` (R$ 100), e essas coins somem da economia. A caixa guarda até `achados.maximo-por-jogador` (45) pilhas por `achados.dias` (3) dias; o que passa disso some, como antes. Quem está online vê um aviso na barra de ação.
+O item que a limpeza tiraria do chão e que tem dono não some: vai pra caixa do dono, que abre com `/achados` (ou `/perdidos`). Dono é quem jogou o item ou, nos drops de morte, quem morreu (os drops que nascem perto do corpo no mesmo instante da morte ganham o morto como dono). Cada pilha volta pagando `achados.taxa-por-pilha` (R$ 10.000), e essas coins somem da economia. A caixa guarda até `achados.maximo-por-jogador` (45) pilhas por `achados.horas` (1) hora; o que passa disso some, como antes. A cada minuto as pilhas vencidas saem de todas as caixas, e o menu mostra quanto falta pra cada uma sumir. Na atualização de 2026-10-31 (que trocou os 3 dias por 1 hora), o que já estava guardado ganhou 1 hora a partir da subida do plugin novo. Quem está online vê um aviso na barra de ação.
 
 Nos mundos de `achados.mundos-sem-caixa` (as `arenas`, onde quem morre perde os itens pro vencedor) nada vai pra caixa. Drop de mob, de bloco minerado e de farm não tem dono e some normalmente. A caixa fica em `achados.yml`. Precisa do Vault pra cobrar (sem ele, recuperar é de graça).
 

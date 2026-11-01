@@ -16,7 +16,7 @@ import java.util.logging.Level;
  * Limite diário de transferência (anti-fraude/anti-abuso entre contas).
  *
  * Soma tudo que cada jogador ENVIOU no dia (pelo valor bruto, antes da taxa) via
- * /pix pagar e /pix aceitar — /pix qrcode já passa por /pix pagar, então conta também.
+ * /pix pagar e /pix aceitar — /pix qrcode é uma cobrança (paga com /pix aceitar), então conta também.
  * Compras na loja não entram (não passam pelo Pix). O total zera à meia-noite (horário
  * do servidor) e fica salvo em {@code limites.yml}, pra reiniciar o servidor não zerar o
  * limite de ninguém.

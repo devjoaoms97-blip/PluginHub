@@ -15,7 +15,7 @@
 //                Banco e Compactador no fundo)
 //     boss       a arena do boss ("toxica"), ao sul do spawn, colada no portão "BOSS"
 //     dicas      os 12 NPCs de dicas pelo spawn (DicasPlugin), com as falas
-//     tutorial   o painel "Como começar", ao lado do portão oeste do spawn (já vem junto com o spawn)
+//     tutorial   apaga o painel "Como começar", que saiu (já roda junto com o spawn)
 //     spawn      o spawn inteiro (EstruturasPlugin "spring"), as barracas dele e os hologramas da fonte
 //     barracas   só as 32 barracas do spawn (redesenha e cadastra as que faltam; aluguéis e NPCs ficam)
 //     arenas     saguão, X1 ("axepvp") e Gladiador ("coliseu"), bem longe um do outro, e limpa o que
@@ -230,44 +230,16 @@ async function estruturaNoSpawn(id) {
   console.log(`  barracas: ${BARRACAS_SPAWN.filter(id => new RegExp(`\\b${id}\\b`).test(lista)).length} de ${BARRACAS_SPAWN.length}`)
 }
 
-// Painel "Como começar": um holograma grande só, no fim da avenida oeste (à esquerda de quem nasce
-// olhando pro norte), do lado sul do portão "MOBS" (no meio ele taparia o túnel) e sempre virado pra
-// quem olha.
-const TUTORIAL = { pos: [-41, 10], altura: 2.2, escala: 1.3, linhas: [
-  ['✦ COMO COMEÇAR ✦', 'gold', true],
-  ['', null],
-  ['1. Minere: portão MINAS, ao norte  (/mina)', 'white'],
-  ['    Na entrada: Ferreiro, Bruxa, Picareteiro e Sábio', 'gray'],
-  ['2. Na mina, o que você quebra já vira dinheiro', 'white'],
-  ['    Loja Oficial: portão LESTE  (/warp loja)', 'gray'],
-  ['3. Suba de rank: /rankup  (/ranks mostra todos)', 'white'],
-  ['4. Todo dia: /diaria e /missoes', 'white'],
-  ['5. Comércio: barracas pelo spawn, clique no vendedor', 'white'],
-  ['6. Mobs (drops, XP e skills): portão OESTE  (/warp mobs)', 'white'],
-  ['7. Boss: portão BOSS, ao sul  (/boss proximo)', 'white'],
-  ['8. PvP: /duelo e /gladiador', 'white'],
-  ['9. Seu terreno: /terreno auto  ·  Recursos: /warp recursos', 'white'],
-  ['10. Benefícios: /vip tiers', 'white'],
-  ['', null],
-  ['Os NPCs pelo spawn dão mais dicas: clique neles!', 'aqua'],
-] }
-
+// Painel "Como começar": ficava no fim da avenida oeste, do lado do portão "MOBS". Saiu em 2026-10-31
+// (o /tutorial e o /comandos do AjudaPlugin fazem esse papel); a etapa só apaga o que sobrou dele.
 async function construirTutorial() {
   const W = 'spawn'
-  console.log('\n== Painel "Como começar" ==')
-  // os hologramas soltos das versões antigas (em volta da fonte) e o painel antigo saem
+  console.log('\n== Painel "Como começar" (removido) ==')
   await t.console(`${em(W)} forceload add ${SPAWN.x - 48} ${SPAWN.z - 16} ${SPAWN.x + 16} ${SPAWN.z + 16}`)
   await t.espera(1500)
+  // os hologramas soltos das versões antigas (em volta da fonte), o painel antigo (no meio da avenida) e o último
   await t.console(`execute in minecraft:${W} positioned ${SPAWN.x} ${CHAO + 1} ${SPAWN.z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..16]`)
-  // o painel antigo (no meio da avenida, onde agora é o portão) e o atual, do lado dele
   await t.console(`execute in minecraft:${W} positioned ${SPAWN.x - 42} ${CHAO + 2} ${SPAWN.z} run minecraft:kill @e[type=text_display,tag=mapa,distance=..14]`)
-  const [dx, dz] = TUTORIAL.pos
-  const partes = TUTORIAL.linhas.map(([s, cor, negrito]) =>
-    `{text:"${s}"${cor ? `,color:"${cor}"` : ''}${negrito ? ',bold:1b' : ''}}`).join(',"\\n",')
-  await t.console(`${em(W)} summon minecraft:text_display ${SPAWN.x + dx + 0.5} ${CHAO + TUTORIAL.altura} ${SPAWN.z + dz + 0.5} `
-    + `{Tags:["mapa"],billboard:"vertical",shadow:1b,line_width:400,background:${0xB0101018 | 0},`
-    + `transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[${TUTORIAL.escala}f,${TUTORIAL.escala}f,${TUTORIAL.escala}f]},`
-    + `text:[${partes}]}`)
   await t.console(`${em(W)} forceload remove ${SPAWN.x - 48} ${SPAWN.z - 16} ${SPAWN.x + 16} ${SPAWN.z + 16}`)
 }
 
@@ -318,8 +290,8 @@ async function construirLoja() {
 
 /**
  * A /warp mobs: o portão "MOBS" no oeste do spawn ("spring-oeste", só aquele pedaço, pra não mexer no
- * resto de um spawn que já existe), o salão de estátuas ("mobs") colado nele e o painel "Como começar"
- * do lado do portão. O salão cadastra a área e os spawners das estátuas no SpawnersPlugin.
+ * resto de um spawn que já existe), o salão de estátuas ("mobs") colado nele, apagando o que sobrou do
+ * painel "Como começar". O salão cadastra a área e os spawners das estátuas no SpawnersPlugin.
  */
 async function construirMobs() {
   console.log('\n== Portão oeste do spawn (EstruturasPlugin: spring-oeste) ==')
@@ -403,7 +375,7 @@ const DICAS = [
     '&fQuer um X1? &e/duelo <jogador> <valor>&f. Quem perde, perde os itens. Quem ganha, ganha o meu respeito.',
     '&fNa agenda atual: &6Gladiador&f por &bclã&f sábado às &e19h&f e &6individual&f domingo às &e19h&f. A borda fecha no centro!',
     '&fQuer um cantinho seu? &e/terreno&f. Madeira e bicho você acha no &e/warp recursos&f.',
-    '&fMorreu e não achou suas coisas? Olhe o &e/achados&f: o que a limpeza recolheu do chão fica guardado por 3 dias, por uma taxinha.',
+    '&fMorreu e não achou suas coisas? Olhe o &e/achados&f: o que a limpeza recolheu do chão fica guardado por 1 hora, e cada pilha volta por R$ 10.000.',
     '&fVIP tem &e/montaria&f: um cavalo na hora, bem mais rápido que a pé. Só não entra nas minas nem na arena do boss.',
   ] },
   { id: 'guarda-minas', skin: '6ee1acb2b58e2db54aa7668be2eda0f57d6b81e186d1ee87a530354a2f2a3ef8', nome: '&7Guarda do Portão', pos: [6, -38], virado: 'centro', falas: [

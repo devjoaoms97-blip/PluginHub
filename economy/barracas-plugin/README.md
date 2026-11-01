@@ -20,6 +20,9 @@ Mercado entre jogadores em **barracas alugadas no spawn**. O jogador paga um alu
 | `/barraca comprar <quantidade> <preço>` | dono | A loja passa a comprar o item da mão dos outros jogadores |
 | `/barraca loja` | dono | Abre o estoque da loja (o mesmo que clicar no próprio NPC) |
 | `/barraca retirar` | todos | Pega o estoque da loja quando o aluguel acabou |
+| `/loja` | todos | As lojas abertas (barracas alugadas); clicar no dono leva até ela, e o mouse mostra os itens |
+| `/loja <jogador>` | todos | Leva até a frente do vendedor da barraca do jogador |
+| `/loja anunciar [mensagem]` | dono | Anuncia a barraca no chat, com os itens no mouse e um [VISITAR] que leva até ela |
 | `/barraca pos1` / `pos2` | staff | Marca os cantos da área (o bloco para onde você está olhando) |
 | `/barraca criar <id> [especial]` | staff | Cria a barraca na área marcada |
 | `/barraca remover <id>` | staff | Apaga a barraca |
@@ -50,6 +53,12 @@ O item anunciado fica fixo desde a criação (com encantamentos, nome etc.). Pra
 - Num anúncio de compra, vende um lote: os itens saem do seu inventário e o dinheiro sai da conta do dono (com a mesma taxa, descontada de quem vendeu).
 - É recusado se faltar estoque, saldo, espaço no inventário, ou se a loja já comprou o máximo. Nada é cobrado nesses casos.
 - O dono recebe aviso de cada venda e de quando o estoque acaba (se estiver online).
+
+## Destino público (`/loja`)
+
+Enquanto a barraca está alugada, `/loja <dono>` (alias `/lojas`) leva qualquer jogador até ela: no primeiro lugar livre na frente do NPC, fora da área da barraca, olhando pro vendedor. Quando o aluguel acaba, o destino deixa de existir sozinho (o comando responde que o jogador não tem barraca). O teleporte é na hora, como o `/mina`, e quem está em combate não usa (`loja` e `lojas` estão em `em-combate.comandos` do CombatePlugin).
+
+`/loja anunciar [mensagem]` manda pro chat global "[Loja] Fulano: mensagem [VISITAR]": passar o mouse mostra os anúncios (vende e compra, com preço e estoque) e clicar leva à barraca. Precisa ter algo à venda com estoque. Um anúncio a cada `loja.anuncio-intervalo-minutos` (10) por jogador, com a mensagem cortada em `loja.anuncio-max-caracteres` (60). A staff também espera (um op anunciando sem parar inundava o chat). O resto do chat tem o anti-flood do ChatPlugin.
 
 ## Proteção da área
 

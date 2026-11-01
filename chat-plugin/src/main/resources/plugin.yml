@@ -1,0 +1,33 @@
+name: ChatPlugin
+version: '1.0.0'
+main: com.example.chat.ChatPlugin
+api-version: '26.2'
+author: Você
+description: Chat local (o mundo) e global (/g), com anti-flood.
+# carrega depois dos que põem tags no chat, pro prefixo [L]/[G] ficar na frente de tudo
+softdepend: [VipPlugin, ClasPlugin, RankupPlugin, GladiadorPlugin]
+
+commands:
+  g:
+    description: Fala com o servidor todo (sem o /g, só quem está no seu mundo vê).
+    usage: "Uso: /g <mensagem>"
+    aliases: [global]
+    permission: chat.usar
+  antiflood:
+    description: (staff) Recarrega o config do chat.
+    usage: "Uso: /antiflood reload"
+    permission: chat.admin
+
+permissions:
+  chat.usar:
+    description: Usa o chat global (/g).
+    default: true
+  chat.espiar:
+    description: Vê as mensagens do chat local dos outros mundos.
+    default: op
+  chat.antiflood.ignorar:
+    description: Não passa pelo anti-flood (nem a staff tem, por padrão).
+    default: false
+  chat.admin:
+    description: Recarrega o config do chat.
+    default: op

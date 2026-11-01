@@ -66,9 +66,7 @@ public class RankupCommand implements CommandExecutor, TabCompleter {
         } else {
             jogador.sendMessage("§aVocê subiu pro rank " + atual.nomeColorido() + "§a!");
         }
-        if (atual != plugin.getRankManager().getProximo(inicial)) {
-            jogador.sendMessage("§7Total gasto: §f" + Formato.valor(gasto));
-        }
+        jogador.sendMessage("§7" + (atual != plugin.getRankManager().getProximo(inicial) ? "Total gasto" : "Pago") + ": §f" + Formato.valor(gasto));
 
         List<String> liberadas = minasLiberadas(inicial, atual);
         if (!liberadas.isEmpty()) {
