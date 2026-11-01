@@ -185,6 +185,11 @@ def catalogo():
                         ("torch", 1.3), ("soul_torch", 1.5), ("chest", 17), ("barrel", 15), ("crafting_table", 8.5),
                         ("furnace", 8.5), ("anvil", 560), ("end_rod", 30), ("respawn_anchor", 400)]:
         add(A, nome, preco)
+    # ingredientes de poção que não estavam em lugar nenhum (o Alquimista mostra também os das outras
+    # categorias: veja "extras" do alquimista no config do EconomyShopPlugin)
+    for nome, preco in [("glass_bottle", 2.7), ("pufferfish", 8), ("dragon_breath", 50), ("slime_block", 57),
+                        ("cobweb", 11), ("turtle_helmet", 315)]:
+        add(A, nome, preco)
     return c
 
 

@@ -91,12 +91,13 @@ public class ArenaToxica implements Estrutura {
         gerarVeios(p);
         for (int i = 0; i < 4; i++) {
             double a = Math.toRadians(90 * i);
-            gerarTorre(p, (int) Math.round(Math.cos(a) * RAIO_TORRE), (int) Math.round(Math.sin(a) * RAIO_TORRE), 16 + i % 3 * 3);
+            gerarTorre(p, (int) Math.round(Math.cos(a) * RAIO_TORRE), (int) Math.round(Math.sin(a) * RAIO_TORRE), alturaTorre(i));
         }
         gerarContaineres(p);
         gerarBarreiras(p);
         gerarCaixotes(p);
         gerarTambores(p);
+        gerarEscaladas(p);
         gerarEntrada(p, ENTRADA_NORTE); // a única: fica de frente pro portão sul do spawn
         gerarDescida(p);
         gerarLuzesDoPiso(p);
@@ -573,6 +574,63 @@ public class ArenaToxica implements Estrutura {
             if (pisoLivre(p, x, z)) {
                 p.set(x, 1, z, random.nextBoolean() ? Material.COBBLED_DEEPSLATE.createBlockData() : laje(Material.COBBLED_DEEPSLATE_SLAB, false));
             }
+        }
+    }
+
+    private static int alturaTorre(int i) {
+        return 16 + i % 3 * 3;
+    }
+
+    // ------------------------------------------------------------------ escaladas
+
+    /**
+     * Pra subir nas coberturas (e fugir dos mobs do boss): em cada torre, uma escada de mão no lado
+     * virado pro centro e, do lado oposto, uma espiral de parkour (blocos soltos subindo um por vez em
+     * volta da torre, sem passar pela escada); em cada contêiner, uma escada de mão na ponta virada pro
+     * centro e, nos dois empilhados, outra de cima do contêiner de baixo até o de cima.
+     */
+    private void gerarEscaladas(Planta p) {
+        for (int i = 0; i < 4; i++) {
+            double a = Math.toRadians(90 * i);
+            int cx = (int) Math.round(Math.cos(a) * RAIO_TORRE), cz = (int) Math.round(Math.sin(a) * RAIO_TORRE);
+            int altura = alturaTorre(i);
+            // a direção do centro da arena, vista da torre
+            int dx = (int) -Math.round(Math.cos(a)), dz = (int) -Math.round(Math.sin(a));
+            // a coluna da torre onde a escada encosta vai até o topo (o anel de fora tem o topo irregular)
+            for (int y = 1; y <= altura; y++) p.set(cx + 3 * dx, y, cz + 3 * dz, NERVURA);
+            escadaDeMao(p, cx + 4 * dx, cz + 4 * dz, 1, altura, dx, dz);
+            espiral(p, cx, cz, altura, Math.atan2(dz, dx));
+        }
+        for (int q = 0; q < 4; q++) {
+            // a ponta x = 30 do contêiner de baixo (no quadrante girado), virada pro centro
+            int[] pe = girar(29, 10, q), dir = girar(-1, 0, q);
+            escadaDeMao(p, pe[0], pe[1], 1, 4, dir[0], dir[1]);
+        }
+        // empilhados: o do quadrante 1 começa em x = 31, o do 3 em x = 32 (em cima do de baixo, y 5..8)
+        int[] q1 = girar(30, 10, 1), d1 = girar(-1, 0, 1);
+        escadaDeMao(p, q1[0], q1[1], 5, 8, d1[0], d1[1]);
+        int[] q3 = girar(31, 10, 3), d3 = girar(-1, 0, 3);
+        escadaDeMao(p, q3[0], q3[1], 5, 8, d3[0], d3[1]);
+    }
+
+    /** Escada de mão de y1 a y2 em (x, z), presa no bloco do lado oposto a (dx, dz). */
+    private static void escadaDeMao(Planta p, int x, int z, int y1, int y2, int dx, int dz) {
+        BlockFace face = dx > 0 ? BlockFace.EAST : dx < 0 ? BlockFace.WEST : dz > 0 ? BlockFace.SOUTH : BlockFace.NORTH;
+        for (int y = y1; y <= y2; y++) p.set(x, y, z, direcional(Material.LADDER, face));
+    }
+
+    /**
+     * Espiral de parkour em volta da torre: um bloco por degrau, do chão (y 1) até a altura da torre, a
+     * 6,5 do centro dela (a torre vai até ~3,9). Varre 300° começando do lado oposto à escada, então
+     * nunca passa na frente dela; com 16 a 22 degraus, cada pulo é de 1 pra cima e menos de 2 pro lado.
+     */
+    private static void espiral(Planta p, int cx, int cz, int altura, double anguloEscada) {
+        double inicio = anguloEscada + Math.toRadians(30);
+        double varredura = Math.toRadians(300);
+        for (int y = 1; y <= altura; y++) {
+            double a = inicio + varredura * (y - 1) / (altura - 1);
+            int x = cx + (int) Math.round(Math.cos(a) * 6.5), z = cz + (int) Math.round(Math.sin(a) * 6.5);
+            p.set(x, y, z, y % 4 == 0 ? perigo(x, z) : COBRE);
         }
     }
 

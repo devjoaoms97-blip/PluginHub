@@ -89,6 +89,16 @@ public class WarpMobs implements Listener {
         return pontos.size();
     }
 
+    /** O bloco é o spawner de uma estátua (não sai com Toque Suave, nem pra staff). */
+    boolean ehEstatua(Block bloco) {
+        for (Ponto p : pontos.values()) {
+            if (p.x() == bloco.getX() && p.y() == bloco.getY() && p.z() == bloco.getZ() && p.mundo().equals(bloco.getWorld().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ---------------------------------------------------------------------
     // Ciclo: um mob a mais em cada estátua com jogador por perto
     // ---------------------------------------------------------------------

@@ -74,7 +74,7 @@ public class ShopGUI {
 
     /** {@code soCategoria}: aberto por um vendedor (sem o botão de voltar pras categorias). */
     public Inventory montarItens(String categoria, int pagina, Player jogador, boolean soCategoria) {
-        List<ShopItem> todos = plugin.getShopManager().getItensDaCategoria(categoria);
+        List<ShopItem> todos = plugin.getShopManager().getItensDoMenu(categoria);
         int totalPaginas = Math.max(1, (int) Math.ceil(todos.size() / (double) ITENS_POR_PAGINA));
         pagina = Math.max(0, Math.min(pagina, totalPaginas - 1));
 

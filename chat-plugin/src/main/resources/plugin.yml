@@ -5,7 +5,7 @@ api-version: '26.2'
 author: Você
 description: Chat local (o mundo) e global (/g), com anti-flood.
 # carrega depois dos que põem tags no chat, pro prefixo [L]/[G] ficar na frente de tudo
-softdepend: [VipPlugin, ClasPlugin, RankupPlugin, GladiadorPlugin]
+softdepend: [VipPlugin, ClasPlugin, RankupPlugin, GladiadorPlugin, RecursosPlugin]
 
 commands:
   g:

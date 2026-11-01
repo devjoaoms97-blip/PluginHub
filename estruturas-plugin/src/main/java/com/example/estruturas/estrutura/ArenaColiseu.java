@@ -69,6 +69,19 @@ public class ArenaColiseu implements Estrutura {
             Material.POTTED_RED_TULIP, Material.POTTED_CACTUS, Material.POTTED_ORANGE_TULIP, Material.POTTED_DEAD_BUSH
     };
 
+    /**
+     * Os quatro setores do piso, pra quem luta saber onde está: leste (vermelho), sul (verde), oeste
+     * (amarelo) e norte (azul). Cada um tem a faixa da parede, um obelisco e o chão em volta dele na cor.
+     */
+    private record Setor(String nome, Material concreto, Material terracota, Material estandarte) {}
+
+    private static final Setor[] SETORES = {
+            new Setor("leste", Material.RED_CONCRETE, Material.RED_TERRACOTTA, Material.RED_WALL_BANNER),
+            new Setor("sul", Material.LIME_CONCRETE, Material.LIME_TERRACOTTA, Material.LIME_WALL_BANNER),
+            new Setor("oeste", Material.YELLOW_CONCRETE, Material.YELLOW_TERRACOTTA, Material.YELLOW_WALL_BANNER),
+            new Setor("norte", Material.LIGHT_BLUE_CONCRETE, Material.LIGHT_BLUE_TERRACOTTA, Material.LIGHT_BLUE_WALL_BANNER)
+    };
+
     private int[][] aneis;
 
     @Override
@@ -103,6 +116,7 @@ public class ArenaColiseu implements Estrutura {
         gerarDecoracao(p);
         gerarPortoes(p);
         gerarObstaculos(p);
+        gerarMarcos(p);
         gerarLuzesDoPiso(p);
 
         // Limpeza por último e só onde nada foi gravado: cada posição entra uma vez só na planta.
@@ -244,7 +258,7 @@ public class ArenaColiseu implements Estrutura {
         p.set(x, 1, z, LISO);
         for (int y = 2; y <= PODIO - 2; y++) {
             boolean faixa = miolo && (y == 3 || y == 8);
-            p.set(x, y, z, pilastra ? LISO : faixa ? Material.TERRACOTTA : CORTADO);
+            p.set(x, y, z, pilastra ? LISO : faixa ? setor(x, z).concreto() : CORTADO);
         }
         p.set(x, PODIO - 1, z, pilastra ? ENTALHADO : CORTADO);
     }
@@ -619,6 +633,43 @@ public class ArenaColiseu implements Estrutura {
             }
         }
         p.set(cx, alturaCanto + 1, cz, lanterna(Material.LANTERN, false));
+    }
+
+    /** O setor de (x, z): o eixo mais perto, medido na elipse (0 leste, 1 sul, 2 oeste, 3 norte). */
+    private static Setor setor(int x, int z) {
+        double graus = Math.toDegrees(Math.atan2(z / (double) RAIO_Z, x / (double) RAIO_X));
+        return SETORES[Math.floorMod((int) Math.round(graus / 90), 4)];
+    }
+
+    /**
+     * No meio de cada setor (no eixo, a 62% do raio, entre as colunas do anel do meio): um obelisco da
+     * cor do setor, de 10 de altura (o vidro está em 12), com estandartes nos quatro lados e luz no topo,
+     * e um círculo do chão em volta na mesma cor. Visto de qualquer ponto do piso e do deck.
+     */
+    private void gerarMarcos(Planta p) {
+        for (int s = 0; s < 4; s++) {
+            Setor setor = SETORES[s];
+            int[] c = noPiso(0.62, 90 * s);
+            for (int dx = -4; dx <= 4; dx++) {
+                for (int dz = -4; dz <= 4; dz++) {
+                    if (dx * dx + dz * dz > 18) continue;
+                    p.set(c[0] + dx, 0, c[1] + dz, setor.terracota());
+                    for (int y = 1; y <= 10; y++) p.set(c[0] + dx, y, c[1] + dz, Material.AIR);
+                }
+            }
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    p.set(c[0] + dx, 1, c[1] + dz, setor.concreto());
+                    p.set(c[0] + dx, 2, c[1] + dz, laje(Material.SMOOTH_SANDSTONE_SLAB, false));
+                }
+            }
+            p.set(c[0], 2, c[1], ENTALHADO);
+            for (int y = 3; y <= 9; y++) p.set(c[0], y, c[1], setor.concreto());
+            p.set(c[0], 10, c[1], LUZ);
+            for (BlockFace face : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
+                p.set(c[0] + face.getModX(), 8, c[1] + face.getModZ(), direcional(setor.estandarte(), face));
+            }
+        }
     }
 
     /** Grade de luzes no chão — sem isso o piso fica escuro e nasce mob. */

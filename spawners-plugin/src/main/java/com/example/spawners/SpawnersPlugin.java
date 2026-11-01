@@ -60,6 +60,7 @@ public class SpawnersPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(spawners, this);
         getServer().getPluginManager().registerEvents(warpMobs, this);
         getServer().getPluginManager().registerEvents(loja, this);
+        getServer().getPluginManager().registerEvents(new ToqueSuave(this), this);
         long ciclo = Math.max(1, getConfig().getLong("ciclo-segundos", 20)) * 20L;
         getServer().getScheduler().runTaskTimer(this, spawners::ciclo, ciclo, ciclo);
         long cicloMobs = Math.max(1, getConfig().getLong("warp-mobs.ciclo-segundos", 6)) * 20L;
@@ -193,6 +194,18 @@ public class SpawnersPlugin extends JavaPlugin {
 
     public Tipo tipo(String id) {
         return id == null ? null : tipos.get(id);
+    }
+
+    /** O tipo da loja desse mob, ou null se a loja não tem. */
+    public Tipo tipoDaEntidade(org.bukkit.entity.EntityType entidade) {
+        for (Tipo t : tipos.values()) {
+            if (t.entidade() == entidade) return t;
+        }
+        return null;
+    }
+
+    WarpMobs getWarpMobs() {
+        return warpMobs;
     }
 
     public Economy getEconomy() {

@@ -74,6 +74,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         carregarDados();
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(centroDoEnd, this);
+        getServer().getPluginManager().registerEvents(new MatadorDoDragao(this), this);
         getServer().getPluginManager().registerEvents(mapas, this);
         Luz luz = new Luz(this);
         getServer().getPluginManager().registerEvents(luz, this);

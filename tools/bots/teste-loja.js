@@ -44,7 +44,7 @@ t.rodar(async () => {
   msgs = await t.capturar(bot, () => bot.chat('/sell all'))
   // sem a permissão, o servidor esconde o comando ("Unknown command")
   t.verificar(msgs.some(m => m.includes('Loja Oficial') || /Unknown|desconhecido/i.test(m)), '/sell fechado pros jogadores', msgs[0])
-  await t.capturar(bot, () => bot.chat('/warp loja'), 2000)
+  await t.capturar(bot, () => bot.chat('/warp loja'), 4500) // espera de 3 s do teleporte (não VIP)
   t.verificar(Math.abs(bot.entity.position.x - 67.5) < 2 && Math.abs(bot.entity.position.z - (Z + 0.5)) < 2,
     '/warp loja leva pra entrada da loja', `${bot.entity.position}`)
 
@@ -112,6 +112,23 @@ t.rodar(async () => {
     const pocao = await t.console(`data get entity ${nome} Inventory[{id:"minecraft:potion"}].components."minecraft:potion_contents"`)
     t.verificar(/strong_strength/.test(pocao), 'comprou a Poção de Força II, com o efeito certo', pocao.slice(0, 100))
   }
+
+  console.log('\n== Alquimista: todos os ingredientes de poção ==')
+  // o menu do Alquimista mostra também os ingredientes de outras categorias (extras), e o frasco de vidro
+  janela = await abrir(bot, new Vec3(99.5, 65, Z + 14.5), new Vec3(99.5, 65, Z + 11.5), 0)
+  const todos = []
+  for (let pagina = 0; janela && pagina < 4; pagina++) {
+    janela.slots.slice(0, 45).forEach(s => s && todos.push(s.name))
+    if (!janela.slots[52]) break
+    await bot.clickWindow(52, 0, 0) // próxima página
+    await t.espera(1000)
+    janela = bot.currentWindow
+  }
+  if (bot.currentWindow) bot.closeWindow(bot.currentWindow)
+  const faltam = ['ghast_tear', 'nether_wart', 'glass_bottle', 'rabbit_foot', 'magma_cream', 'blaze_powder', 'pufferfish']
+    .filter(i => !todos.includes(i))
+  t.verificar(todos.length > 0 && faltam.length === 0, 'o Alquimista tem a lágrima de ghast, a verruga, o frasco e os outros ingredientes',
+    faltam.length ? `faltam: ${faltam.join(', ')}` : `${todos.length} itens`)
 
   await t.console(`lp user ${nome} permission unset vip.desconto.diamante`)
   await t.console(`ranks admin set ${nome} campones`)

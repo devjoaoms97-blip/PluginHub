@@ -105,6 +105,31 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
         return mapas;
     }
 
+    /**
+     * O mapa do Dragão do End (chamado pelo RecursosPlugin, por reflexão, quando o dragão morre): vai
+     * pro inventário de quem deu o último golpe ({@code jogador}); o que não couber cai nos pés dele.
+     * Sem ninguém com o crédito (null, ou quem saiu do servidor), cai do lado do portal de saída do
+     * {@code mundo} (em cima do portal ele sumiria pro outro mundo). Devolve false com o drop desligado.
+     */
+    public boolean mapaDoDragao(Player jogador, World mundo) {
+        if (!getConfig().getBoolean("drops.dragao.ativado", true)) return false;
+        String raridade = mapas.sortearRaridade(getConfig().getConfigurationSection("drops.dragao.pesos"));
+        ItemStack mapa = mapas.criar(raridade);
+        if (jogador != null && jogador.isOnline()) {
+            jogador.getInventory().addItem(mapa).values().forEach(i -> jogador.getWorld().dropItem(jogador.getLocation(), i));
+            jogador.sendMessage("§5✦ §dVocê ganhou um §fMapa do Tesouro " + nomeRaridade(raridade) + " §dpor matar o dragão!");
+            Bukkit.broadcastMessage("§5✦ §f" + jogador.getName() + " §dlevou o §fMapa do Tesouro " + nomeRaridade(raridade) + " §ddo dragão.");
+            return true;
+        }
+        org.bukkit.boss.DragonBattle luta = mundo.getEnderDragonBattle();
+        Location portal = luta == null ? null : luta.getEndPortalLocation();
+        Location l = portal == null ? mundo.getSpawnLocation()
+                : mundo.getHighestBlockAt(portal.getBlockX(), portal.getBlockZ() + 5).getLocation().add(0.5, 1.2, 0.5);
+        mundo.dropItem(l, mapa).setVelocity(new org.bukkit.util.Vector());
+        Bukkit.broadcastMessage("§5✦ §dO Dragão do End deixou um §fMapa do Tesouro " + nomeRaridade(raridade) + " §ddo lado do portal!");
+        return true;
+    }
+
     /** A câmara ativa que contém o local, usado por integrações de regiões e comandos. */
     public boolean dentroDeCamara(Location local) {
         return camaras != null && camaras.camaraDe(local) != null;

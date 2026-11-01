@@ -92,7 +92,8 @@ trava-venda:
 # Os vendedores (um por categoria). A staff põe cada um com /shop admin npc <id>; a estrutura
 # "loja" já põe todos. skin: "textura:<hash>" (textures.minecraft.net) ou o nick de um jogador.
 # Com "comando" no lugar de "categoria", o vendedor abre esse comando em nome do jogador (balcões
-# de outros plugins, como o dos spawners).
+# de outros plugins, como o dos spawners). "extras": itens de outras categorias que o vendedor também
+# mostra, depois dos dele.
 vendedores:
   minerador:
     categoria: "Minérios"
@@ -138,6 +139,10 @@ vendedores:
     categoria: "Alquimia"
     nome: "&d&l⚗ Alquimista"
     descricao: "&7Poções, redstone, nether e end"
+    # Ingredientes de poção das outras categorias (o mesmo item, preço e mercado do vendedor de origem):
+    # sem eles, quem chega ao Alquimista não monta poção nenhuma (ex: lágrima de ghast pra regeneração).
+    extras: [NETHER_WART, REDSTONE, GUNPOWDER, SUGAR, RABBIT_FOOT, SPIDER_EYE, MAGMA_CREAM, GOLDEN_CARROT,
+             BLAZE_ROD, GHAST_TEAR, TURTLE_SCUTE, PHANTOM_MEMBRANE, BREEZE_ROD, STONE]
     skin: "textura:defd6156fb3dd71e8b0600b7865205387d8897e9410bf715078bf600966e9951"
 
 mensagens:

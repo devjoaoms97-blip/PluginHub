@@ -12,6 +12,7 @@ Spawners empilhados nos terrenos: outra fonte de renda além da mina.
 - **Abate:** a morte, por jogador ou não, vale pela pilha inteira: derruba os drops (com Pilhagem) e o XP de cada mob da pilha de uma vez, e o spawner começa uma pilha nova no ciclo seguinte. Os drops vendem no **Caçador**, e o preço dinâmico regula: o que muita gente farma vale menos.
 - **Pilha que volta com o chunk:** se o spawner já começou outra enquanto ela estava descarregada, as duas viram uma só.
 - **Quebrar:** devolve todos os spawners do bloco (em itens de até 64), sem precisar de Toque Suave.
+- **Spawner natural com Toque Suave:** o spawner de masmorra, mina abandonada ou fortaleza quebrado com picareta com Toque Suave vira o spawner da loja do mesmo mob (zumbi, esqueleto, aranha, aranha das cavernas e blaze), em qualquer mundo onde o jogador pode quebrar (as proteções de cada mundo valem). Os de mob que a loja não tem (traça, cubo de magma) e os das câmaras de desafio (outro bloco) não saem. `toque-suave.ativado` desliga.
 - **Explosão** não quebra spawner.
 
 O bloco mostra o mob girando, mas o spawn do vanilla fica desligado: quem gera é o ciclo do plugin.
@@ -49,12 +50,20 @@ Com 1 spawner são 180 mobs por hora (se o jogador matar todos); o preço se pag
 |---|---|---|
 | Galinha, Porco | Camponês | R$ 5.000, R$ 8.000 |
 | Ovelha, Vaca | Fazendeiro | R$ 10.000, R$ 14.000 |
-| Zumbi, Esqueleto | Lenhador | R$ 3.000, R$ 5.000 |
-| Aranha, Creeper | Ferreiro | R$ 5.000, R$ 7.000 |
+| Zumbi, Zumbi do Deserto | Lenhador | R$ 3.000 |
+| Afogado | Lenhador | R$ 2.700 |
+| Esqueleto, Errante, Esqueleto Pantanoso | Lenhador | R$ 5.000 |
+| Aranha, Aranha das Cavernas | Ferreiro | R$ 5.000 |
+| Creeper | Ferreiro | R$ 7.000 |
 | Slime | Mercador | R$ 10.000 |
+| Piglin Zumbificado | Mercador | R$ 4.900 |
 | Enderman | Escudeiro | R$ 15.000 |
 | Blaze | Clérigo | R$ 18.000 |
+| Esqueleto Wither | Clérigo | R$ 6.700 |
+| Breeze | Cavaleiro | R$ 74.000 |
 | Golem de Ferro | Barão | R$ 120.000 |
+
+Os de 2026-10-31 (Zumbi do Deserto, Afogado, Errante, Esqueleto Pantanoso, Aranha das Cavernas, Piglin Zumbificado, Esqueleto Wither e Breeze) foram calibrados pelo `tools/economia/spawners.py` pra se pagar em ~20 h, como os outros. A pilha não se transforma (o zumbi do deserto não vira zumbi na água, nem o zumbi vira afogado): perderia a contagem.
 
 ## Comandos
 

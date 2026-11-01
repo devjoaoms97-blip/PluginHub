@@ -18,6 +18,11 @@ drops:
   boss:
     ativado: true
     pesos: {comum: 45, raro: 30, arcano: 18, lendario: 7}
+  # O Dragão do End sempre dá 1 mapa: direto pro inventário de quem deu o último golpe (quem é, o
+  # RecursosPlugin decide). Sem ninguém com o crédito, ele cai do lado do portal de saída.
+  dragao:
+    ativado: true
+    pesos: {comum: 45, raro: 30, arcano: 18, lendario: 7}
   # Cada bloco quebrado numa mina (RankupPlugin) tem essa chance de dar um mapa, que vai direto pro
   # inventário. Com uns 4.000 blocos por hora, 0.000625 (1 em 1.600) dá em média 2,5 mapas por hora.
   mina:

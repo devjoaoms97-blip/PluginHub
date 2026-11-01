@@ -5,6 +5,9 @@ No servidor de teste, o Gladiador por clã abre sábado às **19h** e o individu
 
 São necessários pelo menos **4 jogadores** no individual ou **2 clãs** no modo por clã; se faltar gente, o evento cancela e devolve as inscrições. Há 15 segundos de preparação antes da luta. Cada pessoa entra com seu próprio equipamento: morrer, desconectar ou sair da arena elimina e pode deixar os itens no chão.
 
+**A arena**
+O piso tem quatro setores de cor para você se achar: **leste vermelho, sul verde, oeste amarelo e norte azul**. Cada setor tem a faixa da parede na cor dele e um obelisco com estandartes no meio, com o chão em volta na mesma cor.
+
 **Como vencer e receber**
 No individual, vence a última pessoa viva. Por clã, vence o último clã com alguém de pé, e o pote é dividido igualmente entre todos que lutaram por esse clã, mesmo os eliminados. Se o limite de 20 minutos terminar com mais de um lado vivo, os sobreviventes dividem o pote.
 

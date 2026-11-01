@@ -50,14 +50,39 @@ tipos:
     nome: "&2Zumbi"
     preco: 3000
     rank: lenhador
+  zumbi_deserto:
+    entidade: HUSK
+    nome: "&eZumbi do Deserto"
+    preco: 3000
+    rank: lenhador
+  afogado:
+    entidade: DROWNED
+    nome: "&3Afogado"
+    preco: 2700
+    rank: lenhador
   esqueleto:
     entidade: SKELETON
     nome: "&7Esqueleto"
     preco: 5000
     rank: lenhador
+  errante:
+    entidade: STRAY
+    nome: "&bErrante"
+    preco: 5000
+    rank: lenhador
+  pantanoso:
+    entidade: BOGGED
+    nome: "&2Esqueleto Pantanoso"
+    preco: 5000
+    rank: lenhador
   aranha:
     entidade: SPIDER
     nome: "&8Aranha"
+    preco: 5000
+    rank: ferreiro
+  aranha_caverna:
+    entidade: CAVE_SPIDER
+    nome: "&3Aranha das Cavernas"
     preco: 5000
     rank: ferreiro
   creeper:
@@ -75,16 +100,39 @@ tipos:
     nome: "&5Enderman"
     preco: 15000
     rank: escudeiro
+  piglin_zumbi:
+    entidade: ZOMBIFIED_PIGLIN
+    nome: "&dPiglin Zumbificado"
+    preco: 4900
+    rank: mercador
   blaze:
     entidade: BLAZE
     nome: "&6Blaze"
     preco: 18000
     rank: clerigo
+  esqueleto_wither:
+    entidade: WITHER_SKELETON
+    nome: "&8Esqueleto Wither"
+    preco: 6700
+    rank: clerigo
+  breeze:
+    entidade: BREEZE
+    nome: "&fBreeze"
+    preco: 74000
+    rank: cavaleiro
   golem:
     entidade: IRON_GOLEM
     nome: "&fGolem de Ferro"
     preco: 120000
     rank: barao
+
+# Toque Suave: spawner natural (masmorra, mina abandonada, fortaleza...) quebrado com picareta com
+# Toque Suave vira o spawner da loja do mesmo mob (zumbi, esqueleto, aranha, aranha das cavernas e
+# blaze). Traça e cubo de magma não estão na loja: esses não saem. Os da câmara de desafio (breeze,
+# esqueleto pantanoso) são outro bloco e não saem. Só onde o jogador pode quebrar: as proteções de
+# cada mundo valem.
+toque-suave:
+  ativado: true
 
 # /warp mobs: o salão de estátuas a oeste do spawn (estrutura "mobs" do EstruturasPlugin, que
 # cadastra as estátuas e a área com o /spawners mobs). Em volta do spawner na frente de cada estátua

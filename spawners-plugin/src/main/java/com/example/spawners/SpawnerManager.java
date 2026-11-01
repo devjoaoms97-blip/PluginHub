@@ -31,6 +31,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.EntitiesLoadEvent;
@@ -128,6 +129,11 @@ public class SpawnerManager implements Listener {
                     + " §7(dono " + Bukkit.getOfflinePlayer(c.dono).getName() + ")");
         }
         return linhas;
+    }
+
+    /** O bloco é um spawner da loja colocado num terreno. */
+    boolean ehColocado(Block b) {
+        return porLugar.containsKey(chave(b));
     }
 
     private static String chave(Block b) {
@@ -437,6 +443,15 @@ public class SpawnerManager implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void aoMirar(EntityTargetEvent evento) {
         if (evento.getEntity() instanceof Creeper && evento.getEntity().getPersistentDataContainer().has(chavePilha)) evento.setCancelled(true);
+    }
+
+    /**
+     * A pilha não se transforma: o zumbi do deserto viraria zumbi na água, o zumbi viraria afogado e o
+     * piglin zumbificado... e o mob novo perderia a contagem da pilha.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void aoTransformar(EntityTransformEvent evento) {
+        if (evento.getEntity().getPersistentDataContainer().has(chavePilha)) evento.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)

@@ -74,6 +74,26 @@ public class ShopManager {
         return resultado;
     }
 
+    /**
+     * O que o menu de uma categoria mostra: os itens dela e, depois, os {@code extras} dos vendedores
+     * dessa categoria (itens de outra categoria, como a lágrima de ghast no Alquimista). O extra é o
+     * mesmo item da loja: mesmo preço e mesmo mercado do vendedor de origem.
+     */
+    public java.util.List<ShopItem> getItensDoMenu(String categoria) {
+        java.util.List<ShopItem> resultado = getItensDaCategoria(categoria);
+        org.bukkit.configuration.ConfigurationSection vendedores = plugin.getConfig().getConfigurationSection("vendedores");
+        if (vendedores == null) return resultado;
+        for (String id : vendedores.getKeys(false)) {
+            if (!categoria.equalsIgnoreCase(vendedores.getString(id + ".categoria", ""))) continue;
+            for (String nome : vendedores.getStringList(id + ".extras")) {
+                Material m = Material.matchMaterial(nome.trim());
+                ShopItem item = m == null ? null : itens.get(m);
+                if (item != null && !resultado.contains(item)) resultado.add(item);
+            }
+        }
+        return resultado;
+    }
+
     public void cadastrarItem(Material material, String categoria, double precoBase, double margem, double min, double max, double passo) {
         ShopItem item = new ShopItem(material, categoria, precoBase, margem, min, max, passo);
         itens.put(material, item);

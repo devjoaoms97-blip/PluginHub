@@ -1,7 +1,7 @@
 # 🐉 Eventos
 
 **Boss mundial**
-Na agenda atual do servidor de teste, um boss aparece na arena todos os dias às **20h**: de segunda a sábado é sorteado entre os bosses normais; no domingo aparece o **Wither**. `/boss proximo` mostra o próximo horário. Entre pela passagem sul do spawn ou use `/warp boss`; o PvP começa depois do túnel.
+Na agenda atual do servidor de teste, um boss aparece na arena todos os dias às **20h**: de segunda a sábado é sorteado entre os bosses normais; no domingo aparece o **Wither**. `/boss proximo` mostra o próximo horário. Entre pela passagem sul do spawn ou use `/warp boss`; o PvP começa depois do túnel. As torres e os contêineres da arena têm escadas de mão, e as torres uma espiral de parkour: suba para fugir dos mobs ou atirar de cima.
 
 O campeão é quem dá o golpe final e recebe o prêmio especial e a tag de campeão. Os três maiores danos ganham coins, e quem ajudou recebe XP de skill proporcional ao dano causado. Se o boss escapar após uma hora, o servidor fica amaldiçoado: o XP de skill cai 10% por até 24 horas, ou até o próximo boss ser derrotado.
 

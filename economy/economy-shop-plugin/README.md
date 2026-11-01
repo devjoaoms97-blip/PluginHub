@@ -135,3 +135,7 @@ mvn clean package
 
 - `ChargeManager.java` — novo método `registrarTransacaoComLoja` + constante `ENTIDADE_LOJA`
 - `PixCommand.java` — método `historico()` agora reconhece a `ENTIDADE_LOJA` e mostra "Loja do Servidor"
+
+## Extras de um vendedor
+
+No config, `vendedores.<id>.extras` lista itens de outras categorias que o vendedor também mostra, depois dos dele. É o mesmo item da loja: mesmo preço e mesmo mercado do vendedor de origem (vender a lágrima de ghast no Alquimista mexe no mesmo preço do Caçador). O Alquimista usa isso pra ter todos os ingredientes de poção.

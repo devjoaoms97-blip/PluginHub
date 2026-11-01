@@ -35,6 +35,14 @@ DROPS = {
     "ZOMBIE": [("ROTTEN_FLESH", 1.0, 0.5)],
     "SKELETON": [("BONE", 1.0, 0.5), ("ARROW", 1.0, 0.5)],
     "SPIDER": [("STRING", 1.0, 0.5), ("SPIDER_EYE", 1 / 3, 0.5)],
+    "CAVE_SPIDER": [("STRING", 1.0, 0.5), ("SPIDER_EYE", 1 / 3, 0.5)],
+    "HUSK": [("ROTTEN_FLESH", 1.0, 0.5)],
+    "DROWNED": [("ROTTEN_FLESH", 1.0, 0.5), ("COPPER_INGOT", 0.11, 0.02)],
+    "STRAY": [("BONE", 1.0, 0.5), ("ARROW", 1.0, 0.5)],
+    "BOGGED": [("BONE", 1.0, 0.5), ("ARROW", 1.0, 0.5)],
+    "ZOMBIFIED_PIGLIN": [("ROTTEN_FLESH", 1.0, 0.5), ("GOLD_NUGGET", 0.5, 0.5)],
+    "WITHER_SKELETON": [("COAL", 1 / 3, 0.5), ("BONE", 1.0, 0.5)],
+    "BREEZE": [("BREEZE_ROD", 1.5, 0.5)],
     "CREEPER": [("GUNPOWDER", 1.0, 0.5)],
     "SLIME": [("SLIME_BALL", 1.0, 0.5)],
     "ENDERMAN": [("ENDER_PEARL", 0.5, 0.5)],
@@ -59,7 +67,7 @@ def main():
     lim = cfg["limite-por-terreno"]
 
     print(f"{por_hora:.0f} mobs/h por spawner | {lim} por terreno | Pilhagem {a.pilhagem} | {a.terrenos} terreno(s)")
-    print(f"{'tipo':<11}{'rank':<11}{'preço':>9}{'R$/h 1':>9}{'se paga':>9}{'R$/h cheio':>12}{'mina/h':>10}{'% mina':>8}  sem venda")
+    print(f"{'tipo':<17}{'rank':<11}{'preço':>9}{'R$/h 1':>9}{'se paga':>9}{'R$/h cheio':>12}{'mina/h':>10}{'% mina':>8}  sem venda")
     for tid, t in cfg["tipos"].items():
         drops = DROPS.get(t["entidade"], [])
         rank = t["rank"]
@@ -81,7 +89,7 @@ def main():
         renda_cheio *= fator
         mina = renda_no_rank.get(rank, float("nan"))
         paga = t["preco"] / renda_1 if renda_1 else float("inf")
-        print(f"{tid:<11}{rank:<11}{t['preco']:>9,}{renda_1:>9,.0f}{paga:>8.1f}h{renda_cheio:>12,.0f}{mina:>10,.0f}"
+        print(f"{tid:<17}{rank:<11}{t['preco']:>9,}{renda_1:>9,.0f}{paga:>8.1f}h{renda_cheio:>12,.0f}{mina:>10,.0f}"
               f"{renda_cheio / mina:>8.0%}  {', '.join(sem_venda)}")
 
 

@@ -8,5 +8,8 @@ O Dragão do End fica no mundo de recursos, acessado por `/warp end`. Ele renasc
 
 As grades de ferro das gaiolas de cristal são removidas pelo servidor, então todos os cristais podem ser atingidos com flechas. Destrua-os para interromper a cura do dragão e ataque quando ele se aproximar. O centro, num raio de 100 blocos, impede quebrar ou colocar blocos e protege o terreno contra explosões; isso não desliga o PvP fora do quadrado verde.
 
+**Recompensa**
+Quem dá o **último golpe** ganha a tag **[Matador de Dragão]** no chat, até o próximo dragão morrer, e um **Mapa do Tesouro** direto no inventário (Comum 45%, Raro 30%, Arcano 18%, Lendário 7%). Se o dragão morrer de forma indireta (explosão de um cristal, por exemplo), o crédito vai para o último jogador que o acertou nos 30 segundos anteriores; flecha conta para quem atirou, e a explosão de um cristal para quem quebrou o cristal. Se ninguém levar o crédito, o mapa cai do lado do portal.
+
 **Ovo e saída**
 O ovo aparece apenas na primeira derrota do dragão daquele End. É decorativo: não quebra e não se teleporta quando clicado. O End é reiniciado todo mês no dia 10, às 5h, e o portal de saída leva ao spawn. Para exploração, limites e mapas dos três mundos, veja **Mundos de recursos**.

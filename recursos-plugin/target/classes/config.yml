@@ -63,3 +63,12 @@ end:
     renascer: true
     hora: "21:00"
     mensagem: "&5&l🐉 O Dragão do End renasceu! &dVá com &f/warp end&d."
+    # Quem matou ganha a tag no chat até o próximo dragão morrer (o mapa do tesouro que ele derruba é
+    # do TesourosPlugin). Conta o último golpe; numa morte indireta (cristal, flecha de quem saiu...),
+    # o último jogador que acertou o dragão nos últimos janela-segundos. Explosão de cristal conta pra
+    # quem quebrou o cristal.
+    matador:
+      ativado: true
+      janela-segundos: 30
+      tag: "&5[Matador de Dragão]"
+      mensagem: "&5&l🐉 &f%jogador% &dmatou o Dragão do End e é o novo &5[Matador de Dragão]&d!"

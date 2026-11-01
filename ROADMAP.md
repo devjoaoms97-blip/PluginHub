@@ -281,11 +281,11 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 #### Mundos, arenas e eventos
 - [x] **Painel "Como começar" removido** (2026-10-31): o holograma do fim da avenida oeste saiu (o `/tutorial` e o `/comandos` fazem esse papel). `node montar-mapa.js construir tutorial` apaga o painel de um mapa que ainda o tem.
 - [x] **Montarias no mundo `tesouros`** (2026-10-30): `/montaria` liberado no `/warp tesouros`; as restrições das minas, da arena do boss e dos demais mundos foram mantidas.
-- [ ] **Recompensa do dragão do End**: conceder tag e prêmio ao responsável pela morte e fazer o dragão dropar um tesouro; definir elegibilidade, conteúdo e chance, inclusive para mortes indiretas e disputas pelo último golpe.
-- [ ] **Acesso às estruturas do `/boss`**: inserir escadas e trechos de parkour nas estruturas da arena.
-- [ ] **Referências visuais no Gladiador**: adicionar marcos que ajudem os jogadores a diferenciar as áreas da arena.
+- [x] **Recompensa do dragão do End** (2026-10-31): quem dá o último golpe ganha a tag `[Matador de Dragão]` no chat até o próximo dragão morrer (RecursosPlugin); numa morte indireta, conta o último jogador que acertou nos 30 s anteriores (flecha conta pro atirador, cristal pra quem quebrou). Sem dinheiro. O dragão sempre dá 1 Mapa do Tesouro direto no inventário de quem levou o crédito (sem ninguém com o crédito, ele cai do lado do portal), com as chances do boss (comum 45, raro 30, arcano 18, lendário 7; TesourosPlugin `drops.dragao`).
+- [x] **Acesso às estruturas do `/boss`** (2026-10-31): cada torre ganhou escada de mão (lado do centro) e espiral de parkour em volta; cada contêiner, escada de mão na ponta (e até o empilhado). Vale ao reconstruir a `toxica`.
+- [x] **Referências visuais no Gladiador** (2026-10-31): o piso tem quatro setores de cor (leste vermelho, sul verde, oeste amarelo, norte azul), com a faixa da parede, um obelisco com estandartes e o chão em volta na cor do setor. Vale ao reconstruir o `coliseu`.
 - [x] **`/sethome` nas arenas** (2026-10-31): `/sethome` e `/createhome` barrados dentro da arena do boss, do piso do X1, do piso do Gladiador e da câmara ativa do tesouro (limites reais de cada uma); logo fora, liberado. `teste-sethome-arenas.js`.
-- [ ] **Toque Suave em spawners**: permitir que spawners de todos os mundos sejam coletados com picareta com Toque Suave, conforme as regras de proteção de cada mundo.
+- [x] **Toque Suave em spawners** (2026-10-31): spawner natural quebrado com picareta com Toque Suave vira o spawner da loja do mesmo mob, onde o jogador pode quebrar. A loja ganhou Aranha das Cavernas, Zumbi do Deserto, Afogado, Errante, Esqueleto Pantanoso, Piglin Zumbificado, Esqueleto Wither e Breeze (calibrados pelo `spawners.py`, ~20 h pra se pagar). Traça e cubo de magma ficaram de fora.
 
 #### Terrenos, lojas e economia
 - [x] **Carnes cozidas no Fazendeiro** (2026-10-31): o Fazendeiro compra boi, porco, frango, carneiro e coelho assados. A carne crua a loja deixou de vender (o Caçador continua comprando): comprar crua, assar e vender cozida dava lucro (`loja.py`).
@@ -303,6 +303,8 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 
 - [x] **Chat local e global** (2026-10-31, `chat-plugin`): a mensagem normal só chega a quem está no mesmo mundo (`[L]`) e `/g <mensagem>` chega a todos (`[G]`); a staff (`chat.espiar`) vê o local dos outros mundos. Antes o chat era um só.
 - [x] **Anti-flood no chat** (2026-10-31, `chat-plugin`, novo): o chat e os comandos de mensagem (`/msg`, `/r`, `/cc`...) têm intervalo de 2 s, a mesma mensagem não repete por 30 s e mais de 5 em 15 s silencia por 30 s; `/vip vender`, `/pix qrcode`, `/pix receber`, `/tpa`, `/cla convidar` e `/bounty colocar` têm intervalo próprio. Vale pra staff também (só quem tem `chat.antiflood.ignorar` passa). O `/loja anunciar` deixou de isentar a staff, que era o que inundava o chat.
+
+- [x] **Alquimista com todos os ingredientes de poção** (2026-10-31): o vendedor ganhou `extras` (itens de outra categoria, com o mesmo preço e mercado do vendedor de origem): verruga do Nether, redstone, pólvora, açúcar, pé de coelho, olho de aranha, creme de magma, cenoura dourada, vara de blaze, lágrima de ghast, escama de tartaruga, membrana de phantom, vara de breeze e pedra. Entraram na loja os que faltavam de vez: frasco de vidro, baiacu, bafo de dragão, bloco de slime, teia e casco de tartaruga (`loja.py`, sem brecha).
 
 #### Limpeza e nomes
 - [x] **Limpeza do chão nas minas** (2026-10-31): a limpeza só alcançava chunks carregados, e as minas do fundo da avenida (até z -175) ficavam descarregadas sem ninguém por perto: os itens voltavam quando alguém chegava. Agora o item que nasceu antes da última limpeza sai quando o chunk dele carrega (com dono, vai pros achados). Os nomeados continuam protegidos (`ignorar-itens-nomeados`).
