@@ -71,9 +71,7 @@ t.rodar(async () => {
   console.log('\n== /tpa com clique ==')
   const outro = await t.criarBot(t.nomeNovo('Ajt'))
   await t.espera(1500)
-  for (const b of [nome, outro.username]) {
-    for (const p of ['essentials.tpa', 'essentials.tpaccept', 'essentials.tpdeny']) await t.console(`lp user ${b} permission set ${p} true`)
-  }
+  // sem permissão no usuário: o /tpa, o /tpaccept e o /tpdeny vêm do grupo default
   await t.console(`execute in minecraft:spawn run minecraft:tp ${nome} 0.5 65 20.5`)
   await t.console(`execute in minecraft:spawn run minecraft:tp ${outro.username} 0.5 65 -20.5`)
   await t.espera(1500)
@@ -88,9 +86,6 @@ t.rodar(async () => {
   const e = Object.values(bot.entities).find(x => x.username === outro.username)
   t.verificar(!!e && e.position.distanceTo(bot.entity.position) < 3, 'aceitar pelo comando do botão traz quem pediu', e ? `a ${e.position.distanceTo(bot.entity.position).toFixed(1)} blocos` : 'longe')
 
-  for (const b of [nome, outro.username]) {
-    for (const p of ['essentials.tpa', 'essentials.tpaccept', 'essentials.tpdeny']) await t.console(`lp user ${b} permission unset ${p}`)
-  }
   await t.capturar(bot, () => bot.chat('/terreno abandonar confirmar'), 500)
   await t.console(`tutorial admin resetar ${nome}`)
   await t.console(`minecraft:clear ${nome}`)

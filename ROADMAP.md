@@ -276,7 +276,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Permissões dos botões de ticket** (2026-10-31): Assumir e Fechar são só da staff, e quem abriu o ticket não usa nenhum dos dois, nem se for da staff (`discord-bot/src/tickets.js`).
 - [x] **Tutorial inicial com recompensa** (2026-10-31, `ajuda-plugin`): `/tutorial` com 5 etapas detectadas sozinhas (minerar 64 blocos na mina, `/warp loja`, `/ranks`, `/terreno auto`, `/diaria`) e um Mapa do Tesouro Comum no fim, uma vez por jogador (guardado se o inventário estiver cheio). Convite com botão ao entrar.
 - [x] **Ajuda para iniciantes** (2026-10-31, `ajuda-plugin`): `/comandos` com o índice clicável e 11 páginas (`/comandos amigo`, `/comandos terreno`...); clicar num comando o digita no chat.
-- [x] **Aceitar `/tpa` com clique** (2026-10-31, `ajuda-plugin`): botões [ACEITAR] e [RECUSAR] pra quem recebe o pedido; o Essentials continua validando o pedido e a expiração. Falta dar as permissões do `/tpa` ao grupo padrão (hoje ele só tem `/spawn` e `/warp`).
+- [x] **Aceitar `/tpa` com clique** (2026-10-31, `ajuda-plugin`): botões [ACEITAR] e [RECUSAR] pra quem recebe o pedido; o Essentials continua validando o pedido e a expiração. O grupo `default` tem `/tpa`, `/tpahere`, `/tpaccept`, `/tpdeny`, `/home`, `/sethome` e `/delhome` (no `default.yml` do LuckPerms e no `montar-mapa.js`); o `teste-ajuda.js` confere sem dar permissão ao bot.
 
 #### Mundos, arenas e eventos
 - [x] **Painel "Como começar" removido** (2026-10-31): o holograma do fim da avenida oeste saiu (o `/tutorial` e o `/comandos` fazem esse papel). `node montar-mapa.js construir tutorial` apaga o painel de um mapa que ainda o tem.
