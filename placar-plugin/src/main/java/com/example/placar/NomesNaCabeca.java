@@ -72,9 +72,10 @@ class NomesNaCabeca {
         // times de quem saiu
         for (Scoreboard s : todos) {
             for (Team t : Set.copyOf(s.getTeams())) {
-                if (t.getName().startsWith(PREFIXO_TIME) && !times.contains(t.getName())) {
+                String nome = t.getName(); // depois do unregister, o time não responde mais nem o nome
+                if (nome.startsWith(PREFIXO_TIME) && !times.contains(nome)) {
                     t.unregister();
-                    aplicados.getOrDefault(s, new HashMap<>()).remove(t.getName());
+                    aplicados.getOrDefault(s, new HashMap<>()).remove(nome);
                 }
             }
         }

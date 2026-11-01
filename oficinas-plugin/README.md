@@ -37,7 +37,7 @@ O Cambista encanta o item da **mão** com níveis acima do máximo do jogo, pago
 | Saque | Espada | IV, V, VI | 20, 40, 80 | R$ 300 mil, 900 mil, 2,5 mi |
 | Inquebrável | Ferramentas, armas e armaduras | IV, V, VI | 8, 16, 32 | R$ 100 mil, 300 mil, 800 mil |
 
-- Sobe **um nível por vez**: do que o item tem pro primeiro nível da lista (uma picareta com Fortuna III ou sem Fortuna vai pra VI) e depois um a um.
+- Sobe **um nível por vez**. Os níveis normais do jogo (de I ao máximo da mesa) custam só coins, sem fragmentos: `niveis-comuns.preco-por-nivel` × o nível (R$ 25 mil por nível; Saque I sai por R$ 25 mil e Saque III por R$ 75 mil). Uma espada sem Saque vai pra Saque I, não pra IV. Do máximo normal, pula pro primeiro nível da tabela (uma picareta com Fortuna III, IV ou V vai pra VI) e depois um a um.
 - Cada encantamento só vai nos itens da lista `itens` dele no config (Afiação nunca em picareta ou pá). `_PICKAXE` vale pra todo material que termina assim; `BOW`, só pro arco. Sem a lista, vale o que o jogo aceita. Também não aparece o que conflita com um encantamento do item (Fortuna e Toque Suave, as proteções entre si).
 - O desconto de VIP vale **só nas coins**. A compra aparece no extrato do Bancário, conta pra missão de encantar e, no último nível, é anunciada no chat.
 - **É caro de propósito.** Pela simulação do rankup, só Eficiência VIII leva a meta de 150 h até o Rei pra ~90 h, e Eficiência VIII com Fortuna VIII pra ~75 h. Os custos somam ~105 h de mina em fragmentos pra Eficiência VIII e ~175 h pra Fortuna VIII. O Saque vai só até VI, um nível acima do que dá pra ter no jogo, porque mexe nos drops dos mobs (inclusive dos spawners).

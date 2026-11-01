@@ -207,7 +207,9 @@ compactador:
 
 # Cambista: troca Fragmentos Arcanos (caem nas minas, ~1 por hora de mina: RankupPlugin,
 # fragmentos.chance-por-bloco) e coins por encantamentos acima do máximo no item da mão. Sobe um
-# nível por vez: do que o item tem pro primeiro nível da lista, e depois um a um. A chave é o id do
+# nível por vez: os níveis normais do jogo (de I ao máximo da mesa) custam só coins, pelo
+# niveis-comuns.preco-por-nivel × o nível (sem Saque, o próximo é Saque I, não IV); do máximo
+# normal, pula pro primeiro nível da lista (Fortuna III vai pra VI), e depois um a um. A chave é o id do
 # encantamento no Minecraft. O desconto de VIP vale só nas coins. "itens" diz em que ele pode ir:
 # "_PICKAXE" vale pra todo material que termina assim (de madeira a netherita), "BOW" só pro arco.
 # Sem "itens", vale o que o jogo aceita.
@@ -218,6 +220,8 @@ compactador:
 # R$ 3 mi e R$ 6 mi. O Saque vai só até VI (um acima do que o vanilla e a mina deixam: III da mesa,
 # IV e V nos kits) e mexe nos drops dos mobs e dos spawners, por isso cada nível é caro.
 cambista:
+  niveis-comuns:
+    preco-por-nivel: 25000
   encantamentos:
     efficiency:
       nome: "Eficiência"

@@ -29,8 +29,9 @@ import java.util.TreeMap;
  * encantamentos acima do máximo no item da mão: Eficiência, Fortuna, Afiação, Proteção e Poder VI a
  * VIII, Inquebrável IV a VI... A lista, os níveis e os custos ficam em {@code cambista.encantamentos}.
  * <p>
- * Sobe um nível por vez: do que o item tem (qualquer nível abaixo do primeiro da lista) pro primeiro
- * nível, e depois um a um. É caro de propósito: esses níveis desequilibram a economia e o PvP, então
+ * Sobe um nível por vez. Os níveis normais do jogo (de I ao máximo da mesa) custam só coins
+ * ({@code cambista.niveis-comuns.preco-por-nivel} × o nível): sem Saque, o próximo é Saque I, não IV.
+ * Do máximo normal, pula pro primeiro nível da lista (Fortuna III vai pra VI), e depois um a um. É caro de propósito: esses níveis desequilibram a economia e o PvP, então
  * cada um custa dezenas de horas de mina em fragmentos, mais coins (que saem da economia). O desconto
  * de VIP vale só nas coins. Encantamento que conflita com um do item (Fortuna e Toque Suave, as
  * proteções entre si) não é oferecido.
@@ -91,7 +92,7 @@ public class Cambista implements Listener {
                 String nome = plugin.cores(secao.getString(chave + ".nome", chave));
                 if (mao.getType().isAir()) {
                     // sem item: só a vitrine, com os custos
-                    menu.inventario.setItem(slot++, vitrine(nome, niveis, jogador));
+                    menu.inventario.setItem(slot++, vitrine(nome, ench, niveis, jogador));
                     continue;
                 }
                 if (!serve(chave, ench, mao)) continue;
@@ -110,25 +111,26 @@ public class Cambista implements Listener {
     /** O ícone de um encantamento pro item da mão: o próximo nível, o custo e se dá pra comprar. */
     private ItemStack oferta(Player jogador, ItemStack mao, Enchantment ench, String nome, TreeMap<Integer, double[]> niveis, int fragmentos) {
         int atual = mao.getEnchantmentLevel(ench);
-        Integer proximo = niveis.higherKey(atual);
+        Integer proximo = proximo(ench, niveis, atual);
         if (proximo == null) {
             return Servicos.icone(Material.BOOK, "§a" + nome + " " + romano(atual), "§7Esse item já está no máximo.");
         }
         if (conflita(mao, ench)) {
             return Servicos.icone(Material.BOOK, "§7" + nome, "§cConflita com um encantamento do item.");
         }
-        double[] custo = niveis.get(proximo);
+        double[] custo = custo(niveis, proximo);
         double preco = precoComDesconto(jogador, custo[1]);
         List<String> lore = new ArrayList<>();
         lore.add("§7No item: §f" + (atual > 0 ? nome + " " + romano(atual) : "nada"));
         lore.add("");
-        lore.add("§7Custo: §d" + (int) custo[0] + " fragmentos §7+ §a" + plugin.dinheiro(preco));
+        lore.add(custo[0] > 0 ? "§7Custo: §d" + (int) custo[0] + " fragmentos §7+ §a" + plugin.dinheiro(preco)
+                : "§7Custo: §a" + plugin.dinheiro(preco) + " §7(nível normal, sem fragmentos)");
         if (plugin.descontoVip(jogador) > 0) lore.add("§6(" + String.format(Locale.ROOT, "%.0f", plugin.descontoVip(jogador)) + "% de desconto VIP nas coins)");
         boolean temFragmentos = fragmentos >= custo[0];
         boolean temDinheiro = plugin.getEconomy() != null && plugin.getEconomy().has(jogador, preco);
         lore.add(temFragmentos ? "§a✔ fragmentos" : "§c✖ faltam " + (int) (custo[0] - fragmentos) + " fragmentos");
         lore.add(temDinheiro ? "§a✔ coins" : "§c✖ coins insuficientes");
-        Integer depois = niveis.higherKey(proximo);
+        Integer depois = proximo(ench, niveis, proximo);
         if (depois != null) lore.add("§8Depois: " + nome + " " + romano(depois));
         lore.add("");
         lore.add(temFragmentos && temDinheiro ? "§eClique pra encantar" : "§7Junte o que falta e volte");
@@ -137,8 +139,13 @@ public class Cambista implements Listener {
     }
 
     /** Sem item na mão: o que o cambista faz e quanto custa cada nível. */
-    private ItemStack vitrine(String nome, TreeMap<Integer, double[]> niveis, Player jogador) {
+    private ItemStack vitrine(String nome, Enchantment ench, TreeMap<Integer, double[]> niveis, Player jogador) {
         List<String> lore = new ArrayList<>();
+        int comuns = Math.min(ench.getMaxLevel(), niveis.firstKey() - 1);
+        if (comuns >= 1) {
+            lore.add("§f" + (comuns == 1 ? "I" : "I a " + romano(comuns)) + "§7: §a"
+                    + plugin.dinheiro(precoComDesconto(jogador, precoComum())) + " §7por nível");
+        }
         niveis.forEach((nivel, custo) -> lore.add("§f" + romano(nivel) + "§7: §d" + (int) custo[0] + " frag. §7+ §a"
                 + plugin.dinheiro(precoComDesconto(jogador, custo[1]))));
         return Servicos.icone(Material.ENCHANTED_BOOK, "§d" + nome, lore.toArray(String[]::new));
@@ -156,9 +163,9 @@ public class Cambista implements Listener {
         Enchantment ench = encantamento(chave);
         TreeMap<Integer, double[]> niveis = niveis(chave);
         if (ench == null || !serve(chave, ench, item) || conflita(item, ench)) return;
-        Integer proximo = niveis.higherKey(item.getEnchantmentLevel(ench));
+        Integer proximo = proximo(ench, niveis, item.getEnchantmentLevel(ench));
         if (proximo == null) return;
-        double[] custo = niveis.get(proximo);
+        double[] custo = custo(niveis, proximo);
         int fragmentos = (int) custo[0];
         if (contarFragmentos(jogador) < fragmentos) {
             jogador.sendMessage("§cFaltam fragmentos: precisa de §f" + fragmentos + "§c, você tem §f" + contarFragmentos(jogador) + "§c.");
@@ -178,9 +185,9 @@ public class Cambista implements Listener {
 
         jogador.playSound(jogador.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 0.8f);
         jogador.playSound(jogador.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_RESONATE, 1f, 1f);
-        jogador.sendMessage("§d✦ O cambista gravou §f" + nome + " " + romano(proximo) + " §dno seu item por §f" + fragmentos
-                + " fragmentos §de §f" + plugin.dinheiro(preco) + "§d.");
-        if (niveis.higherKey(proximo) == null) {
+        jogador.sendMessage("§d✦ O cambista gravou §f" + nome + " " + romano(proximo) + " §dno seu item por "
+                + (fragmentos > 0 ? "§f" + fragmentos + " fragmentos §de " : "") + "§f" + plugin.dinheiro(preco) + "§d.");
+        if (proximo(ench, niveis, proximo) == null) {
             Bukkit.broadcastMessage("§d§l✦ §f" + jogador.getName() + " §dconseguiu §f" + nome + " " + romano(proximo) + " §dno Cambista!");
         }
         abrir(jogador);
@@ -190,6 +197,25 @@ public class Cambista implements Listener {
 
     private Enchantment encantamento(String chave) {
         return Registry.ENCHANTMENT.get(NamespacedKey.minecraft(chave.toLowerCase(Locale.ROOT)));
+    }
+
+    /**
+     * O nível seguinte ao que o item tem: abaixo do máximo normal do jogo, o próximo (só coins); depois,
+     * o próximo da lista. Null quando já está no topo da lista.
+     */
+    private static Integer proximo(Enchantment ench, TreeMap<Integer, double[]> niveis, int atual) {
+        if (atual < ench.getMaxLevel() && atual + 1 < niveis.firstKey()) return atual + 1;
+        return niveis.higherKey(atual);
+    }
+
+    /** {fragmentos, preço} do nível: o da lista ou, num nível normal do jogo, só as coins por nível. */
+    private double[] custo(TreeMap<Integer, double[]> niveis, int nivel) {
+        double[] custo = niveis.get(nivel);
+        return custo != null ? custo : new double[]{0, precoComum() * nivel};
+    }
+
+    private double precoComum() {
+        return plugin.getConfig().getDouble("cambista.niveis-comuns.preco-por-nivel", 25000);
     }
 
     /** nível → {fragmentos, preço}, em ordem. */

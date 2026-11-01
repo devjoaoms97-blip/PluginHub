@@ -207,6 +207,7 @@ Quatro barraquinhas temáticas na praça de entrada da Avenida das Minas (estrut
 - [ ] Calibrar a chance do fragmento e os custos do Cambista com jogadores de verdade (`analisar.py`). 🟡
 - [x] Missões nas oficinas (2026-10-27): tipos `reparar` (Ferreiro) e `encantar` (Bruxa e Cambista), com uma diária e uma semanal de cada.
 - [x] Machados no Picareteiro, pra mina do bosque (2026-10-25).
+- [x] **Cambista começa no nível I** (2026-11-01): uma espada sem Saque ia direto pra Saque IV. Agora os níveis normais do jogo (de I ao máximo da mesa) saem um a um, só por coins (`niveis-comuns.preco-por-nivel`, R$ 25 mil × o nível), e do máximo normal o item segue pra tabela de fragmentos.
 
 ### Placar lateral ✅ v1 (`placar-plugin`)
 Scoreboard no canto da tela com saldo, rank, barra até o próximo rank, clã, missões do dia, próximo boss e jogadores online. Linhas no config, com placeholders; `/placar` liga e desliga.

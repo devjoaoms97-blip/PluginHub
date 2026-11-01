@@ -173,8 +173,24 @@ t.rodar(async () => {
   await naMao(nome, 'diamond_sword')
   janela = await falar(bot, CAMBISTA)
   texto = ofertas(janela)
-  t.verificar(/Afia/.test(texto) && /Saque IV/.test(texto) && !/Efici/.test(texto) && !/Fortuna/.test(texto),
-    'na espada: Afiação e Saque (a partir do IV), sem Eficiência nem Fortuna', texto.slice(0, 200))
+  t.verificar(/Afia/.test(texto) && /Saque I/.test(texto) && !/Saque IV/.test(texto) && !/Efici/.test(texto) && !/Fortuna/.test(texto),
+    'na espada sem Saque: Afiação e Saque I (não IV), sem Eficiência nem Fortuna', texto.slice(0, 200))
+  if (janela) {
+    // nível normal do jogo: só coins (R$ 25.000 × 1), sem fragmento
+    const antes = Number((await t.console(`balance ${nome}`)).match(/\$([\d,.]+)/)[1].replace(/,/g, ''))
+    const slot = janela.slots.findIndex((s, i) => i >= 9 && i < 27 && /Saque/.test(nomeDo(s)))
+    if (slot >= 0) await bot.clickWindow(slot, 0, 0)
+    await t.espera(1500)
+    if (bot.currentWindow) bot.closeWindow(bot.currentWindow)
+    const depois = Number((await t.console(`balance ${nome}`)).match(/\$([\d,.]+)/)[1].replace(/,/g, ''))
+    encs = await t.console(`data get entity ${nome} SelectedItem.components."minecraft:enchantments"`)
+    t.verificar(/looting": 1/.test(encs) && Math.abs(antes - depois - 25000) < 1 && await quantos(nome, 'paper') === 49,
+      'comprou Saque I por R$ 25.000, sem gastar fragmento', `${encs} | pagou ${antes - depois}`)
+  }
+  await naMao(nome, 'diamond_sword[enchantments={"minecraft:looting":3}]')
+  janela = await falar(bot, CAMBISTA)
+  texto = ofertas(janela)
+  t.verificar(/Saque IV/.test(texto), 'com Saque III, o próximo é o IV (com fragmentos)', texto.slice(0, 200))
   if (janela) bot.closeWindow(janela)
 
   console.log('\n== Compactador ==')
