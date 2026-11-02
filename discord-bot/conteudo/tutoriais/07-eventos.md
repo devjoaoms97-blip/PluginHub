@@ -1,5 +1,7 @@
 # 🐉 Eventos
 
+📅 **`/eventos`** mostra a agenda de todos, o que está rolando agora e qual é o próximo.
+
 **Boss mundial**
 Na agenda atual do servidor de teste, um boss aparece na arena todos os dias às **20h**: de segunda a sábado é sorteado entre os bosses normais; no domingo aparece o **Wither**. `/boss proximo` mostra o próximo horário. Entre pela passagem sul do spawn ou use `/warp boss`; o PvP começa depois do túnel. As torres e os contêineres da arena têm escadas de mão, e as torres uma espiral de parkour: suba para fugir dos mobs ou atirar de cima.
 
@@ -12,7 +14,14 @@ Na agenda do servidor de teste, o modo **por clã** abre sábado às **19h** e o
 
 Inscrição, pote, borda e critérios de vitória estão explicados em **Gladiador**.
 
-No individual vence a última pessoa de pé; por clã, o último clã com alguém vivo. O pote soma as inscrições e o bônus do servidor; no modo por clã, é dividido igualmente entre todos que lutaram pelo clã vencedor, vivos ou eliminados. Cada um luta com seu próprio equipamento, e morrer, desconectar ou sair da área elimina e pode deixar seus itens na arena. Se faltar o mínimo de participantes, o evento é cancelado e as inscrições são devolvidas. Após 5 minutos, a borda fecha ao longo de outros 5; depois de 20 minutos, quem restar divide o pote. Os vencedores têm 30 segundos para pegar itens no chão. Os destaques recebem tags até o próximo evento: **[Ceifador]** (mais abates), **[Fujão]** (mais movimento) e **[Top Damage]** (mais dano causado).
+**Vietnã e Spleef**
+Eventos rápidos e grátis em que **ninguém perde itens**: entre com o inventário **totalmente vazio** (inclusive armadura e a outra mão), uma inscrição por conexão. Todos recebem o mesmo kit, ninguém perde vida e quem cai na água vai pra arquibancada, em cima da arena. O último de pé leva um **cheque de R$ 10.000**; depois de 8 minutos, quem estiver de pé divide. Na arena só vale o comando do evento (nada de `/tpa` ou `/home`), e da arquibancada sai com `/spawn`.
+
+☘ **Vietnã**, todo dia às **10h** e **16h** (`/vietna entrar`): pilares sobre a água. Kit: arco com Impulso, bolas de neve, cargas de vento (empurram e servem pra pular de um pilar pro outro) e vara de pesca. Os golpes só empurram. Depois de 2 minutos, o topo de um pilar fica **vermelho** e ele cai pouco depois: saia de cima!
+
+❄ **Spleef**, todo dia às **13h** e **18h** (`/spleef entrar`): três pisos de neve. Kit: uma pá que quebra a neve na hora. Quebre o chão debaixo dos outros; quem cai vai pro piso de baixo, e do último cai na água. Depois de 2 minutos, a neve começa a virar **gelo** e sumir.
+
+Pra só assistir: `/vietna assistir` ou `/spleef assistir`.
 
 **Mine-sena**
 O sorteio é todo dia às 18h. Veja como escolher seus números e apostar no tutorial **Dinheiro, loja e Pix**.

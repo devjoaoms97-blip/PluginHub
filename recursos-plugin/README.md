@@ -37,7 +37,7 @@ O Nether e o End padrão do jogo ficam desligados (`allow-nether=false` no `serv
 |---|---|
 | `/warp recursos`, `/warp nether`, `/warp end` | Vai pro mundo |
 | `/recursos [info] [mundo]` | Datas dos próximos resets (dos três, ou de um) |
-| `/luz` (ou `/visao`) | Liga e desliga a visão noturna (pra todos). Fica até desligar: volta depois de morrer, de beber leite e de sair do servidor |
+| `/luz` (ou `/visao`) | Liga e desliga a visão noturna (pra todos). Fica até desligar: volta depois de morrer, de beber leite, de sair do servidor, de trocar de mundo e de qualquer coisa que tire o efeito (como os eventos, que limpam os efeitos de quem entra). Se a luz está marcada mas o efeito sumiu, o `/luz` liga de novo em vez de desligar |
 | `/mapa [recursos\|nether\|end]` | O mapa de localização do mundo |
 | `/recursos admin resetar [mundo] [minutos\|agora]` | Marca um reset (padrão: o mundo de recursos, em 5 min, com os avisos) ou reseta na hora. O mundo pode ser o nome ou o comando (`nether`, `end`) |
 | `/recursos admin cancelar [mundo]` | Cancela o reset marcado (o automático continua) |

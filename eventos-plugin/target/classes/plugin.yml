@@ -3,14 +3,23 @@ version: '1.0.0'
 main: com.example.eventos.EventosPlugin
 api-version: '26.2'
 author: Você
-description: Eventos do servidor. O primeiro é o Vietnã, de derrubar os outros dos pilares na água com arco, bola de neve, carga de vento e vara.
+description: Eventos do servidor. Vietnã (derrubar os outros dos pilares na água) e Spleef (quebrar a neve debaixo dos outros).
 softdepend: [Vault, ChequePlugin, DiscordPlugin, AreasPlugin]
 
 commands:
+  eventos:
+    description: Agenda dos eventos, o que está rolando e o próximo.
+    usage: "Uso: /eventos"
+    permission: eventos.usar
+    permission-message: "§cVocê não tem permissão para os eventos."
   vietna:
     description: Evento Vietnã.
     usage: "Uso: /vietna <entrar|sair|info|assistir|top>"
-    aliases: [vietnam]
+    permission: eventos.usar
+    permission-message: "§cVocê não tem permissão para os eventos."
+  spleef:
+    description: Evento Spleef.
+    usage: "Uso: /spleef <entrar|sair|info|assistir|top>"
     permission: eventos.usar
     permission-message: "§cVocê não tem permissão para os eventos."
 

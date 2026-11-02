@@ -4,23 +4,29 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.data.type.Lantern;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A arena do Vietnã, construída pelo plugin (de novo a cada evento, pra os pilares voltarem):
+ * A arena do Vietnã: um prédio fechado, de tema de selva.
  * <pre>
- *   arquibancada (norte, atrás do vidro, acima dos pilares)
- *   ┌──────────── vidro ────────────┐
- *   │ ▪▪  ▪▪  ▪▪  ▪▪  ▪▪  ▪▪        │   pilares de 2x2 (tronco da selva, topo de musgo),
- *   │                               │   "vao" blocos entre eles, sobre a água
- *   │ ▪▪  ▪▪  ▪▪  ▪▪  ▪▪  ▪▪        │
- *   └───────────────────────────────┘
+ *   teto (madeira escura, claraboias de vidro e lanternas penduradas)
+ *   ┌─────────────────────────────────────────┐
+ *   │ galeria │ vidro │                │ vidro │ galeria │   ← quem assiste, em volta e acima
+ *   │█████████│       │  ▪▪  ▪▪  ▪▪    │       │█████████│
+ *   │█████████│ parede│  ▪▪  ▪▪  ▪▪    │ parede│█████████│   ← pilares de 2x2 sobre a água
+ *   │█████████│ ~~~~~~~~~ água ~~~~~~~~~~~~~~ │█████████│
  * </pre>
- * A água tem 3 de fundo, os pilares sobem {@code altura} acima dela e o vidro em volta vai bem acima
- * dos pilares (quem voa por cima com a carga de vento sai da arena e está fora).
+ * Pilares de tronco da selva com topo de musgo, {@code vao} blocos entre eles, {@code altura} acima da
+ * água (3 de fundo, com lanternas do mar no fundo). A galeria fica 5 blocos acima do topo dos pilares,
+ * em volta dos 4 lados, separada da arena por um vidro do piso dela até o teto: quem luta não chega lá
+ * nem voando com a carga de vento.
+ * <p>
+ * {@link #construir()} faz o prédio inteiro (uma vez, pela staff); {@link #resetar()} só ergue os
+ * pilares de novo, a cada evento.
  */
 public class ArenaVietna {
 
@@ -28,9 +34,11 @@ public class ArenaVietna {
     public record Pilar(int x, int z) {
     }
 
+    private static final int GALERIA = 4; // largura da galeria
+
     private final String mundo;
     private final int aguaY, altura;
-    private final int x0, z0, x1, z1; // piscina por dentro
+    private final int x0, z0, x1, z1; // a piscina por dentro (onde se luta)
     private final List<Pilar> pilares = new ArrayList<>();
 
     public ArenaVietna(ConfigurationSection cfg) {
@@ -64,12 +72,12 @@ public class ArenaVietna {
         return aguaY + altura;
     }
 
-    private int topoVidro() {
-        return topoPilar() + 8;
+    private int pisoGaleria() {
+        return topoPilar() + 5;
     }
 
-    private int pisoArquibancada() {
-        return topoPilar() + 2;
+    private int teto() {
+        return pisoGaleria() + 6;
     }
 
     /** Em cima do pilar, no meio dos 4 blocos. */
@@ -77,23 +85,24 @@ public class ArenaVietna {
         return new Location(mundo(), p.x() + 1, topoPilar() + 1, p.z() + 1, yaw, 0);
     }
 
-    /** Onde quem caiu (ou veio assistir) aparece: o meio da arquibancada, olhando pros pilares. */
+    /** Onde quem caiu (ou veio assistir) aparece: o meio da galeria norte, olhando pros pilares. */
     public Location arquibancada() {
-        return new Location(mundo(), (x0 + x1) / 2.0 + 0.5, pisoArquibancada() + 1, z0 - 3.5, 0, 25);
+        return new Location(mundo(), (x0 + x1) / 2.0 + 0.5, pisoGaleria() + 1, z0 - 1 - GALERIA / 2.0, 0, 35);
     }
 
-    /** Dentro da piscina e acima dela até o vidro (onde se luta). */
+    /** Dentro das paredes, da água ao teto (onde se luta). */
     public boolean naArena(Location l) {
         return l.getWorld() != null && l.getWorld().getName().equals(mundo)
                 && l.getX() >= x0 && l.getX() < x1 + 1 && l.getZ() >= z0 && l.getZ() < z1 + 1
-                && l.getY() >= aguaY - 4 && l.getY() < topoVidro() + 1;
+                && l.getY() >= aguaY - 4 && l.getY() < teto();
     }
 
-    /** A arquibancada (atrás do vidro norte). */
+    /** A galeria em volta (os 4 lados), acima da arena. */
     public boolean naArquibancada(Location l) {
-        return l.getWorld() != null && l.getWorld().getName().equals(mundo)
-                && l.getX() >= x0 - 1 && l.getX() < x1 + 2 && l.getZ() >= z0 - 7 && l.getZ() < z0 - 1
-                && l.getY() >= pisoArquibancada() - 1 && l.getY() < topoVidro() + 3;
+        if (l.getWorld() == null || !l.getWorld().getName().equals(mundo)) return false;
+        boolean noAnel = l.getX() >= x0 - 1 - GALERIA && l.getX() < x1 + 2 + GALERIA && l.getZ() >= z0 - 1 - GALERIA
+                && l.getZ() < z1 + 2 + GALERIA && !(l.getX() >= x0 - 1 && l.getX() < x1 + 2 && l.getZ() >= z0 - 1 && l.getZ() < z1 + 2);
+        return noAnel && l.getY() >= pisoGaleria() && l.getY() < teto();
     }
 
     /** Caiu: os pés na altura da água (ou abaixo). */
@@ -101,38 +110,92 @@ public class ArenaVietna {
         return l.getY() < aguaY + 1.2;
     }
 
-    /** [min, max] da caixa de PvP pro AreasPlugin (a piscina até o vidro). */
+    /** [min, max] da caixa de PvP pro AreasPlugin (a piscina até o teto). */
     public int[][] caixa() {
-        return new int[][]{{x0, aguaY - 4, z0}, {x1, topoVidro(), z1}};
+        return new int[][]{{x0, aguaY - 4, z0}, {x1, teto(), z1}};
     }
 
-    /** Constrói tudo de novo (a piscina, os pilares, o vidro e a arquibancada). */
+    /** O prédio inteiro (e limpa o que sobrou das versões antigas em volta). */
     public void construir() {
         World w = mundo();
         if (w == null) return;
-        // limpa (o ar acima de tudo, a arquibancada inclusive)
-        encher(w, x0 - 1, aguaY - 3, z0 - 8, x1 + 1, topoVidro() + 4, z1 + 1, Material.AIR);
-        // fundo, água e paredes de vidro
-        encher(w, x0 - 1, aguaY - 3, z0 - 1, x1 + 1, aguaY - 3, z1 + 1, Material.SAND);
+        int ex0 = x0 - 2 - GALERIA, ez0 = z0 - 2 - GALERIA, ex1 = x1 + 2 + GALERIA, ez1 = z1 + 2 + GALERIA; // paredes de fora
+        int base = aguaY - 3, galeria = pisoGaleria(), teto = teto();
+        encher(w, ex0 - 3, base, ez0 - 6, ex1 + 3, teto + 6, ez1 + 3, Material.AIR);
+
+        // o corpo do prédio: maciço até a galeria, com a piscina escavada
+        encher(w, ex0, base, ez0, ex1, galeria - 1, ez1, Material.MOSSY_STONE_BRICKS);
+        misturar(w, ex0, base, ez0, ex1, galeria - 1, ez1);
+        encher(w, x0, aguaY - 2, z0, x1, galeria - 1, z1, Material.AIR);
         encher(w, x0, aguaY - 2, z0, x1, aguaY, z1, Material.WATER);
-        for (int y = aguaY - 2; y <= topoVidro(); y++) {
-            encher(w, x0 - 1, y, z0 - 1, x1 + 1, y, z0 - 1, Material.GLASS);
-            encher(w, x0 - 1, y, z1 + 1, x1 + 1, y, z1 + 1, Material.GLASS);
-            encher(w, x0 - 1, y, z0 - 1, x0 - 1, y, z1 + 1, Material.GLASS);
-            encher(w, x1 + 1, y, z0 - 1, x1 + 1, y, z1 + 1, Material.GLASS);
+        for (int x = x0 + 1; x <= x1; x += 4) {
+            for (int z = z0 + 1; z <= z1; z += 4) w.getBlockAt(x, aguaY - 3, z).setType(Material.SEA_LANTERN, false);
         }
+        // paredes de dentro: colunas de tronco da selva e uma faixa de lanternas do mar acima da água
+        for (int y = aguaY + 1; y < galeria; y++) {
+            for (int x = x0; x <= x1; x += 5) {
+                w.getBlockAt(x, y, z0 - 1).setType(Material.JUNGLE_LOG, false);
+                w.getBlockAt(x, y, z1 + 1).setType(Material.JUNGLE_LOG, false);
+            }
+            for (int z = z0; z <= z1; z += 5) {
+                w.getBlockAt(x0 - 1, y, z).setType(Material.JUNGLE_LOG, false);
+                w.getBlockAt(x1 + 1, y, z).setType(Material.JUNGLE_LOG, false);
+            }
+        }
+        for (int x = x0 + 2; x <= x1; x += 5) {
+            w.getBlockAt(x, aguaY + 3, z0 - 1).setType(Material.SEA_LANTERN, false);
+            w.getBlockAt(x, aguaY + 3, z1 + 1).setType(Material.SEA_LANTERN, false);
+        }
+        for (int z = z0 + 2; z <= z1; z += 5) {
+            w.getBlockAt(x0 - 1, aguaY + 3, z).setType(Material.SEA_LANTERN, false);
+            w.getBlockAt(x1 + 1, aguaY + 3, z).setType(Material.SEA_LANTERN, false);
+        }
+        // borda de madeira em volta da arena, no nível da galeria
+        anel(w, x0 - 1, z0 - 1, x1 + 1, z1 + 1, galeria - 1, Material.STRIPPED_JUNGLE_LOG);
+
+        // galeria: piso de madeira da selva, vidro do lado da arena até o teto, parede de fora com janelas
+        encher(w, ex0 + 1, galeria, ez0 + 1, ex1 - 1, galeria, ez1 - 1, Material.JUNGLE_PLANKS);
+        encher(w, x0, galeria, z0, x1, galeria, z1, Material.AIR);
+        for (int y = galeria; y < teto; y++) anel(w, x0 - 1, z0 - 1, x1 + 1, z1 + 1, y, Material.GLASS);
+        for (int y = galeria; y < teto; y++) anel(w, ex0, ez0, ex1, ez1, y, Material.MOSSY_STONE_BRICKS);
+        for (int x = ex0; x <= ex1; x += 4) {
+            for (int y = galeria; y < teto; y++) {
+                w.getBlockAt(x, y, ez0).setType(Material.JUNGLE_LOG, false);
+                w.getBlockAt(x, y, ez1).setType(Material.JUNGLE_LOG, false);
+            }
+            w.getBlockAt(x + 2, galeria + 2, ez0).setType(Material.GLASS_PANE, false);
+            w.getBlockAt(x + 2, galeria + 2, ez1).setType(Material.GLASS_PANE, false);
+        }
+        for (int z = ez0; z <= ez1; z += 4) {
+            for (int y = galeria; y < teto; y++) {
+                w.getBlockAt(ex0, y, z).setType(Material.JUNGLE_LOG, false);
+                w.getBlockAt(ex1, y, z).setType(Material.JUNGLE_LOG, false);
+            }
+            w.getBlockAt(ex0, galeria + 2, z + 2).setType(Material.GLASS_PANE, false);
+            w.getBlockAt(ex1, galeria + 2, z + 2).setType(Material.GLASS_PANE, false);
+        }
+        // bancos (degraus de madeira) encostados na parede de fora, e lanternas no chão da galeria
+        anel(w, ex0 + 1, ez0 + 1, ex1 - 1, ez1 - 1, galeria + 1, Material.JUNGLE_SLAB);
+        for (int x = ex0 + 3; x < ex1; x += 6) {
+            w.getBlockAt(x, galeria + 1, ez0 + 1).setType(Material.LANTERN, false);
+            w.getBlockAt(x, galeria + 1, ez1 - 1).setType(Material.LANTERN, false);
+        }
+
+        // teto: madeira escura com claraboias e lanternas penduradas sobre a arena
+        encher(w, ex0, teto, ez0, ex1, teto, ez1, Material.DARK_OAK_PLANKS);
+        for (int x = x0 + 2; x <= x1 - 2; x += 6) {
+            for (int z = z0 + 2; z <= z1 - 2; z += 6) {
+                encher(w, x, teto, z, x + 1, teto, z + 1, Material.GLASS);
+                pendurar(w, x - 2, teto - 1, z - 2);
+            }
+        }
+        anel(w, ex0 - 1, ez0 - 1, ex1 + 1, ez1 + 1, teto, Material.JUNGLE_SLAB);
+        resetar();
+    }
+
+    /** Os pilares de novo (a cada evento). */
+    public void resetar() {
         for (Pilar p : pilares) erguer(p);
-        // arquibancada: dois degraus de madeira atrás do vidro norte, com parapeito
-        int piso = pisoArquibancada();
-        encher(w, x0 - 1, aguaY - 3, z0 - 4, x1 + 1, piso - 1, z0 - 2, Material.STONE_BRICKS);
-        encher(w, x0 - 1, aguaY - 3, z0 - 7, x1 + 1, piso, z0 - 5, Material.STONE_BRICKS);
-        encher(w, x0 - 1, piso, z0 - 4, x1 + 1, piso, z0 - 2, Material.DARK_OAK_PLANKS);
-        encher(w, x0 - 1, piso + 1, z0 - 7, x1 + 1, piso + 1, z0 - 5, Material.DARK_OAK_PLANKS);
-        for (int y = piso + 1; y <= piso + 3; y++) {
-            encher(w, x0 - 2, y, z0 - 8, x0 - 2, y, z0 - 2, Material.GLASS);
-            encher(w, x1 + 2, y, z0 - 8, x1 + 2, y, z0 - 2, Material.GLASS);
-        }
-        encher(w, x0 - 2, piso + 2, z0 - 8, x1 + 2, piso + 4, z0 - 8, Material.GLASS);
     }
 
     /** O pilar inteiro, do fundo ao topo. */
@@ -152,6 +215,39 @@ public class ArenaVietna {
         World w = mundo();
         encher(w, p.x(), aguaY + 1, p.z(), p.x() + 1, topoPilar(), p.z() + 1, Material.AIR);
         encher(w, p.x(), aguaY - 2, p.z(), p.x() + 1, aguaY, p.z() + 1, Material.WATER);
+    }
+
+    /** Lanterna pendurada (com uma corrente) no teto. */
+    private static void pendurar(World w, int x, int y, int z) {
+        w.getBlockAt(x, y, z).setType(Material.IRON_CHAIN, false);
+        w.getBlockAt(x, y - 1, z).setType(Material.LANTERN, false);
+        if (w.getBlockAt(x, y - 1, z).getBlockData() instanceof Lantern l) {
+            l.setHanging(true);
+            w.getBlockAt(x, y - 1, z).setBlockData(l, false);
+        }
+    }
+
+    /** Pedra com musgo, rachada e comum, misturadas, pra parede não ficar lisa. */
+    private static void misturar(World w, int ax, int ay, int az, int bx, int by, int bz) {
+        java.util.Random r = new java.util.Random(42);
+        for (int x = ax; x <= bx; x++) {
+            for (int y = ay; y <= by; y++) {
+                for (int z = az; z <= bz; z++) {
+                    if (x != ax && x != bx && z != az && z != bz) continue; // só a casca de fora
+                    int s = r.nextInt(10);
+                    if (s < 3) w.getBlockAt(x, y, z).setType(Material.CRACKED_STONE_BRICKS, false);
+                    else if (s < 5) w.getBlockAt(x, y, z).setType(Material.STONE_BRICKS, false);
+                }
+            }
+        }
+    }
+
+    /** O contorno de um retângulo numa altura. */
+    private static void anel(World w, int ax, int az, int bx, int bz, int y, Material m) {
+        encher(w, ax, y, az, bx, y, az, m);
+        encher(w, ax, y, bz, bx, y, bz, m);
+        encher(w, ax, y, az, ax, y, bz, m);
+        encher(w, bx, y, az, bx, y, bz, m);
     }
 
     private static void encher(World w, int ax, int ay, int az, int bx, int by, int bz, Material m) {

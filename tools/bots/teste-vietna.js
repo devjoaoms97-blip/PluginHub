@@ -37,6 +37,9 @@ t.rodar(async () => {
     }
     await t.espera(1500)
 
+    // o A liga a luz antes: o evento limpa os efeitos e leva pra outro mundo, e ela tem que continuar
+    await t.capturar(a, () => a.chat('/luz'), 600)
+
     console.log('\n== Inscrição ==')
     await t.console('vietna abrir')
     await t.espera(500)
@@ -66,6 +69,8 @@ t.rodar(async () => {
     await t.espera(2500)
     t.verificar([a, b, c].every(noPilar), 'os 3 em cima dos pilares', [a, b, c].map(x => x.entity.position.floored()).join(' | '))
     t.verificar(await quantos(a.username, 'bow') === 0, 'sem kit na preparação')
+    const efeitos = await t.console(`data get entity ${a.username} active_effects`)
+    t.verificar(/night_vision/.test(efeitos), 'o /luz continua ligado depois de trocar de mundo e o evento limpar os efeitos', efeitos.slice(0, 120))
     await t.espera(10000)
     const kit = {}
     for (const item of ['bow', 'snowball', 'wind_charge', 'fishing_rod', 'arrow']) kit[item] = await quantos(a.username, item)
@@ -149,6 +154,7 @@ t.rodar(async () => {
       await t.console(`minecraft:clear ${bot.username}`)
       await t.console(`lp user ${bot.username} permission unset eventos.ip.ignorar`)
     }
+    await t.capturar(a, () => a.chat('/luz'), 600) // desliga
   }
   await t.terminar(...todos.filter(x => x !== c))
 })

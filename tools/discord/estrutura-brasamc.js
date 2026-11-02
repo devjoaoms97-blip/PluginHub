@@ -143,6 +143,7 @@ module.exports = {
   webhooks: {
     boss: 'eventos',
     gladiador: 'eventos',
+    eventos: 'eventos',
     minesena: 'eventos',
     skills: 'eventos',
     loja: 'eventos',

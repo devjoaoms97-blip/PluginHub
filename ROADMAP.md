@@ -180,7 +180,12 @@ Pilares de 2x2 sobre a água no mundo `arenas`; cada um nasce num pilar com o me
 
 **Próximos passos**
 - [ ] Testar jogando a força dos empurrões (`vietna.empurrao`) e o tempo dos pilares.
-- [ ] Outros eventos no mesmo plugin (spleef, corrida...).
+- [ ] Outros eventos no mesmo plugin (corrida...).
+
+### Evento Spleef ✅ v1 (`eventos-plugin`, 2026-11-02)
+Três pisos redondos de neve sobre a água no mundo `arenas`; cada um com a mesma pá (Eficiência V) quebra o chão debaixo dos outros. Quem cai de um piso vai pro de baixo; do último, cai na água e vai pra arquibancada. O último de pé leva o cheque de R$ 10.000.
+- Decisões de 2026-11-02: só a pá (sem bola de neve), 3 andares, o piso derrete com o tempo (só nos andares com gente), todo dia às 13:00 e 18:00. Inscrição, prêmio e travas iguais às do Vietnã.
+- A parte comum dos eventos foi separada (`base/` do EventosPlugin): o próximo evento só define a arena, o kit e a luta. Só um evento aberto por vez.
 
 ### Combate 1.8 ✅ v1 (`combate-plugin`)
 Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo entre golpes configurável e separado por mão** (`/combate intervalo`, de 0 ao padrão de 0,5 s ou mais; alternar as duas mãos bate duas vezes mais), **bloqueio com a espada** (só sem escudo na segunda mão) e **duas mãos** (o botão direito bate com a espada, o machado ou o soco da segunda mão, cada um com a sua skill). Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado continuam como no jogo atual.

@@ -38,6 +38,14 @@ categorias:
     mencionar: ""
     mencionar-se: "inscrições abertas"
     teste: "(simulação: inscrições abertas!)"
+  # Eventos do EventosPlugin (o Vietnã): aberto e vencedor. Sem webhook próprio, vai pro padrão.
+  eventos:
+    nome: "Eventos"
+    titulo: "☘ Eventos"
+    cor: "#27ae60"
+    mencionar: ""
+    mencionar-se: "inscrições abertas"
+    teste: "(simulação: Vietnã com inscrições abertas!)"
   # Leilões de imóvel (terrenos) e de barraca especial: abertos e arrematados.
   leiloes:
     nome: "Leilões"

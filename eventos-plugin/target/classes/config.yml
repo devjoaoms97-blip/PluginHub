@@ -67,4 +67,50 @@ vietna:
 
   # Na arena e na arquibancada, só esses comandos funcionam (sem a barra; a staff passa). Nenhum
   # teleporte de fora (/tpa, /home, /back...) leva alguém pra lá: só os do próprio evento.
-  comandos-liberados: [vietna, vietnam, spawn]
+  comandos-liberados: [vietna, spawn]
+
+# ---------------------------------------------------------------------------------------------
+# Spleef: três pisos redondos de neve sobre a água. Todos com a mesma pá (Eficiência V, quebra a neve
+# na hora): quebre o chão debaixo dos outros. Sem bola de neve e sem soco. Quem cai de um piso vai pro
+# de baixo; do último, cai na água e está fora (vai pra arquibancada). O último de pé leva o cheque.
+# Mesmas regras de inscrição do Vietnã: grátis, inventário totalmente vazio e uma por IP. Só um evento
+# fica aberto por vez.
+# ---------------------------------------------------------------------------------------------
+spleef:
+  # Abre sozinho todo dia nesses horários (HH:mm): o Vietnã é às 10:00 e 16:00, o Gladiador e o dragão à noite.
+  agenda: ["13:00", "18:00"]
+
+  inscricao:
+    duracao-segundos: 180
+    avisos-segundos: [120, 60, 30, 10]
+  minimo-jogadores: 3
+  premio: 10000
+
+  luta:
+    preparacao-segundos: 10
+    tempo-maximo-minutos: 8
+
+  # Contra quem fica parado: depois de "comecar-segundos" de luta, a cada "intervalo-segundos"
+  # "blocos-por-vez" blocos de neve viram gelo (o aviso) e somem "aviso-segundos" depois. Só nos andares
+  # em que ainda tem alguém de pé.
+  derreter:
+    comecar-segundos: 120
+    intervalo-segundos: 2
+    blocos-por-vez: 10
+    aviso-segundos: 1
+
+  kit:
+    eficiencia: 5
+
+  # A arena, construída pelo plugin no começo de cada evento (os pisos voltam): "andares" pisos de neve
+  # de "raio" blocos, um a cada "distancia-andares" acima da água ("agua-y" é o bloco de cima dela),
+  # dentro de um anel de vidro, e a arquibancada no lado norte.
+  arena:
+    mundo: arenas
+    centro: [0, 900]
+    agua-y: 64
+    raio: 15
+    andares: 3
+    distancia-andares: 6
+
+  comandos-liberados: [spleef, spawn]

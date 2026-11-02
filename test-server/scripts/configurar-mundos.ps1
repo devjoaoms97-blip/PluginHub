@@ -30,6 +30,8 @@ function Rodar([string]$comando) {
 
 # o reset dos mundos de recursos roda o "mv regen" pelo console, sem o /mv confirm
 Rodar 'mv config confirm-mode disable_console' | Out-Null
+# o modo de jogo de cada um vale em todos os mundos (a staff no criativo não volta pro sobrevivência ao trocar de mundo)
+Rodar 'mv config enforce-gamemode false' | Out-Null
 $existentes = Rodar 'mv list'
 $vazio = '--world-type flat --no-structures --generator-settings {"layers":[{"block":"minecraft:air","height":1}],"biome":"minecraft:the_void"} --force-spawn-position 0.5,65,0.5:0:0'
 $mundos = [ordered]@{

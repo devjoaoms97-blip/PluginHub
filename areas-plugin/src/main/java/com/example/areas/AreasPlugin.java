@@ -448,7 +448,10 @@ public class AreasPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void aoQuebrar(BlockBreakEvent evento) {
-        if (barraConstrucao(evento.getPlayer(), evento.getBlock().getLocation())) {
+        Location onde = evento.getBlock().getLocation();
+        // caixas em que quebrar vale (o piso de neve do Spleef): quem decide o que quebra é o EventosPlugin
+        if (getConfig().getStringList("quebrar-liberado").stream().anyMatch(c -> dentroDaCaixaDaArena(onde, c))) return;
+        if (barraConstrucao(evento.getPlayer(), onde)) {
             evento.setCancelled(true);
             avisar(evento.getPlayer(), "quebrar blocos");
         }
