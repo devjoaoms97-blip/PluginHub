@@ -3,6 +3,7 @@ package com.example.eventos;
 import com.example.eventos.base.Evento;
 import com.example.eventos.base.EventoCommand;
 import com.example.eventos.base.EventosListener;
+import com.example.eventos.correoucai.CorreOuCai;
 import com.example.eventos.spleef.Spleef;
 import com.example.eventos.util.DiscordIntegration;
 import com.example.eventos.util.Premio;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Eventos do servidor: o Vietnã ({@link Vietna}) e o Spleef ({@link Spleef}). Cada um abre sozinho nos
+ * Eventos do servidor: o Vietnã ({@link Vietna}), o Spleef ({@link Spleef}) e o Corre ou Cai ({@link CorreOuCai}). Cada um abre sozinho nos
  * horários de {@code <evento>.agenda}, e só um fica aberto por vez. O que é comum aos dois (inscrição,
  * regras, prêmio) está em {@link Evento} e {@link EventosListener}.
  */
@@ -33,7 +34,7 @@ public class EventosPlugin extends JavaPlugin {
         saveDefaultConfig();
         this.discord = new DiscordIntegration(this);
         this.premio = new Premio(this);
-        this.eventos = List.of(new Vietna(this), new Spleef(this));
+        this.eventos = List.of(new Vietna(this), new Spleef(this), new CorreOuCai(this));
 
         for (Evento e : eventos) {
             EventoCommand comando = new EventoCommand(this, e);
@@ -43,6 +44,7 @@ public class EventosPlugin extends JavaPlugin {
         getCommand("eventos").setExecutor(new AgendaCommand(this));
         getServer().getPluginManager().registerEvents(new EventosListener(this), this);
         getServer().getScheduler().runTaskTimer(this, this::tick, 20L, 20L);
+        getServer().getScheduler().runTaskTimer(this, () -> eventos.forEach(Evento::tickRapido), 2L, 2L);
         // um /reload com gente que tinha caído no meio de um evento: volta pra onde estava
         getServer().getOnlinePlayers().forEach(p -> eventos.forEach(e -> e.aoEntrar(p)));
         getLogger().info("EventosPlugin ativado!");

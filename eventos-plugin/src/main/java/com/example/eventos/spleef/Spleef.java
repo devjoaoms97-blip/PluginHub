@@ -54,6 +54,11 @@ public class Spleef extends Evento {
     }
 
     @Override
+    public String rotulo() {
+        return "§b❄ Spleef";
+    }
+
+    @Override
     public String descricao() {
         return "Três pisos de neve sobre a água: com a pá, quebre o chão debaixo dos outros. Caiu de um piso, vai pro de baixo; do último, cai na água e está fora.";
     }

@@ -57,6 +57,11 @@ public class Vietna extends Evento {
     }
 
     @Override
+    public String rotulo() {
+        return "§a☘ Vietnã";
+    }
+
+    @Override
     public String descricao() {
         return "Pilares sobre a água: derrube os outros com arco, bola de neve, carga de vento e vara. Os golpes só empurram; caiu na água, está fora.";
     }

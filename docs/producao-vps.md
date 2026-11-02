@@ -14,7 +14,7 @@ O que precisa ser feito ou conferido quando o servidor sair do PC (`C:\mc-teste`
 
 ## Eventos (EventosPlugin: Vietnã e Spleef)
 
-- [ ] **`minimo-jogadores` de 3 ou 4** em `vietna:` e em `spleef:` no `plugins/EventosPlugin/config.yml`. O padrão do jar é 3; **no servidor de teste está 1** (decisão de 2026-11-02, pra testar sozinho), e não pode ir assim pra produção: com 1, quem entra sozinho joga até o tempo acabar e leva o cheque de R$ 10.000.
+- [ ] **`minimo-jogadores` de 3 ou 4** em `vietna:`, `spleef:` e `correoucai:` no `plugins/EventosPlugin/config.yml`. O padrão do jar é 3; **no servidor de teste está 1** (decisão de 2026-11-02, pra testar sozinho), e não pode ir assim pra produção: com 1, quem entra sozinho joga até o tempo acabar e leva o cheque de R$ 10.000.
 - [ ] No `plugins/AreasPlugin/config.yml`, as caixas "arena do vietnã" ([-16, 60, 584] a [16, 81, 616]) e "arena do spleef" ([-16, 60, 884] a [16, 93, 916]) em `pvp-so-nas-caixas.arenas` e em `sethome.caixas-pvp`, `carga-de-vento-liberada: ["arena do vietnã"]` e `quebrar-liberado: ["arena do spleef"]` (as listas que já existem no servidor não pegam o padrão novo do jar).
-- [ ] `/vietna construir` e `/spleef construir` uma vez (ou `node tools/bots/montar-mapa.js construir vietna spleef`, que põe também os hologramas do saguão).
+- [ ] `/vietna construir`, `/spleef construir` e `/correoucai construir` uma vez (ou `node tools/bots/montar-mapa.js construir vietna spleef correoucai`, que põe também os hologramas do saguão).
 - [ ] As permissões `eventos.ip.ignorar` só nos bots de teste, nunca num grupo.

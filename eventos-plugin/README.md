@@ -1,6 +1,6 @@
 # EventosPlugin
 
-Eventos de arena do servidor: o **Vietnã** (`/vietna`) e o **Spleef** (`/spleef`). Só um fica aberto por vez (a agenda pula o horário se outro estiver aberto, e a staff não abre um segundo).
+Eventos de arena do servidor: o **Vietnã** (`/vietna`), o **Spleef** (`/spleef`) e o **Corre ou Cai** (`/correoucai`). Só um fica aberto por vez (a agenda pula o horário se outro estiver aberto, e a staff não abre um segundo).
 
 ## O que todos têm em comum
 
@@ -69,13 +69,21 @@ Uma torre redonda e fechada de tema de inverno no mundo `arenas`, em volta de (0
 - Todos começam no piso de cima, em roda, olhando pro centro. A arena é construída de novo a cada evento.
 - A caixa por dentro da parede (de [-16, 60, 884] a [16, 93, 916]) está no AreasPlugin como "arena do spleef": lá quebrar bloco vale (`quebrar-liberado`, e o EventosPlugin decide o que quebra) e ninguém marca home.
 
+## Corre ou Cai
+
+Um prédio quadrado e fechado de festa colorida no mundo `arenas`, em volta de (0, 1200): três pisos de concreto de 25 x 25 (verde-limão, azul-claro e magenta, de baixo pra cima) sobre a água, de parede a parede, um a cada 6 blocos de altura. Paredes de quartzo com faixas de vidro colorido e luzes em cada andar, teto com claraboias coloridas e lanternas penduradas, e a galeria em volta, 5 blocos acima do piso de cima, atrás de um vidro até o teto. Todo dia às **11:00** e às **17:00** (`correoucai.agenda`).
+
+- **Sem kit**: só correr (decisões de 2026-11-02).
+- **O chão some**: o bloco em que alguém pisa (os até 4 debaixo do pé) fica **vermelho** e some meio segundo depois (`chao.some-em-ticks: 10`), mesmo pra quem está parado: o plugin confere o chão de cada um a cada 2 ticks. Nos primeiros 3 segundos da luta, nada some (`chao.graca-segundos`). Quem cai de um piso vai pro de baixo; do último, cai na água e está fora.
+- Todos começam no piso de cima, espalhados. A cada evento, só os pisos voltam.
+
 ## /eventos
 
 A agenda de todos os eventos do servidor: o que está rolando agora (com o comando pra entrar ou assistir), o próximo (dia, hora e quanto falta) e os horários de cada um. Os horários vêm do config de cada plugin, então mudou lá, muda aqui: Vietnã e Spleef (`<evento>.agenda`), Gladiador (`agenda` do GladiadorPlugin), Boss (`agenda` do BossPlugin, com o boss do dia, ex.: Wither no domingo), Dragão do End (`end.dragao.hora` do RecursosPlugin) e Mine-sena (`minesena.horario` do ChequePlugin). Plugin desligado, a linha some.
 
 ## Comandos
 
-Iguais nos dois eventos (`/vietna ...` e `/spleef ...`):
+Iguais em todos os eventos (`/vietna ...`, `/spleef ...` e `/correoucai ...`):
 
 | Comando | O que faz |
 |---|---|
@@ -84,12 +92,12 @@ Iguais nos dois eventos (`/vietna ...` e `/spleef ...`):
 | `/<evento> assistir` | Vai pra arquibancada |
 | `/<evento> top` | Quem mais venceu |
 
-Staff (`eventos.admin`): `abrir`, `iniciar` (fecha as inscrições e começa agora), `cancelar`, `construir` (refaz a arena e mostra a caixa pro AreasPlugin) e `reload` (recarrega o config dos dois).
+Staff (`eventos.admin`): `abrir`, `iniciar` (fecha as inscrições e começa agora), `cancelar`, `construir` (refaz a arena e mostra a caixa pro AreasPlugin) e `reload` (recarrega o config de todos).
 
 ## Config
 
-Uma seção por evento no `config.yml` (`vietna:` e `spleef:`), com as mesmas chaves comuns (agenda, inscrição, mínimo de jogadores, prêmio, tempos da luta, comandos liberados) e as de cada um: no Vietnã, os pilares que somem, o kit e o reabastecimento, a força dos empurrões e a arena; no Spleef, o derretimento, a Eficiência da pá e a arena (centro, raio, andares e distância entre eles). Mudou uma arena? Atualize a caixa dela no config do AreasPlugin com o que o `/<evento> construir` mostra.
+Uma seção por evento no `config.yml` (`vietna:`, `spleef:` e `correoucai:`), com as mesmas chaves comuns (agenda, inscrição, mínimo de jogadores, prêmio, tempos da luta, comandos liberados) e as de cada um: no Vietnã, os pilares que somem, o kit e o reabastecimento, a força dos empurrões e a arena; no Spleef, o derretimento, a Eficiência da pá e a arena (centro, raio, andares e distância entre eles); no Corre ou Cai, o tempo até o bloco sumir, a graça do começo e a arena. Mudou uma arena? Atualize a caixa dela no config do AreasPlugin com o que o `/<evento> construir` mostra.
 
 ## Teste
 
-`node tools/bots/teste-vietna.js` e `node tools/bots/teste-spleef.js`
+`node tools/bots/teste-vietna.js`, `node tools/bots/teste-spleef.js` e `node tools/bots/teste-correoucai.js`

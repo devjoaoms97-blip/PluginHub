@@ -95,6 +95,9 @@ public abstract class Evento {
     /** A cor das mensagens ("§a"). */
     protected abstract String cor();
 
+    /** O nome com cor e símbolo, pra agenda do /eventos ("§a☘ Vietnã"). */
+    public abstract String rotulo();
+
     /** O que se faz no evento, pro anúncio da abertura e pro /<id> info. */
     public abstract String descricao();
 
@@ -133,6 +136,15 @@ public abstract class Evento {
 
     /** A cada segundo da luta (o que some com o tempo, reabastecer...). */
     protected void tickLuta(long agora) {
+    }
+
+    /** A cada 2 ticks da luta (o Corre ou Cai: o chão debaixo de cada um). */
+    protected void tickRapidoLuta(long agora) {
+    }
+
+    /** Chamado pelo plugin a cada 2 ticks. */
+    public void tickRapido() {
+        if (fase == Fase.LUTA) tickRapidoLuta(System.currentTimeMillis());
     }
 
     /** Um projétil de outro participante acertou: o dano já foi cancelado (o Vietnã empurra). */

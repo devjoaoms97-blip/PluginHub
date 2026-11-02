@@ -14,14 +14,16 @@ Na agenda do servidor de teste, o modo **por clã** abre sábado às **19h** e o
 
 Inscrição, pote, borda e critérios de vitória estão explicados em **Gladiador**.
 
-**Vietnã e Spleef**
+**Vietnã, Spleef e Corre ou Cai**
 Eventos rápidos e grátis em que **ninguém perde itens**: entre com o inventário **totalmente vazio** (inclusive armadura e a outra mão), uma inscrição por conexão. Todos recebem o mesmo kit, ninguém perde vida e quem cai na água vai pra arquibancada, em cima da arena. O último de pé leva um **cheque de R$ 10.000**; depois de 8 minutos, quem estiver de pé divide. Na arena só vale o comando do evento (nada de `/tpa` ou `/home`), e da arquibancada sai com `/spawn`.
 
 ☘ **Vietnã**, todo dia às **10h** e **16h** (`/vietna entrar`): pilares sobre a água. Kit: arco com Impulso, bolas de neve, cargas de vento (empurram e servem pra pular de um pilar pro outro) e vara de pesca. Os golpes só empurram. Depois de 2 minutos, o topo de um pilar fica **vermelho** e ele cai pouco depois: saia de cima!
 
 ❄ **Spleef**, todo dia às **13h** e **18h** (`/spleef entrar`): três pisos de neve. Kit: uma pá que quebra a neve na hora. Quebre o chão debaixo dos outros; quem cai vai pro piso de baixo, e do último cai na água. Depois de 2 minutos, a neve começa a virar **gelo** e sumir.
 
-Pra só assistir: `/vietna assistir` ou `/spleef assistir`.
+✦ **Corre ou Cai**, todo dia às **11h** e **17h** (`/correoucai entrar`): três pisos coloridos e nenhum kit. O bloco onde você pisa fica **vermelho** e some meio segundo depois: não pare de correr! Quem cai vai pro piso de baixo, e do último cai na água.
+
+Pra só assistir: `/vietna assistir`, `/spleef assistir` ou `/correoucai assistir`.
 
 **Mine-sena**
 O sorteio é todo dia às 18h. Veja como escolher seus números e apostar no tutorial **Dinheiro, loja e Pix**.

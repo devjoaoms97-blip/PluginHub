@@ -23,7 +23,7 @@ import java.util.TreeMap;
 
 /**
  * /eventos: o que está acontecendo agora, o próximo evento e a agenda de todos. Os horários vêm do config
- * de cada plugin (o deles manda; sem o plugin, a linha some): Vietnã e Spleef (este plugin), Gladiador,
+ * de cada plugin (o deles manda; sem o plugin, a linha some): os eventos deste plugin, Gladiador,
  * Boss, Dragão do End (RecursosPlugin) e Mine-sena (ChequePlugin).
  */
 public class AgendaCommand implements CommandExecutor {
@@ -94,8 +94,7 @@ public class AgendaCommand implements CommandExecutor {
         for (Evento e : plugin.getEventos()) {
             List<Horario> hs = new ArrayList<>();
             for (String s : e.cfg().getStringList("agenda")) adicionar(hs, null, s, null);
-            String nome = e.id().equals("spleef") ? "§b❄ Spleef" : "§a☘ Vietnã";
-            if (!hs.isEmpty()) linhas.add(new Linha(nome, "/" + e.id(), hs));
+            if (!hs.isEmpty()) linhas.add(new Linha(e.rotulo(), "/" + e.id(), hs));
         }
         Plugin glad = ativo("GladiadorPlugin");
         if (glad != null) {

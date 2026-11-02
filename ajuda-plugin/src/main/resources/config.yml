@@ -96,6 +96,7 @@ comandos-permitidos:
     - eventos
     - vietna
     - spleef
+    - correoucai
     # teleporte e casas
     - tpa
     - tpahere
@@ -225,6 +226,8 @@ comandos:
         - "/vietna entrar | Se inscreve no Vietnã"
         - "/spleef | Evento Spleef: quebre a neve debaixo dos outros (inventário vazio)"
         - "/spleef entrar | Se inscreve no Spleef"
+        - "/correoucai | Evento Corre ou Cai: o chão some onde você pisa (inventário vazio)"
+        - "/correoucai entrar | Se inscreve no Corre ou Cai"
         - "/boss proximo | Quando o próximo boss aparece"
         - "/bounty colocar <jogador> <valor> | Recompensa pela cabeça de alguém"
         - "/bounty lista | Maiores recompensas"

@@ -1,9 +1,11 @@
 com\example\eventos\spleef\ArenaSpleef.class
 com\example\eventos\AgendaCommand.class
+com\example\eventos\correoucai\ArenaCorreOuCai.class
 com\example\eventos\util\Formato.class
 com\example\eventos\vietna\ArenaVietna$Pilar.class
 com\example\eventos\base\EventoCommand.class
 com\example\eventos\base\EventosListener.class
+com\example\eventos\correoucai\CorreOuCai.class
 com\example\eventos\base\Evento$Participante.class
 com\example\eventos\base\Evento.class
 com\example\eventos\vietna\Vietna.class

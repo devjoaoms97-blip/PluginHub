@@ -114,3 +114,40 @@ spleef:
     distancia-andares: 6
 
   comandos-liberados: [spleef, spawn]
+
+# ---------------------------------------------------------------------------------------------
+# Corre ou Cai: três pisos coloridos sobre a água, sem kit. O bloco em que alguém pisa fica vermelho e
+# some logo depois: quem para, cai. Quem cai de um piso vai pro de baixo; do último, cai na água e está
+# fora (vai pra galeria). O último de pé leva o cheque. Mesmas regras de inscrição dos outros eventos.
+# ---------------------------------------------------------------------------------------------
+correoucai:
+  # Abre sozinho todo dia nesses horários (HH:mm).
+  agenda: ["11:00", "17:00"]
+
+  inscricao:
+    duracao-segundos: 180
+    avisos-segundos: [120, 60, 30, 10]
+  minimo-jogadores: 3
+  premio: 10000
+
+  luta:
+    preparacao-segundos: 10
+    tempo-maximo-minutos: 8
+
+  chao:
+    # o bloco some esse tanto depois de alguém pisar (20 ticks = 1 s; 10 = meio segundo)
+    some-em-ticks: 10
+    # no começo da luta, o chão não some por esses segundos (ninguém cai na largada)
+    graca-segundos: 3
+
+  # A arena, construída pelo plugin (/correoucai construir); a cada evento, só os pisos voltam.
+  # "raio" é a metade do lado do piso quadrado (12 = 25 x 25); um andar a cada "distancia-andares".
+  arena:
+    mundo: arenas
+    centro: [0, 1200]
+    agua-y: 64
+    raio: 12
+    andares: 3
+    distancia-andares: 6
+
+  comandos-liberados: [correoucai, spawn]

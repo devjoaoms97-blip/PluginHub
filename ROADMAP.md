@@ -187,6 +187,14 @@ Três pisos redondos de neve sobre a água no mundo `arenas`; cada um com a mesm
 - Decisões de 2026-11-02: só a pá (sem bola de neve), 3 andares, o piso derrete com o tempo (só nos andares com gente), todo dia às 13:00 e 18:00. Inscrição, prêmio e travas iguais às do Vietnã.
 - A parte comum dos eventos foi separada (`base/` do EventosPlugin): o próximo evento só define a arena, o kit e a luta. Só um evento aberto por vez.
 
+### Evento Corre ou Cai ✅ v1 (`eventos-plugin`, 2026-11-02)
+Três pisos coloridos sobre a água, sem kit: o bloco em que se pisa fica vermelho e some meio segundo depois, então quem para cai. Do último piso, cai na água e vai pra galeria. O último de pé leva o cheque de R$ 10.000.
+- Decisões de 2026-11-02: 3 andares, 0,5 s pro bloco sumir, nenhuma ajuda (só correr), festa colorida, todo dia às 11:00 e 17:00.
+
+**Próximos eventos (decididos em 2026-11-02, um de cada vez, decidindo tudo antes)**
+- [ ] Sobrevivência: ondas de mobs, todos juntos, com kit.
+- [ ] Quiz no chat.
+
 ### Combate 1.8 ✅ v1 (`combate-plugin`)
 Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo entre golpes configurável e separado por mão** (`/combate intervalo`, de 0 ao padrão de 0,5 s ou mais; alternar as duas mãos bate duas vezes mais), **bloqueio com a espada** (só sem escudo na segunda mão) e **duas mãos** (o botão direito bate com a espada, o machado ou o soco da segunda mão, cada um com a sua skill). Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado continuam como no jogo atual.
 
