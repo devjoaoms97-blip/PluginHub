@@ -1,0 +1,26 @@
+name: EventosPlugin
+version: '1.0.0'
+main: com.example.eventos.EventosPlugin
+api-version: '26.2'
+author: Você
+description: Eventos do servidor. O primeiro é o Vietnã, de derrubar os outros dos pilares na água com arco, bola de neve, carga de vento e vara.
+softdepend: [Vault, ChequePlugin, DiscordPlugin, AreasPlugin]
+
+commands:
+  vietna:
+    description: Evento Vietnã.
+    usage: "Uso: /vietna <entrar|sair|info|assistir|top>"
+    aliases: [vietnam]
+    permission: eventos.usar
+    permission-message: "§cVocê não tem permissão para os eventos."
+
+permissions:
+  eventos.usar:
+    description: Permite se inscrever e assistir aos eventos.
+    default: true
+  eventos.admin:
+    description: Abre, inicia e cancela os eventos, constrói a arena e usa comandos dentro dela.
+    default: op
+  eventos.ip.ignorar:
+    description: Pula a trava de uma inscrição por IP (só pros bots de teste, que entram todos pelo mesmo IP).
+    default: false

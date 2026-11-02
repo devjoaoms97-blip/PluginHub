@@ -33,6 +33,7 @@ node teste-pvp-ciclo.js     # PvP em ciclos na warp mobs (salão sim, vestíbulo
 node teste-dicas.js         # NPCs de dicas: balão animado, próxima fala, some sozinho, não toma dano
 node teste-duelo.js         # X1 com aposta (precisa das arenas)
 node teste-gladiador.js     # Gladiador individual e por clã (precisa das arenas)
+node teste-vietna.js        # evento Vietnã: inscrição, pilares, kit, regras, eliminação, cheque e pilares sumindo
 node teste-farm-arenas.js   # abate nas arenas não paga Bounty nem conta no placar do clã
 node teste-combate.js       # combate 1.8: sem recarga, tempo por mão, bloqueio com a espada e duas mãos
 node teste-skills-maos.js   # o golpe da segunda mão treina a skill da arma dela
@@ -96,6 +97,7 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-skills-maos.js` | Machado na mão esquerda treina a skill Machado, soco na esquerda treina o Porradeiro, e a espada da direita (que não bateu) não treina |
 | `teste-profissoes.js` | Com chances de 100% no config (e o original de volta no fim): o 3x3 do Minerador quebra os vizinhos, vende tudo e só os blocos à mão dão XP; o Lenhador derruba a árvore natural inteira (com a tora a mais) e não a de folhas colocadas; colheita dupla do trigo; a pesca dá 8 XP, mapa do tesouro e Fragmento Arcano; e a venda no Fazendeiro mostra o bônus do Agricultor (+20% no 50) |
 | `teste-duelo.js` | Desafio e aceite com apostas retidas, espectador (modo espectador, sem comandos, volta no fim), contagem sem dano, ninguém de fora bate, comandos bloqueados, morte com perda de itens e prêmio menos a taxa, volta para onde estava, ranking, recusa e cancelamento com devolução |
+| `teste-vietna.js` | Inscrição só com o inventário vazio (nem armadura) e uma por IP, os 3 nos pilares sem kit na preparação e com o kit na luta, golpe sem dano, `/spawn` e `/tpa` barrados lutando, teleporte de fora pra arena barrado, `/vietna assistir` e `/sethome`/`/tpa` barrados na arquibancada, cair na água elimina (arquibancada, sem kit), desconectar elimina, o último de pé leva o cheque e volta, a arena se refaz, `/spawn` da arquibancada e, num segundo evento com o tempo encurtado no config (e o original de volta no fim), os pilares sumindo |
 | `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução. No fim, devolve os 16 pontos de entrada oficiais do coliseu |
 | `teste-farm-arenas.js` | Num duelo entre clãs diferentes, com recompensa na cabeça de quem perde: o Bounty não paga (e a recompensa continua), e o placar de abates do clã não muda |
 | `teste-terrenos.js` | Compra, borda da grade, holograma da entrada (à venda, dono, leilão), amigo só com baús, proteção (vizinho, rua, amigo), imposto, confisco por imposto atrasado, leilão de imóvel (dívida do dono antigo, lance superado e devolvido, vencedor leva o que tem dentro) e leilão sem lances |

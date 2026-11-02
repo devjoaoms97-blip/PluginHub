@@ -58,6 +58,13 @@ pvp-so-nas-caixas:
   arenas:
     - {nome: "piso do X1", min: [-625, 60, -14], max: [-575, 77, 14]}
     - {nome: "piso do coliseu", min: [524, 60, -64], max: [676, 75, 64]}
+    # A piscina dos pilares do Vietnã (EventosPlugin), até o vidro. Lá o EventosPlugin cancela o dano e
+    # só empurra; a arquibancada (ao norte, z < 584) fica fora.
+    - {nome: "arena do vietnã", min: [-16, 60, 584], max: [16, 78, 616]}
+
+# Caixas (de pvp-so-nas-caixas) em que a carga de vento vale, mesmo com bloquear.carga-de-vento: o
+# Vietnã usa ela pra empurrar e pra pular de um pilar pro outro.
+carga-de-vento-liberada: ["arena do vietnã"]
 
 # Nas áreas listadas, os comandos abaixo não funcionam lá dentro, e o teleporte que um deles acabou
 # de pedir (até 10 s) não leva ninguém pra lá: /tpa de fora pra quem está dentro (o /tpaccept lá
@@ -72,7 +79,7 @@ teleporte-por-comando:
 # acima em pvp-so-nas-caixas; as câmaras do tesouro são dinâmicas e vêm do TesourosPlugin.
 sethome:
   comandos: [sethome, createhome]
-  caixas-pvp: ["arena do boss", "piso do X1", "piso do coliseu"]
+  caixas-pvp: ["arena do boss", "piso do X1", "piso do coliseu", "arena do vietnã"]
   camaras-do-tesouro: true
 
 # %coisa% vira o que foi barrado ("voar", "usar pérola do fim"...).

@@ -184,7 +184,8 @@ public class AreasPlugin extends JavaPlugin implements Listener {
     public void aoLancar(PlayerLaunchProjectileEvent evento) {
         Player p = evento.getPlayer();
         boolean perola = evento.getProjectile() instanceof EnderPearl && bloqueia("perola");
-        boolean vento = evento.getProjectile() instanceof WindCharge && bloqueia("carga-de-vento");
+        boolean vento = evento.getProjectile() instanceof WindCharge && bloqueia("carga-de-vento")
+                && getConfig().getStringList("carga-de-vento-liberada").stream().noneMatch(c -> dentroDaCaixaDaArena(p.getLocation(), c));
         if ((perola || vento) && preso(p, p.getLocation())) {
             evento.setShouldConsume(false);
             evento.setCancelled(true);

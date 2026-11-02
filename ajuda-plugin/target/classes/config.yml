@@ -93,6 +93,8 @@ comandos-permitidos:
     - duelo
     - x1
     - gladiador
+    - vietna
+    - vietnam
     # teleporte e casas
     - tpa
     - tpahere
@@ -217,6 +219,8 @@ comandos:
         - "/duelo assistir <jogador> | Assiste um duelo"
         - "/gladiador | Evento Gladiador: inscritos e pote"
         - "/gladiador entrar | Se inscreve no Gladiador"
+        - "/vietna | Evento Vietnã: derrube os outros na água (inventário vazio)"
+        - "/vietna entrar | Se inscreve no Vietnã"
         - "/boss proximo | Quando o próximo boss aparece"
         - "/bounty colocar <jogador> <valor> | Recompensa pela cabeça de alguém"
         - "/bounty lista | Maiores recompensas"

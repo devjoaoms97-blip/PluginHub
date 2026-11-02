@@ -173,6 +173,15 @@ Evento de PvP na arena do mundo `arenas`, aberto pela staff ou pela agenda: insc
 - [x] Destaques com tag no chat até o próximo Gladiador: [Ceifador] (mais abates), [Fujão] (mais blocos andados) e [Top Damage] (mais dano).
 - [x] Prêmio do modo por clã direto no banco do clã, como opção.
 
+### Evento Vietnã ✅ v1 (`eventos-plugin`, 2026-11-02)
+Pilares de 2x2 sobre a água no mundo `arenas`; cada um nasce num pilar com o mesmo kit (arco com Impulso, bola de neve, carga de vento e vara) e tenta derrubar os outros. Os golpes não tiram vida, só empurram. Caiu na água, está fora e vai pra arquibancada; o último de pé leva um cheque de R$ 10.000.
+- Decisões de 2026-11-02: inscrição grátis, com o **inventário totalmente vazio** (nem armadura) e **uma por IP**; mínimo de 3 jogadores; agenda fixa todo dia às 10:00 e 16:00 (à noite já tem o Gladiador no fim de semana e o dragão); quem cai assiste da arquibancada; pilares somem com o tempo (depois de 2 min, um a cada 12 s).
+- Na arena e na arquibancada só valem `/vietna` e `/spawn` (lutando, só `/vietna`); nenhum teleporte de fora (`/tpa`, `/home`...) leva alguém pra lá.
+
+**Próximos passos**
+- [ ] Testar jogando a força dos empurrões (`vietna.empurrao`) e o tempo dos pilares.
+- [ ] Outros eventos no mesmo plugin (spleef, corrida...).
+
 ### Combate 1.8 ✅ v1 (`combate-plugin`)
 Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo entre golpes configurável e separado por mão** (`/combate intervalo`, de 0 ao padrão de 0,5 s ou mais; alternar as duas mãos bate duas vezes mais), **bloqueio com a espada** (só sem escudo na segunda mão) e **duas mãos** (o botão direito bate com a espada, o machado ou o soco da segunda mão, cada um com a sua skill). Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado continuam como no jogo atual.
 

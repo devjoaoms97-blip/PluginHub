@@ -340,6 +340,9 @@ async function construirArenas() {
   await estrutura('axepvp', W, AXE.centro)
   console.log('\n== Gladiador: coliseu ==')
   await estrutura('coliseu', W, GLAD.centro)
+  // o EventosPlugin constrói a dele (e de novo a cada evento): pilares sobre a água em (0, 600)
+  console.log('\n== Vietnã: pilares ==')
+  console.log(await t.console('vietna construir'))
 }
 
 // NPCs de dicas (DicasPlugin). Os 4 primeiros ficam em volta da fonte, nas diagonais entre as avenidas,

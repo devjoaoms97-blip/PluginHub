@@ -1,0 +1,12 @@
+com\example\eventos\vietna\Vietna$Fase.class
+com\example\eventos\util\Formato.class
+com\example\eventos\vietna\ArenaVietna$Pilar.class
+com\example\eventos\vietna\VietnaCommand$1.class
+com\example\eventos\vietna\Vietna.class
+com\example\eventos\vietna\ArenaVietna.class
+com\example\eventos\vietna\Vietna$Participante.class
+com\example\eventos\util\Premio.class
+com\example\eventos\vietna\VietnaCommand.class
+com\example\eventos\vietna\VietnaListener.class
+com\example\eventos\EventosPlugin.class
+com\example\eventos\util\DiscordIntegration.class

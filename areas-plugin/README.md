@@ -13,7 +13,7 @@ Dentro de uma área fechada:
 | Voo (`/fly` do VIP) | Não liga. Quem entra voando cai, sem dano de queda |
 | Tridente com Correnteza | Não carrega |
 | Fruta do coro | Não teleporta |
-| Carga de vento | Não sai e não é gasta |
+| Carga de vento | Não sai e não é gasta, menos nas caixas de `carga-de-vento-liberada` (a arena do Vietnã, do EventosPlugin) |
 | Construção | Ninguém quebra nem coloca bloco, usa balde, põe fogo, pisoteia plantação nem mexe em moldura, quadro e suporte de armadura. Explosão, fogo que espalha e mob (enderman) também não mexem em nada. As minas do RankupPlugin ficam de fora: lá quem cuida é ele |
 
 **PvP só na arena do boss e, em ciclos, na warp mobs.** No mundo `spawn`, o PvP do Minecraft fica ligado, mas um jogador só machuca outro se os dois estiverem dentro de uma das caixas de `pvp-so-nas-caixas`: a arena do boss, depois do pulo do túnel (PvP sempre; a escadaria e o túnel não têm), e a warp mobs da linha vermelha pra dentro (o vestíbulo nunca tem).
@@ -30,7 +30,7 @@ Com uma config de uma versão antiga, as seções que faltam (como a `pvp-so-nas
 
 **Teleporte por comando (só nas arenas).** No mundo `arenas`, os comandos de `teleporte-por-comando.comandos` (`/tpa`, `/tpahere`, `/tpaccept`, `/back`, `/home` e os apelidos do EssentialsX) não funcionam. E o teleporte que um deles acabou de pedir, até 10 s antes, não leva ninguém pra lá: nem o `/back` pro lugar em que o jogador morreu na arena, nem uma casa antiga marcada lá, nem o `/tpa` aceito antes de alguém entrar. `/spawn` e `/warp` (a plateia) continuam. As áreas com essa regra ficam em `teleporte-por-comando.areas`.
 
-**Criar homes nas arenas.** `/sethome` e `/createhome` (`sethome.comandos`) são bloqueados somente dentro da caixa da arena do boss, do piso do X1, do piso do Gladiador e de uma câmara ativa do tesouro. As três caixas fixas usam os limites de `pvp-so-nas-caixas`; a câmara usa os limites reais gerados pelo TesourosPlugin. Fora dessas áreas, a criação continua permitida, inclusive no saguão e nas plateias do mundo `arenas`.
+**Criar homes nas arenas.** `/sethome` e `/createhome` (`sethome.comandos`) são bloqueados somente dentro da caixa da arena do boss, do piso do X1, do piso do Gladiador, da arena do Vietnã e de uma câmara ativa do tesouro. As quatro caixas fixas usam os limites de `pvp-so-nas-caixas`; a câmara usa os limites reais gerados pelo TesourosPlugin. Fora dessas áreas, a criação continua permitida, inclusive no saguão e nas plateias do mundo `arenas`.
 
 Cada um liga e desliga em `bloquear`. Os admins (`areas.ignorar`) e quem está no criativo passam. Os jogadores que assistem (plateia do X1 e do Gladiador) seguem as mesmas regras de quem joga.
 

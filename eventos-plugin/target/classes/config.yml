@@ -1,0 +1,70 @@
+# Configuração do EventosPlugin
+
+# ---------------------------------------------------------------------------------------------
+# Vietnã: pilares de 2x2 sobre a água. Cada um nasce num pilar com o mesmo kit (arco, bola de
+# neve, carga de vento e vara de pesca) e tenta derrubar os outros. Ninguém perde vida: os golpes só
+# empurram. Caiu na água (ou saiu da arena), está fora e vai pra arquibancada. O último de pé leva
+# o prêmio num cheque. Só entra quem está com o inventário totalmente vazio (nem armadura), e um por IP.
+# ---------------------------------------------------------------------------------------------
+vietna:
+  # Abre sozinho todo dia nesses horários (HH:mm). Lista vazia desativa.
+  agenda: ["10:00", "16:00"]
+
+  inscricao:
+    duracao-segundos: 180
+    avisos-segundos: [120, 60, 30, 10]
+  minimo-jogadores: 3
+
+  # Cheque do servidor (ChequePlugin) pro vencedor; se o tempo acabar com mais de um de pé, divide.
+  # Sem o ChequePlugin, o valor cai direto na conta.
+  premio: 10000
+
+  luta:
+    # nos pilares, sem kit, antes de começar
+    preparacao-segundos: 10
+    # depois disso, quem estiver de pé divide o prêmio
+    tempo-maximo-minutos: 8
+
+  # Contra quem fica parado: depois de "comecar-segundos" de luta, a cada "intervalo-segundos" um pilar
+  # fica vermelho por "aviso-segundos" e some (quem está nele cai). Sempre sobra pelo menos "minimo".
+  pilares-somem:
+    comecar-segundos: 120
+    intervalo-segundos: 12
+    aviso-segundos: 3
+    minimo: 2
+
+  # O kit de cada um, entregue quando a luta começa. O arco tem Impulso e Infinidade (1 flecha basta).
+  kit:
+    arco-impulso: 1
+    bolas-de-neve: 16
+    cargas-de-vento: 3
+    vara-de-pesca: true
+    # a cada "segundos", soma "quantidade" de volta até o máximo do kit
+    reabastecer:
+      segundos: 30
+      bolas-de-neve: 8
+      cargas-de-vento: 1
+
+  # Empurrão de cada coisa que acerta (os golpes não tiram vida: o plugin cancela o dano e empurra).
+  # A flecha empurra conforme a força do tiro (arco puxado até o fim = o valor cheio). Soco não vale.
+  empurrao:
+    flecha: 1.3
+    bola-de-neve: 0.9
+    carga-de-vento: 0.6
+    vara-de-pesca: 0.4
+    vertical: 0.35
+
+  # A arena, construída pelo plugin no começo de cada evento (os pilares voltam). "agua-y" é o bloco
+  # de cima da água; os pilares sobem "altura" blocos acima dela. 6 x 6 pilares de 2x2 com 3 blocos de
+  # vão (dá pra pular de um pro outro correndo) e a arquibancada no lado norte, atrás de um vidro.
+  arena:
+    mundo: arenas
+    centro: [0, 600]
+    agua-y: 64
+    pilares-por-lado: 6
+    vao: 3
+    altura: 6
+
+  # Na arena e na arquibancada, só esses comandos funcionam (sem a barra; a staff passa). Nenhum
+  # teleporte de fora (/tpa, /home, /back...) leva alguém pra lá: só os do próprio evento.
+  comandos-liberados: [vietna, vietnam, spawn]
