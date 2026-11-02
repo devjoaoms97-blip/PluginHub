@@ -210,3 +210,84 @@ sobrevivencia:
     raio: 15
 
   comandos-liberados: [sobrevivencia, spawn]
+
+# ---------------------------------------------------------------------------------------------
+# Quiz: uma rodada de perguntas no chat, sem arena e sem inscrição (responde quem estiver online, de
+# onde estiver, com /quiz <resposta>). Cada pergunta vale 1 ponto pra quem acertar primeiro; quem fizer
+# mais pontos leva o prêmio (dividido no empate). A resposta não liga pra acento, maiúscula nem pra
+# "o"/"a" na frente. Sem mínimo de jogadores (decisão de 2026-11-02). Roda junto com os outros eventos.
+# ---------------------------------------------------------------------------------------------
+quiz:
+  agenda: ["12:00", "15:00"]
+  perguntas-por-rodada: 10
+  segundos-por-pergunta: 20
+  # entre uma pergunta e a próxima
+  pausa-segundos: 5
+  premio: 5000
+  # cada jogador só tenta de novo depois desse tempo (contra chutar as contas no automático)
+  espera-entre-tentativas-segundos: 2
+
+  # quantas vezes cada tipo entra no sorteio de cada pergunta ("conta" e "palavra" são geradas na hora)
+  pesos:
+    servidor: 3
+    minecraft: 3
+    conta: 2
+    palavra: 2
+
+  # A primeira resposta é a que aparece; as outras também valem.
+  servidor:
+    - {pergunta: "Qual comando mostra a agenda dos eventos?", respostas: ["/eventos", "eventos"]}
+    - {pergunta: "Quantos andares de neve tem o Spleef?", respostas: ["3", "tres"]}
+    - {pergunta: "Qual comando liga a visão noturna?", respostas: ["/luz", "luz"]}
+    - {pergunta: "Qual é o primeiro rank do servidor?", respostas: ["Camponês", "campones"]}
+    - {pergunta: "Qual é o último rank do rankup?", respostas: ["Rei"]}
+    - {pergunta: "Quantas ondas tem a Sobrevivência?", respostas: ["10", "dez"]}
+    - {pergunta: "Qual comando sobe de rank?", respostas: ["/rankup", "rankup"]}
+    - {pergunta: "Que horas o Dragão do End renasce?", respostas: ["21h", "21", "21:00", "21 horas"]}
+    - {pergunta: "Qual NPC troca Fragmentos Arcanos por encantamentos?", respostas: ["Cambista"]}
+    - {pergunta: "Qual comando mostra as suas skills?", respostas: ["/skills", "skills"]}
+    - {pergunta: "Qual comando pega a recompensa de todo dia?", respostas: ["/diaria", "diaria"]}
+    - {pergunta: "Qual comando manda dinheiro pra outro jogador?", respostas: ["/pix", "pix"]}
+    - {pergunta: "Qual o nome do NPC guia do spawn?", respostas: ["Zé", "ze", "ze o guia"]}
+    - {pergunta: "Em que dia da semana o boss é o Wither?", respostas: ["Domingo"]}
+    - {pergunta: "Qual skill de profissão quebra 3x3 com a picareta?", respostas: ["Minerador"]}
+    - {pergunta: "Qual comando abre as missões?", respostas: ["/missoes", "missoes"]}
+    - {pergunta: "Qual evento tem pilares sobre a água?", respostas: ["Vietnã", "vietna", "vietnam"]}
+    - {pergunta: "Qual é o chefe da onda 10 da Sobrevivência?", respostas: ["Devastador", "ravager"]}
+    - {pergunta: "Que horas é o sorteio da Mine-sena?", respostas: ["18h", "18", "18:00", "18 horas"]}
+    - {pergunta: "Qual comando põe uma recompensa pela cabeça de alguém?", respostas: ["/bounty", "bounty"]}
+    - {pergunta: "Em qual evento o chão some onde você pisa?", respostas: ["Corre ou Cai", "correoucai"]}
+    - {pergunta: "Qual comando leva pro mundo de recursos?", respostas: ["/warp recursos", "warp recursos"]}
+    - {pergunta: "Qual skill de profissão ganha XP pescando?", respostas: ["Pescador"]}
+    - {pergunta: "Qual comando abre o Quiz e mostra como ele funciona?", respostas: ["/quiz", "quiz"]}
+
+  minecraft:
+    - {pergunta: "Quantos blocos de obsidiana tem um portal do Nether mínimo (sem os cantos)?", respostas: ["10", "dez"]}
+    - {pergunta: "Que item doma um lobo?", respostas: ["Osso", "ossos"]}
+    - {pergunta: "Quantos olhos do Ender completam o portal do End?", respostas: ["12", "doze"]}
+    - {pergunta: "Qual mob verde explode quando chega perto?", respostas: ["Creeper"]}
+    - {pergunta: "Quantos lingotes de ferro faz uma armadura de ferro completa?", respostas: ["24", "vinte e quatro"]}
+    - {pergunta: "Em que dimensão fica o Ender Dragon?", respostas: ["End", "the end"]}
+    - {pergunta: "Quantos espaços tem a barra rápida (hotbar)?", respostas: ["9", "nove"]}
+    - {pergunta: "Que minério se usa, junto com obsidiana e livro, pra fazer a mesa de encantamento?", respostas: ["Diamante", "diamantes"]}
+    - {pergunta: "O que o Wither deixa cair quando morre?", respostas: ["Estrela do Nether", "nether star"]}
+    - {pergunta: "Quantos ticks tem um segundo no Minecraft?", respostas: ["20", "vinte"]}
+    - {pergunta: "O que usar na cabeça pra olhar pro Enderman sem ele atacar?", respostas: ["Abóbora", "abobora", "abobora entalhada"]}
+    - {pergunta: "Que mob vira bruxa quando é atingido por um raio?", respostas: ["Aldeão", "aldeao", "villager"]}
+    - {pergunta: "Qual mob deixa cair a lágrima?", respostas: ["Ghast"]}
+    - {pergunta: "Qual encantamento faz a ferramenta gastar mais devagar?", respostas: ["Inquebrável", "inquebravel", "inquebrabilidade", "unbreaking"]}
+    - {pergunta: "Quantos diamantes fazem um bloco de diamante?", respostas: ["9", "nove"]}
+    - {pergunta: "Que comida faz o porco te seguir?", respostas: ["Cenoura", "cenoura no palito", "batata", "beterraba"]}
+    - {pergunta: "Qual o bloco mais duro que se quebra com picareta de diamante?", respostas: ["Obsidiana"]}
+    - {pergunta: "Que ferramenta corta lã das ovelhas?", respostas: ["Tesoura"]}
+    - {pergunta: "Qual mob fica nas fortalezas do Nether e solta varas de blaze?", respostas: ["Blaze"]}
+    - {pergunta: "Quantas tábuas saem de um tronco?", respostas: ["4", "quatro"]}
+    - {pergunta: "Qual minério se acha no Nether e vira netherite?", respostas: ["Detrito ancestral", "detritos ancestrais", "ancient debris"]}
+    - {pergunta: "Que bloco o aldeão bibliotecário usa como mesa de trabalho?", respostas: ["Atril", "atril de leitura", "lectern"]}
+    - {pergunta: "Em que mob o porco vira quando é atingido por um raio?", respostas: ["Piglin zumbificado", "porco zumbi", "zombified piglin"]}
+    - {pergunta: "Quantas lãs vão no crafting de uma cama?", respostas: ["3", "tres"]}
+
+  # palavras pro "desembaralhe" (sem acento fica mais justo)
+  palavras: [diamante, esmeralda, creeper, picareta, obsidiana, enderman, redstone, espada, machado, fornalha,
+             bigorna, lanterna, cambista, montaria, gladiador, castelo, saqueador, esqueleto, aranha, netherite,
+             encantamento, tridente, minerador, pescador, lenhador, galinha, abobora, melancia]

@@ -86,9 +86,19 @@ O único de todos juntos: com o mesmo kit de ferro, contra 10 ondas de invasores
 - **Ondas** (`ondas.lista`, pra 1 jogador; cada jogador a mais põe 50% a mais de mobs e de vida nos chefes, `ondas.a-mais-por-jogador`): saqueadores e vingadores, bruxas a partir da 3 e evocadores a partir da 7. Chefes (`ondas.chefes`): **Capitão Saqueador** (vingador com 120 de vida e 1,5x de dano) na 5 e **Devastador** (300 de vida) na 10. Os invasores saem dos 4 portões em rodízio e vão atrás do jogador mais perto; as vexes do evocador entram na onda. Eles não deixam cair nada nem experiência. Entre as ondas, 10 s de pausa (`ondas.pausa-segundos`), com aviso no chat de quem está na arena ou na galeria. O `/sobrevivencia` mostra a onda e quantos invasores faltam.
 - **Regras**: os mobs machucam de verdade; um jogador não machuca outro (nem com flecha). **Morreu, está fora**: não deixa nada no chão (só o kit estava com ele) e renasce na galeria. Quem estiver vivo quando a última onda cair divide o cheque; se todos morrerem, ninguém ganha; depois de 20 minutos, quem estiver vivo divide.
 
+## Quiz
+
+O único sem arena: uma rodada de perguntas no chat, todo dia às **12:00** e às **15:00** (`quiz.agenda`). Sem inscrição e sem mínimo de jogadores: responde quem estiver online, de onde estiver, com **`/quiz <resposta>`**. Roda junto com os outros eventos. Decisões de 2026-11-02.
+
+- **10 perguntas** (`perguntas-por-rodada`), **20 s** cada (`segundos-por-pergunta`) e 5 s entre elas. Ninguém acertou a tempo, a resposta aparece e vem a próxima.
+- **Os tipos** são sorteados pelos pesos (`pesos`): sobre o **servidor** e sobre o **Minecraft** (as listas `servidor` e `minecraft` do config, com uma ou mais respostas aceitas), **contas** geradas na hora (soma, subtração e multiplicação) e **palavras embaralhadas** (`palavras`). Uma pergunta não se repete na mesma rodada.
+- **A resposta** não liga pra acento, maiúscula, pontuação de número ("10.000" = "10000") nem pra "o"/"a"/"um" na frente. Errou, só quem errou vê "Não é isso"; acertou, todos veem quem acertou e a resposta. Entre uma tentativa e outra, 2 s (`espera-entre-tentativas-segundos`), contra chutar as contas no automático.
+- **Prêmio**: cada pergunta vale 1 ponto pra quem acertar primeiro; quem fizer mais pontos leva o cheque de **R$ 5.000** (`premio`), dividido no empate (quem saiu antes do fim recebe na conta). Vitórias em `quiz-vitorias.yml` (`/quiz top`).
+- Staff (`eventos.admin`): `/quiz abrir`, `/quiz cancelar` e `/quiz resposta` (a resposta da pergunta aberta).
+
 ## /eventos
 
-A agenda de todos os eventos do servidor: o que está rolando agora (com o comando pra entrar ou assistir), o próximo (dia, hora e quanto falta) e os horários de cada um. Os horários vêm do config de cada plugin, então mudou lá, muda aqui: Vietnã e Spleef (`<evento>.agenda`), Gladiador (`agenda` do GladiadorPlugin), Boss (`agenda` do BossPlugin, com o boss do dia, ex.: Wither no domingo), Dragão do End (`end.dragao.hora` do RecursosPlugin) e Mine-sena (`minesena.horario` do ChequePlugin). Plugin desligado, a linha some.
+A agenda de todos os eventos do servidor (o Quiz também): o que está rolando agora (com o comando pra entrar ou assistir), o próximo (dia, hora e quanto falta) e os horários de cada um. Os horários vêm do config de cada plugin, então mudou lá, muda aqui: Vietnã e Spleef (`<evento>.agenda`), Gladiador (`agenda` do GladiadorPlugin), Boss (`agenda` do BossPlugin, com o boss do dia, ex.: Wither no domingo), Dragão do End (`end.dragao.hora` do RecursosPlugin) e Mine-sena (`minesena.horario` do ChequePlugin). Plugin desligado, a linha some.
 
 ## Comandos
 
@@ -109,4 +119,4 @@ Uma seção por evento no `config.yml` (`vietna:`, `spleef:`, `correoucai:` e `s
 
 ## Teste
 
-`node tools/bots/teste-vietna.js`, `node tools/bots/teste-spleef.js` e `node tools/bots/teste-correoucai.js` e `node tools/bots/teste-sobrevivencia.js`
+`node tools/bots/teste-vietna.js`, `node tools/bots/teste-spleef.js` e `node tools/bots/teste-correoucai.js`, `node tools/bots/teste-sobrevivencia.js` e `node tools/bots/teste-quiz.js`

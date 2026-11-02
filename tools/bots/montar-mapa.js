@@ -411,6 +411,7 @@ const DICAS = [
     '&fNa agenda atual: &6Gladiador&f por &bclã&f sábado às &e19h&f e &6individual&f domingo às &e19h&f. A borda fecha no centro!',
     '&fTodo dia, às &e10h&f e às &e16h&f, tem o &2Vietnã&f: pilares sobre a água, e quem cair tá fora. Entre com o inventário vazio: &e/vietna entrar&f. O último de pé leva um cheque!',
     '&fE às &e13h&f e às &e18h&f tem o &bSpleef&f: três pisos de neve, cada um com uma pá. Quebre o chão debaixo dos outros! &e/spleef entrar&f, com o inventário vazio.',
+    '&fE às &e12h&f e às &e15h&f tem &eQuiz&f no chat: responda com &e/quiz <resposta>&f de onde estiver. Quem acertar mais leva um cheque!',
     '&fTodo dia às &e22h&f tem a &6Sobrevivência&f: todos juntos contra 10 ondas de invasores no castelo. Quem chegar vivo ao fim divide o prêmio! &e/sobrevivencia entrar&f.',
     '&fÀs &e11h&f e às &e17h&f tem o &dCorre ou Cai&f: o chão some onde você pisa, então não pare! &e/correoucai entrar&f, com o inventário vazio.',
     '&fQuer um cantinho seu? &e/terreno&f. Madeira e bicho você acha no &e/warp recursos&f.',

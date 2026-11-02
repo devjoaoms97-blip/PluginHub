@@ -29,6 +29,9 @@ Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o últ
 
 Pra só assistir: `/<evento> assistir` (ex.: `/spleef assistir`).
 
+**Quiz**
+✎ Todo dia às **12h** e **15h**, sem inscrição: 10 perguntas no chat (sobre o servidor, o Minecraft, contas e palavras embaralhadas). Responda com `/quiz <resposta>`, de onde estiver: quem acertar primeiro marca 1 ponto, e quem fizer mais pontos leva **R$ 5.000** (dividido no empate). Acento e maiúscula não importam.
+
 **Mine-sena**
 O sorteio é todo dia às 18h. Veja como escolher seus números e apostar no tutorial **Dinheiro, loja e Pix**.
 

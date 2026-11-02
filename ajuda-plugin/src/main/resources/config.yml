@@ -98,6 +98,7 @@ comandos-permitidos:
     - spleef
     - correoucai
     - sobrevivencia
+    - quiz
     # teleporte e casas
     - tpa
     - tpahere
@@ -231,6 +232,7 @@ comandos:
         - "/correoucai entrar | Se inscreve no Corre ou Cai"
         - "/sobrevivencia | Evento Sobrevivência: ondas de invasores, todos juntos (inventário vazio)"
         - "/sobrevivencia entrar | Se inscreve na Sobrevivência"
+        - "/quiz <resposta> | Responde a pergunta do Quiz"
         - "/boss proximo | Quando o próximo boss aparece"
         - "/bounty colocar <jogador> <valor> | Recompensa pela cabeça de alguém"
         - "/bounty lista | Maiores recompensas"

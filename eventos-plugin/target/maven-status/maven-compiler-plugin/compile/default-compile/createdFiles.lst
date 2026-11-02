@@ -1,8 +1,11 @@
+com\example\eventos\quiz\Quiz$Pergunta.class
 com\example\eventos\vietna\ArenaVietna$Pilar.class
 com\example\eventos\base\EventoCommand.class
 com\example\eventos\AgendaCommand$Horario.class
 com\example\eventos\base\Evento$Fase.class
+com\example\eventos\quiz\Quiz.class
 com\example\eventos\base\EventoCommand$1.class
+com\example\eventos\quiz\QuizCommand.class
 com\example\eventos\spleef\ArenaSpleef.class
 com\example\eventos\AgendaCommand.class
 com\example\eventos\sobrevivencia\ArenaSobrevivencia.class

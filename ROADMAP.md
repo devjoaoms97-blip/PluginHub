@@ -193,7 +193,7 @@ Três pisos coloridos sobre a água, sem kit: o bloco em que se pisa fica vermel
 
 **Próximos eventos (decididos em 2026-11-02, um de cada vez, decidindo tudo antes)**
 - [x] **Sobrevivência** (`/sobrevivencia`, 2026-11-02): todos juntos, com kit de ferro, contra 10 ondas de invasores (saqueadores, vingadores, bruxas e evocadores) no pátio de um castelo sitiado, com chefe na 5 (Capitão Saqueador) e na 10 (Devastador). Os mobs machucam de verdade; morreu, está fora (sem perder nada) e vai pra galeria. Quem chegar vivo ao fim divide o cheque de R$ 10.000; se todos morrerem, ninguém ganha. Todo dia às 22:00.
-- [ ] Quiz no chat.
+- [x] **Quiz** (`/quiz`, 2026-11-02): rodada de 10 perguntas no chat (servidor, Minecraft, contas e palavras embaralhadas), resposta com `/quiz <resposta>` em 20 s, 1 ponto pra quem acertar primeiro e R$ 5.000 pra quem fizer mais pontos (dividido no empate). Sem inscrição e sem mínimo de jogadores. Todo dia às 12:00 e 15:00.
 
 ### Combate 1.8 ✅ v1 (`combate-plugin`)
 Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo entre golpes configurável e separado por mão** (`/combate intervalo`, de 0 ao padrão de 0,5 s ou mais; alternar as duas mãos bate duas vezes mais), **bloqueio com a espada** (só sem escudo na segunda mão) e **duas mãos** (o botão direito bate com a espada, o machado ou o soco da segunda mão, cada um com a sua skill). Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado continuam como no jogo atual.

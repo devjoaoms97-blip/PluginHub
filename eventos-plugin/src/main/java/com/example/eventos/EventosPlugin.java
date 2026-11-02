@@ -4,6 +4,8 @@ import com.example.eventos.base.Evento;
 import com.example.eventos.base.EventoCommand;
 import com.example.eventos.base.EventosListener;
 import com.example.eventos.correoucai.CorreOuCai;
+import com.example.eventos.quiz.Quiz;
+import com.example.eventos.quiz.QuizCommand;
 import com.example.eventos.sobrevivencia.Sobrevivencia;
 import com.example.eventos.spleef.Spleef;
 import com.example.eventos.util.DiscordIntegration;
@@ -28,6 +30,7 @@ public class EventosPlugin extends JavaPlugin {
     private List<Evento> eventos;
     private DiscordIntegration discord;
     private Premio premio;
+    private Quiz quiz;
     private String ultimoMinutoAgenda = "";
 
     @Override
@@ -35,6 +38,10 @@ public class EventosPlugin extends JavaPlugin {
         saveDefaultConfig();
         this.discord = new DiscordIntegration(this);
         this.premio = new Premio(this);
+        this.quiz = new Quiz(this);
+        QuizCommand comandoQuiz = new QuizCommand(this);
+        getCommand("quiz").setExecutor(comandoQuiz);
+        getCommand("quiz").setTabCompleter(comandoQuiz);
         this.eventos = List.of(new Vietna(this), new Spleef(this), new CorreOuCai(this), new Sobrevivencia(this));
 
         for (Evento e : eventos) {
@@ -55,11 +62,13 @@ public class EventosPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         if (eventos != null) eventos.forEach(e -> e.cancelar("o servidor está desligando"));
+        if (quiz != null) quiz.cancelar("o servidor está desligando");
     }
 
     private void tick() {
         agenda();
         eventos.forEach(Evento::tick);
+        quiz.tick();
     }
 
     /** Abre cada evento nos horários do dia ({@code <evento>.agenda: ["10:00", "16:00"]}), uma vez por minuto agendado. */
@@ -67,6 +76,13 @@ public class EventosPlugin extends JavaPlugin {
         LocalDateTime agora = LocalDateTime.now();
         String minuto = agora.toLocalDate() + " " + agora.getHour() + ":" + agora.getMinute();
         if (minuto.equals(ultimoMinutoAgenda)) return;
+        // o Quiz é no chat: roda junto com qualquer evento de arena
+        for (String horario : getConfig().getStringList("quiz.agenda")) {
+            if (!horario.trim().equals(String.format("%02d:%02d", agora.getHour(), agora.getMinute()))) continue;
+            ultimoMinutoAgenda = minuto;
+            if (!quiz.isAtivo()) quiz.abrir();
+            return;
+        }
         for (Evento e : eventos) {
             for (String horario : e.cfg().getStringList("agenda")) {
                 try {
@@ -112,6 +128,10 @@ public class EventosPlugin extends JavaPlugin {
 
     public DiscordIntegration getDiscord() {
         return discord;
+    }
+
+    public Quiz getQuiz() {
+        return quiz;
     }
 
     public Premio getPremio() {

@@ -62,6 +62,10 @@ public class AgendaCommand implements CommandExecutor {
             };
             sender.sendMessage("§aAgora: §f" + aberto.nome() + " §7(" + fase + "§7)");
         }
+        if (plugin.getQuiz().isAtivo()) {
+            sender.sendMessage("§aAgora: §fQuiz §7(pergunta " + plugin.getQuiz().getNumero() + "/" + plugin.getQuiz().total()
+                    + ": §f/quiz <resposta>§7)");
+        }
 
         // o próximo de todos (o mais cedo a partir de agora)
         LocalDateTime agora = LocalDateTime.now();
@@ -96,6 +100,9 @@ public class AgendaCommand implements CommandExecutor {
             for (String s : e.cfg().getStringList("agenda")) adicionar(hs, null, s, null);
             if (!hs.isEmpty()) linhas.add(new Linha(e.rotulo(), "/" + e.id(), hs));
         }
+        List<Horario> quiz = new ArrayList<>();
+        for (String s : plugin.getConfig().getStringList("quiz.agenda")) adicionar(quiz, null, s, null);
+        if (!quiz.isEmpty()) linhas.add(new Linha("§e✎ Quiz", "/quiz", quiz));
         Plugin glad = ativo("GladiadorPlugin");
         if (glad != null) {
             List<Horario> hs = new ArrayList<>();
