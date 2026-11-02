@@ -1,6 +1,6 @@
 # EventosPlugin
 
-Eventos de arena do servidor: o **Vietnã** (`/vietna`), o **Spleef** (`/spleef`) e o **Corre ou Cai** (`/correoucai`). Só um fica aberto por vez (a agenda pula o horário se outro estiver aberto, e a staff não abre um segundo).
+Eventos de arena do servidor: o **Vietnã** (`/vietna`), o **Spleef** (`/spleef`), o **Corre ou Cai** (`/correoucai`) e a **Sobrevivência** (`/sobrevivencia`). Só um fica aberto por vez (a agenda pula o horário se outro estiver aberto, e a staff não abre um segundo).
 
 ## O que todos têm em comum
 
@@ -77,13 +77,22 @@ Um prédio quadrado e fechado de festa colorida no mundo `arenas`, em volta de (
 - **O chão some**: o bloco em que alguém pisa (os até 4 debaixo do pé) fica **vermelho** e some meio segundo depois (`chao.some-em-ticks: 10`), mesmo pra quem está parado: o plugin confere o chão de cada um a cada 2 ticks. Nos primeiros 3 segundos da luta, nada some (`chao.graca-segundos`). Quem cai de um piso vai pro de baixo; do último, cai na água e está fora.
 - Todos começam no piso de cima, espalhados. A cada evento, só os pisos voltam.
 
+## Sobrevivência
+
+O único de todos juntos: com o mesmo kit de ferro, contra 10 ondas de invasores no pátio de um castelo sitiado, com chefe na 5 e na 10. Todo dia às **22:00** (`sobrevivencia.agenda`). Decisões de 2026-11-02.
+
+- **Arena**: o pátio de 31 x 31 de um castelo fechado no mundo `arenas`, em volta de (0, 1500): chão de pedra com musgo e rachaduras, muralhas de tijolo de pedra com colunas de carvalho escuro, um portão com grade de ferro no meio de cada muralha (de onde os invasores saem), fardos de feno e pilhas de tronco pra se esconder, teto de carvalho escuro com claraboias e lanternas, ameias por fora e a galeria em cima das muralhas, atrás de vidro.
+- **Kit**: armadura, espada e arco de ferro (inquebráveis), 32 flechas e 4 maçãs douradas. Quando uma onda cai, mais 16 flechas. Sem fome (a vida volta sozinha).
+- **Ondas** (`ondas.lista`, pra 1 jogador; cada jogador a mais põe 50% a mais de mobs e de vida nos chefes, `ondas.a-mais-por-jogador`): saqueadores e vingadores, bruxas a partir da 3 e evocadores a partir da 7. Chefes (`ondas.chefes`): **Capitão Saqueador** (vingador com 120 de vida e 1,5x de dano) na 5 e **Devastador** (300 de vida) na 10. Os invasores saem dos 4 portões em rodízio e vão atrás do jogador mais perto; as vexes do evocador entram na onda. Eles não deixam cair nada nem experiência. Entre as ondas, 10 s de pausa (`ondas.pausa-segundos`), com aviso no chat de quem está na arena ou na galeria. O `/sobrevivencia` mostra a onda e quantos invasores faltam.
+- **Regras**: os mobs machucam de verdade; um jogador não machuca outro (nem com flecha). **Morreu, está fora**: não deixa nada no chão (só o kit estava com ele) e renasce na galeria. Quem estiver vivo quando a última onda cair divide o cheque; se todos morrerem, ninguém ganha; depois de 20 minutos, quem estiver vivo divide.
+
 ## /eventos
 
 A agenda de todos os eventos do servidor: o que está rolando agora (com o comando pra entrar ou assistir), o próximo (dia, hora e quanto falta) e os horários de cada um. Os horários vêm do config de cada plugin, então mudou lá, muda aqui: Vietnã e Spleef (`<evento>.agenda`), Gladiador (`agenda` do GladiadorPlugin), Boss (`agenda` do BossPlugin, com o boss do dia, ex.: Wither no domingo), Dragão do End (`end.dragao.hora` do RecursosPlugin) e Mine-sena (`minesena.horario` do ChequePlugin). Plugin desligado, a linha some.
 
 ## Comandos
 
-Iguais em todos os eventos (`/vietna ...`, `/spleef ...` e `/correoucai ...`):
+Iguais em todos os eventos (`/vietna ...`, `/spleef ...`, `/correoucai ...` e `/sobrevivencia ...`):
 
 | Comando | O que faz |
 |---|---|
@@ -96,8 +105,8 @@ Staff (`eventos.admin`): `abrir`, `iniciar` (fecha as inscrições e começa ago
 
 ## Config
 
-Uma seção por evento no `config.yml` (`vietna:`, `spleef:` e `correoucai:`), com as mesmas chaves comuns (agenda, inscrição, mínimo de jogadores, prêmio, tempos da luta, comandos liberados) e as de cada um: no Vietnã, os pilares que somem, o kit e o reabastecimento, a força dos empurrões e a arena; no Spleef, o derretimento, a Eficiência da pá e a arena (centro, raio, andares e distância entre eles); no Corre ou Cai, o tempo até o bloco sumir, a graça do começo e a arena. Mudou uma arena? Atualize a caixa dela no config do AreasPlugin com o que o `/<evento> construir` mostra.
+Uma seção por evento no `config.yml` (`vietna:`, `spleef:`, `correoucai:` e `sobrevivencia:`), com as mesmas chaves comuns (agenda, inscrição, mínimo de jogadores, prêmio, tempos da luta, comandos liberados) e as de cada um: no Vietnã, os pilares que somem, o kit e o reabastecimento, a força dos empurrões e a arena; no Spleef, o derretimento, a Eficiência da pá e a arena (centro, raio, andares e distância entre eles); no Corre ou Cai, o tempo até o bloco sumir, a graça do começo e a arena; na Sobrevivência, o kit, as ondas, os chefes e a arena. Mudou uma arena? Atualize a caixa dela no config do AreasPlugin com o que o `/<evento> construir` mostra.
 
 ## Teste
 
-`node tools/bots/teste-vietna.js`, `node tools/bots/teste-spleef.js` e `node tools/bots/teste-correoucai.js`
+`node tools/bots/teste-vietna.js`, `node tools/bots/teste-spleef.js` e `node tools/bots/teste-correoucai.js` e `node tools/bots/teste-sobrevivencia.js`

@@ -192,7 +192,7 @@ Três pisos coloridos sobre a água, sem kit: o bloco em que se pisa fica vermel
 - Decisões de 2026-11-02: 3 andares, 0,5 s pro bloco sumir, nenhuma ajuda (só correr), festa colorida, todo dia às 11:00 e 17:00.
 
 **Próximos eventos (decididos em 2026-11-02, um de cada vez, decidindo tudo antes)**
-- [ ] Sobrevivência: ondas de mobs, todos juntos, com kit.
+- [x] **Sobrevivência** (`/sobrevivencia`, 2026-11-02): todos juntos, com kit de ferro, contra 10 ondas de invasores (saqueadores, vingadores, bruxas e evocadores) no pátio de um castelo sitiado, com chefe na 5 (Capitão Saqueador) e na 10 (Devastador). Os mobs machucam de verdade; morreu, está fora (sem perder nada) e vai pra galeria. Quem chegar vivo ao fim divide o cheque de R$ 10.000; se todos morrerem, ninguém ganha. Todo dia às 22:00.
 - [ ] Quiz no chat.
 
 ### Combate 1.8 ✅ v1 (`combate-plugin`)

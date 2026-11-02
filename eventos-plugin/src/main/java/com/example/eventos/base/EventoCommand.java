@@ -115,7 +115,8 @@ public class EventoCommand implements TabExecutor {
             sender.sendMessage(ev.cor() + "Agora: §f" + switch (ev.getFase()) {
                 case INSCRICAO -> "inscrições abertas (" + ev.getParticipantes().size() + " inscrito(s)): /" + ev.id() + " entrar";
                 case PREPARACAO -> "começando";
-                case LUTA -> "luta rolando, " + vivos + " de pé: /" + ev.id() + " assistir";
+                case LUTA -> "luta rolando, " + vivos + " de pé" + (ev.detalheLuta() != null ? ", " + ev.detalheLuta() : "")
+                        + ": /" + ev.id() + " assistir";
                 case FIM -> "acabou de terminar";
             });
         }

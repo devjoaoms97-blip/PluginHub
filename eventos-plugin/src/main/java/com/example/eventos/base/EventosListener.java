@@ -64,18 +64,48 @@ public class EventosListener implements Listener {
         Player atirador = evento.getDamager() instanceof Projectile proj && proj.getShooter() instanceof Player p ? p : null;
         Player batedor = evento.getDamager() instanceof Player p ? p : atirador;
         Evento daVitima = lutando(evento.getEntity());
+        // a Sobrevivência: mob (ou flecha de mob) machuca quem luta, e quem luta acerta os mobs dela
+        if (daVitima != null && batedor == null && daVitima.danoDeMobs() && daVitima.getFase() == Evento.Fase.LUTA) return;
+        Evento doBatedor = batedor == null ? null : lutando(batedor);
+        if (daVitima == null && doBatedor != null && doBatedor.podeAcertar(evento.getEntity())) return;
         // quem está fora não acerta quem luta, e quem luta não acerta ninguém de fora
-        if (daVitima == null && (batedor == null || lutando(batedor) == null)) return;
+        if (daVitima == null && doBatedor == null) return;
         evento.setCancelled(true);
         if (daVitima == null || atirador == null || atirador == evento.getEntity() || lutando(atirador) != daVitima) return;
         if (daVitima.getFase() != Evento.Fase.LUTA) return;
         daVitima.aoAcertar((Player) evento.getEntity(), (Projectile) evento.getDamager());
     }
 
-    /** Queda, afogamento, qualquer dano: ninguém lutando perde vida. */
+    /** Queda, afogamento, qualquer dano: ninguém lutando perde vida (menos na Sobrevivência, na luta). */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoTomarDano(EntityDamageEvent evento) {
-        if (!(evento instanceof EntityDamageByEntityEvent) && lutando(evento.getEntity()) != null) evento.setCancelled(true);
+        if (evento instanceof EntityDamageByEntityEvent) return;
+        Evento e = lutando(evento.getEntity());
+        if (e != null && !(e.danoDeMobs() && e.getFase() == Evento.Fase.LUTA)) evento.setCancelled(true);
+    }
+
+    /** Morreu na luta (a Sobrevivência): o kit não cai, nem a experiência, e está fora. */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void aoMorrer(org.bukkit.event.entity.PlayerDeathEvent evento) {
+        Player p = evento.getPlayer();
+        Evento e = lutando(p);
+        if (e == null) return;
+        evento.getDrops().clear();
+        evento.setDroppedExp(0);
+        evento.setKeepLevel(true);
+        e.eliminarPorMorte(p);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void aoRenascer(org.bukkit.event.player.PlayerRespawnEvent evento) {
+        for (Evento e : plugin.getEventos()) {
+            Location galeria = e.tirarRenascer(evento.getPlayer().getUniqueId());
+            if (galeria != null && galeria.getWorld() != null) {
+                evento.setRespawnLocation(galeria);
+                evento.getPlayer().sendMessage("§7Você está na galeria. Pra sair: §f/spawn§7.");
+                return;
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

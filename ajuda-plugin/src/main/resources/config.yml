@@ -97,6 +97,7 @@ comandos-permitidos:
     - vietna
     - spleef
     - correoucai
+    - sobrevivencia
     # teleporte e casas
     - tpa
     - tpahere
@@ -228,6 +229,8 @@ comandos:
         - "/spleef entrar | Se inscreve no Spleef"
         - "/correoucai | Evento Corre ou Cai: o chão some onde você pisa (inventário vazio)"
         - "/correoucai entrar | Se inscreve no Corre ou Cai"
+        - "/sobrevivencia | Evento Sobrevivência: ondas de invasores, todos juntos (inventário vazio)"
+        - "/sobrevivencia entrar | Se inscreve na Sobrevivência"
         - "/boss proximo | Quando o próximo boss aparece"
         - "/bounty colocar <jogador> <valor> | Recompensa pela cabeça de alguém"
         - "/bounty lista | Maiores recompensas"

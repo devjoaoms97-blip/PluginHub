@@ -3,7 +3,7 @@ version: '1.0.0'
 main: com.example.eventos.EventosPlugin
 api-version: '26.2'
 author: Você
-description: Eventos do servidor. Vietnã (derrubar os outros dos pilares na água), Spleef (quebrar a neve debaixo dos outros) e Corre ou Cai (o chão some onde se pisa).
+description: Eventos do servidor. Vietnã (derrubar os outros dos pilares na água), Spleef (quebrar a neve debaixo dos outros), Corre ou Cai (o chão some onde se pisa) e Sobrevivência (ondas de invasores, todos juntos).
 softdepend: [Vault, ChequePlugin, DiscordPlugin, AreasPlugin]
 
 commands:
@@ -15,6 +15,11 @@ commands:
   vietna:
     description: Evento Vietnã.
     usage: "Uso: /vietna <entrar|sair|info|assistir|top>"
+    permission: eventos.usar
+    permission-message: "§cVocê não tem permissão para os eventos."
+  sobrevivencia:
+    description: Evento Sobrevivência.
+    usage: "Uso: /sobrevivencia <entrar|sair|info|assistir|top>"
     permission: eventos.usar
     permission-message: "§cVocê não tem permissão para os eventos."
   correoucai:

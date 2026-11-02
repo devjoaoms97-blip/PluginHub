@@ -151,3 +151,62 @@ correoucai:
     distancia-andares: 6
 
   comandos-liberados: [correoucai, spawn]
+
+# ---------------------------------------------------------------------------------------------
+# Sobrevivência: todos juntos, com o mesmo kit de ferro, contra 10 ondas de invasores no pátio de um
+# castelo sitiado, com chefe na 5 e na 10. Os mobs machucam de verdade; quem morre está fora (sem perder
+# nada: só o kit estava com ele) e vai pra galeria. Quem estiver vivo quando a última onda cair divide o
+# prêmio; se todos morrerem, ninguém ganha. Sem fogo amigo. Mesmas regras de inscrição dos outros.
+# ---------------------------------------------------------------------------------------------
+sobrevivencia:
+  agenda: ["22:00"]
+
+  inscricao:
+    duracao-segundos: 180
+    avisos-segundos: [120, 60, 30, 10]
+  minimo-jogadores: 3
+  # dividido entre quem chegar vivo ao fim da última onda (ou do tempo máximo)
+  premio: 10000
+
+  luta:
+    preparacao-segundos: 10
+    tempo-maximo-minutos: 20
+
+  kit:
+    # armadura, espada e arco de ferro (inquebráveis) vêm sempre; aqui, o que se conta
+    flechas: 32
+    macas-douradas: 4
+    # quando uma onda cai, cada um vivo ganha mais essas flechas
+    flechas-por-onda: 16
+
+  ondas:
+    # entre uma onda e a próxima
+    pausa-segundos: 10
+    # cada jogador a mais (além do primeiro) põe essa fração a mais de mobs e de vida nos chefes
+    a-mais-por-jogador: 0.5
+    # uma linha por onda: "TIPO:quantidade, ..." (tipos do Minecraft), pra 1 jogador
+    lista:
+      - "PILLAGER:3, VINDICATOR:1"
+      - "PILLAGER:3, VINDICATOR:3"
+      - "PILLAGER:4, VINDICATOR:2, WITCH:1"
+      - "PILLAGER:4, VINDICATOR:4, WITCH:2"
+      - "PILLAGER:4"
+      - "PILLAGER:5, VINDICATOR:4, WITCH:2"
+      - "PILLAGER:5, VINDICATOR:5, EVOKER:1"
+      - "PILLAGER:6, VINDICATOR:5, WITCH:3, EVOKER:1"
+      - "PILLAGER:6, VINDICATOR:6, WITCH:3, EVOKER:2"
+      - "VINDICATOR:4, EVOKER:1"
+    # o chefe de cada onda (vida em pontos: 2 = 1 coração; dano = multiplicador do golpe)
+    chefes:
+      "5": {tipo: VINDICATOR, nome: "&c&lCapitão Saqueador", vida: 120, dano: 1.5}
+      "10": {tipo: RAVAGER, nome: "&4&lDevastador", vida: 300, dano: 1.0}
+
+  # O pátio do castelo, construído pelo plugin (/sobrevivencia construir). "raio" é a metade do lado
+  # (15 = 31 x 31); "chao-y" é o bloco do chão.
+  arena:
+    mundo: arenas
+    centro: [0, 1500]
+    chao-y: 64
+    raio: 15
+
+  comandos-liberados: [sobrevivencia, spawn]

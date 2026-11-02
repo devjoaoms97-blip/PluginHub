@@ -73,6 +73,7 @@ public abstract class Evento {
     private long fimInscricao, inicioLuta;
     private final Set<Integer> avisosDados = new HashSet<>();
     private final Set<UUID> teleporteLiberado = new HashSet<>();
+    private final Set<UUID> renascerNaGaleria = new HashSet<>();
     private final Map<UUID, Integer> vitorias = new HashMap<>();
     private final Map<UUID, String> nomes = new HashMap<>();
 
@@ -151,7 +152,30 @@ public abstract class Evento {
     public void aoAcertar(Player vitima, Projectile projetil) {
     }
 
-    /** Quem está lutando pode quebrar esse bloco? (o Spleef: a neve do piso) */
+    /** Um detalhe da luta pro /<evento> (a Sobrevivência: a onda), ou null. */
+    public String detalheLuta() {
+        return null;
+    }
+
+    /** Os mobs machucam quem luta de verdade (a Sobrevivência)? Nos outros, ninguém perde vida. */
+    public boolean danoDeMobs() {
+        return false;
+    }
+
+    /** Quem luta pode acertar essa entidade (que não é participante)? (a Sobrevivência: os mobs dela) */
+    public boolean podeAcertar(org.bukkit.entity.Entity alvo) {
+        return false;
+    }
+
+    /**
+     * Acaba quando sobra um de pé? (os eventos de "último de pé"). Na Sobrevivência, que é de todos
+     * juntos, não: ela acaba quando a última onda cai ou quando todos morrem.
+     */
+    protected boolean acabaComUmDePe() {
+        return true;
+    }
+
+    /** Quem luta pode quebrar esse bloco? (o Spleef: a neve do piso) */
     public boolean podeQuebrar(Player p, org.bukkit.block.Block bloco) {
         return false;
     }
@@ -365,11 +389,27 @@ public abstract class Evento {
         verificarVencedor();
     }
 
+    /** Morreu na luta (a Sobrevivência): está fora, e renasce na galeria (o kit não cai: ver EventosListener). */
+    public void eliminarPorMorte(Player p) {
+        Participante part = lutando(p.getUniqueId());
+        if (part == null) return;
+        part.vivo = false;
+        renascerNaGaleria.add(p.getUniqueId());
+        removerPendente(p.getUniqueId());
+        anunciar(prefixo() + " §f" + part.nome + " §7morreu. " + cor() + "Restam §f" + vivos().size() + cor() + ".");
+        verificarVencedor();
+    }
+
+    /** Onde quem morreu na luta renasce (a galeria), uma vez; null se não é o caso. */
+    public Location tirarRenascer(UUID jogador) {
+        return renascerNaGaleria.remove(jogador) ? arquibancada() : null;
+    }
+
     private void verificarVencedor() {
         if (fase != Fase.LUTA) return;
         List<UUID> vivos = vivos();
         // sozinho (mínimo 1, no teste), não vence na hora: joga até cair ou o tempo acabar
-        if (vivos.isEmpty() || (vivos.size() == 1 && participantes.size() > 1)) finalizar(vivos);
+        if (vivos.isEmpty() || (acabaComUmDePe() && vivos.size() == 1 && participantes.size() > 1)) finalizar(vivos);
     }
 
     protected List<UUID> vivos() {
@@ -380,7 +420,8 @@ public abstract class Evento {
         return vivos().stream().map(Bukkit::getPlayer).filter(p -> p != null).toList();
     }
 
-    private void finalizar(List<UUID> ganhadores) {
+    /** Termina e paga o prêmio dividido entre os ganhadores (vazio = ninguém). */
+    protected void finalizar(List<UUID> ganhadores) {
         fase = Fase.FIM;
         if (ganhadores.isEmpty()) {
             anunciar(titulo() + " §7Ninguém sobrou de pé.");
@@ -403,7 +444,7 @@ public abstract class Evento {
             }
             salvarVitorias();
             String resultado = titulo() + " §f" + String.join(", ", nomesGanhadores) + " " + cor() + "§l"
-                    + (ganhadores.size() > 1 ? "venceram (tempo esgotado)" : "venceu") + cor() + "! Prêmio: cheque de §f"
+                    + (ganhadores.size() > 1 ? (acabaComUmDePe() ? "venceram (tempo esgotado)" : "sobreviveram") : (acabaComUmDePe() ? "venceu" : "sobreviveu")) + cor() + "! Prêmio: cheque de §f"
                     + Formato.valor(parte) + (ganhadores.size() > 1 ? " " + cor() + "pra cada um" : "") + cor() + ".";
             anunciar(resultado);
             plugin.getDiscord().enviar("eventos", resultado);

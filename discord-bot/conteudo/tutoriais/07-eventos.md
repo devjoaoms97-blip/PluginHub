@@ -14,8 +14,10 @@ Na agenda do servidor de teste, o modo **por clã** abre sábado às **19h** e o
 
 Inscrição, pote, borda e critérios de vitória estão explicados em **Gladiador**.
 
-**Vietnã, Spleef e Corre ou Cai**
-Eventos rápidos e grátis em que **ninguém perde itens**: entre com o inventário **totalmente vazio** (inclusive armadura e a outra mão), uma inscrição por conexão. Todos recebem o mesmo kit, ninguém perde vida e quem cai na água vai pra arquibancada, em cima da arena. O último de pé leva um **cheque de R$ 10.000**; depois de 8 minutos, quem estiver de pé divide. Na arena só vale o comando do evento (nada de `/tpa` ou `/home`), e da arquibancada sai com `/spawn`.
+**Eventos de arena**
+Eventos rápidos e grátis em que **ninguém perde itens**: entre com o inventário **totalmente vazio** (inclusive armadura e a outra mão), uma inscrição por conexão. Todos recebem o mesmo kit, e quem sai do jogo vai pra galeria, em cima da arena (sai dela com `/spawn`). O prêmio é um **cheque de R$ 10.000**. Na arena só vale o comando do evento (nada de `/tpa` ou `/home`).
+
+Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o último de pé leva o cheque (depois de 8 minutos, quem estiver de pé divide).
 
 ☘ **Vietnã**, todo dia às **10h** e **16h** (`/vietna entrar`): pilares sobre a água. Kit: arco com Impulso, bolas de neve, cargas de vento (empurram e servem pra pular de um pilar pro outro) e vara de pesca. Os golpes só empurram. Depois de 2 minutos, o topo de um pilar fica **vermelho** e ele cai pouco depois: saia de cima!
 
@@ -23,7 +25,9 @@ Eventos rápidos e grátis em que **ninguém perde itens**: entre com o inventá
 
 ✦ **Corre ou Cai**, todo dia às **11h** e **17h** (`/correoucai entrar`): três pisos coloridos e nenhum kit. O bloco onde você pisa fica **vermelho** e some meio segundo depois: não pare de correr! Quem cai vai pro piso de baixo, e do último cai na água.
 
-Pra só assistir: `/vietna assistir`, `/spleef assistir` ou `/correoucai assistir`.
+⚔ **Sobrevivência**, todo dia às **22h** (`/sobrevivencia entrar`): todos **juntos**, com kit de ferro, contra 10 ondas de invasores no pátio de um castelo, com chefe na 5 e na 10. Aqui os mobs machucam de verdade: morreu, está fora (sem perder nada). Quem estiver vivo no fim da última onda divide o prêmio.
+
+Pra só assistir: `/<evento> assistir` (ex.: `/spleef assistir`).
 
 **Mine-sena**
 O sorteio é todo dia às 18h. Veja como escolher seus números e apostar no tutorial **Dinheiro, loja e Pix**.

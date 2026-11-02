@@ -19,10 +19,11 @@
 //     spawn      o spawn inteiro (EstruturasPlugin "spring"), as barracas dele e os hologramas da fonte
 //     barracas   só as 32 barracas do spawn (redesenha e cadastra as que faltam; aluguéis e NPCs ficam)
 //     arenas     saguão, X1 ("axepvp") e Gladiador ("coliseu"), bem longe um do outro, e limpa o que
-//                sobrou das versões anteriores no mundo das arenas (e faz o vietna, o spleef e o correoucai junto)
+//                sobrou das versões anteriores no mundo das arenas (e faz o vietna, o spleef, o correoucai e a sobrevivencia junto)
 //     vietna     só a arena do Vietnã (EventosPlugin) e o holograma dele no saguão das arenas
 //     spleef     só a arena do Spleef (EventosPlugin) e o holograma dele no saguão das arenas
 //     correoucai só a arena do Corre ou Cai (EventosPlugin) e o holograma dele no saguão das arenas
+//     sobrevivencia  só o castelo da Sobrevivência (EventosPlugin) e o holograma dele no saguão das arenas
 //     marcar     spawn dos jogadores, warps e local do boss (com o bot da staff)
 //     limpar-antigo   apaga o mapa antigo (praça, mercado, loja, portais e as barracas n1..n8, e1, e2).
 //                     Só uma vez, ao trocar o mapa antigo por este, e ANTES do spawn: fora isso, apagaria
@@ -346,6 +347,7 @@ async function construirArenas() {
   await construirVietna()
   await construirSpleef()
   await construirCorreOuCai()
+  await construirSobrevivencia()
 }
 
 // O EventosPlugin constrói as arenas dos eventos (e de novo a cada evento). No saguão das arenas, um
@@ -360,6 +362,13 @@ async function construirCorreOuCai() {
   console.log('\n== Corre ou Cai: pisos coloridos (0, 1200) e holograma no saguão ==')
   console.log(await t.console('correoucai construir'))
   await holograma('arenas', [0, CHAO + 1, -5], [['/correoucai', 'light_purple'], ['todo dia, 11h e 17h', null], ['/correoucai assistir', 'gray'], ['', null]])
+}
+
+async function construirSobrevivencia() {
+  console.log('\n== Sobrevivência: castelo (0, 1500) e holograma no saguão ==')
+  console.log(await t.console('sobrevivencia construir'))
+  // a fileira de cima do saguão está cheia (duelo, Gladiador, Vietnã, Spleef e Corre ou Cai): na parede oeste
+  await holograma('arenas', [-6, CHAO + 1, 2], [['/sobrevivencia', 'gold'], ['todo dia, 22h', null], ['/sobrevivencia assistir', 'gray'], ['', null]])
 }
 
 async function construirSpleef() {
@@ -402,6 +411,7 @@ const DICAS = [
     '&fNa agenda atual: &6Gladiador&f por &bclã&f sábado às &e19h&f e &6individual&f domingo às &e19h&f. A borda fecha no centro!',
     '&fTodo dia, às &e10h&f e às &e16h&f, tem o &2Vietnã&f: pilares sobre a água, e quem cair tá fora. Entre com o inventário vazio: &e/vietna entrar&f. O último de pé leva um cheque!',
     '&fE às &e13h&f e às &e18h&f tem o &bSpleef&f: três pisos de neve, cada um com uma pá. Quebre o chão debaixo dos outros! &e/spleef entrar&f, com o inventário vazio.',
+    '&fTodo dia às &e22h&f tem a &6Sobrevivência&f: todos juntos contra 10 ondas de invasores no castelo. Quem chegar vivo ao fim divide o prêmio! &e/sobrevivencia entrar&f.',
     '&fÀs &e11h&f e às &e17h&f tem o &dCorre ou Cai&f: o chão some onde você pisa, então não pare! &e/correoucai entrar&f, com o inventário vazio.',
     '&fQuer um cantinho seu? &e/terreno&f. Madeira e bicho você acha no &e/warp recursos&f.',
     '&fMorreu e não achou suas coisas? Olhe o &e/achados&f: o que a limpeza recolheu do chão fica guardado por 1 hora, e cada pilha volta por R$ 10.000.',
@@ -623,7 +633,7 @@ if (fase === 'cadastrar') {
 } else if (fase === 'construir' || fase === 'marcar') {
   const partes = {
     'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
-    boss: construirBoss, oficinas: construirOficinas, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, marcar: marcarComBot,
+    boss: construirBoss, oficinas: construirOficinas, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, marcar: marcarComBot,
   }
   // "marcar" sozinho era o atalho antigo pra só a parte do bot
   const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)
