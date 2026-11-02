@@ -20,6 +20,8 @@ import com.example.skills.manager.RewardManager;
 import com.example.skills.manager.SangramentoManager;
 import com.example.skills.manager.SkillDataManager;
 import com.example.skills.manager.XpManager;
+import com.example.skills.profissao.Integracoes;
+import com.example.skills.profissao.ProfissoesListener;
 import com.example.skills.skill.PlayerSkillData;
 import com.example.skills.skill.Skill;
 import net.milkbowl.vault.economy.Economy;
@@ -87,6 +89,7 @@ public class SkillsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SkillsGUIListener(), this);
         getServer().getPluginManager().registerEvents(new StunListener(this), this);
         getServer().getPluginManager().registerEvents(new MorteListener(this), this);
+        getServer().getPluginManager().registerEvents(new ProfissoesListener(this, new Integracoes(this)), this);
 
         this.passiveSkillsTask = new PassiveSkillsTask(this);
         int intervaloSegundos = getConfig().getInt("passivas.intervalo-segundos", 10);
@@ -204,6 +207,15 @@ public class SkillsPlugin extends JavaPlugin {
         int cheios = (int) Math.floor(fracao * 10);
         return "§b" + "■".repeat(cheios) + "§8" + "■".repeat(10 - cheios)
                 + String.format(Locale.forLanguageTag("pt-BR"), " §f%.0f%%", Math.floor(fracao * 100));
+    }
+
+    /**
+     * EconomyShopPlugin (por reflexão): o bônus de venda do Agricultor (fração, 0.2 = +20%) pra um item
+     * dessa categoria da loja, ou 0 (categoria fora de {@code agricultor.categorias-venda}).
+     */
+    public double bonusVenda(UUID jogadorId, String categoria) {
+        if (!getConfig().getStringList("agricultor.categorias-venda").contains(categoria)) return 0;
+        return bonusCalculator.porNivel(jogadorId, Skill.AGRICULTOR, "agricultor.bonus-venda-por-nivel");
     }
 
     private java.lang.reflect.Method metodoMaldicao;

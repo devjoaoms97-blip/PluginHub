@@ -49,6 +49,15 @@ Ela lê os ranks do `rankup-plugin/src/main/resources/config.yml`, os preços da
 
 A diferença entre "sozinho" e "10 por mina" é a loja dinâmica: quanto mais gente vende o mesmo minério, mais o preço cai. O bônus de venda do VIP (`vip-bonus-venda` na loja) vale na venda automática da mina. Nos VIPs, a Eficiência pesa quase tanto quanto a Fortuna, porque é ela que faz quebrar mais blocos por hora.
 
+**Skills de profissão** (decisões de 2026-11-02, ainda não implementadas):
+```
+python tools/economia/simular.py --minerador 0.05                      # 3x3 com 5% no nível 50
+python tools/economia/simular.py --minerador 0.05 --fator-precos 1.13  # testar preços de rank diferentes
+python tools/economia/simular.py --pescador                            # mapas e fragmentos por nível
+```
+- `--minerador <chance>` anda no tempo: o Minerador sobe com os blocos quebrados à mão (`--xp-por-bloco`, padrão 1; os do 3x3 não dão XP) e a chance do 3x3 cresce com o nível até a chance dada. Cada 3x3 quebra em média `--vizinhos-3x3` blocos a mais (padrão 5: a parede da mina já está gasta; 8 com ela cheia), que vão pra venda automática e baixam o preço de equilíbrio junto. Mostra as horas por rank, o nível do Minerador em cada um e o fator de preço dos ranks que volta à meta (`--meta-horas`, ou as horas sem a skill). Com 5%: ~133 h; os preços dos ranks ficam como estão (o encurtamento foi aceito em 2026-11-02).
+- `--pescador` mostra, por nível, as horas de pesca até ele, os mapas por hora com os pesos de raridade, as coins médias por mapa (do `loot.yml` dos tesouros) e os fragmentos por hora, comparados com os da mina. Os números ficam no `PESCADOR`, no começo do `simular.py`.
+
 **Quando rodar de novo:** sempre que mudar o preço de um rank, a composição de uma mina ou o preço de um item da loja. Se a mina usar um bloco novo, ele precisa entrar na tabela `BLOCOS` do `simular.py` (dureza e o que ele dropa).
 
 ## Análise (`analisar.py`)

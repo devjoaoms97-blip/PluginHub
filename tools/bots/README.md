@@ -36,6 +36,7 @@ node teste-gladiador.js     # Gladiador individual e por clã (precisa das arena
 node teste-farm-arenas.js   # abate nas arenas não paga Bounty nem conta no placar do clã
 node teste-combate.js       # combate 1.8: sem recarga, tempo por mão, bloqueio com a espada e duas mãos
 node teste-skills-maos.js   # o golpe da segunda mão treina a skill da arma dela
+node teste-profissoes.js    # Minerador (3x3), Lenhador, Agricultor e Pescador (põe chances de 100% e volta o config)
 node teste-recursos.js      # mundo de recursos: /warp recursos, borda e reset (uns 2 minutos)
 node teste-nether-end.js    # /warp nether e /warp end, /mapa, /luz, centro do End (proteção, PvP, gaiolas, dragão, ovo) e reset do Nether (uns 3 minutos)
 node teste-rankup-extras.js # menus do /ranks e do /mina, holograma, rank na tab e prestígio
@@ -93,6 +94,7 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-nether-end.js` | `/warp nether` em chão firme abaixo do teto e `/warp end` no quadrado verde do centro (com o holograma do PvP), `/luz` (liga, volta depois de morrer, desliga), bordas de 3.000 e 5.000, `/mapa` (um por mundo, com o terreno, que o reset apaga), centro do End sem quebrar, PvP barrado no quadrado e valendo fora dele, gaiolas dos cristais removidas, dragão renascendo pela staff, ovo que não teleporta nem quebra, reset do Nether e resgate de quem saiu lá dentro |
 | `teste-recursos.js` | `/warp recursos` em chão firme dentro do raio, borda, espera entre usos, reset marcado com aviso no chat, quem estava lá tirado antes, bloco do mundo antigo sumindo, e quem saiu do servidor lá dentro voltando num lugar seguro do mundo novo |
 | `teste-skills-maos.js` | Machado na mão esquerda treina a skill Machado, soco na esquerda treina o Porradeiro, e a espada da direita (que não bateu) não treina |
+| `teste-profissoes.js` | Com chances de 100% no config (e o original de volta no fim): o 3x3 do Minerador quebra os vizinhos, vende tudo e só os blocos à mão dão XP; o Lenhador derruba a árvore natural inteira (com a tora a mais) e não a de folhas colocadas; colheita dupla do trigo; a pesca dá 8 XP, mapa do tesouro e Fragmento Arcano; e a venda no Fazendeiro mostra o bônus do Agricultor (+20% no 50) |
 | `teste-duelo.js` | Desafio e aceite com apostas retidas, espectador (modo espectador, sem comandos, volta no fim), contagem sem dano, ninguém de fora bate, comandos bloqueados, morte com perda de itens e prêmio menos a taxa, volta para onde estava, ranking, recusa e cancelamento com devolução |
 | `teste-gladiador.js` | Individual (inscrição, preparação sem dano, desconexão elimina, último de pé leva o pote) e por clã (sem clã não entra, sem dano no mesmo clã, prêmio dividido no clã vencedor), e cancelamento com devolução. No fim, devolve os 16 pontos de entrada oficiais do coliseu |
 | `teste-farm-arenas.js` | Num duelo entre clãs diferentes, com recompensa na cabeça de quem perde: o Bounty não paga (e a recompensa continua), e o placar de abates do clã não muda |

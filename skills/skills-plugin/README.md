@@ -1,6 +1,6 @@
 # SkillsPlugin
 
-Sistema de skills de combate estilo RPG, com 11 skills, progressão por nível, GUI visual e recompensas em dinheiro.
+Sistema de skills estilo RPG: 13 skills de combate e 4 de profissão (fora do PvP), com progressão por nível, GUI visual e recompensas em dinheiro.
 
 ## Skills incluídas
 
@@ -20,6 +20,22 @@ Sistema de skills de combate estilo RPG, com 11 skills, progressão por nível, 
 | Regeneração | Tempo em combate recente | +50% velocidade de regen natural |
 | Agilidade | Se mover durante combate | +10% velocidade de movimento |
 
+### Profissões (fora do PvP)
+
+Ficam na última linha do menu. As chances crescem com o nível (nível × "por-nivel" do config) e o prestígio soma 10% por prestígio, como nas outras. Números calibrados com o `tools/economia/simular.py` (2026-11-02).
+
+| Skill | Ganha XP com | No nível 50 |
+|---|---|---|
+| Minerador | 1 por bloco quebrado à mão numa mina (RankupPlugin) | 5% de chance de quebrar o 3x3 em volta, com picareta (o plano de frente pra quem minera; olhando pra cima ou pra baixo, o do chão) |
+| Agricultor | 3 por planta madura colhida com a mão (trigo, cenoura, batata, beterraba, verruga do Nether, cacau) | +20% na venda das categorias de `agricultor.categorias-venda` (o Fazendeiro, `Farm`) e 15% de colheita dupla (o que se colhe, não a semente) |
+| Pescador | 8 por pesca (pesca parada vale) | 1 em 400 pescas: mapa do tesouro (Comum 45% · Raro 30% · Arcano 18% · Lendário 7%); 1 em 400: Fragmento Arcano. ~1 de cada por hora com Isca III |
+| Lenhador | 3 por tronco cortado com a mão | 20% de tora a mais (na mina do bosque também) e, com machado, 20% de derrubar a árvore inteira |
+
+- **Os blocos extras do 3x3** passam pelo `RankupPlugin#quebrarExtra`: vão pra venda automática e contam pro reset da mina, mas não disparam o evento de quebra, então não dão Fragmento Arcano, mapa do tesouro, progresso de missão nem XP.
+- **Derrubar a árvore** só nos mundos de `lenhador.derrubar-mundos` (`recursos`) e só em árvore natural: os troncos ligados ao cortado (também na diagonal), até `lenhador.derrubar-max-troncos` (64), com pelo menos uma folha que não foi colocada por jogador encostada. Na mina nunca (lá é tudo tronco, sem folha). Os troncos caem onde estava o cortado, e cada um gasta 1 de durabilidade do machado.
+- **Contra farm**: tronco colocado por jogador não dá XP nem tora a mais (a lista dos colocados fica em memória, com os 100 mil mais recentes). Farm automática de planta não dispara a quebra por jogador, então não dá XP nem colheita dupla. O bônus de venda do Agricultor fica abaixo da trava da venda da loja.
+- **Pescador abaixo do 50**: a chance cai junto com o nível (nível/50), e os pesos do mapa puxam pro Comum (`pescador.pesos-mapa`, por faixa: 1–9 85/15/0/0, 10–19 75/20/5/0, 20–29 65/24/9/2, 30–39 55/28/13/4, 40–49 50/29/16/5, 50 45/30/18/7). Tabela de horas e coins: `python tools/economia/simular.py --pescador`.
+
 - **XP de arma em PvP tem redução progressiva por vítima**: primeiros 250 XP integrais, até 500 XP pela metade e depois a 25%, com teto de 1.000 XP por atacante/vítima ao dia. O registro persiste em `plugins/SkillsPlugin/xp-pvp.yml` e reinicia à meia-noite no fuso do servidor; faixas, multiplicadores e limite são configuráveis em `xp.pvp`.
 - **PvE (mobs) conta metade do XP de arma** — configurável em `xp.multiplicador-pve`
 - **Nível máximo: 50** por skill, com curva de XP progressiva — configurável em `config.yml`
@@ -35,8 +51,9 @@ Sistema de skills de combate estilo RPG, com 11 skills, progressão por nível, 
 | `/skills prestigio <skill> [confirmar]` | No nível 50, volta a skill pro nível 1 em troca de um prestígio (veja abaixo) |
 | `/skills admin xpdobro <multiplicador> <horas>` | (staff) Liga o XP extra agora; `parar` desliga |
 | `/skills admin setlevel <jogador> <skill> <nível>` | (staff) Define manualmente o nível de uma skill de um jogador. Requer permissão `skills.admin` (padrão: op) |
+| `/skills admin reload` | (staff) Recarrega o `config.yml` |
 
-Nomes de skill aceitos no comando admin: `espadas`, `machado`, `arqueiro`, `porradeiro`, `tridente`, `esquiva`, `defesa`, `bloqueio`, `critico`, `regeneracao`, `agilidade`.
+Nomes de skill aceitos no comando admin: `espadas`, `machado`, `arqueiro`, `porradeiro`, `tridente`, `lanceiro`, `marreteiro`, `esquiva`, `defesa`, `bloqueio`, `critico`, `regeneracao`, `agilidade`, `minerador`, `agricultor`, `pescador`, `lenhador`.
 
 Ao usar `setlevel`, o XP acumulado daquela skill é zerado (já que o "degrau" mudou manualmente, não faria sentido manter XP de um nível diferente).
 

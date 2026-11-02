@@ -83,6 +83,19 @@ public class ColetaMinaListener implements Listener {
     }
 
     /**
+     * Os drops de um bloco (com a ferramenta da mão, sem o toque suave) vendidos na hora, e o que a loja
+     * não compra no inventário. É o que o bloco extra do 3x3 do Minerador rende ({@code RankupPlugin#quebrarExtra}).
+     */
+    public void venderDrops(Player jogador, org.bukkit.block.Block bloco) {
+        for (ItemStack drop : bloco.getDrops(ferramentaSemToque(jogador), jogador)) {
+            if (drop.getType().isAir() || plugin.getLojaIntegration().vender(jogador, drop)) continue;
+            for (ItemStack resto : jogador.getInventory().addItem(drop).values()) {
+                bloco.getWorld().dropItemNaturally(bloco.getLocation().add(0.5, 0.5, 0.5), resto);
+            }
+        }
+    }
+
+    /**
      * Toque suave não vale na mina: o bloco cairia inteiro (o minério), a loja não compra e ele iria pro
      * inventário. Com ele na ferramenta, os drops do evento saem da lista (não aparecem) e quem chama
      * entrega os de uma cópia da ferramenta sem o encantamento ({@link #ferramentaSemToque}).

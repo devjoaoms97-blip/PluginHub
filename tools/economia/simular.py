@@ -12,6 +12,9 @@ Uso:
   python simular.py                        (cenários padrão)
   python simular.py --jogadores 5 --fortuna 3
   python simular.py --meta-horas 150       (sugere preços de rank pra bater a meta)
+  python simular.py --minerador 0.05       (skill Minerador: 3x3 com 5% de chance no nível 50)
+  python simular.py --minerador 0.05 --fator-precos 1.13
+  python simular.py --pescador             (mapas e fragmentos da skill Pescador por nível)
 """
 import argparse
 import math
@@ -24,6 +27,22 @@ RANKS = RAIZ / "rankup-plugin/src/main/resources/config.yml"
 ITENS = RAIZ / "test-server/configs/EconomyShopPlugin/itens.yml"
 LOJA = RAIZ / "economy/economy-shop-plugin/src/main/resources/config.yml"
 MINAS = Path(__file__).with_name("minas-planejadas.yml")
+SKILLS = RAIZ / "skills/skills-plugin/src/main/resources/config.yml"
+TESOUROS = RAIZ / "tesouros-plugin/src/main/resources/config.yml"
+LOOT = RAIZ / "tesouros-plugin/src/main/resources/loot.yml"
+
+# Skill Pescador (decisões de 2026-11-02). Pesca AFK vale. No nível máximo: 1 mapa e 1 Fragmento
+# Arcano por hora, em média, com a vara de referência; abaixo, a taxa cai junto com o nível
+# (nível/50) e os pesos dos mapas puxam pro Comum. O prestígio da skill soma 10% por nível na taxa.
+PESCADOR = dict(
+    pescas_por_hora=400,      # vara com Isca III (Lure III), pesca AFK
+    xp_por_pesca=8,
+    mapas_por_hora=1.0,       # no nível 50
+    fragmentos_por_hora=1.0,  # no nível 50
+    # (a partir do nível, pesos comum/raro/arcano/lendário)
+    pesos=[(1, (85, 15, 0, 0)), (10, (75, 20, 5, 0)), (20, (65, 24, 9, 2)),
+           (30, (55, 28, 13, 4)), (40, (50, 29, 16, 5)), (50, (45, 30, 18, 7))],
+)
 
 # Jogador da meta de 150 h: não-VIP, 3 por mina, picareta de diamante com Eficiência III e
 # Fortuna III (dá pra encantar na mesa). Os VIPs Ouro e Diamante ganham Fortuna IV e V no kit mensal.
@@ -102,8 +121,12 @@ def preco_equilibrio(item, unidades_por_min, loja):
     return max(item["minimo"], preco), ancora
 
 
-def renda_por_hora(mina, multiplicador, itens, loja, cenario):
-    """R$/h de um jogador nessa mina, e os itens que dropam e a loja não compra."""
+def renda_por_hora(mina, multiplicador, itens, loja, cenario, mult_unidades=1.0):
+    """R$/h de um jogador nessa mina, e os itens que dropam e a loja não compra.
+
+    mult_unidades: blocos a mais por bloco quebrado à mão (o 3x3 do Minerador). Eles também vão pra
+    venda automática, então baixam o preço de equilíbrio junto. Os blocos/h devolvidos são só os à mão.
+    """
     pesos = mina["blocos"]
     total = sum(pesos.values())
     tempo_medio = sum(p / total * segundos_por_bloco(BLOCOS[b][0], cenario.eficiencia) for b, p in pesos.items())
@@ -112,7 +135,8 @@ def renda_por_hora(mina, multiplicador, itens, loja, cenario):
     unidades = {}  # item -> unidades/min de UM jogador
     for bloco, peso in pesos.items():
         item = BLOCOS[bloco][1]
-        unidades[item] = unidades.get(item, 0) + blocos_por_min * peso / total * quantidade_media(bloco, cenario.fortuna)
+        unidades[item] = (unidades.get(item, 0)
+                          + blocos_por_min * peso / total * quantidade_media(bloco, cenario.fortuna) * mult_unidades)
 
     renda, sem_preco = 0.0, []
     for item, por_min in unidades.items():
@@ -138,6 +162,100 @@ def simular(ranks, itens, loja, minas, cenario, precos=None):
         preco = precos[i] if precos else ranks[i]["preco"]
         linhas.append((ranks[i], melhor[0], melhor[1], preco / melhor[1] if melhor[1] else math.inf, preco))
     return linhas
+
+
+def curva_xp():
+    """XP pra sair de cada nível (0..máximo-1), igual ao LevelFormula do SkillsPlugin."""
+    cfg = yaml.safe_load(SKILLS.read_text(encoding="utf-8"))
+    base, expoente, maximo = cfg["xp"]["base"], cfg["xp"]["expoente"], cfg["nivel-maximo"]
+    return [round(base * (n + 1) ** expoente) for n in range(maximo)]
+
+
+def simular_minerador(ranks, itens, loja, minas, cenario, chance_max, vizinhos, xp_por_bloco,
+                      fator_precos=1.0, passo_h=0.05):
+    """Como o simular(), andando no tempo: o Minerador sobe com os blocos quebrados à mão (os do 3x3
+    não dão XP) e a chance do 3x3 cresce com o nível (chance_max no máximo). Lista por rank:
+    (rank alvo, mina usada no fim, R$/h médio, horas, preço, nível do Minerador ao subir)."""
+    curva = curva_xp()
+    maximo = len(curva)
+    ordem = [r["id"] for r in ranks]
+    nivel, xp = 0, 0.0
+    linhas = []
+    for i in range(1, len(ranks)):
+        atual = ranks[i - 1]
+        preco = ranks[i]["preco"] * fator_precos
+        acessiveis = [m for m in minas.items() if ordem.index(m[1]["rank"]) <= i - 1]
+        dinheiro, horas = 0.0, 0.0
+        while dinheiro < preco:
+            mult = 1 + chance_max * nivel / maximo * vizinhos
+            nome, renda, _, blocos_h = max(
+                ((n, *renda_por_hora(m, atual["multiplicador-venda"], itens, loja, cenario, mult))
+                 for n, m in acessiveis), key=lambda x: x[1])
+            dinheiro += renda * passo_h
+            horas += passo_h
+            xp += blocos_h * passo_h * xp_por_bloco
+            while nivel < maximo and xp >= curva[nivel]:
+                xp -= curva[nivel]
+                nivel += 1
+        linhas.append((ranks[i], nome, preco / horas, horas, preco, nivel))
+    return linhas
+
+
+def fator_para_meta(ranks, itens, loja, minas, cenario, meta, **minerador):
+    """Quanto multiplicar todos os preços de rank pra o Minerador voltar a dar a meta de horas."""
+    baixo, alto = 0.5, 3.0
+    for _ in range(20):
+        fator = (baixo + alto) / 2
+        total = sum(h for _, _, _, h, _, _ in simular_minerador(ranks, itens, loja, minas, cenario,
+                                                                 fator_precos=fator, passo_h=0.1, **minerador))
+        baixo, alto = (fator, alto) if total < meta else (baixo, fator)
+    return fator
+
+
+def pesos_pescador(nivel):
+    pesos = PESCADOR["pesos"][0][1]
+    for desde, p in PESCADOR["pesos"]:
+        if nivel >= desde:
+            pesos = p
+    return pesos
+
+
+def imprimir_pescador():
+    """Mapas e fragmentos da skill Pescador por nível, comparados com os da mina."""
+    curva = curva_xp()
+    maximo = len(curva)
+    tesouros = yaml.safe_load(TESOUROS.read_text(encoding="utf-8"))["drops"]
+    loot = yaml.safe_load(LOOT.read_text(encoding="utf-8"))
+    raridades = ["comum", "raro", "arcano", "lendario"]
+    coins = [sum(loot[r]["coins"]) / 2 for r in raridades]
+
+    def valor_medio(pesos):
+        total = sum(pesos)
+        return sum(p / total * c for p, c in zip(pesos, coins))
+
+    p = PESCADOR
+    xp_h = p["pescas_por_hora"] * p["xp_por_pesca"]
+    print(f"\n== Pescador: {p['pescas_por_hora']} pescas/h (Isca III, AFK vale), {p['xp_por_pesca']} XP por pesca ==")
+    print(f"Coins do mapa (loot.yml): " + ", ".join(f"{r} R$ {c:,.0f}" for r, c in zip(raridades, coins)))
+    print(f"{'nível':>5} {'h AFK':>6} {'mapas/h':>8} {'C/R/A/L':>13} {'R$/mapa':>8} {'R$/h':>8} "
+          f"{'frag/h':>7} {'1 a cada':>14}")
+    acumulado, xp_total = 0.0, 0
+    for nivel in (1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50):
+        xp_total = sum(curva[:nivel])
+        acumulado = xp_total / xp_h
+        fracao = nivel / maximo
+        mapas = p["mapas_por_hora"] * fracao
+        pesos = pesos_pescador(nivel)
+        print(f"{nivel:>5} {acumulado:>6.0f} {mapas:>8.2f} {'/'.join(map(str, pesos)):>13} "
+              f"{valor_medio(pesos):>8,.0f} {mapas * valor_medio(pesos):>8,.0f} "
+              f"{p['fragmentos_por_hora'] * fracao:>7.2f} {p['pescas_por_hora'] / mapas:>8.0f} pescas")
+    print(f"Por pesca no nível {maximo}: mapa {p['mapas_por_hora'] / p['pescas_por_hora']:.4f}, "
+          f"fragmento {p['fragmentos_por_hora'] / p['pescas_por_hora']:.4f}; cada prestígio soma 10%.")
+    mina = tesouros["mina"]
+    pesos_mina = [mina["pesos"][r] for r in raridades]
+    print(f"Comparação, a mina: 1 mapa a cada {1 / mina['chance-por-bloco']:,.0f} blocos "
+          f"(~{4000 * mina['chance-por-bloco']:.1f}/h com 4.000 blocos/h), R$ {valor_medio(pesos_mina):,.0f} por mapa.")
+    print("As coins só entram quando alguém faz a câmara do mapa (fora da pesca); as rolagens de item ficam de fora.")
 
 
 def imprimir(titulo, linhas):
@@ -180,9 +298,38 @@ def main():
                         help="fração do tempo quebrando blocos; o resto é andar, vender, esperar reset (padrão 0.5)")
     parser.add_argument("--meta-horas", type=float, help="sugere preços de rank pra chegar ao último nessa quantidade de horas")
     parser.add_argument("--primeiro-rank-horas", type=float, default=1.0, help="horas do primeiro rankup na sugestão")
+    parser.add_argument("--minerador", type=float,
+                        help="skill Minerador: chance do 3x3 no nível máximo (ex: 0.05); sobe com o nível")
+    parser.add_argument("--vizinhos-3x3", type=float, default=5,
+                        help="blocos a mais por 3x3, em média (8 com a parede cheia; padrão 5, parede já gasta)")
+    parser.add_argument("--xp-por-bloco", type=float, default=1, help="XP do Minerador por bloco quebrado à mão")
+    parser.add_argument("--fator-precos", type=float, default=1.0,
+                        help="multiplica todos os preços de rank (com --minerador)")
+    parser.add_argument("--pescador", action="store_true", help="tabela de mapas e fragmentos da skill Pescador")
     args = parser.parse_args()
 
+    if args.pescador:
+        imprimir_pescador()
+        return
+
     ranks, itens, loja, minas = carregar()
+    if args.minerador is not None:
+        cenario = argparse.Namespace(**dict(REFERENCIA, eficiencia=args.eficiencia, utilizacao=args.utilizacao))
+        minerador = dict(chance_max=args.minerador, vizinhos=args.vizinhos_3x3, xp_por_bloco=args.xp_por_bloco)
+        sem = sum(h for *_, h, _ in simular(ranks, itens, loja, minas, cenario))
+        linhas = simular_minerador(ranks, itens, loja, minas, cenario, fator_precos=args.fator_precos, **minerador)
+        print(f"\n== Minerador: 3x3 com {args.minerador:.0%} no nível máximo, {args.vizinhos_3x3:g} blocos a mais, "
+              f"{args.xp_por_bloco:g} XP/bloco, preços x{args.fator_precos:g} (referência) ==")
+        print(f"{'rank':<11} {'preço':>12} {'mina':<10} {'R$/h':>10} {'horas':>7} {'acumulado':>9} {'nível':>5}")
+        acumulado = 0
+        for rank, mina, renda, horas, preco, nivel in linhas:
+            acumulado += horas
+            print(f"{rank['id']:<11} {preco:>12,.0f} {mina:<10} {renda:>10,.0f} {horas:>7.1f} {acumulado:>9.1f} {nivel:>5}")
+        print(f"Sem o Minerador: {sem:.1f} h. Com ele: {acumulado:.1f} h ({(acumulado / sem - 1) * 100:+.1f}%).")
+        meta = args.meta_horas or sem
+        fator = fator_para_meta(ranks, itens, loja, minas, cenario, meta, **minerador)
+        print(f"Pra voltar a {meta:.0f} h com o Minerador: preços de rank x{fator:.3f} (+{(fator - 1) * 100:.0f}%).")
+        return
     for nome, mina in minas.items():
         for bloco in mina["blocos"]:
             if bloco not in BLOCOS:

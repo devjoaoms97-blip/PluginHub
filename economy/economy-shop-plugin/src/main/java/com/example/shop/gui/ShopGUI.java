@@ -125,7 +125,7 @@ public class ShopGUI {
         if (item.isVendivel()) {
             double unidade = jogador == null ? item.getPrecoVendaComEvento() : precos.precoVendaUnitario(jogador, item, true);
             String alta = item.getMultiplicadorEvento() > 1 ? " §6📈 em alta" : " §7(varia)";
-            lore.add("§cVender: §f" + formatar(unidade) + alta + (jogador != null ? precos.textoBonus(jogador) : ""));
+            lore.add("§cVender: §f" + formatar(unidade) + alta + (jogador != null ? precos.textoBonus(jogador, item) : ""));
         } else if (item.isVendivelNaMina()) {
             lore.add("§8Só vende na mina (venda automática)");
         } else {

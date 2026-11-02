@@ -49,6 +49,7 @@ public class RankupPlugin extends JavaPlugin {
     private Menus menus;
     private Hologramas hologramas;
     private FragmentosListener fragmentos;
+    private ColetaMinaListener coleta;
     private boolean avisouFalhaTab;
 
     @Override
@@ -87,7 +88,7 @@ public class RankupPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new MinaListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
-        ColetaMinaListener coleta = new ColetaMinaListener(this);
+        this.coleta = new ColetaMinaListener(this);
         getServer().getPluginManager().registerEvents(coleta, this);
         this.fragmentos = new FragmentosListener(this);
         getServer().getPluginManager().registerEvents(fragmentos, this);
@@ -226,6 +227,28 @@ public class RankupPlugin extends JavaPlugin {
         String prestigio = nivel > 0 ? Formato.cores(getConfig().getString("prestigio.formato", "&d✦%nivel% ")).replace("%nivel%", String.valueOf(nivel)) : "";
         return Formato.cores(getConfig().getString("chat.formato", "&8[%rank%&8]"))
                 .replace("%rank%", prestigio + rankManager.getRankDe(jogador).nomeColorido());
+    }
+
+    /** SkillsPlugin (por reflexão): o id da mina nesse lugar, ou null fora das minas. */
+    public String minaEm(org.bukkit.Location local) {
+        Mina mina = minaManager.getMinaEm(local);
+        return mina == null ? null : mina.getId();
+    }
+
+    /**
+     * SkillsPlugin (o 3x3 do Minerador, por reflexão): quebra um bloco da mina sem evento de quebra, só
+     * com a venda automática e a contagem do reset. Assim o bloco extra não dá fragmento, mapa, missão
+     * nem XP. false se não é bloco de mina que esse jogador pode minerar agora.
+     */
+    public boolean quebrarExtra(Player jogador, org.bukkit.block.Block bloco) {
+        Mina mina = minaManager.getMinaEm(bloco.getLocation());
+        if (mina == null || mina.isResetando() || bloco.getType().isAir() || bloco.isLiquid()) return false;
+        if (bloco.getType().getHardness() < 0) return false; // bedrock e afins
+        if (!jogador.hasPermission(PERMISSAO_ADMIN) && !rankManager.temAcesso(jogador.getUniqueId(), mina.getRankMinimo())) return false;
+        coleta.venderDrops(jogador, bloco);
+        bloco.setType(org.bukkit.Material.AIR);
+        minaManager.registrarQuebra(mina);
+        return true;
     }
 
     /** O item do Fragmento Arcano (OficinasPlugin: o Cambista devolve o troco; staff: testes). */

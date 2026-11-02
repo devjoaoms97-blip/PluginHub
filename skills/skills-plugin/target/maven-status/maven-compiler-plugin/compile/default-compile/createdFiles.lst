@@ -1,5 +1,6 @@
 com\example\skills\skill\Skill.class
 com\example\skills\gui\SkillsGUI.class
+com\example\skills\profissao\ProfissoesListener$1.class
 com\example\skills\manager\CombatTagManager.class
 com\example\skills\manager\ParryManager.class
 com\example\skills\listener\StunListener.class
@@ -26,6 +27,8 @@ com\example\skills\SkillsPlugin.class
 com\example\skills\manager\AtordoamentoManager.class
 com\example\skills\manager\EventoXp.class
 com\example\skills\manager\SangramentoManager.class
+com\example\skills\profissao\ProfissoesListener.class
 com\example\skills\manager\RewardManager$1.class
 com\example\skills\manager\RewardManager.class
+com\example\skills\profissao\Integracoes.class
 com\example\skills\skill\PlayerSkillData.class

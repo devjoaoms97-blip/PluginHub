@@ -110,3 +110,53 @@ passivas:
   # Intervalo (em segundos) entre concessões de XP passivo (Regeneração/Agilidade)
   intervalo-segundos: 10
   xp-por-tick: 3.0
+
+# ---------------------------------------------------------------------------------------------
+# Skills de profissão (fora do PvP). Os números saíram do tools/economia/simular.py (2026-11-02):
+# chance = nível x "por-nivel" (o prestígio soma 10% por prestígio, como nas outras skills).
+# ---------------------------------------------------------------------------------------------
+
+# Minerador: XP por bloco quebrado à mão numa mina (RankupPlugin). Com 1, chega ao nível ~45 quando
+# vira Rei. Com picareta, chance de quebrar o 3x3 em volta (o plano de frente pra quem minera): 0.001
+# por nível = 5% no nível 50, o que encurta a meta de 150 h pra ~133 h (simular.py --minerador 0.05).
+# Os blocos extras só vão pra venda automática da mina: não dão fragmento, mapa, missão nem XP.
+minerador:
+  xp-por-bloco: 1
+  chance-3x3-por-nivel: 0.001
+
+# Agricultor: XP por planta madura colhida com a mão (trigo, cenoura, batata, beterraba, verruga do
+# Nether e cacau); farm automática não dá. Bônus de venda nas categorias da loja abaixo (o Fazendeiro),
+# 0.004 por nível = +20% no 50, por cima do rank e do VIP e abaixo da trava da venda. Chance de
+# colheita dupla (só o que se colhe, não a semente), 0.003 por nível = 15% no 50.
+agricultor:
+  xp-por-colheita: 3
+  bonus-venda-por-nivel: 0.004
+  categorias-venda: [Farm]
+  chance-colheita-dupla-por-nivel: 0.003
+
+# Pescador: XP por pesca (pesca parada vale). No nível 50, 1 em 400 pescas dá um mapa do tesouro
+# (TesourosPlugin) e 1 em 400 um Fragmento Arcano (RankupPlugin): ~1 de cada por hora com a vara de
+# Isca III (~400 pescas por hora). Abaixo do 50 a chance cai junto com o nível, e os pesos do mapa
+# puxam pro Comum (vale a faixa do maior "nivel" que o jogador já tem). Tabela: simular.py --pescador.
+pescador:
+  xp-por-pesca: 8
+  chance-mapa-por-nivel: 0.00005
+  chance-fragmento-por-nivel: 0.00005
+  pesos-mapa:
+    - {nivel: 1, comum: 85, raro: 15, arcano: 0, lendario: 0}
+    - {nivel: 10, comum: 75, raro: 20, arcano: 5, lendario: 0}
+    - {nivel: 20, comum: 65, raro: 24, arcano: 9, lendario: 2}
+    - {nivel: 30, comum: 55, raro: 28, arcano: 13, lendario: 4}
+    - {nivel: 40, comum: 50, raro: 29, arcano: 16, lendario: 5}
+    - {nivel: 50, comum: 45, raro: 30, arcano: 18, lendario: 7}
+
+# Lenhador: XP por tronco cortado com a mão (tronco colocado por jogador não conta). Chance de uma
+# tora a mais (na mina do bosque também), 0.004 por nível = 20% no 50. Com machado, chance de derrubar
+# a árvore inteira, só nos mundos abaixo e só em árvore natural (troncos ligados a folhas que não
+# foram colocadas), até "derrubar-max-troncos". Na mina nunca: lá é tudo tronco, sem folha.
+lenhador:
+  xp-por-tronco: 3
+  chance-tora-extra-por-nivel: 0.004
+  chance-derrubar-por-nivel: 0.004
+  derrubar-mundos: [recursos]
+  derrubar-max-troncos: 64

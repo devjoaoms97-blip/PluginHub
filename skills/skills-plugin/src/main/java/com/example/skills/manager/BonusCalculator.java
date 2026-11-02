@@ -60,6 +60,15 @@ public class BonusCalculator {
         return nivelComPrestigio(jogadorId, Skill.CRITICO) * taxa;
     }
 
+    /**
+     * Chance (ou bônus) de uma skill de profissão: o nível com prestígio vezes o valor por nível do
+     * config (ex: {@code minerador.chance-3x3-por-nivel}). Sem valor padrão no código: vale o do jar,
+     * mesmo num config antigo que ainda não tem a chave.
+     */
+    public double porNivel(java.util.UUID jogadorId, Skill skill, String caminho) {
+        return nivelComPrestigio(jogadorId, skill) * plugin.getConfig().getDouble(caminho);
+    }
+
     /** Multiplicador de dano fixo aplicado quando o Crítico da skill proca. */
     public double getMultiplicadorCritico() {
         return plugin.getConfig().getDouble("critico.multiplicador-dano", 0.40);

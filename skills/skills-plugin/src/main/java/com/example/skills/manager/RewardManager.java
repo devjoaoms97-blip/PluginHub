@@ -56,6 +56,10 @@ public class RewardManager {
             case CRITICO -> Particle.DAMAGE_INDICATOR;
             case REGENERACAO -> Particle.HEART;
             case AGILIDADE -> Particle.HAPPY_VILLAGER;
+            case MINERADOR -> Particle.WAX_OFF;
+            case AGRICULTOR -> Particle.COMPOSTER;
+            case PESCADOR -> Particle.SPLASH;
+            case LENHADOR -> Particle.CHERRY_LEAVES;
         };
     }
 

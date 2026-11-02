@@ -99,7 +99,7 @@ public class ShopGUIListener implements Listener {
 
         jogador.sendMessage("§aVendeu §f" + venda.quantidade() + "x " + nomeAmigavel(item.getMaterial())
                 + " §apor §f" + formatar(venda.liquido()) + " §7(imposto: " + formatar(venda.imposto()) + ")"
-                + plugin.getPrecificacao().textoBonus(jogador));
+                + plugin.getPrecificacao().textoBonus(jogador, item));
     }
 
     private void venderTudoDoTipo(Player jogador, ShopItem item) {

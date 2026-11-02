@@ -148,7 +148,7 @@ Com jogadores de verdade, o `rankups.csv` mostra quanto tempo cada rank está le
 
 - **OficinasPlugin**: o guia de mina (fora do mapa desde 2026-10-27, mas o tipo continua) mostra `infoMina(String, UUID)` (rank, blocos, reset, % minerada e a chance de fragmento) e, pra quem `podeEntrarNaMina(String, Player)`, o botão que roda `/mina <id>`. O Cambista reconhece o Fragmento Arcano pela marca.
 
-A API pra outros plugins, por reflexão: `multiplicadorVenda(UUID)`, `rankDe(UUID)`, `tagDoRank(UUID)`, `infoMina(String, UUID)`, `podeEntrarNaMina(String, Player)` e `fragmento(int)`.
+A API pra outros plugins, por reflexão: `multiplicadorVenda(UUID)`, `rankDe(UUID)`, `tagDoRank(UUID)`, `infoMina(String, UUID)`, `podeEntrarNaMina(String, Player)`, `fragmento(int)`, `minaEm(Location)` (o id da mina ali, ou null) e `quebrarExtra(Player, Block)` (o 3x3 do Minerador do SkillsPlugin: quebra o bloco da mina sem evento de quebra, só com a venda automática e a contagem do reset, então ele não dá fragmento, mapa, missão nem XP).
 
 ## Persistência
 

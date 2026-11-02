@@ -16,7 +16,13 @@ public enum Skill {
     BLOQUEIO("Bloqueio", Material.SHIELD, "Bloquear ataques com escudo levantado", "bloqueio"),
     CRITICO("Crítico", Material.NETHER_STAR, "Golpes usando a Adaga", "critico"),
     REGENERACAO("Regeneração", Material.GOLDEN_APPLE, "Tempo em combate recente", "regeneracao"),
-    AGILIDADE("Agilidade", Material.SUGAR, "Se mover durante o combate", "agilidade");
+    AGILIDADE("Agilidade", Material.SUGAR, "Se mover durante o combate", "agilidade"),
+
+    // profissões (fora do PvP): ficam na última linha do menu
+    MINERADOR("Minerador", Material.DIAMOND_PICKAXE, "Quebrar blocos nas minas", "minerador"),
+    AGRICULTOR("Agricultor", Material.WHEAT, "Colher plantas maduras com a mão", "agricultor"),
+    PESCADOR("Pescador", Material.FISHING_ROD, "Pescar (vale parado)", "pescador"),
+    LENHADOR("Lenhador", Material.IRON_AXE, "Cortar troncos de árvore", "lenhador");
 
     private final String nomeExibicao;
     private final Material icone;
@@ -40,6 +46,11 @@ public enum Skill {
 
     public String getDescricaoXp() {
         return descricaoXp;
+    }
+
+    /** Skill de profissão (Minerador, Agricultor, Pescador, Lenhador): não é de combate. */
+    public boolean isProfissao() {
+        return ordinal() >= MINERADOR.ordinal();
     }
 
     /** Chave usada no config.yml (bonus-por-nivel.<chave>) e no arquivo de dados do jogador. */

@@ -72,6 +72,12 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
             return tratarXpDobro(sender, args);
         }
 
+        if (args.length >= 2 && args[1].equalsIgnoreCase("reload")) {
+            plugin.reloadConfig();
+            sender.sendMessage("§aConfig do SkillsPlugin recarregado.");
+            return true;
+        }
+
         if (args.length < 2 || !args[1].equalsIgnoreCase("setlevel")) {
             sender.sendMessage("§cUso: §f/skills admin setlevel <jogador> <skill> <nível>");
             sender.sendMessage("§cOu: §f/skills admin criaradaga §c(transforma a espada na mão em Adaga)");
@@ -306,6 +312,7 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
             opcoes.add("setlevel");
             opcoes.add("criaradaga");
             opcoes.add("xpdobro");
+            opcoes.add("reload");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("setlevel")) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 opcoes.add(p.getName());

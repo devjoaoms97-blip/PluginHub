@@ -2,11 +2,14 @@ package com.example.shop.manager;
 
 import com.example.shop.ShopPlugin;
 import com.example.shop.model.ShopItem;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Todos os preços que o jogador vê e paga passam por aqui, pra valerem as mesmas regras no menu dos
@@ -57,6 +60,28 @@ public class Precificacao {
         return plugin.getRankupIntegration().multiplicador(jogador) * (1 + bonusVendaVip(jogador) / 100.0);
     }
 
+    /** Rank × VIP × a skill de profissão da categoria do item (o Agricultor no Fazendeiro). */
+    public double multiplicadorVenda(Player jogador, ShopItem item) {
+        return multiplicadorVenda(jogador) * (1 + bonusVendaSkill(jogador, item));
+    }
+
+    /**
+     * Bônus de venda (fração) que o SkillsPlugin dá pra categoria desse item ({@code SkillsPlugin#bonusVenda}:
+     * o Agricultor, nas categorias de {@code agricultor.categorias-venda} do config dele). 0 sem o plugin.
+     */
+    public double bonusVendaSkill(Player jogador, ShopItem item) {
+        Plugin skills = Bukkit.getPluginManager().getPlugin("SkillsPlugin");
+        if (skills == null || !skills.isEnabled()) return 0;
+        try {
+            Object valor = skills.getClass().getMethod("bonusVenda", UUID.class, String.class)
+                    .invoke(skills, jogador.getUniqueId(), item.getCategoria());
+            double bonus = valor instanceof Number n ? n.doubleValue() : 0;
+            return Double.isFinite(bonus) && bonus > 0 ? bonus : 0;
+        } catch (ReflectiveOperationException e) {
+            return 0;
+        }
+    }
+
     /** O máximo que UMA unidade do inventário pode render, antes do imposto. */
     public double tetoUnitario(ShopItem item) {
         double fracao = plugin.getConfig().getDouble("trava-venda.percentual-da-compra", 90) / 100.0;
@@ -65,7 +90,7 @@ public class Precificacao {
 
     /** O preço de uma unidade agora, pra esse jogador (o que aparece no menu), antes do imposto. */
     public double precoVendaUnitario(Player jogador, ShopItem item, boolean doInventario) {
-        double preco = item.getPrecoVendaComEvento() * multiplicadorVenda(jogador);
+        double preco = item.getPrecoVendaComEvento() * multiplicadorVenda(jogador, item);
         return doInventario ? Math.min(preco, tetoUnitario(item)) : preco;
     }
 
@@ -77,7 +102,7 @@ public class Precificacao {
     public Venda vender(Player jogador, ShopItem item, int quantidade, boolean doInventario) {
         if (quantidade <= 0 || plugin.getEconomy() == null) return new Venda(0, 0, 0, 1, false);
 
-        double multiplicador = multiplicadorVenda(jogador);
+        double multiplicador = multiplicadorVenda(jogador, item);
         double teto = tetoUnitario(item);
         double imposto = plugin.getConfig().getDouble("imposto.percentual-venda", 2.0);
         double base = 0;
@@ -105,13 +130,15 @@ public class Precificacao {
         return new Venda(vendidas, bruto, liquido, multiplicador, travou);
     }
 
-    /** " (bônus: rank +25%, VIP +12%)" pra mensagem de venda, ou "". */
-    public String textoBonus(Player jogador) {
+    /** " (bônus: rank +25%, VIP +12%, Agricultor +20%)" pra mensagem de venda, ou "". */
+    public String textoBonus(Player jogador, ShopItem item) {
         double rank = plugin.getRankupIntegration().multiplicador(jogador);
         double vip = bonusVendaVip(jogador);
+        double skill = bonusVendaSkill(jogador, item);
         StringBuilder sb = new StringBuilder();
         if (rank > 1) sb.append(String.format(Locale.ROOT, "rank +%.0f%%", (rank - 1) * 100));
         if (vip > 0) sb.append(sb.isEmpty() ? "" : ", ").append(String.format(Locale.ROOT, "VIP +%.0f%%", vip));
+        if (skill > 0) sb.append(sb.isEmpty() ? "" : ", ").append(String.format(Locale.ROOT, "Agricultor +%.1f%%", skill * 100));
         return sb.isEmpty() ? "" : " §7(bônus: §a" + sb + "§7)";
     }
 

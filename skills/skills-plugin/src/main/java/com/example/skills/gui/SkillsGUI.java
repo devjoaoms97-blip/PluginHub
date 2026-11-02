@@ -28,10 +28,11 @@ public class SkillsGUI {
         PlayerSkillData dados = plugin.getSkillDataManager().get(jogador.getUniqueId());
         int nivelMaximo = plugin.getXpManager().getFormula().getNivelMaximo();
 
-        Skill[] skills = Skill.values();
-        for (int i = 0; i < skills.length; i++) {
-            Skill skill = skills[i];
-            inv.setItem(i, criarItemSkill(skill, dados, nivelMaximo));
+        // combate nas duas primeiras linhas, profissões na última
+        int combate = 0;
+        int profissao = 18;
+        for (Skill skill : Skill.values()) {
+            inv.setItem(skill.isProfissao() ? profissao++ : combate++, criarItemSkill(skill, dados, nivelMaximo));
         }
 
         return inv;
@@ -71,7 +72,9 @@ public class SkillsGUI {
         }
 
         lore.add("");
-        if (skill == Skill.CRITICO) {
+        if (skill.isProfissao()) {
+            lore.addAll(efeitosProfissao(skill, dados));
+        } else if (skill == Skill.CRITICO) {
             double chance = plugin.getBonusCalculator().getChanceCritico(dados.getJogadorId());
             double multiplicador = plugin.getBonusCalculator().getMultiplicadorCritico();
             lore.add("§aChance de crítico: §f" + String.format(Locale.forLanguageTag("pt-BR"), "%.1f", chance * 100) + "%");
@@ -111,6 +114,35 @@ public class SkillsGUI {
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    /** O que a profissão dá agora (as chances crescem com o nível e o prestígio). */
+    private List<String> efeitosProfissao(Skill skill, PlayerSkillData dados) {
+        var bonus = plugin.getBonusCalculator();
+        java.util.UUID id = dados.getJogadorId();
+        List<String> linhas = new ArrayList<>();
+        switch (skill) {
+            case MINERADOR -> linhas.add("§aQuebrar 3x3 com a picareta: §f" + pct(bonus.porNivel(id, skill, "minerador.chance-3x3-por-nivel")));
+            case AGRICULTOR -> {
+                linhas.add("§aVenda no Fazendeiro: §f+" + pct(bonus.porNivel(id, skill, "agricultor.bonus-venda-por-nivel")));
+                linhas.add("§aColheita dupla: §f" + pct(bonus.porNivel(id, skill, "agricultor.chance-colheita-dupla-por-nivel")));
+            }
+            case PESCADOR -> {
+                linhas.add("§aMapa do tesouro: §f" + pct(bonus.porNivel(id, skill, "pescador.chance-mapa-por-nivel")) + " §7por pesca");
+                linhas.add("§aFragmento Arcano: §f" + pct(bonus.porNivel(id, skill, "pescador.chance-fragmento-por-nivel")) + " §7por pesca");
+            }
+            case LENHADOR -> {
+                linhas.add("§aTora a mais: §f" + pct(bonus.porNivel(id, skill, "lenhador.chance-tora-extra-por-nivel")));
+                linhas.add("§aDerrubar a árvore: §f" + pct(bonus.porNivel(id, skill, "lenhador.chance-derrubar-por-nivel"))
+                        + " §7(machado, mundo de recursos)");
+            }
+            default -> { }
+        }
+        return linhas;
+    }
+
+    private static String pct(double fracao) {
+        return String.format(Locale.forLanguageTag("pt-BR"), fracao < 0.01 ? "%.2f%%" : "%.1f%%", fracao * 100);
     }
 
     private String barraDeProgresso(double fracao) {
