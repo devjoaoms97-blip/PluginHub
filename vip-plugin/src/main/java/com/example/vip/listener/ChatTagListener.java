@@ -56,6 +56,25 @@ public class ChatTagListener implements Listener {
                 + tag + corDoNome(player.getUniqueId()) + player.getName());
     }
 
+    /** A tag do VIP ativo ("§b[Diamante]"), ou "" sem VIP. Também pro {@link TagNaCabeca}. */
+    public String tagVip(UUID jogador) {
+        VipTier tier = plugin.getVipManager().getTierAtivo(jogador);
+        return tier != null ? plugin.getTag(tier) : "";
+    }
+
+    /** A tag do rank (com o prestígio) e a do clã, sem espaço no fim, ou "". */
+    public String tagRank(UUID jogador) {
+        return prefixo("RankupPlugin", jogador).trim();
+    }
+
+    public String tagCla(UUID jogador) {
+        return prefixo("ClasPlugin", jogador).trim();
+    }
+
+    public String tagApoiador(UUID jogador) {
+        return apoiador(jogador).trim();
+    }
+
     /** A tag de apoiador do CreditosPlugin, com espaço no fim, ou "" (não é apoiador ou sem o plugin). */
     private String apoiador(UUID jogador) {
         String tag = doCreditos("tagApoiador", jogador);
@@ -63,7 +82,7 @@ public class ChatTagListener implements Listener {
     }
 
     /** A cor do nome comprada no CreditosPlugin ("§b"), ou branco. */
-    private String corDoNome(UUID jogador) {
+    public String corDoNome(UUID jogador) {
         String cor = doCreditos("corDoNome", jogador);
         return cor == null ? "§f" : cor;
     }

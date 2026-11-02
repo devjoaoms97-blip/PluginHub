@@ -1,7 +1,5 @@
 package com.example.shop;
 
-import com.example.shop.command.BuyCommand;
-import com.example.shop.command.SellCommand;
 import com.example.shop.command.ShopCommand;
 import com.example.shop.gui.ShopGUI;
 import com.example.shop.gui.ShopGUIListener;
@@ -70,14 +68,6 @@ public class ShopPlugin extends JavaPlugin {
         ShopCommand shopCommand = new ShopCommand(this);
         getCommand("shop").setExecutor(shopCommand);
         getCommand("shop").setTabCompleter(shopCommand);
-
-        BuyCommand buyCommand = new BuyCommand(this);
-        getCommand("buy").setExecutor(buyCommand);
-        getCommand("buy").setTabCompleter(buyCommand);
-
-        SellCommand sellCommand = new SellCommand(this);
-        getCommand("sell").setExecutor(sellCommand);
-        getCommand("sell").setTabCompleter(sellCommand);
 
         getServer().getPluginManager().registerEvents(new ShopGUIListener(this), this);
         getServer().getPluginManager().registerEvents(new com.example.shop.manager.TrocasVillager(this), this);

@@ -26,10 +26,21 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => m.includes('Em alta') && m.includes('diamante')), '/shop evento mostra o item em alta', msgs[0])
   await t.console(`minecraft:give ${a.username} diamond 1`)
   await t.console(`eco set ${a.username} 0`)
-  // o /sell é da staff agora (os jogadores vendem nos vendedores da Loja Oficial)
-  await t.console(`lp user ${a.username} permission set shop.comandos true`)
-  msgs = await t.capturar(a, () => a.chat('/sell all'), 1500)
-  await t.console(`lp user ${a.username} permission unset shop.comandos`)
+  // vende o diamante no Minerador da Loja Oficial (não existe mais /sell)
+  await t.console(`execute in minecraft:spawn run minecraft:tp ${a.username} 112.5 65 ${43 - 10.5} 180 0`)
+  await t.espera(1500)
+  const minerador = Object.values(a.entities).find(e => e.name === 'mannequin' && Math.abs(e.position.x - 112.5) < 1 && Math.abs(e.position.z - (43 - 13.5)) < 1)
+  msgs = ['Minerador não encontrado']
+  if (minerador) {
+    const janela = await new Promise(ok => {
+      const fim = setTimeout(() => ok(null), 3000)
+      a.once('windowOpen', j => { clearTimeout(fim); setTimeout(() => ok(j), 800) })
+      a.activateEntity(minerador)
+    })
+    const slot = janela ? janela.slots.findIndex((s, i) => i < janela.inventoryStart && s?.name === 'diamond') : -1
+    msgs = slot >= 0 ? await t.capturar(a, () => a.clickWindow(slot, 0, 0), 1500) : ['menu sem diamante']
+    if (a.currentWindow) a.closeWindow(a.currentWindow)
+  }
   const comEvento = parseFloat((await t.console(`balance ${a.username}`)).replace(/[^\d,]/g, '').replace(',', '.'))
   await t.console('shop admin evento parar')
   t.verificar(comEvento > 0, 'venda com o evento ligado', `${msgs.join(' ').slice(0, 100)} saldo=${comEvento}`)

@@ -29,7 +29,13 @@ Temas: começo, rankup, dinheiro, terreno, amigo (o `/terreno amigo`), teleporte
 
 Quem recebe um `/tpa` ou `/tpahere` (EssentialsX) ganha, logo abaixo das mensagens do Essentials, os botões **[✔ ACEITAR]** e **[✖ RECUSAR]**, que rodam `/tpaccept <quem pediu>` e `/tpdeny <quem pediu>`. O Essentials continua cuidando de tudo: se o pedido existe, se expirou e quem pode aceitar. O clique só digita o comando. O plugin ouve o `TPARequestEvent` do Essentials por reflexão, sem dependência de compilação. Sem o Essentials, essa parte fica desligada.
 
-O jogador precisa das permissões do Essentials (`essentials.tpa`, `essentials.tpahere`, `essentials.tpaccept`, `essentials.tpdeny`). O grupo `default` do servidor de teste já as dá, junto com `essentials.home`, `essentials.sethome` e `essentials.delhome`.
+O jogador precisa das permissões do Essentials (`essentials.tpa`, `essentials.tpahere`, `essentials.tpaccept`, `essentials.tpdeny`). O grupo `default` do servidor de teste já as dá, junto com `essentials.home`, `essentials.sethome`, `essentials.delhome`, `essentials.msg` e `essentials.r`.
+
+## Comandos permitidos
+
+O jogador vê no Tab e usa só os comandos de `comandos-permitidos.lista` (os do servidor, pelo nome principal). Antes eram 322 no Tab de quem não é staff: cada comando repetido com o prefixo do plugin (`essentials:tpa`), os apelidos do Essentials (`etpa`, `tpyes`, `ehome`...), o WorldEdit, o LuckPerms, o FreeMinecraftModels, os extras do AuthMe e `pl`, `version`, `me`... O que não está na lista responde "Comando desconhecido", com a dica do `/comandos`. A staff (`ajuda.comandos.todos`, op) vê e usa tudo. Os botões clicáveis do chat passam por esse filtro, então o comando deles precisa estar na lista; o que um plugin roda pelo jogador, não. `comandos-permitidos.ativado: false` desliga.
+
+Os bots de teste ganham `ajuda.comandos.todos` (`criarBot(nome, { comandos: true })` deixa o bot só com a lista, como no `teste-ajuda.js`).
 
 ## Comandos
 
@@ -47,6 +53,7 @@ O jogador precisa das permissões do Essentials (`essentials.tpa`, `essentials.t
 | Permissão | Padrão | O que libera |
 |---|---|---|
 | `ajuda.usar` | todos | `/tutorial` e `/comandos` |
+| `ajuda.comandos.todos` | op | Vê e usa todos os comandos, não só os da lista |
 | `ajuda.admin` | op | Os comandos de staff |
 
 ## Arquivos

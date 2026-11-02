@@ -1,5 +1,5 @@
 // Terrenos: compra, borda da grade, holograma da entrada, proteção, amigo (só com baús e com tudo), imposto, confisco por imposto atrasado,
-// leilão de imóvel (dono antigo pagando a dívida, lance superado e devolvido) e leilão sem lances.
+// leilão de imóvel (o Leiloeiro contando o que está guardado, dono antigo pagando a dívida, lance superado e devolvido) e leilão sem lances.
 // Usa dois jogadores novos a cada execução. Uso: node teste-terrenos.js
 const t = require('./lib')
 
@@ -18,6 +18,22 @@ async function holograma(x, z) {
     const m = r.match(/entity data: "(.*)"$/)
     if (!m) break
     texto += m[1]
+  }
+  return texto
+}
+// a fala do NPC: o balão (TextDisplay) acima da cabeça dele, pedaço por pedaço (a resposta do console
+// corta textos longos). Com uma cor só, o texto vem no "text" de fora; com várias, nos pedaços do "extra"
+async function balao(x, z) {
+  const ler = async caminho => {
+    const r = await t.console(`execute in minecraft:${MUNDO} positioned ${x} 68.1 ${z} run data get entity @e[type=text_display,limit=1,sort=nearest,distance=..1] ${caminho}`)
+    const m = r.match(/entity data: "(.*)"$/)
+    return m ? m[1] : null
+  }
+  let texto = (await ler('text.text')) || ''
+  for (let i = 0; i < 30; i++) {
+    const pedaco = await ler(`text.extra[${i}].text`)
+    if (pedaco === null) break
+    texto += pedaco
   }
   return texto
 }
@@ -110,6 +126,11 @@ t.rodar(async () => {
   await t.capturar(a, () => a.chat(`/terreno amigo remover ${nomeB}`))
   await colocarBloco(a, px, pz) // fica no terreno pro leilão
   t.verificar(await blocoE(px, 65, pz, 'cobblestone'), 'bloco de volta (vai junto no leilão)')
+  // um baú com itens: o holograma do leilão mostra o que está guardado
+  await t.console(`execute in minecraft:${MUNDO} run setblock ${minX + 5} 65 ${minZ + 5} minecraft:chest{Items:[{Slot:0b,id:"minecraft:diamond",count:20},{Slot:1b,id:"minecraft:iron_ingot",count:5}]}`)
+  // e um baú duplo (as duas metades com itens): conta como UM baú
+  await t.console(`execute in minecraft:${MUNDO} run setblock ${minX + 8} 65 ${minZ + 5} minecraft:chest[facing=south,type=left]{Items:[{Slot:0b,id:"minecraft:gold_ingot",count:3}]}`)
+  await t.console(`execute in minecraft:${MUNDO} run setblock ${minX + 7} 65 ${minZ + 5} minecraft:chest[facing=south,type=right]{Items:[{Slot:0b,id:"minecraft:gold_ingot",count:2}]}`)
 
   console.log('\n== Imposto ==')
   msgs = await t.capturar(a, () => a.chat('/terreno imposto'))
@@ -123,8 +144,44 @@ t.rodar(async () => {
   const inicio = b.mensagens.length
   for (let s = 0; s < 40 && !b.mensagens.slice(inicio).some(m => m.includes('vai a leilão')); s++) await t.espera(1000)
   t.verificar(b.mensagens.slice(inicio).some(m => m.includes('vai a leilão')), 'sem saldo, o terreno foi a leilão (anúncio no chat)')
-  t.verificar((await holograma(sx, sz)).includes('LEIL'), 'o holograma mostra o leilão', await holograma(sx, sz))
+  const holoLeilao = await holograma(sx, sz)
+  t.verificar(holoLeilao === '', 'o terreno em leilão fica sem holograma (quem fala dele é o Leiloeiro)', holoLeilao)
+
+  console.log('\n== Leiloeiro ==')
+  await tpPara(nomeB, sx + 0.5, 65, sz - 2.5) // na rua, de frente pro Leiloeiro (do outro lado do atril)
+  await t.espera(1500)
+  const leiloeiro = Object.values(b.entities).find(e => e.name === 'mannequin' && Math.abs(e.position.x - (sx + 0.5)) < 1 && Math.abs(e.position.z - (sz - 0.5)) < 1)
+  t.verificar(!!leiloeiro, 'o Leiloeiro está na rua, colado na entrada do terreno em leilão')
+  t.verificar(await blocoE(sx, 65, sz - 2, 'lectern'), 'com um atril na frente dele')
+  const falas = []
+  for (let i = 0; leiloeiro && i < 4; i++) {
+    b.activateEntity(leiloeiro) // a próxima fala
+    // espera ele terminar de escrever (uma letra por tick): o texto para de crescer
+    let anterior = null, atual = ''
+    for (let k = 0; k < 20 && (atual === '' || atual !== anterior); k++) {
+      await t.espera(500)
+      anterior = atual
+      atual = await balao(sx + 0.5, sz - 0.5)
+    }
+    falas.push(atual)
+  }
+  console.log(falas.map((f, i) => `  fala ${i + 1}: ${f}`).join('\n'))
+  t.verificar(/Dou-lhe uma/.test(falas[0] || '') && /sem lances/.test(falas[0] || ''), 'a 1ª fala anuncia o leilão sem lances', falas[0])
+  t.verificar(falas[1]?.includes(nomeA), 'a 2ª fala diz de quem era', falas[1])
+  t.verificar(/30 itens/.test(falas[2] || '') && /2 baús/.test(falas[2] || '') && !/iamante|erro|ouro/.test(falas[2] || ''),
+    'a 3ª fala conta os 30 itens em 2 baús (o duplo conta um só), sem dizer quais', falas[2])
+  t.verificar(/Lance mínimo/.test(falas[3] || ''), 'sem máquinas nem spawners, a fala deles some e vem o lance mínimo', falas[3])
   t.verificar(a.mensagens.slice(-10).some(m => m.includes('foi confiscado')), 'o dono foi avisado')
+
+  console.log('\n== /terreno leiloes ==')
+  const brutos = []
+  const ouvir = j => brutos.push(JSON.stringify(j.json ?? j))
+  b.on('message', ouvir)
+  msgs = await t.capturar(b, () => b.chat('/terreno leiloes'), 1200)
+  b.removeListener('message', ouvir)
+  t.verificar(msgs.some(m => m.includes(String(id)) && m.includes('[IR]') && m.includes('[LANCE]')), 'cada leilão tem os botões [IR] e [LANCE]',
+    msgs.find(m => m.includes('[IR]')))
+  t.verificar(brutos.some(j => j.includes(`/terreno ir ${id}`)), 'o [IR] roda o /terreno ir do terreno')
 
   console.log('\n== Leilão de imóvel ==')
   await t.console(`eco set ${nomeA} 100000`)
@@ -160,6 +217,7 @@ t.rodar(async () => {
   msgs = await t.capturar(b, () => b.chat(`/terreno info ${id}`))
   t.verificar(msgs.some(m => m.includes('À venda')), 'e voltou à venda')
   t.verificar((await holograma(sx, sz)).includes('VENDA'), 'e o holograma voltou para "À venda"')
+  t.verificar(!(await blocoE(sx, 65, sz - 2, 'lectern')), 'e o atril do Leiloeiro saiu da rua')
 
   await t.terminar(a, b)
 })

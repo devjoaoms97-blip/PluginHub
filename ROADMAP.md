@@ -155,6 +155,7 @@ Terrenos de 32x32 num mundo em grade gerado pelo plugin, comprados por R$ 50.000
 - [x] Holograma na entrada do terreno, com o dono, "À venda" ou o leilão. Antes era uma placa.
 - [x] Fundo de bedrock em y = 0 (2026-10-25), também nos chunks que já existiam.
 - [x] Holograma do terreno em leilão mostra quantos itens estão guardados lá dentro (2026-10-25).
+- [x] **Leiloeiro** (2026-11-01): a contagem dos itens guardados existia, mas nunca entrou no holograma do leilão. Agora quem conta é um NPC, o Leiloeiro, na rua, colado na entrada de cada terreno em leilão, atrás de um atril: a cada clique, uma fala num balão, como os NPCs do spawn ("Dou-lhe uma!..."), com o lance, de quem era, quantos itens estão guardados (nunca quais), quantas máquinas e quantos spawners tem, o lance mínimo e o tempo que falta. O terreno em leilão ficou sem holograma.
 - [x] Permissões separadas para os amigos (construir, baús, usar).
 - [x] Missão de pagar o imposto ou de construir no terreno.
 
@@ -307,7 +308,14 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 
 - [x] **Alquimista com todos os ingredientes de poção** (2026-10-31): o vendedor ganhou `extras` (itens de outra categoria, com o mesmo preço e mercado do vendedor de origem): verruga do Nether, redstone, pólvora, açúcar, pé de coelho, olho de aranha, creme de magma, cenoura dourada, vara de blaze, lágrima de ghast, escama de tartaruga, membrana de phantom, vara de breeze e pedra. Entraram na loja os que faltavam de vez: frasco de vidro, baiacu, bafo de dragão, bloco de slime, teia e casco de tartaruga (`loja.py`, sem brecha).
 
+- [x] **Sem `/buy` e `/sell`** (2026-11-01): os comandos saíram do EconomyShopPlugin (eram só da staff). Comprar e vender é na `/warp loja` (vendedores da Loja Oficial) ou nas barracas dos jogadores; o minério continua vendido na hora, na mina. O `/shop` fica pra staff.
+- [x] **`/vip pocoes`** (2026-11-01, perk `vip.perk.pocoes`, todos os tiers): junta as poções iguais do inventário (bebíveis, arremessáveis e persistentes) em pilhas de até 10 (`pocoes.max-pilha`), pelo tamanho máximo de pilha do item; beber ou arremessar gasta uma.
+- [x] **"$1" no `/vip vender`** (2026-11-01): o VipPlugin formatava o dinheiro pelo Essentials ("$1"); agora mostra "R$ 1,00", como os outros plugins.
+
 #### Limpeza e nomes
+- [x] **Limpa dos comandos** (2026-11-01, AjudaPlugin): o jogador via 322 comandos no Tab (prefixo de plugin, apelidos do Essentials, WorldEdit, LuckPerms, AuthMe, `pl`...). Agora vê e usa só a lista `comandos-permitidos` (~60, os do servidor); o resto é "comando desconhecido". A staff vê tudo. O grupo `default` ganhou `/msg` e `/r`.
+- [x] **Uma tag acima da cabeça** (2026-11-01, VipPlugin + PlacarPlugin): `[Fazendeiro] [DoD] [Diamante] Nome` ficava enorme. Acima da cabeça vai só a tag que o jogador escolhe no `/tag` (VIP, apoiador, clã, rank ou nenhuma); sem escolha, a do VIP ou, sem VIP, o rank. Na tab e no chat continuam todas.
+- [x] **Corrigido** (2026-11-01): o PlacarPlugin era desativado a cada reinício (os times dos nomes ficam salvos no scoreboard principal, e apagá-los dava erro), sem placar nem tags.
 - [x] **Limpeza do chão nas minas** (2026-10-31): a limpeza só alcançava chunks carregados, e as minas do fundo da avenida (até z -175) ficavam descarregadas sem ninguém por perto: os itens voltavam quando alguém chegava. Agora o item que nasceu antes da última limpeza sai quando o chunk dele carrega (com dono, vai pros achados). Os nomeados continuam protegidos (`ignorar-itens-nomeados`).
 - [x] **Achados e perdidos** (2026-10-31): cada pilha fica 1 hora (`achados.horas`) e volta por R$ 10.000; as vencidas saem a cada minuto, mesmo de quem não abre o `/achados`, e o menu mostra os minutos que faltam. O que já estava guardado ganhou 1 hora a partir da atualização.
 - [x] **Tags no nome acima da cabeça** (2026-10-31, PlacarPlugin): não havia time de scoreboard, e é só por ele que o Minecraft decora esse nome. Agora cada scoreboard em uso (o placar de cada jogador e o principal) tem um time por jogador com o mesmo prefixo da tab (rank, clã, VIP, apoiador) e a cor do nome comprada. `nome-na-cabeca.ativado` desliga.
@@ -336,6 +344,13 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Escudo Perfeito (parry)** (2026-10-27): escudo levantado até 0,3 s antes de um golpe corpo a corpo anula o dano e atordoa quem bateu por 1 s (sem andar e sem bater), com recarga de 3 s.
 - [x] **Corrigido** (2026-10-27): quem morre só de Sangramento agora dá o abate a quem aplicou (Bounty, clãs, missões, Gladiador).
 - [x] **Limite diário de XP no PvP** (2026-10-30): cada par atacante/vítima pode gerar até 1.000 XP efetivos por dia; o ganho diminui após 250 e 500 XP. O total é persistido e reinicia diariamente.
+- [ ] **Skills de profissão, fora do PvP** (ideias de 2026-11-01, guardadas). As 13 skills de hoje são de combate. Cada bônus que vira dinheiro mexe na meta de 150 h até o Rei: calcular no `simular.py` antes de implementar. Todas com prestígio e com as regras contra farm das missões (bloco colocado pelo jogador e mob de spawner não contam). 🔴
+  - **Minerador** (XP por bloco nas minas): chance de quebrar 3x3 com uma picaretada (~8% no nível 50). Substitui o encantamento de "explosão" do Rankup. Com a venda automática, ~8% de chance dá ~+15% de renda na mina: subir os preços dos ranks ou aceitar o encurtamento.
+  - **Pescador** (XP por peixe): tesouros próprios, inspirados na pescaria da Craftlandia: livro e armadura encantados, Mapa do Tesouro (quase sempre o Comum), Fragmento Arcano raro e peixes raros pra vender. Só em águas abertas (a regra de tesouro do jogo) e com teto de mapas por hora, contra a pesca AFK.
+  - **Agricultor** (XP por colher planta madura): bônus de venda no Fazendeiro conforme o nível (até ~+20%) e chance de colheita dupla. Farm automática não dá XP; o bônus fica abaixo da trava da venda.
+  - **Lenhador**: chance de derrubar a árvore inteira e de tora a mais (mina do bosque e mundo de recursos).
+  - Segunda leva: **Caçador** (drop a mais e cabeça de mob, fora das pilhas de spawner), **Escavador** (achados na terra, areia e cascalho), **Alquimista** (poção mais longa e extra no suporte) e **Ferreiro** (desconto no Ferreiro, na Bruxa e nas coins do Cambista).
+  - Recomendação: começar por Minerador, Agricultor, Pescador e Lenhador.
 
 ### 🛒 EconomyShopPlugin
 - [x] **Eventos de mercado**: um item sorteado tem o preço multiplicado por algumas horas ("alta do diamante"), com anúncio no chat. A cada `intervalo-horas`, com uma chance, por `duracao-horas`; a staff liga com `/shop admin evento <item> <mult> <horas>`, e `/shop evento` mostra o item em alta.

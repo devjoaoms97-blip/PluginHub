@@ -20,6 +20,6 @@ O spawn, a Loja Oficial, a Avenida das Minas e os terrenos são seguros. Há PvP
 A mensagem normal só chega a quem está no **mesmo mundo**, com `[L]` na frente. Para falar com o servidor todo, use `/g <mensagem>` (`[G]`). O chat tem anti-flood: espere 2 segundos entre mensagens e não repita a mesma mensagem.
 
 **Comandos para guardar**
-`/comandos` lista os comandos por tema · `/g <mensagem>` fala no chat global · `/spawn` volta ao spawn · `/warp` mostra as warps · `/mina` escolhe uma mina · `/ranks` mostra os ranks · `/skills` abre suas skills.
+`/comandos` lista os comandos por tema · `/g <mensagem>` fala no chat global · `/tag` escolhe a tag acima da sua cabeça · `/spawn` volta ao spawn · `/warp` mostra as warps · `/mina` escolhe uma mina · `/ranks` mostra os ranks · `/skills` abre suas skills.
 
 Os próximos tutoriais explicam minas, economia, terrenos, combate, clãs, eventos, VIP e Discord.

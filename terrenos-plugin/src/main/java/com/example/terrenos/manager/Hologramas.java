@@ -1,7 +1,6 @@
 package com.example.terrenos.manager;
 
 import com.example.terrenos.TerrenosPlugin;
-import com.example.terrenos.model.Leilao;
 import com.example.terrenos.model.Terreno;
 import com.example.terrenos.model.TerrenoId;
 import com.example.terrenos.mundo.Grade;
@@ -13,9 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Container;
-import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
@@ -26,25 +22,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
  * Holograma na entrada de cada terreno: na rua, em cima da borda, no meio do lado norte, de frente
- * pra quem chega pelo /terreno home ou /terreno ir. Mostra "À venda" com o preço, o dono, ou o
- * leilão com o lance atual e quantos itens estão guardados lá dentro. É um TextDisplay (com uma Interaction invisível embaixo, pra dar pra
- * clicar e ver o /terreno info) que não fica salvo no mundo: nasce quando o chunk carrega e some
- * com ele, então os terrenos à venda ganham holograma sem precisar guardar nada.
+ * pra quem chega pelo /terreno home ou /terreno ir. Mostra "À venda" com o preço ou o dono. O terreno
+ * em leilão fica sem holograma: quem fala dele é o {@link Leiloeiro}, o NPC na frente da entrada. É um
+ * TextDisplay (com uma Interaction invisível embaixo, pra dar pra clicar e ver o /terreno info) que não
+ * fica salvo no mundo: nasce quando o chunk carrega e some com ele, então os terrenos à venda ganham
+ * holograma sem precisar guardar nada.
  */
 public class Hologramas implements Listener {
 
@@ -64,17 +54,11 @@ public class Hologramas implements Listener {
     private final TerrenosPlugin plugin;
     private final NamespacedKey chaveTerreno;
     private final Map<TerrenoId, Holo> hologramas = new HashMap<>();
+    private final Leiloeiro leiloeiro;
 
-    /** Quantos itens um terreno em leilão guarda, e quando foi contado. */
-    private record Guardado(long itens, int recipientes, long contadoEm) {
-    }
-
-    /** A contagem carrega os chunks do terreno: fica guardada e é refeita de tempos em tempos. */
-    private static final long RECONTAR_MS = 5 * 60_000L;
-    private final Map<TerrenoId, Guardado> guardados = new HashMap<>();
-
-    public Hologramas(TerrenosPlugin plugin) {
+    public Hologramas(TerrenosPlugin plugin, Leiloeiro leiloeiro) {
         this.plugin = plugin;
+        this.leiloeiro = leiloeiro;
         this.chaveTerreno = new NamespacedKey(plugin, "terreno");
     }
 
@@ -94,12 +78,19 @@ public class Hologramas implements Listener {
         return id != null && entrada(bloco.getWorld(), id).equals(bloco) ? id : null;
     }
 
-    /** Cria ou reescreve o holograma do terreno, se o chunk dele estiver carregado. */
+    /** Cria ou reescreve o holograma do terreno (e põe ou tira o Leiloeiro), se o chunk dele estiver carregado. */
     public void atualizar(TerrenoId id) {
         World mundo = plugin.getMundo();
-        if (mundo == null || !ativados() || !plugin.getTerrenoManager().dentroDaGrade(id)) return;
+        if (mundo == null || !plugin.getTerrenoManager().dentroDaGrade(id)) return;
         Block b = entrada(mundo, id);
         if (!mundo.isChunkLoaded(b.getX() >> 4, b.getZ() >> 4)) return;
+        leiloeiro.atualizar(id, b);
+        Terreno t = plugin.getTerrenoManager().get(id);
+        if (!ativados() || (t != null && t.emLeilao() && leiloeiro.ativado())) {
+            Holo velho = hologramas.remove(id);
+            if (velho != null) velho.remover();
+            return;
+        }
         Holo holo = hologramas.get(id);
         if (holo == null || !holo.valido()) {
             if (holo != null) holo.remover();
@@ -135,78 +126,8 @@ public class Hologramas implements Listener {
         if (t == null) {
             return titulo + "\n§a§lÀ VENDA\n§f" + Formato.valor(plugin.getTerrenoManager().precoCompra()) + "\n§7/terreno comprar";
         }
-        if (t.emLeilao()) {
-            Leilao l = t.getLeilao();
-            return titulo + "\n§6§lEM LEILÃO\n" + (l.temLance() ? "§f" + Formato.valor(l.getLance()) : "§7sem lances") + "\n§7/terreno lance";
-        }
+        if (t.emLeilao()) return titulo + "\n§6§lEM LEILÃO\n§7/terreno lance"; // só com o Leiloeiro desligado
         return titulo + "\n§7Dono: §f" + t.getNomeDono();
-    }
-
-    private String linhaGuardado(TerrenoId id) {
-        Guardado g = guardados.get(id);
-        if (g == null || System.currentTimeMillis() - g.contadoEm() > RECONTAR_MS) {
-            // conta no próximo tick: aqui pode ser dentro do ChunkLoadEvent, e a contagem carrega chunks
-            plugin.getServer().getScheduler().runTask(plugin, () -> recontar(id));
-            if (g == null) return "§7Contando os itens guardados...";
-        }
-        if (g.recipientes() == 0) return "§7Nenhum item guardado";
-        return "§7Guardado: §f" + String.format(Locale.forLanguageTag("pt-BR"), "%,d", g.itens()) + " §7ite" + (g.itens() == 1 ? "m" : "ns")
-                + " em §f" + g.recipientes() + " §7recipiente" + (g.recipientes() == 1 ? "" : "s");
-    }
-
-    private void recontar(TerrenoId id) {
-        Guardado atual = guardados.get(id);
-        if (atual != null && System.currentTimeMillis() - atual.contadoEm() <= RECONTAR_MS) return; // outro pedido já contou
-        Terreno t = plugin.getTerrenoManager().get(id);
-        World mundo = plugin.getMundo();
-        if (t == null || !t.emLeilao() || mundo == null) return;
-        Grade g = plugin.getGrade();
-        int minX = g.minX(id), minZ = g.minZ(id), maxX = minX + g.getTamanho() - 1, maxZ = minZ + g.getTamanho() - 1;
-        long itens = 0;
-        int recipientes = 0;
-        for (int cx = minX >> 4; cx <= maxX >> 4; cx++) {
-            for (int cz = minZ >> 4; cz <= maxZ >> 4; cz++) {
-                Chunk chunk = mundo.getChunkAt(cx, cz);
-                for (BlockState estado : chunk.getTileEntities()) {
-                    if (!(estado instanceof Container recipiente) || !dentro(estado.getX(), estado.getZ(), minX, minZ, maxX, maxZ)) continue;
-                    // o inventário do próprio bloco: cada metade do baú duplo conta a sua parte
-                    itens += contar(recipiente.getSnapshotInventory());
-                    recipientes++;
-                }
-                for (Entity entidade : chunk.getEntities()) {
-                    // carrinho e bote com baú, burro, lhama...
-                    if (entidade instanceof Player || !(entidade instanceof InventoryHolder dono)) continue;
-                    Location l = entidade.getLocation();
-                    if (!dentro(l.getBlockX(), l.getBlockZ(), minX, minZ, maxX, maxZ)) continue;
-                    itens += contar(dono.getInventory());
-                    recipientes++;
-                }
-            }
-        }
-        guardados.put(id, new Guardado(itens, recipientes, System.currentTimeMillis()));
-        atualizar(id);
-    }
-
-    private static boolean dentro(int x, int z, int minX, int minZ, int maxX, int maxZ) {
-        return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
-    }
-
-    /** Itens do inventário, contando também o que está dentro de shulkers e bundles. */
-    private static long contar(Inventory inventario) {
-        long total = 0;
-        for (ItemStack item : inventario.getContents()) total += contar(item);
-        return total;
-    }
-
-    private static long contar(ItemStack item) {
-        if (item == null || item.getType().isAir()) return 0;
-        long total = item.getAmount();
-        if (item.getItemMeta() instanceof BlockStateMeta meta && meta.hasBlockState() && meta.getBlockState() instanceof ShulkerBox caixa) {
-            total += item.getAmount() * contar(caixa.getInventory());
-        } else if (item.getItemMeta() instanceof BundleMeta bundle) {
-            for (ItemStack dentro : bundle.getItems()) total += item.getAmount() * contar(dentro);
-        }
-        return total;
     }
 
     /** Ao ligar (e no /terreno reload): os chunks que já estão carregados. */
@@ -219,6 +140,7 @@ public class Hologramas implements Listener {
     public void removerTodos() {
         hologramas.values().forEach(Holo::remover);
         hologramas.clear();
+        leiloeiro.removerTodos();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -234,7 +156,7 @@ public class Hologramas implements Listener {
                 TerrenoId id = terrenoDaEntrada(b);
                 if (id == null || !plugin.getTerrenoManager().dentroDaGrade(id)) continue;
                 tirarPlacaAntiga(b);
-                if (ativados()) atualizar(id);
+                atualizar(id);
             }
         }
     }
@@ -258,6 +180,7 @@ public class Hologramas implements Listener {
             e.getValue().remover();
             return true;
         });
+        leiloeiro.descarregar(chunk);
     }
 
     @EventHandler(priority = EventPriority.LOW)

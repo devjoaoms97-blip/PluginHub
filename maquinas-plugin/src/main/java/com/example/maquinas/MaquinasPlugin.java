@@ -304,6 +304,11 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
         return tipos;
     }
 
+    /** API (TerrenosPlugin, por reflexão, pro Leiloeiro): quantas máquinas tem no terreno "x;z". */
+    public int maquinasNoTerreno(String terreno) {
+        return maquinas == null ? 0 : maquinas.noTerreno(terreno);
+    }
+
     public Economy getEconomy() {
         return economy;
     }

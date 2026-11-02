@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Lógica dos perks de VIP (fly, heal, feed, kit, kitmensal, particula, warp). Não é mais um
+ * Lógica dos perks de VIP (fly, heal, feed, kit, kitmensal, particula, warp, pocoes). Não é mais um
  * {@code CommandExecutor} — desde que tudo virou subcomando de {@code /vip}, é só um
  * helper chamado por {@link VipCommand#onCommand}, que já garantiu que quem chamou é um
  * {@link Player}. Continua checando aqui, por dentro, se esse player tem VIP ativo e a
@@ -36,7 +36,7 @@ public class PerkCommand {
         this.plugin = plugin;
     }
 
-    /** Ponto de entrada único, chamado pelo VipCommand pra "fly", "heal", "feed", "kit", "kitmensal", "particula" e "warp". */
+    /** Ponto de entrada único, chamado pelo VipCommand pra "fly", "heal", "feed", "kit", "kitmensal", "particula", "warp" e "pocoes". */
     public void executar(Player player, String subcomando, String[] args) {
         VipTier tier = plugin.getVipManager().getTierAtivo(player.getUniqueId());
         if (tier == null) {
@@ -52,6 +52,7 @@ public class PerkCommand {
             case "kitmensal" -> tratarKitMensal(player, tier);
             case "particula" -> tratarParticula(player, tier, args);
             case "warp" -> tratarWarp(player, tier);
+            case "pocoes" -> tratarPocoes(player);
             default -> player.sendMessage("§cPerk não reconhecido.");
         }
     }
@@ -244,6 +245,77 @@ public class PerkCommand {
         float yaw = (float) plugin.getConfig().getDouble(base + ".yaw", 0);
         player.teleport(new Location(mundo, x, y, z, yaw, 0));
         player.sendMessage("§aTeleportado pra área exclusiva " + (base.equals(doTier) ? "do VIP " + plugin.getNomeExibicao(tier) : "de VIP") + "§a.");
+    }
+
+    /**
+     * Junta as poções iguais do inventário (bebíveis, arremessáveis e persistentes) em pilhas de até
+     * {@code pocoes.max-pilha} (10). O jogo não empilha poção: a pilha maior vem do componente de tamanho
+     * máximo do item, que fica na poção (beber ou arremessar gasta uma, o resto continua empilhado). Só
+     * se juntam poções idênticas, então o efeito de cada uma não muda.
+     */
+    private void tratarPocoes(Player player) {
+        if (!perkPermitido(player, "pocoes", "vip.perk.pocoes")) {
+            return;
+        }
+        int maximo = Math.max(1, Math.min(99, plugin.getConfig().getInt("pocoes.max-pilha", 10)));
+        ItemStack[] conteudo = player.getInventory().getStorageContents();
+        // cada tipo de poção (a poção "pura", sem o tamanho de pilha) → quantas tem
+        List<ItemStack> tipos = new ArrayList<>();
+        List<Integer> quantidades = new ArrayList<>();
+        List<Integer> slots = new ArrayList<>();
+        int pilhasAntes = 0;
+        for (int i = 0; i < conteudo.length; i++) {
+            ItemStack item = conteudo[i];
+            if (item == null || !ehPocao(item.getType())) continue;
+            ItemStack pura = item.clone();
+            pura.setAmount(1);
+            org.bukkit.inventory.meta.ItemMeta meta = pura.getItemMeta();
+            meta.setMaxStackSize(null);
+            pura.setItemMeta(meta);
+            int tipo = -1;
+            for (int t = 0; t < tipos.size() && tipo < 0; t++) {
+                if (tipos.get(t).isSimilar(pura)) tipo = t;
+            }
+            if (tipo < 0) {
+                tipos.add(pura);
+                quantidades.add(0);
+                tipo = tipos.size() - 1;
+            }
+            quantidades.set(tipo, quantidades.get(tipo) + item.getAmount());
+            slots.add(i);
+            conteudo[i] = null;
+            pilhasAntes++;
+        }
+        if (tipos.isEmpty()) {
+            player.sendMessage("§cVocê não tem poções no inventário.");
+            return;
+        }
+        // devolve nos mesmos espaços, já agrupadas (cabem: nunca usam mais espaços que antes)
+        int proximo = 0;
+        int pilhasDepois = 0;
+        int total = 0;
+        for (int t = 0; t < tipos.size(); t++) {
+            int resta = quantidades.get(t);
+            total += resta;
+            while (resta > 0) {
+                ItemStack pilha = tipos.get(t).clone();
+                org.bukkit.inventory.meta.ItemMeta meta = pilha.getItemMeta();
+                meta.setMaxStackSize(maximo);
+                pilha.setItemMeta(meta);
+                pilha.setAmount(Math.min(maximo, resta));
+                resta -= pilha.getAmount();
+                conteudo[slots.get(proximo++)] = pilha;
+                pilhasDepois++;
+            }
+        }
+        player.getInventory().setStorageContents(conteudo);
+        player.sendMessage("§a✦ Agrupei suas §f" + total + " §apoções: de §f" + pilhasAntes + " §apra §f" + pilhasDepois
+                + " §aespaço(s), até " + maximo + " por pilha.");
+        player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ITEM_PICKUP, 0.8f, 1.2f);
+    }
+
+    private static boolean ehPocao(Material material) {
+        return material == Material.POTION || material == Material.SPLASH_POTION || material == Material.LINGERING_POTION;
     }
 
     // ---------------------------------------------------------------------

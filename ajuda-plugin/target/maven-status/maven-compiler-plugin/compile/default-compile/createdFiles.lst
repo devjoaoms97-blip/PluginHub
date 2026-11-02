@@ -1,5 +1,6 @@
 com\example\ajuda\Tutorial.class
 com\example\ajuda\Comandos.class
+com\example\ajuda\ComandosPermitidos.class
 com\example\ajuda\AjudaPlugin.class
 com\example\ajuda\TpaClique.class
 com\example\ajuda\Tutorial$Progresso.class

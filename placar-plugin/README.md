@@ -52,7 +52,7 @@ Cada jogador tem a própria scoreboard (as linhas são diferentes pra cada um), 
 
 ## Tags no nome acima da cabeça
 
-O Minecraft só decora o nome acima da cabeça pelo time da scoreboard, e cada jogador vê a própria. Então, em cada scoreboard em uso (a de cada jogador e a principal, de quem desligou o placar), fica um time por jogador online (`nome_<uuid>`) com o mesmo prefixo da tab: rank, clã, VIP e apoiador, como o VipPlugin monta. A última cor antes do nome vira a cor do nome (a comprada no CreditosPlugin). Atualiza junto com o placar e só reenvia o time que mudou. `nome-na-cabeca.ativado: false` tira os times.
+O Minecraft só decora o nome acima da cabeça pelo time da scoreboard, e cada jogador vê a própria. Então, em cada scoreboard em uso (a de cada jogador e a principal, de quem desligou o placar), fica um time por jogador online (`nome_<uuid>`) com **uma** tag só: a que o jogador escolheu no `/tag` do VipPlugin (VIP, apoiador, clã, rank ou nenhuma; lida por reflexão, `nomeNaCabeca`), e a cor do nome comprada no CreditosPlugin. Todas juntas (`[Fazendeiro] [DoD] [Diamante] Nome`) ficavam enormes; na tab e no chat continuam todas. Sem o VipPlugin, copia o que vem antes do nome na tab. Atualiza junto com o placar e só reenvia o time que mudou. `nome-na-cabeca.ativado: false` tira os times.
 
 ## Como compilar
 

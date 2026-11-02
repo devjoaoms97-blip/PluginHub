@@ -42,6 +42,80 @@ tutorial:
     mensagem: "&a✦ Você ganhou um &fMapa do Tesouro Comum&a! Segure ele e use &f/warp tesouros &apra achar o X."
 
 # ------------------------------------------------------------------ /tpa com clique
+# O que o jogador vê no Tab e pode usar. Sem isso, o Tab mostrava 322 comandos (cada um repetido com o
+# prefixo do plugin, os apelidos do Essentials, WorldEdit, LuckPerms...). O resto responde como comando
+# desconhecido. A staff (ajuda.comandos.todos, op) vê e usa tudo. Os botões clicáveis do chat (/tpaccept,
+# /pix aceitar, /loja <jogador>...) passam por aqui: o comando deles precisa estar na lista.
+comandos-permitidos:
+  ativado: true
+  mensagem: "&cComando desconhecido. Veja os comandos do servidor em &f/comandos&c."
+  lista:
+    # ajuda e chat
+    - tutorial
+    - comandos
+    - g
+    - msg
+    - tell
+    - r
+    # lugares
+    - spawn
+    - warp
+    - warps
+    - mina
+    - minas
+    - recursos
+    - mapa
+    - luz
+    - montaria
+    # rankup e progresso
+    - rankup
+    - ranks
+    - prestigio
+    - diaria
+    - missoes
+    - skills
+    - boss
+    - tesouro
+    # terrenos e economia
+    - terreno
+    - maquinas
+    - spawners
+    - loja
+    - barraca
+    - pix
+    - cheque
+    - minesena
+    - achados
+    # PvP e clãs
+    - cla
+    - cc
+    - bounty
+    - duelo
+    - x1
+    - gladiador
+    # teleporte e casas
+    - tpa
+    - tpahere
+    - tpaccept
+    - tpdeny
+    - home
+    - homes
+    - sethome
+    - delhome
+    # conta, VIP e ajustes
+    - login
+    - l
+    - register
+    - reg
+    - changepassword
+    - logout
+    - vincular
+    - vip
+    - creditos
+    - tag
+    - placar
+    - pacote
+
 tpa-clique:
   ativado: true                    # botões [ACEITAR] e [RECUSAR] pra quem recebe um /tpa ou /tpahere
 
@@ -66,6 +140,7 @@ comandos:
         - "/diaria | Recompensa diária"
         - "/missoes | Missões de hoje"
         - "/g <mensagem> | Chat global (sem o /g, só quem está no seu mundo vê)"
+        - "/msg <jogador> <mensagem> | Mensagem privada (/r responde)"
     rankup:
       titulo: "Rankup"
       resumo: "Ranks, minas e prestígio"
@@ -192,6 +267,8 @@ comandos:
         - "/vip | Benefícios do VIP"
         - "/creditos | Seus créditos e a loja de cosméticos"
         - "/montaria | Montaria (VIP)"
+        - "/vip pocoes | Junta as poções iguais em pilhas de até 10 (VIP)"
         - "/vincular | Vincula sua conta ao Discord"
+        - "/tag | Escolhe a tag acima da sua cabeça (VIP, clã, rank...)"
         - "/placar | Liga e desliga o placar lateral"
         - "/pacote | Manda o pacote de texturas de novo"

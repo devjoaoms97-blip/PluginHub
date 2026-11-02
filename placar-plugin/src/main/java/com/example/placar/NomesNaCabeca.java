@@ -4,6 +4,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -16,11 +17,11 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * As tags no nome acima da cabeça. O Minecraft só decora esse nome pelo time do scoreboard (prefixo e
+ * A tag no nome acima da cabeça. O Minecraft só decora esse nome pelo time do scoreboard (prefixo e
  * cor), e cada jogador vê o PRÓPRIO scoreboard (o do placar, ou o principal pra quem desligou): então
- * em cada scoreboard em uso fica um time por jogador online, com o mesmo prefixo da tab. O nome da tab
- * quem monta é o VipPlugin (rank, clã, VIP, apoiador e a cor do nome); aqui ele é só copiado: o que
- * vem antes do nome vira o prefixo, e a última cor antes do nome, a cor do nome.
+ * em cada scoreboard em uso fica um time por jogador online. A tag quem dá é o VipPlugin: só a que o
+ * jogador escolheu no /tag (rank, clã, VIP ou apoiador), mais a cor do nome. Sem o VipPlugin, copia o
+ * que vem antes do nome na tab.
  * <p>
  * Roda junto com a atualização do placar (a cada {@code intervalo-ticks}) e só mexe no time que mudou.
  */
@@ -32,6 +33,7 @@ class NomesNaCabeca {
     private final PlacarPlugin plugin;
     /** Scoreboard → time → o que já foi aplicado nele (prefixo|cor|nome). Some junto com o scoreboard. */
     private final Map<Scoreboard, Map<String, String>> aplicados = new WeakHashMap<>();
+    private boolean avisouFalha;
 
     NomesNaCabeca(PlacarPlugin plugin) {
         this.plugin = plugin;
@@ -89,10 +91,24 @@ class NomesNaCabeca {
     }
 
     /**
-     * O prefixo (o que vem antes do nome na tab) e o código da cor do nome ("b", ou "" sem cor).
-     * Sem nome próprio na tab, sem prefixo.
+     * O prefixo e o código da cor do nome ("b", ou "" sem cor). Com o VipPlugin, só a tag que o jogador
+     * escolheu no /tag (todas juntas ficavam enormes acima da cabeça); sem ele, o que vem antes do nome
+     * na tab.
      */
-    private static String[] partes(Player p) {
+    private String[] partes(Player p) {
+        Plugin vip = Bukkit.getPluginManager().getPlugin("VipPlugin");
+        if (vip != null && vip.isEnabled()) {
+            try {
+                if (vip.getClass().getMethod("nomeNaCabeca", Player.class).invoke(vip, p) instanceof String[] r && r.length == 2) return r;
+            } catch (ReflectiveOperationException e) {
+                if (!avisouFalha) plugin.getLogger().warning("VipPlugin sem nomeNaCabeca (versão antiga?): " + e.getMessage());
+                avisouFalha = true;
+            }
+        }
+        return partesDaTab(p);
+    }
+
+    private static String[] partesDaTab(Player p) {
         String tab = LEGADO.serialize(p.playerListName());
         int fim = tab.lastIndexOf(p.getName());
         if (fim <= 0) return new String[]{"", ""};

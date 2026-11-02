@@ -22,6 +22,9 @@ permissions:
   ajuda.usar:
     description: Usa o /tutorial e o /comandos.
     default: true
+  ajuda.comandos.todos:
+    description: Vê no Tab e usa todos os comandos, não só os da lista comandos-permitidos (staff).
+    default: op
   ajuda.admin:
     description: Vê e zera o tutorial dos jogadores e recarrega o config.
     default: op

@@ -196,6 +196,11 @@ public class SpawnersPlugin extends JavaPlugin {
         return id == null ? null : tipos.get(id);
     }
 
+    /** API (TerrenosPlugin, por reflexão, pro Leiloeiro): quantos spawners tem no terreno "x;z" (os empilhados contam um por um). */
+    public int spawnersNoTerreno(String terreno) {
+        return spawners == null || terreno == null ? 0 : spawners.noTerreno(terreno);
+    }
+
     /** O tipo da loja desse mob, ou null se a loja não tem. */
     public Tipo tipoDaEntidade(org.bukkit.entity.EntityType entidade) {
         for (Tipo t : tipos.values()) {

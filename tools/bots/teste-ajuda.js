@@ -1,13 +1,14 @@
 // AjudaPlugin: o convite do /tutorial ao entrar, o /comandos (índice e páginas), o tutorial inteiro
 // (minerar na mina, /warp loja, /ranks, /terreno auto, /diaria) com o Mapa do Tesouro Comum no fim,
-// guardado se o inventário estiver cheio e entregue uma vez só, e o /tpa com os botões de aceitar.
+// guardado se o inventário estiver cheio e entregue uma vez só, o /tpa com os botões de aceitar e a lista
+// de comandos dos jogadores (o Tab só com ela, o resto como comando desconhecido).
 // Uso: node teste-ajuda.js
 const t = require('./lib')
 
 t.rodar(async () => {
   const nome = t.nomeNovo('Aju')
   // os comandos de clique vêm em JSON: guarda o bruto pra achar o "/tpaccept <nome>" do botão
-  const bot = await t.criarBot(nome)
+  const bot = await t.criarBot(nome, { comandos: true }) // como um jogador: só os comandos da lista
   const brutos = []
   bot.on('message', j => brutos.push(JSON.stringify(j.json ?? j)))
 
@@ -20,8 +21,8 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => m.includes('Comandos do servidor')) && msgs.some(m => m.includes('[Amigos]')), 'o índice lista os temas', msgs.slice(0, 3).join(' | '))
   msgs = await t.capturar(bot, () => bot.chat('/comandos amigo'), 1000)
   t.verificar(msgs.some(m => m.includes('/terreno amigo add <jogador>')), 'a página "amigo" explica o /terreno amigo', msgs.find(m => m.includes('amigo add')))
-  msgs = await t.capturar(bot, () => bot.chat('/comando terreno'), 1000)
-  t.verificar(msgs.some(m => m.includes('/terreno auto')), 'o /comando terreno (apelido) abre a página do terreno')
+  msgs = await t.capturar(bot, () => bot.chat('/comandos terreno'), 1000)
+  t.verificar(msgs.some(m => m.includes('/terreno auto')), 'o /comandos terreno abre a página do terreno')
   msgs = await t.capturar(bot, () => bot.chat('/comandos xyz'), 1000)
   t.verificar(msgs.some(m => m.includes('Não tem página')), 'tema que não existe avisa e mostra o índice')
 
@@ -69,7 +70,7 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => m.includes('já concluiu')) && mapas2 === 1, 'o prêmio sai uma vez só', msgs[0])
 
   console.log('\n== /tpa com clique ==')
-  const outro = await t.criarBot(t.nomeNovo('Ajt'))
+  const outro = await t.criarBot(t.nomeNovo('Ajt'), { comandos: true })
   await t.espera(1500)
   // sem permissão no usuário: o /tpa, o /tpaccept e o /tpdeny vêm do grupo default
   await t.console(`execute in minecraft:spawn run minecraft:tp ${nome} 0.5 65 20.5`)
@@ -85,6 +86,26 @@ t.rodar(async () => {
   await t.espera(6000)
   const e = Object.values(bot.entities).find(x => x.username === outro.username)
   t.verificar(!!e && e.position.distanceTo(bot.entity.position) < 3, 'aceitar pelo comando do botão traz quem pediu', e ? `a ${e.position.distanceTo(bot.entity.position).toFixed(1)} blocos` : 'longe')
+
+  console.log('\n== Comandos permitidos ==')
+  // o servidor manda a árvore de comandos de novo quando as permissões mudam (op e deop)
+  let arvore = null
+  bot._client.on('declare_commands', p => { arvore = p })
+  await t.console(`minecraft:op ${nome}`)
+  await t.espera(800)
+  await t.console(`minecraft:deop ${nome}`)
+  await t.espera(2500)
+  const nomes = arvore ? arvore.nodes[arvore.rootIndex].children.map(i => arvore.nodes[i].extraNodeData?.name).filter(Boolean) : []
+  const devem = ['tutorial', 'g', 'tpa', 'tpaccept', 'msg', 'tag', 'rankup', 'warp']
+  const naoDevem = nomes.filter(n => n.includes(':') || ['pl', 'plugins', 'version', 'we', 'lp', 'etpa', 'tpyes', 'me'].includes(n))
+  t.verificar(nomes.length > 0 && nomes.length < 80 && devem.every(n => nomes.includes(n)) && naoDevem.length === 0,
+    'o Tab do jogador só tem os comandos da lista (sem prefixo de plugin, WorldEdit, LuckPerms...)', `${nomes.length}: ${naoDevem.join(' ') || 'ok'}`)
+  for (const cmd of ['/pl', '/essentials:tpa ' + outro.username, '/etpa ' + outro.username]) {
+    msgs = await t.capturar(bot, () => bot.chat(cmd), 800)
+    t.verificar(msgs.some(m => m.includes('Comando desconhecido')), `${cmd.split(' ')[0]} responde como comando desconhecido`, msgs[0])
+  }
+  msgs = await t.capturar(outro, () => bot.chat(`/msg ${outro.username} oi do teste`), 1000)
+  t.verificar(msgs.some(m => m.includes('oi do teste')), 'o /msg chega (está na lista e no grupo default)', msgs[0])
 
   await t.capturar(bot, () => bot.chat('/terreno abandonar confirmar'), 500)
   await t.console(`tutorial admin resetar ${nome}`)

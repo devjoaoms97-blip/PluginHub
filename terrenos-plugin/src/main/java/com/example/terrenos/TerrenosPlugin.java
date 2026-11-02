@@ -4,6 +4,7 @@ import com.example.terrenos.command.TerrenoCommand;
 import com.example.terrenos.listener.JogadorListener;
 import com.example.terrenos.listener.ProtecaoListener;
 import com.example.terrenos.manager.Hologramas;
+import com.example.terrenos.manager.Leiloeiro;
 import com.example.terrenos.manager.Limpador;
 import com.example.terrenos.manager.TerrenoManager;
 import com.example.terrenos.mundo.FundoDeBedrock;
@@ -54,7 +55,9 @@ public class TerrenosPlugin extends JavaPlugin {
         }
 
         this.limpador = new Limpador(this);
-        this.hologramas = new Hologramas(this);
+        Leiloeiro leiloeiro = new Leiloeiro(this);
+        getServer().getPluginManager().registerEvents(leiloeiro, this);
+        this.hologramas = new Hologramas(this, leiloeiro);
         this.terrenoManager = new TerrenoManager(this);
         this.pixIntegration = new PixIntegration(this);
         this.rankupIntegration = new RankupIntegration(this);

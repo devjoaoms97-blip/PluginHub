@@ -32,10 +32,19 @@ grade:
 
 holograma:
   # Holograma na entrada de cada terreno (na rua, no meio do lado norte) com "À venda", o dono ou
-  # o leilão. Clicar nele mostra o /terreno info.
+  # "Em leilão". Clicar nele mostra o /terreno info.
   ativado: true
   # Altura do texto acima da borda, em blocos.
   altura: 2.0
+
+leiloeiro:
+  # NPC na rua, colado na entrada de cada terreno em leilão (que fica sem holograma), atrás de um atril. A cada clique, fala a próxima frase num balão:
+  # o lance, de quem era, quantos itens estão guardados (nunca quais), quantas máquinas e spawners
+  # tem, o lance mínimo e o tempo que falta.
+  ativado: true
+  nome: "&6&lLeiloeiro"
+  # "textura:<hash>" (textures.minecraft.net) ou o nick de quem empresta a skin
+  skin: "textura:f7d34d517f0730061f67076710d4e433922199a782c30719ff45cd75facebadf"   # leiloeiro de cartola e terno
 
 compra:
   # Preço fixo de um terreno à venda. A primeira semana de imposto vem incluída.

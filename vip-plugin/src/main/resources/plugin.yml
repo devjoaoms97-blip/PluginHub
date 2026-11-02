@@ -9,9 +9,16 @@ softdepend: [LuckPerms, EconomyShopPlugin, Vault, DiscordPlugin, PixPlugin, Cred
 commands:
   vip:
     description: Sistema de VIPs — perks, consulta e resgate de código pros jogadores; gestão pra staff.
-    usage: "Uso: /vip <check|tiers|resgatar|vender|cancelarvenda|fly|heal|feed|kit|particula|warp|add|remove|list|reload|gerarcodigo|codigos|revogarcodigo|setwarp>"
+    usage: "Uso: /vip <check|tiers|resgatar|vender|cancelarvenda|fly|heal|feed|kit|particula|warp|pocoes|add|remove|list|reload|gerarcodigo|codigos|revogarcodigo|setwarp>"
+  tag:
+    description: Escolhe qual tag aparece acima da sua cabeça (VIP, apoiador, clã, rank ou nenhuma).
+    usage: "Uso: /tag [vip|apoiador|cla|rank|nenhuma]"
+    permission: vip.tag
 
 permissions:
+  vip.tag:
+    description: Escolhe a tag acima da cabeça (/tag).
+    default: true
   vip.admin:
     description: Permite conceder, remover, listar VIPs e gerar/revogar códigos de resgate.
     default: op
@@ -29,6 +36,9 @@ permissions:
     default: false
   vip.perk.particulas:
     description: Concede o perk de partículas (/vip particula). Dê essa permissão nos grupos vip_* pelo LuckPerms.
+    default: false
+  vip.perk.pocoes:
+    description: Junta as poções iguais em pilhas de até 10 (/vip pocoes). Dê essa permissão nos grupos vip_* pelo LuckPerms.
     default: false
   vip.perk.warp:
     description: Concede o perk de warp exclusivo (/vip warp). Dê essa permissão nos grupos vip_* pelo LuckPerms.

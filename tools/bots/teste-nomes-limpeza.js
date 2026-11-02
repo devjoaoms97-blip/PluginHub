@@ -1,5 +1,5 @@
-// Tags no nome acima da cabeça (PlacarPlugin: um time por jogador em cada scoreboard, com o prefixo da
-// tab) e a limpeza de item em chunk descarregado (ItemCleanerPlugin: sai quando o chunk carrega).
+// Tag no nome acima da cabeça (PlacarPlugin: um time por jogador em cada scoreboard, com a tag que o
+// jogador escolheu no /tag do VipPlugin, só uma) e a limpeza de item em chunk descarregado (ItemCleanerPlugin: sai quando o chunk carrega).
 // Uso: node teste-nomes-limpeza.js
 const t = require('./lib')
 
@@ -13,10 +13,26 @@ t.rodar(async () => {
   await t.espera(4500) // o placar (e os times) atualizam a cada 2 s
 
   console.log('\n== Nome acima da cabeça ==')
-  const time = Object.values(b.teams || {}).find(tm => (tm.members || []).includes(a.username))
-  const prefixo = time ? t.semCor(String(time.prefix?.toString?.() ?? time.prefix ?? '')) : ''
-  t.verificar(!!time && /Fazendeiro/i.test(prefixo), 'quem olha vê o rank no nome acima da cabeça do outro (time com o prefixo da tab)',
-    time ? `${time.team}: "${prefixo}"` : 'sem time')
+  const prefixoDe = () => {
+    const time = Object.values(b.teams || {}).find(tm => (tm.members || []).includes(a.username))
+    return time ? t.semCor(String(time.prefix?.toString?.() ?? time.prefix ?? '')).trim() : null
+  }
+  let prefixo = prefixoDe()
+  t.verificar(prefixo !== null && /Fazendeiro/i.test(prefixo), 'sem VIP, quem olha vê o rank acima da cabeça do outro', `"${prefixo}"`)
+  await t.console(`vip add ${a.username} diamante`)
+  await t.espera(4500)
+  prefixo = prefixoDe()
+  t.verificar(/Diamante/.test(prefixo) && !/Fazendeiro/.test(prefixo), 'com VIP, só a tag do VIP (não todas juntas)', `"${prefixo}"`)
+  await t.capturar(a, () => a.chat('/tag rank'), 500)
+  await t.espera(4500)
+  prefixo = prefixoDe()
+  t.verificar(/Fazendeiro/.test(prefixo) && !/Diamante/.test(prefixo), '/tag rank troca pro rank', `"${prefixo}"`)
+  await t.capturar(a, () => a.chat('/tag nenhuma'), 500)
+  await t.espera(4500)
+  prefixo = prefixoDe()
+  t.verificar(prefixo === '', '/tag nenhuma tira a tag', `"${prefixo}"`)
+  await t.console(`vip remove ${a.username}`)
+  await t.capturar(a, () => a.chat('/tag vip'), 500) // sem VIP: recusa
 
   console.log('\n== Item em chunk descarregado ==')
   const em = 'execute in minecraft:spawn run '

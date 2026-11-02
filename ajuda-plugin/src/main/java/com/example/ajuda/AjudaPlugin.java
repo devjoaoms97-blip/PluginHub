@@ -9,8 +9,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Ajuda pra quem está começando: o {@code /tutorial} (etapas com um prêmio único no fim), o
- * {@code /comandos} (páginas de comandos por tema) e o botão de aceitar ou recusar o {@code /tpa} com
- * um clique.
+ * {@code /comandos} (páginas de comandos por tema), o botão de aceitar ou recusar o {@code /tpa} com
+ * um clique e a lista dos comandos que os jogadores veem e usam ({@link ComandosPermitidos}).
  */
 public class AjudaPlugin extends JavaPlugin {
 
@@ -29,6 +29,7 @@ public class AjudaPlugin extends JavaPlugin {
         getCommand("comandos").setExecutor(comandos);
         getCommand("comandos").setTabCompleter(comandos);
         new TpaClique(this).registrar();
+        getServer().getPluginManager().registerEvents(new ComandosPermitidos(this), this);
     }
 
     @Override

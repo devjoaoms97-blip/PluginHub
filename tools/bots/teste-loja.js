@@ -1,7 +1,7 @@
 // Loja Oficial (EconomyShopPlugin + estrutura "loja"): os 7 vendedores no prédio do portão leste do
 // spawn, compra e venda pelo menu do vendedor, desconto do VIP na compra, a trava da venda (no último
 // rank com VIP, vender do inventário não passa de 90% do menor preço de compra) e os comandos de
-// fora (/shop, /sell) fechados pros jogadores.
+// fora fechados pros jogadores (/shop é da staff; /buy e /sell não existem mais).
 // Uso: node teste-loja.js   (depois do "node montar-mapa.js construir loja")
 const t = require('./lib')
 const { Vec3 } = require('vec3')
@@ -42,8 +42,10 @@ t.rodar(async () => {
   let msgs = await t.capturar(bot, () => bot.chat('/shop'))
   t.verificar(msgs.some(m => m.includes('Loja Oficial')), '/shop manda pra Loja Oficial', msgs[0])
   msgs = await t.capturar(bot, () => bot.chat('/sell all'))
-  // sem a permissão, o servidor esconde o comando ("Unknown command")
-  t.verificar(msgs.some(m => m.includes('Loja Oficial') || /Unknown|desconhecido/i.test(m)), '/sell fechado pros jogadores', msgs[0])
+  // o nosso /sell saiu; sobra o do Essentials, que ninguém sem permissão usa (e o jogador nem vê: a lista
+  // de comandos do AjudaPlugin responde "Comando desconhecido")
+  t.verificar(msgs.some(m => /Unknown|desconhecido|não tem acesso/i.test(m)) && !msgs.some(m => /Vendeu|vendido|R\$/.test(m)),
+    'o /sell não vende mais nada', msgs[0])
   await t.capturar(bot, () => bot.chat('/warp loja'), 4500) // espera de 3 s do teleporte (não VIP)
   t.verificar(Math.abs(bot.entity.position.x - 67.5) < 2 && Math.abs(bot.entity.position.z - (Z + 0.5)) < 2,
     '/warp loja leva pra entrada da loja', `${bot.entity.position}`)

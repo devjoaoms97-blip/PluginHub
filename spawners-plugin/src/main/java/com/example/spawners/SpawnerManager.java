@@ -149,6 +149,11 @@ public class SpawnerManager implements Listener {
      * Quantos spawners já tem no terreno (de qualquer tipo e dono). Sem o TerrenosPlugin (terreno
      * null), conta os do mesmo dono, pra o limite continuar valendo.
      */
+    /** Quantos spawners tem no terreno (de qualquer tipo e dono). */
+    int noTerreno(String terreno) {
+        return noTerreno(terreno, null);
+    }
+
     private int noTerreno(String terreno, UUID dono) {
         int total = 0;
         for (Colocado c : porLugar.values()) {

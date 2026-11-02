@@ -1,6 +1,6 @@
 // Benefícios do VIP Diamante, com um jogador novo a cada execução (o kit mensal e o bônus de
 // ativação só valem uma vez por jogador): Pix com desconto, missão extra, bônus de ativação sem o
-// dinheiro por nível das skills, kit mensal encantado e a venda automática da mina com o bônus de VIP.
+// dinheiro por nível das skills, kit mensal encantado, /vip pocoes e a venda automática da mina com o bônus de VIP.
 // Uso: node teste-vip.js [mina]   (padrão: pedreira)
 const t = require('./lib')
 
@@ -51,6 +51,20 @@ t.rodar(async () => {
   t.verificar(/sharpness": 7/.test(espada), 'espada com Afiação VII')
   msgs = await t.capturar(bot, () => bot.chat('/vip kitmensal'))
   t.verificar(msgs.some(m => m.includes('cooldown')), 'segundo pedido recusado pelo cooldown')
+
+  console.log('\n== /vip pocoes ==')
+  await t.console(`minecraft:clear ${nome}`)
+  await t.console(`minecraft:give ${nome} potion[potion_contents={potion:"minecraft:healing"}] 12`)
+  await t.console(`minecraft:give ${nome} splash_potion[potion_contents={potion:"minecraft:poison"}] 3`)
+  await t.console(`minecraft:give ${nome} potion[potion_contents={potion:"minecraft:swiftness"}] 1`)
+  await t.espera(800)
+  msgs = await t.capturar(bot, () => bot.chat('/vip pocoes'), 1500)
+  const pilhas = bot.inventory.items().filter(i => /potion/.test(i.name)).map(i => `${i.name}x${i.count}`).sort()
+  t.verificar(msgs.some(m => m.includes('Agrupei suas 16 poções')) && pilhas.join(' ') === 'potionx1 potionx10 potionx2 splash_potionx3',
+    'junta as poções iguais em pilhas de até 10 (sem misturar efeitos)', `${pilhas.join(' ')} | ${msgs[0]}`)
+  const cura = await t.console(`minecraft:clear ${nome} potion[potion_contents={potion:"minecraft:healing"}] 0`)
+  t.verificar(/Found 12/.test(cura), 'as 12 de cura continuam de cura', cura)
+  await t.console(`minecraft:clear ${nome}`)
 
   console.log('\n== Venda automática ==')
   await t.console(`minecraft:clear ${nome}`)

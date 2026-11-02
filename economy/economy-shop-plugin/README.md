@@ -7,7 +7,7 @@ Loja do servidor com preço de venda dinâmico (oferta e demanda), categorias, h
 A loja é um prédio: a **Loja Oficial**, do lado de fora do portão LESTE do spawn (`/warp loja`, estrutura `loja` do EstruturasPlugin). Dentro, sete vendedores (NPCs com skin temática), um por categoria: **Minerador** (minérios), **Construtor** (blocos), **Lenhador** (madeiras), **Fazendeiro** (farm e comida), **Caçador** (drops de mob), **Jardineiro** (natureza) e **Alquimista** (poções, redstone, nether e end). Clique direito abre o menu só daquela categoria, onde se compra e vende.
 
 - **Na mina, tudo vira dinheiro na hora** (venda automática, pra todos): o que se quebra dentro de uma mina do RankupPlugin é vendido pela loja, com o bônus do rank e do VIP, e o dinheiro aparece na barra de ação.
-- **Comandos:** `/shop` (menu completo), `/buy` e `/sell` de qualquer lugar são só da staff (`shop.comandos`). O jogador que usa `/shop` recebe o aviso pra ir à Loja Oficial. **Nunca dê `essentials.sell` nem `essentials.worth`** aos jogadores: o `/sell` do Essentials vende pela tabela `worth.yml` dele e passaria por cima de tudo isso.
+- **Comandos:** o `/shop` (menu completo) de qualquer lugar é só da staff (`shop.comandos`); `/buy` e `/sell` não existem mais (2026-11-01): o jogador compra e vende na Loja Oficial ou nas barracas dos jogadores. O jogador que usa `/shop` recebe o aviso pra ir à Loja Oficial. **Nunca dê `essentials.sell` nem `essentials.worth`** aos jogadores: o `/sell` do Essentials vende pela tabela `worth.yml` dele e passaria por cima de tudo isso.
 - **VIP:** compra com 3/6/9/12% de desconto (`vip-descontos`) e vende com 3/6/9/12% a mais (`vip-bonus-venda`), pelas permissões `vip.desconto.<tier>`. Na simulação, o Diamante chega ao último rank em ~96 h e quem não é VIP em ~150 h.
 - **Sem limite de quantidade:** o preço dinâmico regula. O que muita gente vende cai de preço sozinho, então farm AFK é bem-vinda.
 - **Sem troca com villager** (`bloquear-trocas-villager`): ninguém troca com villager nem com o vendedor ambulante, no servidor todo, porque esmeralda por item passaria por fora da loja e dos preços dinâmicos. Etiqueta de nome e ovo de spawn continuam funcionando neles.
@@ -46,9 +46,6 @@ python tools/economia/loja.py --gravar --servidor C:\mc-teste   # confere e grav
 |---|---|
 | `/shop` | (staff) Abre a loja completa, com as categorias; pros jogadores, avisa pra ir à Loja Oficial |
 | `/shop historico <item>` | Mostra o gráfico de tendência (sparkline) das últimas 24h |
-| `/buy <item> <quantidade>` | (staff) Compra pelo preço fixo |
-| `/sell` | (staff) Vende o item na mão |
-| `/sell all` | (staff) Vende tudo do inventário que a loja compra |
 | `/shop admin additem <categoria> <base> <margem%> <min> <max> <passo%>` | (staff) Cadastra o item na mão |
 | `/shop admin removeitem` | (staff) Remove o item na mão |
 | `/shop admin resetprice` | (staff) Reseta o preço de venda do item na mão |
@@ -101,7 +98,7 @@ A staff põe um item em alta na hora com `/shop admin evento <item> <multiplicad
 
 ## Bônus do rank (RankupPlugin)
 
-Se o RankupPlugin estiver instalado, toda venda (os vendedores, a venda automática da mina e o `/sell` da staff) é multiplicada pelo bônus do rank do jogador (`multiplicador-venda` no config do Rankup). Com 1.25, ele recebe 25% a mais. O bônus entra antes do imposto, e a mensagem de venda mostra quanto foi. A integração é por reflexão: sem o RankupPlugin, nada muda.
+Se o RankupPlugin estiver instalado, toda venda (os vendedores, a venda automática da mina e o menu do `/shop` da staff) é multiplicada pelo bônus do rank do jogador (`multiplicador-venda` no config do Rankup). Com 1.25, ele recebe 25% a mais. O bônus entra antes do imposto, e a mensagem de venda mostra quanto foi. A integração é por reflexão: sem o RankupPlugin, nada muda.
 
 ## Integração com as missões (MissoesPlugin)
 

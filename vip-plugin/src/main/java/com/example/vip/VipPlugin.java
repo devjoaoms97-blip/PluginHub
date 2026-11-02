@@ -3,6 +3,7 @@ package com.example.vip;
 import com.example.vip.command.VipCommand;
 import com.example.vip.listener.ChatTagListener;
 import com.example.vip.listener.ParticleTrailListener;
+import com.example.vip.listener.TagNaCabeca;
 import com.example.vip.manager.BonusAtivacao;
 import com.example.vip.manager.CodeManager;
 import com.example.vip.manager.CooldownManager;
@@ -24,6 +25,7 @@ public class VipPlugin extends JavaPlugin {
     private CodeManager codeManager;
     private CooldownManager cooldownManager;
     private ChatTagListener chatTagListener;
+    private TagNaCabeca tagNaCabeca;
     private ParticleTrailListener particleTrailListener;
     private Economy economy;
     private BonusAtivacao bonusAtivacao;
@@ -65,6 +67,10 @@ public class VipPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(chatTagListener, this);
         Bukkit.getPluginManager().registerEvents(particleTrailListener, this);
         Bukkit.getPluginManager().registerEvents(bonusAtivacao, this);
+        this.tagNaCabeca = new TagNaCabeca(this, chatTagListener);
+        Bukkit.getPluginManager().registerEvents(tagNaCabeca, this);
+        getCommand("tag").setExecutor(tagNaCabeca);
+        getCommand("tag").setTabCompleter(tagNaCabeca);
 
         int intervaloMin = getConfig().getInt("verificacao-expiracao-minutos", 5);
         long periodoTicks = 20L * 60 * Math.max(1, intervaloMin);
@@ -124,6 +130,14 @@ public class VipPlugin extends JavaPlugin {
     public boolean vipDeEvento(java.util.UUID jogador) {
         var ativo = vipManager.getVipAtivo(jogador);
         return ativo != null && ativo.evento();
+    }
+
+    /**
+     * API (PlacarPlugin, por reflexão): {prefixo, código da cor do nome} do nome acima da cabeça, só com
+     * a tag que o jogador escolheu no {@code /tag}.
+     */
+    public String[] nomeNaCabeca(Player player) {
+        return tagNaCabeca != null ? tagNaCabeca.nomeNaCabeca(player) : new String[]{"", "f"};
     }
 
     /** Atualiza a tag do jogador na tab list na hora (sem precisar dele relogar). */

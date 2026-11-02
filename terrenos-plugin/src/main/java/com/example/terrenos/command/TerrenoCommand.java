@@ -7,6 +7,10 @@ import com.example.terrenos.model.Permissao;
 import com.example.terrenos.model.Terreno;
 import com.example.terrenos.model.TerrenoId;
 import com.example.terrenos.util.Formato;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -379,13 +383,23 @@ public class TerrenoCommand implements CommandExecutor, TabCompleter {
         }
         long agora = System.currentTimeMillis();
         jogador.sendMessage("§6§l--- Leilões de imóvel ---");
+        LegacyComponentSerializer legado = LegacyComponentSerializer.legacySection();
         for (Terreno t : leiloes) {
             Leilao l = t.getLeilao();
-            jogador.sendMessage("§e" + t.getId() + " §7(era de " + l.getNomeDonoAnterior() + ") - "
+            String id = t.getId().toString();
+            // [IR] teleporta pra entrada (onde fica o Leiloeiro); [LANCE] deixa o comando pronto, só falta o valor
+            Component ir = legado.deserialize("§a§l[IR]")
+                    .clickEvent(ClickEvent.runCommand("/terreno ir " + id))
+                    .hoverEvent(HoverEvent.showText(legado.deserialize("§7Ir até a entrada do terreno §f" + id)));
+            Component dar = legado.deserialize("§6§l[LANCE]")
+                    .clickEvent(ClickEvent.suggestCommand("/terreno lance " + id + " "))
+                    .hoverEvent(HoverEvent.showText(legado.deserialize("§7Escreve §f/terreno lance " + id + " §7no chat: é só pôr o valor")));
+            jogador.sendMessage(legado.deserialize("§e" + id + " §7(era de " + l.getNomeDonoAnterior() + ") - "
                     + (l.temLance() ? "§f" + Formato.valor(l.getLance()) + " §7de " + l.getNomeLicitante() : "§7sem lances")
-                    + " §7- termina em §f" + Formato.tempo(l.getTerminaEm() - agora));
+                    + " §7- termina em §f" + Formato.tempo(l.getTerminaEm() - agora) + " ")
+                    .append(ir).append(Component.text(" ")).append(dar));
         }
-        jogador.sendMessage("§7Visite com §f/terreno ir <x;z> §7e dê lance com §f/terreno lance <x;z> <valor>§7.");
+        jogador.sendMessage("§7Clique em §a[IR] §7pra visitar o terreno e em §6[LANCE] §7pra dar o seu lance.");
     }
 
     private void lance(Player jogador, String[] args) {

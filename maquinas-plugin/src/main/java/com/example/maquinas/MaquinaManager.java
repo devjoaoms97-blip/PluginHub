@@ -267,6 +267,14 @@ public class MaquinaManager implements Listener {
         jogador.sendMessage("§a" + t.nome() + " §acolocada! §7Clique nela pra abastecer com Células de Combustível.");
     }
 
+    /** Quantas máquinas tem no terreno (de qualquer tipo e dono). */
+    int noTerreno(String terreno) {
+        return (int) porLugar.values().stream().filter(m -> {
+            Location b = m.bloco();
+            return b != null && terreno.equals(plugin.getTerrenos().terrenoEm(b));
+        }).count();
+    }
+
     /**
      * A máquina conta no limite desse terreno? Sem o TerrenosPlugin (terreno null), conta as do mesmo
      * dono, pra o limite continuar valendo.

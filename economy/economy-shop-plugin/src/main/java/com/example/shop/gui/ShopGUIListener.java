@@ -122,7 +122,7 @@ public class ShopGUIListener implements Listener {
         }
 
         ItemStack pilha = new ItemStack(item.getMaterial(), quantidade);
-        if (!com.example.shop.command.BuyCommand.cabe(jogador, pilha)) {
+        if (!cabe(jogador, pilha)) {
             jogador.sendMessage("§cSeu inventário está cheio: libere espaço e tente de novo. Nada foi cobrado.");
             return;
         }
@@ -182,5 +182,12 @@ public class ShopGUIListener implements Listener {
 
     private String formatar(double valor) {
         return String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", valor);
+    }
+
+    /** O item cabe inteiro no inventário (somando nas pilhas que já tem)? Confere antes de cobrar. */
+    static boolean cabe(Player p, ItemStack item) {
+        org.bukkit.inventory.Inventory copia = org.bukkit.Bukkit.createInventory(null, 36);
+        copia.setContents(p.getInventory().getStorageContents());
+        return copia.addItem(item.clone()).isEmpty();
     }
 }

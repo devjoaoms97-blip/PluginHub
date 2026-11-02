@@ -140,6 +140,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_bronze permission set vip.perk.feed true
 /lp group vip_bronze permission set vip.perk.kit true
 /lp group vip_bronze permission set vip.perk.montaria true
+/lp group vip_bronze permission set vip.perk.pocoes true
 /lp group vip_bronze permission set essentials.teleport.timer.bypass true
 /lp group vip_bronze permission set vip.perk.particulas true
 /lp group vip_bronze permission set vip.desconto.bronze true
@@ -151,6 +152,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_prata permission set vip.perk.feed true
 /lp group vip_prata permission set vip.perk.kit true
 /lp group vip_prata permission set vip.perk.montaria true
+/lp group vip_prata permission set vip.perk.pocoes true
 /lp group vip_prata permission set essentials.teleport.timer.bypass true
 /lp group vip_prata permission set vip.perk.particulas true
 /lp group vip_prata permission set vip.perk.fly true
@@ -164,6 +166,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_ouro permission set vip.perk.feed true
 /lp group vip_ouro permission set vip.perk.kit true
 /lp group vip_ouro permission set vip.perk.montaria true
+/lp group vip_ouro permission set vip.perk.pocoes true
 /lp group vip_ouro permission set essentials.teleport.timer.bypass true
 /lp group vip_ouro permission set vip.perk.particulas true
 /lp group vip_ouro permission set vip.perk.fly true
@@ -179,6 +182,7 @@ Os nomes dos grupos abaixo precisam bater com `grupo-luckperms` de cada tier no 
 /lp group vip_diamante permission set vip.perk.feed true
 /lp group vip_diamante permission set vip.perk.kit true
 /lp group vip_diamante permission set vip.perk.montaria true
+/lp group vip_diamante permission set vip.perk.pocoes true
 /lp group vip_diamante permission set essentials.teleport.timer.bypass true
 /lp group vip_diamante permission set vip.perk.particulas true
 /lp group vip_diamante permission set vip.perk.fly true
@@ -272,17 +276,22 @@ Sem o RankupPlugin, o bônus em dinheiro é zero. Sem o SkillsPlugin, não há X
 
 ## Integração com a loja (EconomyShopPlugin)
 
-Se o `economy-shop-plugin` estiver instalado, `/buy` já aplica automaticamente o desconto do maior tier do jogador — não precisa configurar nada a mais além do passo 2 acima (a permissão `vip.desconto.<tier>` já cobre isso). Essa integração é **desacoplada**: o VipPlugin não sabe que o EconomyShopPlugin existe, e vice-versa — os dois só concordam no nome das permissões `vip.desconto.*`. Ver `economy-shop-plugin/README.md`, seção "Desconto de VIP na compra".
+Se o `economy-shop-plugin` estiver instalado, a compra nos vendedores já aplica automaticamente o desconto do maior tier do jogador — não precisa configurar nada a mais além do passo 2 acima (a permissão `vip.desconto.<tier>` já cobre isso). Essa integração é **desacoplada**: o VipPlugin não sabe que o EconomyShopPlugin existe, e vice-versa — os dois só concordam no nome das permissões `vip.desconto.*`. Ver `economy-shop-plugin/README.md`, seção "Desconto de VIP na compra".
 
 ## Integração com os clãs (ClasPlugin)
 
 Com o ClasPlugin instalado, a tab list mostra as duas tags: `[ABC] [VIP Ouro] Nome`. Quem monta o nome na tab é sempre o VipPlugin: ele pergunta ao ClasPlugin (por reflexão, `prefixoTab`) qual é a tag do clã, e o ClasPlugin pede pra ele refazer a tab (`refrescarTagJogador`) quando alguém entra ou sai de um clã. No chat, as duas tags já conviviam. Sem o ClasPlugin, nada muda.
+
+## Tag acima da cabeça (`/tag`)
+
+Na tab e no chat aparecem todas as tags (rank, clã, VIP, apoiador). Acima da cabeça vai **uma só**, que o jogador escolhe no `/tag` (menu) ou `/tag <vip|apoiador|cla|rank|nenhuma>`; o menu mostra só as que ele tem, com a prévia do nome. Sem escolha, ou se a escolhida sumiu (VIP vencido, saiu do clã), vale a primeira de `tag-na-cabeca.padrao` que ele tem (`[vip, rank]`). A escolha fica em `tags-cabeca.yml`. Quem desenha o nome é o PlacarPlugin, que pergunta ao VipPlugin (`nomeNaCabeca`).
 
 ## Permissões
 
 | Permissão | Padrão | Descrição |
 |---|---|---|
 | `vip.admin` | op | Gerenciar VIPs de outros jogadores e gerar/revogar códigos |
+| `vip.tag` | todos | Escolher a tag acima da cabeça (`/tag`) |
 | `vip.perk.fly` | false | Perk de voo — dar no grupo LuckPerms do tier |
 | `vip.perk.heal` | false | Perk de cura instantânea |
 | `vip.perk.feed` | false | Perk de restaurar fome |

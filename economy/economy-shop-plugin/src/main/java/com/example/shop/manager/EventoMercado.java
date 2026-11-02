@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Evento de mercado ("alta do diamante"): de tempos em tempos, com uma chance, um item sorteado
- * passa a valer mais na venda pra loja por algumas horas. O multiplicador vale no /sell, no menu e
+ * passa a valer mais na venda pra loja por algumas horas. O multiplicador vale nos vendedores, no menu e
  * na venda automática; o preço dinâmico continua caindo a cada unidade vendida como sempre.
  * Começo e fim vão pro chat. Só um evento por vez; o atual fica salvo no config, então sobrevive
  * a um reinício.
@@ -89,7 +89,7 @@ public class EventoMercado {
         String nome = nome(item);
         Bukkit.broadcastMessage("§6§l📈 ALTA " + artigo(nome).toUpperCase(Locale.ROOT) + " " + nome.toUpperCase(Locale.ROOT)
                 + "! §eA loja está pagando §6x" + texto(multiplicador) + " §epor " + nome + " pelas próximas §f" + texto(horas)
-                + "h§e. Venda com §f/sell§e!");
+                + "h§e. Venda na §f/warp loja§e!");
         for (Player p : Bukkit.getOnlinePlayers()) p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 0.8f, 1.4f);
     }
 

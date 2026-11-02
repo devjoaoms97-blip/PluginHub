@@ -1,6 +1,6 @@
 # RankupPlugin
 
-O coração de um servidor **rankup**: o jogador minera nas **minas**, vende o minério na loja (`/sell`) e paga coins pra **subir de rank**. Cada rank libera minas melhores e um bônus na venda.
+O coração de um servidor **rankup**: o jogador minera nas **minas**, vende o minério (na hora, ao minerar, ou na Loja Oficial) e paga coins pra **subir de rank**. Cada rank libera minas melhores e um bônus na venda.
 
 Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro → Mercador → Escudeiro → Clérigo → Cavaleiro → Barão → Conde → Duque → Rei**. Nomes, cores, preços e bônus ficam no `config.yml`.
 
@@ -32,7 +32,7 @@ Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro �
 
 **Ranks.** Todo jogador começa no primeiro rank. O `/rankup` cobra o preço do próximo e sobe. Quem sobe de rank é anunciado no chat. O pagamento aparece no extrato do Bancário e no `/economia tipos RankupPlugin` como "Rankup".
 
-**Bônus de venda.** Cada rank tem um `multiplicador-venda`: com 1.25, o `/sell` (e a venda pelo menu da loja) paga 25% a mais. O bônus entra antes do imposto da loja, e a mensagem de venda mostra quanto foi.
+**Bônus de venda.** Cada rank tem um `multiplicador-venda`: com 1.25, a venda (automática na mina e nos vendedores da loja) paga 25% a mais. O bônus entra antes do imposto da loja, e a mensagem de venda mostra quanto foi.
 
 **Minas.** Uma mina é um cubo marcado com dois cantos. A composição é uma lista de blocos com peso: `stone 70` e `coal_ore 30` dão 70% de pedra e 30% de carvão. Os pesos não precisam somar 100. Ela é preenchida de novo:
 - a cada X minutos (padrão 15), com aviso pra quem está dentro aos 30s e aos 10s;
@@ -74,7 +74,7 @@ No reset, quem está dentro (ou em cima) vai pro ponto de teleporte da mina, e n
    (a mina nasce com `stone 100`; pra tirar a pedra, `/mina admin bloco carvao stone 0`)
 4. Fique num lugar fora da mina, perto da entrada: `/mina admin spawn carvao`.
 5. `/mina admin resetar carvao` pra preencher.
-6. Cadastre na loja os itens que saem da mina (`/shop admin add`), senão o `/sell` não compra.
+6. Cadastre na loja os itens que saem da mina (`/shop admin add`), senão a loja não compra.
 
 **Minas por rank.** As composições com peso estão em [`tools/economia/minas-planejadas.yml`](../tools/economia/minas-planejadas.yml). Elas foram calibradas pra cada mina render cerca de 1,6× a anterior com uma picareta de Fortuna III, então cada rank novo vale a pena:
 
@@ -140,7 +140,7 @@ Com jogadores de verdade, o `rankups.csv` mostra quanto tempo cada rank está le
 
 ## Integrações
 
-- **EconomyShopPlugin**: aplica o bônus de venda do rank no `/sell`, no `/sell all` e no menu. A loja chama `RankupPlugin#multiplicadorVenda(UUID)` por reflexão.
+- **EconomyShopPlugin**: aplica o bônus de venda do rank na venda automática e nos vendedores. A loja chama `RankupPlugin#multiplicadorVenda(UUID)` por reflexão.
 - **PixPlugin** (opcional): o pagamento do rankup aparece no extrato do Bancário como "Loja do Servidor".
 - **PainelEconomiaPlugin**: o rankup aparece como o tipo "Rankup".
 - **MissoesPlugin**: minerar na mina conta pra missão de minerar, como qualquer bloco natural. O bloco que o reset coloca não conta como "colocado pelo jogador".

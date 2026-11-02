@@ -5,11 +5,9 @@ com\example\shop\gui\ShopGUIListener.class
 com\example\shop\ShopPlugin.class
 com\example\shop\util\RankupIntegration.class
 com\example\shop\manager\PriceRegenTask.class
-com\example\shop\command\SellCommand.class
 com\example\shop\manager\VendedoresManager$Lugar.class
 com\example\shop\manager\VendasDiariasManager.class
 com\example\shop\manager\EventoMercado.class
-com\example\shop\command\BuyCommand.class
 com\example\shop\model\ShopItem.class
 com\example\shop\manager\PriceHistoryManager.class
 com\example\shop\manager\PriceHistoryManager$Ponto.class

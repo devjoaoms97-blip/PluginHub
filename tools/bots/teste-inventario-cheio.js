@@ -1,6 +1,6 @@
 // Inventário cheio nas lojas: com o inventário lotado, a compra é recusada com aviso, sem cobrar e
 // sem jogar nada no chão (antes cobrava e o item caía, e a Limpeza levava). Com um espaço livre, compra.
-// Cobre o Maquinista (máquina e combustível), o Domador (spawner) e o /buy da Loja Oficial.
+// Cobre o Maquinista (máquina e combustível), o Domador (spawner) e um vendedor da Loja Oficial (Fazendeiro).
 // Uso: node teste-inventario-cheio.js
 const t = require('./lib')
 const { Vec3 } = require('vec3')
@@ -9,6 +9,7 @@ const dinheiro = r => Number((r.match(/\$([\d,.]+)/) || [, 'NaN'])[1].replace(/,
 const saldo = async nome => dinheiro(await t.console(`balance ${nome}`))
 const MAQUINISTA = new Vec3(112.5, 65, 43 + 14.5)
 const DOMADOR = new Vec3(125.5, 65, 43 - 13.5)
+const FAZENDEIRO = new Vec3(73.5, 65, 43 + 14.5)
 
 const janela = (bot, fn) => new Promise(ok => {
   const fim = setTimeout(() => ok(null), 3000)
@@ -22,7 +23,6 @@ t.rodar(async () => {
   await t.espera(1500)
   await t.console(`eco set ${nome} 500000`)
   await t.console(`ranks admin set ${nome} fazendeiro`)
-  await t.console(`lp user ${nome} permission set shop.comandos true`)
 
   const encher = async () => {
     await t.console(`minecraft:clear ${nome}`)
@@ -70,9 +70,10 @@ t.rodar(async () => {
   await caso('Maquinista: combustível', 'paper', () => comprarNoNpc(balcaoMaq, MAQUINISTA, 22))
   await caso('Domador: spawner', 'spawner', () => comprarNoNpc(`125.5 65 ${43 - 10.5} 180 0`, DOMADOR,
     j => j.slots.findIndex((s, i) => i < j.inventoryStart && s?.name === 'pig_spawn_egg')))
-  await caso('Loja Oficial: /buy', 'oak_log', () => t.capturar(bot, () => bot.chat('/buy oak_log 16'), 1200))
+  // botão direito no item do vendedor: compra 1
+  await caso('Loja Oficial: Fazendeiro', 'carrot', () => comprarNoNpc(`73.5 65 ${43 + 11.5} 0 0`, FAZENDEIRO,
+    j => j.slots.findIndex((s, i) => i < j.inventoryStart && s?.name === 'carrot'), 1))
 
-  await t.console(`lp user ${nome} permission unset shop.comandos`)
   await t.console(`ranks admin set ${nome} campones`)
   await t.console(`minecraft:clear ${nome}`)
   await t.terminar(bot)

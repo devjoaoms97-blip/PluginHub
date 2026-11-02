@@ -161,6 +161,12 @@ codigos-evento:
 # cada tier acima, que também aparece nas mensagens (kit, ativação...). false = sempre o nome-exibicao.
 tag-do-luckperms: true
 
+# Acima da cabeça vai só UMA tag (na tab e no chat continuam todas): a que o jogador escolhe no /tag
+# (vip, apoiador, cla, rank ou nenhuma). Sem escolha, ou se a escolhida sumiu (VIP vencido, saiu do
+# clã), vale a primeira desta lista que ele tem.
+tag-na-cabeca:
+  padrao: [vip, rank]
+
 # Liga/desliga cada perk globalmente, independente de permissão. Útil pra desativar um perk
 # temporariamente (ex: manutenção) sem mexer nos grupos do LuckPerms.
 perks:
@@ -170,6 +176,11 @@ perks:
   kit: true
   particulas: true
   warp: true
+  pocoes: true
+
+# /vip pocoes (perk vip.perk.pocoes): junta as poções iguais do inventário em pilhas de até max-pilha.
+pocoes:
+  max-pilha: 10
 
 # Destino do /vip warp — uma área exclusiva pra quem tem qualquer tier de VIP com o perk "warp".
 warp-vip:

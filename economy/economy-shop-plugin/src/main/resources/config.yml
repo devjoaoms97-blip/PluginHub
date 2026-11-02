@@ -6,10 +6,6 @@ regeneracao:
   # Fração da distância até a âncora recuperada a cada intervalo (0.02 = 2% mais perto por vez)
   fator-por-tick: 0.02
 
-# Quantidade máxima permitida numa única transação de /sell ou /buy, pra evitar
-# comandos absurdos acidentais (ex: vender 999999 de uma vez por engano)
-limite-por-transacao: 6400
-
 imposto:
   # Percentual descontado de toda venda (o dinheiro simplesmente some, não vai pra ninguém —
   # ajuda a controlar inflação no servidor). 0 desativa.
@@ -29,7 +25,7 @@ integracao:
   pix: true
 
 vip-descontos:
-  # Desconto na compra (/buy) por permissão — desacoplado do VipPlugin, funciona com qualquer
+  # Desconto na compra por permissão — desacoplado do VipPlugin, funciona com qualquer
   # plugin de permissões. Se o VipPlugin estiver instalado, ele já concede automaticamente o
   # grupo do LuckPerms certo pro tier do jogador; quem decide se esse grupo tem a permissão
   # abaixo é o próprio LuckPerms (configure isso ao configurar os grupos vip_bronze/vip_prata/
@@ -62,7 +58,7 @@ categorias:
 
 # ---------------------------------------------------------------------------------------------
 # Loja Oficial (presencial). Os jogadores compram e vendem com os vendedores do prédio a leste do
-# spawn; /shop, /buy e /sell de qualquer lugar ficam pra staff (permissão shop.comandos). O que se
+# spawn (ou nas barracas dos jogadores); o /shop de qualquer lugar fica pra staff (shop.comandos). O que se
 # minera nas minas é vendido na hora, pra todos (venda automática). O catálogo (itens.yml) sai do
 # tools/economia/loja.py, que confere se nenhum preço abre brecha antes de gravar.
 # ---------------------------------------------------------------------------------------------

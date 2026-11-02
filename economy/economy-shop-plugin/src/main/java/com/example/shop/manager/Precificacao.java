@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * Todos os preços que o jogador vê e paga passam por aqui, pra valerem as mesmas regras no menu dos
- * vendedores, no /sell da staff e na venda automática das minas:
+ * vendedores, no /shop da staff e na venda automática das minas:
  * <ul>
  *   <li><b>Compra</b>: o preço fixo do item menos o desconto de VIP ({@code vip-descontos}).</li>
  *   <li><b>Venda</b>: o preço dinâmico (com o evento de mercado) vezes o bônus do rank e o bônus de

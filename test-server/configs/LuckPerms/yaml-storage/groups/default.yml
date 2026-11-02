@@ -11,3 +11,5 @@ permissions:
 - essentials.home
 - essentials.sethome
 - essentials.delhome
+- essentials.msg
+- essentials.r
