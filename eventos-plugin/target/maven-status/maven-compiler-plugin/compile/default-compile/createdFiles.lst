@@ -8,6 +8,7 @@ com\example\eventos\base\Evento$Fase.class
 com\example\eventos\quiz\Quiz.class
 com\example\eventos\base\EventoCommand$1.class
 com\example\eventos\quiz\QuizCommand.class
+com\example\eventos\RankingGeral$Fonte.class
 com\example\eventos\spleef\ArenaSpleef.class
 com\example\eventos\AgendaCommand.class
 com\example\eventos\sobrevivencia\ArenaSobrevivencia.class
@@ -25,6 +26,7 @@ com\example\eventos\corrida\CorridaMaluca.class
 com\example\eventos\sobrevivencia\Sobrevivencia.class
 com\example\eventos\vietna\ArenaVietna.class
 com\example\eventos\util\Premio.class
+com\example\eventos\RankingGeral.class
 com\example\eventos\corrida\ArenaCorrida$Porta.class
 com\example\eventos\EventosPlugin.class
 com\example\eventos\util\DiscordIntegration.class

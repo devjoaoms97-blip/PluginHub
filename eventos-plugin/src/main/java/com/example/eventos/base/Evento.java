@@ -253,6 +253,11 @@ public abstract class Evento {
         return lista.subList(0, Math.min(quantos, lista.size()));
     }
 
+    /** As vitórias de cada um neste evento (pro ranking geral). */
+    public Map<UUID, Integer> vitorias() {
+        return Map.copyOf(vitorias);
+    }
+
     public String nomeDe(UUID jogador) {
         String nome = nomes.get(jogador);
         return nome != null ? nome : Bukkit.getOfflinePlayer(jogador).getName();
@@ -642,6 +647,7 @@ public abstract class Evento {
             yaml.set(jogador + ".vitorias", v);
         });
         salvar(yaml, arquivoVitorias);
+        plugin.getRanking().atualizarHolograma();
     }
 
     private void salvar(YamlConfiguration yaml, File arquivo) {

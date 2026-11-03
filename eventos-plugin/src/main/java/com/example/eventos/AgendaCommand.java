@@ -50,6 +50,11 @@ public class AgendaCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("top")) {
+            if (args.length > 1) jogador(sender, args[1]);
+            else top(sender);
+            return true;
+        }
         List<Linha> linhas = linhas();
         sender.sendMessage("§6§l✦ Eventos ✦");
 
@@ -91,6 +96,56 @@ public class AgendaCommand implements CommandExecutor {
         sender.sendMessage("§7Agenda:");
         for (Linha l : linhas) sender.sendMessage(" " + l.nome() + " §7- §f" + texto(l.horarios()) + " §8· §7" + l.como());
         return true;
+    }
+
+    /** O top 10 geral, a posição de quem pediu e quem mais venceu cada evento. */
+    private void top(CommandSender sender) {
+        RankingGeral r = plugin.getRanking();
+        List<RankingGeral.Fonte> fontes = r.fontes();
+        List<Map.Entry<java.util.UUID, Integer>> ordem = r.ordem(fontes);
+        sender.sendMessage("§6§l✦ Vencedores de eventos ✦");
+        for (int i = 0; i < Math.min(10, ordem.size()); i++) {
+            Map.Entry<java.util.UUID, Integer> e = ordem.get(i);
+            sender.sendMessage((i < 3 ? "§e" : "§7") + (i + 1) + "º §f" + r.nome(fontes, e.getKey()) + " §7- §f" + vitorias(e.getValue()));
+        }
+        if (ordem.isEmpty()) sender.sendMessage("§7Ninguém venceu ainda.");
+        if (sender instanceof org.bukkit.entity.Player p) {
+            int pos = 0;
+            for (int i = 0; i < ordem.size(); i++) if (ordem.get(i).getKey().equals(p.getUniqueId())) pos = i + 1;
+            sender.sendMessage(pos == 0 ? "§7Você ainda não venceu nenhum evento."
+                    : "§aVocê: §f" + pos + "º§a, com §f" + vitorias(ordem.get(pos - 1).getValue()) + "§a.");
+        }
+        sender.sendMessage("§7Recordes:");
+        for (RankingGeral.Fonte f : fontes) {
+            Map.Entry<java.util.UUID, Integer> melhor = f.vitorias().entrySet().stream().filter(e -> e.getValue() > 0)
+                    .max(Map.Entry.comparingByValue()).orElse(null);
+            sender.sendMessage(" " + f.rotulo() + " §7- " + (melhor == null ? "ninguém ainda"
+                    : "§f" + r.nome(fontes, melhor.getKey()) + " §7(" + vitorias(melhor.getValue()) + ")"));
+        }
+        sender.sendMessage("§7De um jogador: §f/eventos top <jogador>");
+    }
+
+    /** As vitórias de um jogador em cada evento. */
+    private void jogador(CommandSender sender, String nome) {
+        RankingGeral r = plugin.getRanking();
+        List<RankingGeral.Fonte> fontes = r.fontes();
+        java.util.UUID id = r.porNome(fontes, nome);
+        if (id == null) {
+            sender.sendMessage("§7" + nome + " ainda não venceu nenhum evento.");
+            return;
+        }
+        List<Map.Entry<java.util.UUID, Integer>> ordem = r.ordem(fontes);
+        int pos = 0;
+        for (int i = 0; i < ordem.size(); i++) if (ordem.get(i).getKey().equals(id)) pos = i + 1;
+        sender.sendMessage("§6§l✦ " + r.nome(fontes, id) + " ✦ §f" + vitorias(r.totais(fontes).getOrDefault(id, 0)) + " §7(" + pos + "º no geral)");
+        for (RankingGeral.Fonte f : fontes) {
+            int v = f.vitorias().getOrDefault(id, 0);
+            if (v > 0) sender.sendMessage(" " + f.rotulo() + " §7- §f" + vitorias(v));
+        }
+    }
+
+    private static String vitorias(int n) {
+        return n + (n == 1 ? " vitória" : " vitórias");
     }
 
     private List<Linha> linhas() {

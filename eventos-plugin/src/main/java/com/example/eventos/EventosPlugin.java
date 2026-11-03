@@ -32,6 +32,7 @@ public class EventosPlugin extends JavaPlugin {
     private DiscordIntegration discord;
     private Premio premio;
     private Quiz quiz;
+    private RankingGeral ranking;
     private String ultimoMinutoAgenda = "";
 
     @Override
@@ -40,6 +41,7 @@ public class EventosPlugin extends JavaPlugin {
         this.discord = new DiscordIntegration(this);
         this.premio = new Premio(this);
         this.quiz = new Quiz(this);
+        this.ranking = new RankingGeral(this);
         QuizCommand comandoQuiz = new QuizCommand(this);
         getCommand("quiz").setExecutor(comandoQuiz);
         getCommand("quiz").setTabCompleter(comandoQuiz);
@@ -55,6 +57,8 @@ public class EventosPlugin extends JavaPlugin {
         for (Evento e : eventos) if (e instanceof org.bukkit.event.Listener l) getServer().getPluginManager().registerEvents(l, this);
         getServer().getScheduler().runTaskTimer(this, this::tick, 20L, 20L);
         getServer().getScheduler().runTaskTimer(this, () -> eventos.forEach(Evento::tickRapido), 2L, 2L);
+        // o holograma do ranking: as vitórias do Gladiador mudam fora daqui, e o lugar pode ter acabado de carregar
+        getServer().getScheduler().runTaskTimer(this, ranking::atualizarHolograma, 100L, 1200L);
         // um /reload com gente que tinha caído no meio de um evento: volta pra onde estava
         getServer().getOnlinePlayers().forEach(p -> eventos.forEach(e -> e.aoEntrar(p)));
         getLogger().info("EventosPlugin ativado!");
@@ -64,6 +68,7 @@ public class EventosPlugin extends JavaPlugin {
     public void onDisable() {
         if (eventos != null) eventos.forEach(e -> e.cancelar("o servidor está desligando"));
         if (quiz != null) quiz.cancelar("o servidor está desligando");
+        if (ranking != null) ranking.removerHolograma();
     }
 
     private void tick() {
@@ -133,6 +138,10 @@ public class EventosPlugin extends JavaPlugin {
 
     public Quiz getQuiz() {
         return quiz;
+    }
+
+    public RankingGeral getRanking() {
+        return ranking;
     }
 
     public Premio getPremio() {

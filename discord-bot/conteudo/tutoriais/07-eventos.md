@@ -1,6 +1,6 @@
 # 🐉 Eventos
 
-📅 **`/eventos`** mostra a agenda de todos, o que está rolando agora e qual é o próximo.
+📅 **`/eventos`**: a agenda, o que está rolando e o próximo. 🏆 **`/eventos top`**: o ranking de vencedores.
 
 **Boss mundial**
 Na agenda atual do servidor de teste, um boss aparece na arena todos os dias às **20h**: de segunda a sábado é sorteado entre os bosses normais; no domingo aparece o **Wither**. `/boss proximo` mostra o próximo horário. Entre pela passagem sul do spawn ou use `/warp boss`; o PvP começa depois do túnel. Torres e contêineres têm escadas: suba para fugir dos mobs ou atirar de cima.

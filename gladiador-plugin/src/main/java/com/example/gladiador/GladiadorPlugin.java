@@ -70,6 +70,16 @@ public class GladiadorPlugin extends JavaPlugin {
         return economy;
     }
 
+    /** Pro ranking geral de eventos (EventosPlugin, por reflexão): vitórias no modo individual. */
+    public java.util.Map<java.util.UUID, Integer> vitoriasIndividuais() {
+        return eventoManager.vitoriasIndividuais();
+    }
+
+    /** O nome de quem venceu (guardado nas estatísticas), pro ranking geral de eventos. */
+    public String nomeDoVencedor(java.util.UUID jogador) {
+        return eventoManager.nomeDe(jogador);
+    }
+
     public EventoManager getEventoManager() {
         return eventoManager;
     }

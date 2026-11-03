@@ -107,6 +107,15 @@ O único sem arena: uma rodada de perguntas no chat, todo dia às **12:00** e à
 - **Prêmio**: cada pergunta vale 1 ponto pra quem acertar primeiro; quem fizer mais pontos leva o cheque de **R$ 5.000** (`premio`), dividido no empate (quem saiu antes do fim recebe na conta). Vitórias em `quiz-vitorias.yml` (`/quiz top`).
 - Staff (`eventos.admin`): `/quiz abrir`, `/quiz cancelar` e `/quiz resposta` (a resposta da pergunta aberta).
 
+## Ranking geral (/eventos top)
+
+Os vencedores de todos os eventos juntos: as vitórias de cada evento deste plugin (os de arena e o Quiz) e do **Gladiador individual** (o por clã não conta), **1 por vitória**, desde sempre. Vitória é o que cada evento já conta no `/<evento> top`: o último de pé (ou quem divide no tempo esgotado), todo sobrevivente da Sobrevivência, só o 1º da Corrida e quem fez mais pontos no Quiz. Decisões de 2026-11-03.
+
+- **`/eventos top`**: o top 10, a sua posição (mesmo fora do top) e os recordes (quem mais venceu cada evento).
+- **`/eventos top <jogador>`**: as vitórias dele em cada evento e a posição no geral.
+- **Holograma** no saguão das arenas, na parede sul (`ranking.holograma`): o top 10, atualizado a cada vitória e a cada minuto, quando tem alguém perto (é recriado sozinho depois de um reinício).
+- Não guarda nada à parte: lê os `<evento>-vitorias.yml`, o `quiz-vitorias.yml` e, do GladiadorPlugin (por reflexão), as vitórias individuais.
+
 ## /eventos
 
 A agenda de todos os eventos do servidor (o Quiz também): o que está rolando agora (com o comando pra entrar ou assistir), o próximo (dia, hora e quanto falta) e os horários de cada um. Os horários vêm do config de cada plugin, então mudou lá, muda aqui: Vietnã e Spleef (`<evento>.agenda`), Gladiador (`agenda` do GladiadorPlugin), Boss (`agenda` do BossPlugin, com o boss do dia, ex.: Wither no domingo), Dragão do End (`end.dragao.hora` do RecursosPlugin) e Mine-sena (`minesena.horario` do ChequePlugin). Plugin desligado, a linha some.

@@ -354,3 +354,17 @@ quiz:
   palavras: [diamante, esmeralda, creeper, picareta, obsidiana, enderman, redstone, espada, machado, fornalha,
              bigorna, lanterna, cambista, montaria, gladiador, castelo, saqueador, esqueleto, aranha, netherite,
              encantamento, tridente, minerador, pescador, lenhador, galinha, abobora, melancia]
+
+# ---------------------------------------------------------------------------------------------
+# Ranking geral de vencedores (/eventos top): soma as vitórias de todos os eventos deste plugin (os de
+# arena e o Quiz) e do Gladiador individual (o por clã não conta), 1 por vitória, desde sempre
+# (decisões de 2026-11-03). Não guarda nada à parte: lê o que cada evento já guarda. O holograma mostra
+# o top e se atualiza a cada vitória e a cada minuto (só com o lugar carregado, quando tem gente perto).
+# ---------------------------------------------------------------------------------------------
+ranking:
+  holograma:
+    ativado: true
+    mundo: arenas
+    # no saguão das arenas, na parede sul (de costas pra chegada)
+    posicao: [0.5, 65.5, 5.5]
+    quantos: 10

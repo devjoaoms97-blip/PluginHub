@@ -225,6 +225,7 @@ comandos:
         - "/gladiador | Evento Gladiador: inscritos e pote"
         - "/gladiador entrar | Se inscreve no Gladiador"
         - "/eventos | Agenda dos eventos e qual é o próximo"
+        - "/eventos top | Ranking de vencedores de eventos"
         - "/vietna | Evento Vietnã: derrube os outros na água (inventário vazio)"
         - "/vietna entrar | Se inscreve no Vietnã"
         - "/spleef | Evento Spleef: quebre a neve debaixo dos outros (inventário vazio)"

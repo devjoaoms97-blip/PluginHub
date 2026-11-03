@@ -299,6 +299,11 @@ public class Quiz {
         return lista.subList(0, Math.min(quantos, lista.size()));
     }
 
+    /** As vitórias de cada um (pro ranking geral). */
+    public Map<UUID, Integer> vitorias() {
+        return Map.copyOf(vitorias);
+    }
+
     public String nomeDe(UUID id) {
         String n = nomes.get(id);
         return n != null ? n : Bukkit.getOfflinePlayer(id).getName();
@@ -328,6 +333,7 @@ public class Quiz {
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Não foi possível salvar quiz-vitorias.yml", e);
         }
+        plugin.getRanking().atualizarHolograma();
     }
 
     private static void anunciar(String msg) {

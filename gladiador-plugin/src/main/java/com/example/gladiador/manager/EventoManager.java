@@ -48,6 +48,8 @@ public class EventoManager {
     private final Set<UUID> teleporteLiberado = new HashSet<>();
     private final Set<Integer> avisosDados = new HashSet<>();
     private final Map<UUID, Integer> vitorias = new HashMap<>();
+    /** Só as do modo individual (o ranking geral de eventos do EventosPlugin não conta as por clã). */
+    private final Map<UUID, Integer> vitoriasIndividuais = new HashMap<>();
     private final Map<UUID, String> nomes = new HashMap<>();
     private final Map<String, Integer> vitoriasCla = new HashMap<>();
 
@@ -102,6 +104,11 @@ public class EventoManager {
         List<Map.Entry<String, Integer>> lista = new ArrayList<>(vitoriasCla.entrySet());
         lista.sort((a, b) -> b.getValue() - a.getValue());
         return lista.subList(0, Math.min(quantos, lista.size()));
+    }
+
+    /** As vitórias no modo individual, por jogador (pro ranking geral de eventos). */
+    public Map<UUID, Integer> vitoriasIndividuais() {
+        return Map.copyOf(vitoriasIndividuais);
     }
 
     public String nomeDe(UUID jogador) {
@@ -293,6 +300,7 @@ public class EventoManager {
             for (UUID id : ganhadores) {
                 if (!noBanco) pagarPremio(id, parte);
                 vitorias.merge(id, 1, Integer::sum);
+                if (cla == null) vitoriasIndividuais.merge(id, 1, Integer::sum);
                 nomes.put(id, esse.getParticipantes().get(id).getNome());
             }
             if (cla != null) vitoriasCla.merge(cla, 1, Integer::sum);
@@ -400,6 +408,8 @@ public class EventoManager {
                 try {
                     UUID id = UUID.fromString(chave);
                     vitorias.put(id, est.getInt("jogadores." + chave + ".vitorias"));
+                    int individuais = est.getInt("jogadores." + chave + ".vitorias-individuais");
+                    if (individuais > 0) vitoriasIndividuais.put(id, individuais);
                     nomes.put(id, est.getString("jogadores." + chave + ".nome"));
                 } catch (IllegalArgumentException e) {
                     plugin.getLogger().warning("UUID inválido ignorado em estatisticas.yml: " + chave);
@@ -424,6 +434,7 @@ public class EventoManager {
         vitorias.forEach((id, v) -> {
             yaml.set("jogadores." + id + ".nome", nomes.get(id));
             yaml.set("jogadores." + id + ".vitorias", v);
+            yaml.set("jogadores." + id + ".vitorias-individuais", vitoriasIndividuais.get(id));
         });
         vitoriasCla.forEach((tag, v) -> yaml.set("clas." + tag, v));
         salvar(yaml, arquivoEstatisticas);

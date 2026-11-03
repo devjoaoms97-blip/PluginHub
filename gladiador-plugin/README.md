@@ -78,4 +78,4 @@ Com `premio.cla-no-banco: true`, o modo por clã manda o pote inteiro pro banco 
 
 ## Dados
 
-`arena.yml` guarda a área e os pontos de entrada, `estatisticas.yml` guarda as vitórias por jogador e por clã, e `destaques.yml`, quem tem cada tag. O evento em andamento fica só na memória: ao desligar, ele é cancelado e as inscrições voltam.
+`arena.yml` guarda a área e os pontos de entrada, `estatisticas.yml` guarda as vitórias por jogador (e, à parte, as do modo individual, que vão pro ranking geral de eventos do EventosPlugin: `/eventos top`) e por clã, e `destaques.yml`, quem tem cada tag. O evento em andamento fica só na memória: ao desligar, ele é cancelado e as inscrições voltam.
