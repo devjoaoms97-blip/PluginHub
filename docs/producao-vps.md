@@ -12,6 +12,17 @@ O que precisa ser feito ou conferido quando o servidor sair do PC (`C:\mc-teste`
 
 - [ ] `allow-nether=false` no `server.properties` e `allow-end: false` no `bukkit.yml`: o Nether e o End são só os de recursos (`/warp nether` e `/warp end`).
 
+## Montaria (MontariaPlugin)
+
+- [ ] A caixa da **warp mobs** (decisão de 2026-11-03: sem montaria da linha vermelha pra dentro) em `proibido:` no `plugins/MontariaPlugin/config.yml`, junto da arena do boss. A lista que já existe no servidor não pega o padrão novo do jar:
+  ```yaml
+    - nome: "warp mobs"
+      mundo: spawn
+      min: [-209, 40, 3]
+      max: [-93, 90, 83]
+  ```
+  É a mesma caixa do PvP da warp mobs no AreasPlugin (`pvp-so-nas-caixas.spawn`). Se a estrutura "mobs" mudar de lugar, as duas mudam juntas.
+
 ## Eventos (EventosPlugin)
 
 - [ ] **`minimo-jogadores` de 3 ou 4** em `vietna:`, `spleef:`, `correoucai:`, `sobrevivencia:` e `corrida:` no `plugins/EventosPlugin/config.yml`. O padrão do jar é 3; **no servidor de teste está 1** (decisão de 2026-11-02, pra testar sozinho), e não pode ir assim pra produção: com 1, quem entra sozinho joga até o tempo acabar e leva o cheque de R$ 10.000.
