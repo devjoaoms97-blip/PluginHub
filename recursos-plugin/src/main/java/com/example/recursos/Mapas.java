@@ -41,6 +41,7 @@ import java.util.logging.Level;
  * {@code /mapa [mundo]}: um mapa de cada mundo de recursos. O mapa mostra o mundo inteiro (a borda é a
  * moldura), com o terreno, uma grade a cada 500 blocos, o centro e, no End, a área protegida e o
  * quadrado verde. Com o mapa na mão dentro daquele mundo, a seta é você, e embaixo aparecem as coordenadas.
+ * Os outros jogadores do mundo aparecem como marcas azuis (menos espectador e invisível).
  * <p>
  * <b>Terreno:</b> cada pixel é a cor (do mapa do jogo) de um ponto do mundo, lida só de chunk que já
  * existe, sem gerar nada: o mapa se preenche conforme os jogadores exploram. Quando o plugin liga sem o
@@ -87,7 +88,7 @@ public class Mapas implements Listener {
         MapMeta meta = (MapMeta) item.getItemMeta();
         meta.setMapView(view);
         meta.setDisplayName("§aMapa: " + nomeCurto(m));
-        meta.setLore(List.of("§7Com ele na mão, no " + m.getNome() + ",", "§7a seta mostra onde você está.",
+        meta.setLore(List.of("§7Com ele na mão, no " + m.getNome() + ",", "§7a seta mostra onde você está", "§7e as marcas azuis, os outros jogadores.",
                 "§7O terreno aparece conforme o mundo é explorado."));
         meta.getPersistentDataContainer().set(chave, PersistentDataType.STRING, m.getMundo());
         item.setItemMeta(meta);
@@ -377,13 +378,16 @@ public class Mapas implements Listener {
 
             MapCursorCollection cursores = new MapCursorCollection();
             String texto;
+            if (w != null) {
+                // os outros jogadores do mundo (menos espectador, invisível e quem a pessoa não vê), embaixo da seta
+                for (Player outro : w.getPlayers()) {
+                    if (outro.equals(p) || outro.getGameMode() == org.bukkit.GameMode.SPECTATOR || outro.isInvisible() || !p.canSee(outro)) continue;
+                    cursores.addCursor(cursor(outro.getLocation(), borda, MapCursor.Type.BLUE_MARKER));
+                }
+            }
             if (w != null && p.getWorld().equals(w)) {
                 Location l = p.getLocation();
-                int px = (int) Math.round(l.getX() / borda * 256), pz = (int) Math.round(l.getZ() / borda * 256);
-                px = Math.max(-128, Math.min(127, px));
-                pz = Math.max(-128, Math.min(127, pz));
-                byte direcao = (byte) (Math.floorMod(Math.round(l.getYaw() / 22.5f), 16));
-                cursores.addCursor(new MapCursor((byte) px, (byte) pz, direcao, MapCursor.Type.PLAYER, true));
+                cursores.addCursor(cursor(l, borda, MapCursor.Type.PLAYER));
                 texto = "X " + l.getBlockX() + "  Z " + l.getBlockZ();
             } else {
                 texto = "Voce nao esta aqui";
@@ -393,6 +397,14 @@ public class Mapas implements Listener {
                 for (int x = 2; x < 126; x++) for (int y = 116; y < 126; y++) canvas.setPixelColor(x, y, new Color(40, 40, 40));
                 canvas.drawText(4, 117, MinecraftFont.Font, texto);
             }
+        }
+
+        /** O cursor de alguém no mapa, virado pra onde a pessoa olha. */
+        private MapCursor cursor(Location l, double borda, MapCursor.Type tipo) {
+            int px = Math.max(-128, Math.min(127, (int) Math.round(l.getX() / borda * 256)));
+            int pz = Math.max(-128, Math.min(127, (int) Math.round(l.getZ() / borda * 256)));
+            byte direcao = (byte) (Math.floorMod(Math.round(l.getYaw() / 22.5f), 16));
+            return new MapCursor((byte) px, (byte) pz, direcao, tipo, true);
         }
 
         private void fundo(MapCanvas canvas, World w, Terreno t, double borda) {

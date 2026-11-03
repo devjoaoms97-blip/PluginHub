@@ -77,10 +77,13 @@ public class ArenaSobrevivencia {
         return new Location(mundo(), cx + 0.5, pisoGaleria() + 1, z0 - 1 - GALERIA / 2.0, 0, 35);
     }
 
-    /** Dentro das muralhas, do chão ao teto. */
+    /**
+     * Dentro das muralhas, do chão ao teto, contando a fileira da muralha: a grade dos portões é fina, e
+     * quem encosta nela fica com o meio do corpo já na fileira (antes, isso eliminava por sair da arena).
+     */
     public boolean naArena(Location l) {
         return l.getWorld() != null && l.getWorld().getName().equals(mundo)
-                && l.getX() >= x0 && l.getX() < x1 + 1 && l.getZ() >= z0 && l.getZ() < z1 + 1
+                && l.getX() >= x0 - 1 && l.getX() < x1 + 2 && l.getZ() >= z0 - 1 && l.getZ() < z1 + 2
                 && l.getY() >= chaoY - 2 && l.getY() < teto();
     }
 

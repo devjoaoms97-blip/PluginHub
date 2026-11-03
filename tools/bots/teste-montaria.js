@@ -1,6 +1,6 @@
 // Montaria do VIP no spawn (MontariaPlugin) e PvP só na arena do boss (AreasPlugin).
 // Montaria: sem a permissão do VIP não sai; com ela, o bot monta num cavalo 3x a corrida, que some
-// ao descer, e não é chamada na arena do boss. PvP: no spawn um bot não machuca o outro; na arena do
+// ao descer, e não é chamada na arena do boss nem na warp mobs da linha vermelha pra dentro. PvP: no spawn um bot não machuca o outro; na arena do
 // boss machuca.
 // Uso: node teste-montaria.js   (o mundo spawn com PvP ligado: mv modify spawn set pvp true)
 const t = require('./lib')
@@ -40,6 +40,25 @@ t.rodar(async () => {
   const naArena = await t.console(`execute in minecraft:spawn positioned 0.5 33 195.5 if entity @e[type=horse,distance=..6]`)
   t.verificar(msgs.some(m => /arena do boss/.test(m)) && !/passed|Count/.test(naArena), 'na arena do boss a montaria não sai', msgs[0])
 
+  // na warp mobs: no vestíbulo (onde a warp chega) sai; da linha vermelha pra dentro, não
+  await t.espera(6000)
+  // no vestíbulo, entre a porta e a mureta (onde a /warp mobs chega)
+  await t.console(`execute in minecraft:spawn run minecraft:tp ${nome} -87.5 49 43.5`)
+  await t.espera(1500)
+  const vestibulo = bot.entity.position.clone()
+  await t.capturar(bot, () => bot.chat('/montaria'), 2000)
+  const noVestibulo = await t.console(`execute in minecraft:spawn positioned ${vestibulo.x} ${vestibulo.y} ${vestibulo.z} if entity @e[type=horse,distance=..6]`)
+  t.verificar(vestibulo.x > -93 && /passed|Count/.test(noVestibulo), 'no vestíbulo da warp mobs a montaria sai', `${vestibulo.floored()} | ${noVestibulo}`)
+  await t.console(`ride ${nome} dismount`)
+  await t.espera(6000) // a recarga, ainda no vestíbulo: no salão os mobs atacam
+  await t.console(`effect give ${nome} minecraft:resistance 10 4 true`)
+  await t.console(`execute in minecraft:spawn run minecraft:tp ${nome} -147.5 49 43.5`)
+  await t.espera(500)
+  msgs = await t.capturar(bot, () => bot.chat('/montaria'))
+  const noSalao = await t.console(`execute in minecraft:spawn positioned -147.5 49 43.5 if entity @e[type=horse,distance=..6]`)
+  t.verificar(msgs.some(m => /warp mobs/.test(m)) && !/passed|Count/.test(noSalao), 'da linha vermelha da warp mobs pra dentro, a montaria não sai', msgs[0])
+  await t.console(`effect clear ${nome}`)
+
   // no mundo dos tesouros sai; no de recursos, não
   await t.console(`execute in minecraft:tesouros run minecraft:tp ${nome} 40.5 -19 40.5`)
   await t.espera(6000) // a recarga de 5 s
@@ -47,6 +66,7 @@ t.rodar(async () => {
   const noTesouro = await t.console(`execute in minecraft:tesouros positioned 40.5 -19 40.5 if entity @e[type=horse,distance=..6]`)
   t.verificar(/passed|Count/.test(noTesouro), 'no mundo dos tesouros a montaria sai', noTesouro)
   await t.console(`ride ${nome} dismount`)
+  await t.console(`effect give ${nome} minecraft:slow_falling 30 0 true`) // cai de y 200 sem morrer
   await t.console(`execute in minecraft:recursos run minecraft:tp ${nome} 0.5 200 0.5`)
   await t.espera(6000)
   msgs = await t.capturar(bot, () => bot.chat('/montaria'))

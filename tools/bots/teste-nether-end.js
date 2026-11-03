@@ -41,6 +41,21 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => m.includes('já tem')), 'o mesmo mapa não sai duas vezes')
   await t.capturar(a, () => a.chat('/mapa end'), 1000)
   t.verificar(a.inventory.items().filter(i => i.name === 'filled_map').length === 2, '/mapa end deu o mapa do End')
+  // com o B no Nether também, o mapa do A mostra 2 cursores: a seta dele e a marca do B
+  await t.console(`${N} minecraft:tp ${nomeB} ${p.x + 30} ${p.y} ${p.z + 30}`)
+  await t.espera(1500)
+  // segura um mapa de cada vez (a ordem no inventário varia): o do Nether é o que tem ícone
+  const icones = {}
+  for (const mapa of a.inventory.items().filter(i => i.name === 'filled_map')) {
+    const aoMapa = pk => { if (Array.isArray(pk.icons)) icones[`mapa ${pk.itemDamage}`] = pk.icons }
+    a._client.on('map', aoMapa)
+    await a.equip(mapa, 'hand')
+    await t.espera(2500)
+    a._client.removeListener('map', aoMapa)
+  }
+  const doNether = Object.values(icones).find(i => i.length > 0) || []
+  t.verificar(doNether.length === 2 && new Set(doNether.map(i => i.type)).size === 2, 'o mapa do Nether mostra o outro jogador (marca de outro tipo que a seta)',
+    JSON.stringify(icones))
 
   console.log('\n== /warp end ==')
   // sem dragão durante o centro e o PvP (a staff renasce ele no fim)
@@ -76,6 +91,7 @@ t.rodar(async () => {
   t.verificar(a.blockAt(pa.offset(3, -1, 0))?.name === nomeLado && nomeLado !== 'air', 'não dá pra quebrar no centro do End', nomeLado)
 
   console.log('\n== PvP: no quadrado verde não, fora sim ==')
+  await t.console(`${E} minecraft:kill @e[type=ender_dragon]`) // um dragão vivo mata o B no meio do teste
   await t.capturar(b, () => b.chat('/warp end'), 6000)
   await t.console(`effect clear ${nomeB}`)
   await t.console(`minecraft:effect give ${nomeB} minecraft:instant_health 1 5 true`)

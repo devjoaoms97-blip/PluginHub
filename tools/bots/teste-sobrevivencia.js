@@ -85,6 +85,23 @@ t.rodar(async () => {
     await t.espera(2500)
     t.verificar(await quantos(a.username, 'arrow') === flechasAntes + 16, 'vencida a onda, +16 flechas', `${flechasAntes} → ${await quantos(a.username, 'arrow')}`)
 
+    console.log('\n== Encostado na grade ==')
+    // a grade do portão norte fica na fileira da muralha (z 1484): quem encosta nela fica com o meio do
+    // corpo já nessa fileira, e isso não pode contar como sair da arena (o teleporte na luta precisa do eventos.admin)
+    await t.console(`lp user ${c.username} permission set eventos.admin true`)
+    await t.espera(500)
+    const msgsGrade = await t.capturar(d, async () => {
+      await t.console(`execute in minecraft:arenas run minecraft:tp ${c.username} ${CENTRO[0] + 0.5} ${CHAO + 1} ${CENTRO[1] - RAIO - 1 + 0.87} 180 0`)
+      await t.espera(2500)
+    }, 500)
+    await t.console(`lp user ${c.username} permission unset eventos.admin`)
+    t.verificar(c.entity.position.z < CENTRO[1] - RAIO && !msgsGrade.some(m => m.includes(c.username) && /saiu|fora/.test(m)),
+      'encostado na grade do portão, continua no evento', `${c.entity.position} | ${msgsGrade.find(m => m.includes(c.username)) || ''}`)
+    await t.console(`lp user ${c.username} permission set eventos.admin true`)
+    await t.espera(300)
+    await t.console(`execute in minecraft:arenas run minecraft:tp ${c.username} ${CENTRO[0] + 3.5} ${CHAO + 1} ${CENTRO[1] + 0.5}`)
+    await t.console(`lp user ${c.username} permission unset eventos.admin`)
+
     console.log('\n== Morrer ==')
     const msgsMorte = await t.capturar(d, async () => { await t.console(`minecraft:kill ${b.username}`) }, 3000)
     t.verificar(msgsMorte.some(m => m.includes(b.username) && m.includes('morreu')), 'quem morre está fora', msgsMorte.find(m => m.includes('morreu')))

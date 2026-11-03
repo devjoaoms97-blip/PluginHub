@@ -15,6 +15,12 @@ proibido:
     mundo: spawn
     min: [-60, 0, 107]
     max: [60, 100, 253]
+  # A warp mobs da linha vermelha pra dentro (estrutura "mobs"): tem PvP em ciclos. O vestíbulo e a
+  # escadaria, atrás da linha, continuam liberados. A mesma caixa do PvP do AreasPlugin.
+  - nome: "warp mobs"
+    mundo: spawn
+    min: [-209, 40, 3]
+    max: [-93, 90, 83]
 
 # Velocidade: tantas vezes a corrida a pé (5,6 blocos por segundo). 1.6 é um cavalo médio do jogo; 3 é
 # bem mais rápido que qualquer cavalo (16,8 blocos por segundo).
