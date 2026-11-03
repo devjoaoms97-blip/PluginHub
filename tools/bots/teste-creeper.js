@@ -10,6 +10,9 @@ t.rodar(async () => {
   await t.console(`gamemode survival ${nome}`)
   // um lugar plano e vazio do mundo de recursos, longe de tudo (a explosão do controle não estraga nada importante)
   await t.console(`execute in minecraft:recursos run minecraft:tp ${nome} 900.5 200 900.5`)
+  // o chunk pode não ter carregado ainda logo depois do teleporte ("That position is not loaded"): sem a
+  // plataforma, o bot e o creeper caem, e o creeper que some parece ter explodido
+  await t.console('execute in minecraft:recursos run forceload add 895 895 905 905')
   await t.console(`execute in minecraft:recursos run fill 895 199 895 905 199 905 minecraft:obsidian`)
   await t.console(`execute in minecraft:recursos run minecraft:tp ${nome} 900.5 200 900.5`)
   await t.espera(2000)
@@ -31,6 +34,7 @@ t.rodar(async () => {
   await caso('creeper da /warp mobs não explode', '"spawnersplugin:warp-mobs":"teste"', false)
 
   await t.console(`execute in minecraft:recursos run fill 895 199 895 905 199 905 minecraft:air`)
+  await t.console('execute in minecraft:recursos run forceload remove 895 895 905 905')
   await t.console(`minecraft:tp ${nome} 0 65 0`)
   await t.terminar(bot)
 })

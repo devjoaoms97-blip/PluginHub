@@ -212,6 +212,69 @@ sobrevivencia:
   comandos-liberados: [sobrevivencia, spawn]
 
 # ---------------------------------------------------------------------------------------------
+# Corrida Maluca: uma pista de obstáculos num pavilhão de parque de diversões, sem kit (só correr e
+# pular). Quem cai na água volta pro último checkpoint: ninguém sai por cair. Os primeiros a cruzar a
+# chegada levam os cheques de "premios", na ordem. Acaba quando o pódio fecha, quando todos chegam ou
+# no tempo máximo (quem não chegou não ganha). Mesmas regras de inscrição dos outros. Decisões de 2026-11-02.
+# ---------------------------------------------------------------------------------------------
+corrida:
+  # Abre sozinho todo dia nesses horários (HH:mm).
+  agenda: ["09:00", "14:00"]
+
+  inscricao:
+    duracao-segundos: 180
+    avisos-segundos: [120, 60, 30, 10]
+  minimo-jogadores: 3
+  # 1º, 2º e 3º lugar
+  premios: [5000, 3000, 2000]
+
+  luta:
+    preparacao-segundos: 10
+    tempo-maximo-minutos: 5
+
+  # Duas fileiras de 3 portas iguais: essas abrem (sorteadas a cada corrida) quando alguém encosta; as
+  # outras são parede.
+  portas:
+    abertas-por-fileira: 1
+
+  # O slime joga por cima do vão (velocidade, em blocos por tique).
+  trampolim:
+    impulso-cima: 0.9
+    impulso-frente: 0.65
+
+  # O tapete rolante empurra pra trás quem está em cima, a cada "a-cada-ticks" (o jogador perde o embalo).
+  tapete:
+    empurrao: 0.3
+    a-cada-ticks: 10
+
+  # Dois grupos de plataformas, em xadrez, alternando (meio ciclo um do outro): firme, vermelha (aviso) e sumida.
+  plataformas:
+    firme-segundos: 3
+    aviso-segundos: 1
+    sumida-segundos: 2
+
+  # As barras na altura do pé, uma lista por pivô (o primeiro e o segundo disco): quantos braços (2 =
+  # uma cruz), a velocidade e a força do empurrão.
+  barras:
+    bracos: [1, 2]
+    graus-por-segundo: [72, 60]
+    forca: 1.1
+
+  # Os 4 canhões da ponte do vento, nas paredes, soltam uma carga de vento cada um, revezando.
+  vento:
+    a-cada-segundos: 2
+    velocidade: 0.7
+
+  # A pista, construída pelo plugin (/corrida construir), de "inicio" pro norte (+z), uns 145 blocos; a
+  # cada corrida, só o portão, as portas e as plataformas voltam. "agua-y" é o bloco de cima da piscina.
+  arena:
+    mundo: arenas
+    inicio: [0, 1800]
+    agua-y: 64
+
+  comandos-liberados: [corrida, spawn]
+
+# ---------------------------------------------------------------------------------------------
 # Quiz: uma rodada de perguntas no chat, sem arena e sem inscrição (responde quem estiver online, de
 # onde estiver, com /quiz <resposta>). Cada pergunta vale 1 ponto pra quem acertar primeiro; quem fizer
 # mais pontos leva o prêmio (dividido no empate). A resposta não liga pra acento, maiúscula nem pra

@@ -1,6 +1,8 @@
 com\example\eventos\quiz\Quiz$Pergunta.class
+com\example\eventos\corrida\ArenaCorrida$Canhao.class
 com\example\eventos\vietna\ArenaVietna$Pilar.class
 com\example\eventos\base\EventoCommand.class
+com\example\eventos\corrida\ArenaCorrida.class
 com\example\eventos\AgendaCommand$Horario.class
 com\example\eventos\base\Evento$Fase.class
 com\example\eventos\quiz\Quiz.class
@@ -19,8 +21,10 @@ com\example\eventos\vietna\Vietna.class
 com\example\eventos\AgendaCommand$1.class
 com\example\eventos\spleef\Spleef.class
 com\example\eventos\AgendaCommand$Linha.class
+com\example\eventos\corrida\CorridaMaluca.class
 com\example\eventos\sobrevivencia\Sobrevivencia.class
 com\example\eventos\vietna\ArenaVietna.class
 com\example\eventos\util\Premio.class
+com\example\eventos\corrida\ArenaCorrida$Porta.class
 com\example\eventos\EventosPlugin.class
 com\example\eventos\util\DiscordIntegration.class

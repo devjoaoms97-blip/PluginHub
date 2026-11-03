@@ -1,8 +1,13 @@
 // Boss que ninguém derrota no tempo limite vai embora e amaldiçoa o servidor: XP de skill -10% até
-// o próximo boss morrer (ou 24 h). Precisa de "tempo-limite-minutos: 2" e "avisos-fuga-minutos: [1]"
-// no config do BossPlugin do servidor de testes (o padrão é 60 min); o teste leva uns 3 minutos.
+// o próximo boss morrer (ou 24 h). O teste põe "tempo-limite-minutos: 2" e "avisos-fuga-minutos: [1]" no
+// config do BossPlugin do servidor (o de verdade é 60 min, e em produção fica assim), recarrega e devolve o
+// original no fim; leva uns 3 minutos.
 // Uso: node teste-boss-maldicao.js
+const fs = require('fs')
+const path = require('path')
 const t = require('./lib')
+
+const CONFIG = path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'BossPlugin', 'config.yml')
 
 // XP de cada skill do bot ("x/y XP" no /skills ver)
 async function xpPorSkill(bot) {
@@ -29,6 +34,22 @@ async function xpDeUmAbate(bot) {
 }
 
 t.rodar(async () => {
+  const original = fs.readFileSync(CONFIG, 'utf8')
+  fs.writeFileSync(CONFIG, original.replace(/^tempo-limite-minutos:.*$/m, 'tempo-limite-minutos: 2')
+    .replace(/^avisos-fuga-minutos:(\s*\[[^\]]*\]|(\s*\n\s*-.*)*)/m, 'avisos-fuga-minutos: [1]'))
+  await t.console('boss reload')
+  // o t.terminar encerra o processo: o config volta antes dele, inclusive se o teste der erro
+  let bots = []
+  try {
+    bots = await maldicao()
+  } finally {
+    fs.writeFileSync(CONFIG, original)
+    await t.console('boss reload')
+  }
+  await t.terminar(...bots)
+})
+
+async function maldicao() {
   await t.console('boss stop')
   const normal = await t.criarBot(t.nomeNovo('Mal'))
   await t.console(`execute in minecraft:spawn run minecraft:tp ${normal.username} 0.5 65 20.5`)
@@ -63,6 +84,5 @@ t.rodar(async () => {
 
   await t.console('boss stop')
   await t.console('minecraft:kill @e[type=item]')
-  await t.terminar(normal)
-  await t.terminar(amaldicoado)
-})
+  return [normal, amaldicoado]
+}

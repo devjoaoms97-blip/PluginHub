@@ -90,6 +90,26 @@ public abstract class Evento {
     /** "Vietnã". */
     public abstract String nome();
 
+    /** O nome é feminino ("a Sobrevivência", "a Corrida Maluca")? Pros textos: "no"/"na", "do"/"da". */
+    public boolean feminino() {
+        return false;
+    }
+
+    /** "o Vietnã", "a Corrida Maluca". */
+    public String oNome() {
+        return (feminino() ? "a " : "o ") + nome();
+    }
+
+    /** "no Vietnã", "na Corrida Maluca". */
+    public String noNome() {
+        return (feminino() ? "na " : "no ") + nome();
+    }
+
+    /** "do Vietnã", "da Corrida Maluca". */
+    public String doNome() {
+        return (feminino() ? "da " : "do ") + nome();
+    }
+
     /** O título dos anúncios ("§2§l☘ VIETNÃ ☘"). */
     protected abstract String titulo();
 
@@ -114,8 +134,13 @@ public abstract class Evento {
 
     public abstract Location arquibancada();
 
-    /** Caiu: está fora. */
+    /** Caiu (na água): ver {@link #aoCair}. */
     public abstract boolean caiu(Location l);
+
+    /** Quem luta caiu na água: nos eventos de "último de pé", está fora. A Corrida devolve pro checkpoint. */
+    public void aoCair(Player p) {
+        eliminar(p, "caiu na água", false);
+    }
 
     /** Constrói a arena inteira (o prédio todo: uma vez, pela staff ou pelo montar-mapa). */
     public abstract void construir();
@@ -213,6 +238,11 @@ public abstract class Evento {
         return Math.max(0, cfg().getDouble("premio"));
     }
 
+    /** O prêmio, pro /<evento> info. */
+    public String textoPremio() {
+        return "O último de pé leva um cheque de §f" + Formato.valor(premio()) + "§7.";
+    }
+
     protected long inicioLuta() {
         return inicioLuta;
     }
@@ -249,10 +279,10 @@ public abstract class Evento {
 
     /** null se entrou; senão, o motivo. */
     public String entrar(Player p) {
-        if (fase != Fase.INSCRICAO) return "Não há inscrições abertas no " + nome() + " agora.";
+        if (fase != Fase.INSCRICAO) return "Não há inscrições abertas " + noNome() + " agora.";
         if (participantes.containsKey(p.getUniqueId())) return "Você já está inscrito. Pra sair: /" + id + " sair";
         Evento outro = plugin.eventoInscrito(p.getUniqueId());
-        if (outro != null && outro != this) return "Você já está no " + outro.nome() + ".";
+        if (outro != null && outro != this) return "Você já está " + outro.noNome() + ".";
         if (!inventarioVazio(p)) return "Pra entrar, o inventário precisa estar totalmente vazio, sem armadura e sem nada na outra mão.";
         if (p.getWorld().equals(mundo())) return "Saia do mundo das arenas pra se inscrever.";
         String ip = ip(p);
@@ -405,6 +435,17 @@ public abstract class Evento {
         return renascerNaGaleria.remove(jogador) ? arquibancada() : null;
     }
 
+    /** Saiu da luta sem ser eliminado (a Corrida: cruzou a chegada): perde o kit e vai pra arquibancada. */
+    protected void retirar(Player p) {
+        Participante part = lutando(p.getUniqueId());
+        if (part == null) return;
+        part.vivo = false;
+        tirarKit(p);
+        teleportar(p, arquibancada());
+        removerPendente(p.getUniqueId());
+        verificarVencedor();
+    }
+
     private void verificarVencedor() {
         if (fase != Fase.LUTA) return;
         List<UUID> vivos = vivos();
@@ -450,6 +491,53 @@ public abstract class Evento {
             plugin.getDiscord().enviar("eventos", resultado);
         }
         // a arena volta inteira pro próximo
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (fase == Fase.FIM) {
+                resetar();
+                fase = null;
+                participantes.clear();
+            }
+        }, 40L);
+    }
+
+    /**
+     * Termina pagando por colocação (a Corrida): o 1º da lista leva o 1º prêmio, e assim por diante; só o 1º
+     * conta vitória. Quem ainda estava na luta volta sem o kit. Quem saiu do servidor recebe na conta.
+     */
+    protected void finalizarPorColocacao(List<UUID> colocados, List<Double> premios) {
+        fase = Fase.FIM;
+        for (UUID jogador : vivos()) {
+            Player p = Bukkit.getPlayer(jogador);
+            if (p == null) continue;
+            tirarKit(p);
+            teleportar(p, participantes.get(jogador).retorno);
+            removerPendente(jogador);
+        }
+        if (colocados.isEmpty()) {
+            anunciar(titulo() + " §7Ninguém chegou ao fim.");
+        } else {
+            List<String> podio = new ArrayList<>();
+            for (int i = 0; i < colocados.size(); i++) {
+                UUID jogador = colocados.get(i);
+                Participante part = participantes.get(jogador);
+                double valor = i < premios.size() ? Math.max(0, premios.get(i)) : 0;
+                podio.add("§f" + (i + 1) + "º " + part.nome + (valor > 0 ? " §7(" + Formato.valor(valor) + ")" : ""));
+                if (i == 0) {
+                    vitorias.merge(jogador, 1, Integer::sum);
+                    nomes.put(jogador, part.nome);
+                }
+                Player p = Bukkit.getPlayer(jogador);
+                if (p != null) {
+                    if (naArquibancada(p.getLocation())) teleportar(p, part.retorno);
+                    p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+                }
+                plugin.getPremio().pagar(jogador, valor, "Evento " + nome());
+            }
+            salvarVitorias();
+            String resultado = titulo() + " " + String.join(cor() + ", ", podio) + cor() + "! Prêmios em cheque.";
+            anunciar(resultado);
+            plugin.getDiscord().enviar("eventos", resultado);
+        }
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (fase == Fase.FIM) {
                 resetar();

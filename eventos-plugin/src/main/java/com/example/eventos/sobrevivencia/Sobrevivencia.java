@@ -68,6 +68,11 @@ public class Sobrevivencia extends Evento implements Listener {
     }
 
     @Override
+    public boolean feminino() {
+        return true;
+    }
+
+    @Override
     protected String titulo() {
         return "§6§l⚔ SOBREVIVÊNCIA ⚔";
     }

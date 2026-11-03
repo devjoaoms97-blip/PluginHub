@@ -70,7 +70,7 @@ t.rodar(async () => {
   await clicar(10)
   await clicar(14, 1) // ouro, direito: confirmação do código
   msgs = await t.capturar(bot, () => clicar(14, 1), 2500)
-  const codigo = (msgs.join(' ').match(/1 uso\): (?:VIP-)?([A-Z0-9]+)/) || [])[1]
+  const codigo = (msgs.join(' ').match(/1 uso\)[^:]*: (?:VIP-)?([A-Z0-9]+)/) || [])[1]
   t.verificar(!!codigo && await creditos(nome) === 370, 'o clique direito gera um código de VIP Ouro (350 créditos)', msgs.join(' | ').slice(0, 160))
   if (codigo) await t.console(`vip revogarcodigo ${codigo}`)
   if (bot.currentWindow) bot.closeWindow(bot.currentWindow)

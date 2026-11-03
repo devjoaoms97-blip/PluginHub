@@ -1,8 +1,14 @@
 // Asas da loja de créditos (CreditosPlugin): o bot compra uma asa e ela fica montada nele (item display
 // como passageiro, pra o cliente desenhar grudada nas costas). O que importa é que o passageiro não trave
 // o teleporte: /tp e /spawn do Essentials (pela API) e o /tp do jogo levam o jogador, e a asa volta pras costas.
+// As asas saíram da loja (não ficaram boas: "asas: {}" no config do CreditosPlugin); sem nenhuma, o teste
+// avisa e passa sem testar. Voltando alguma pro config, ele testa de novo.
 // Uso: node teste-asas.js
+const fs = require('fs')
+const path = require('path')
 const t = require('./lib')
+
+const CONFIG = path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'CreditosPlugin', 'config.yml')
 
 const pos = async nome => {
   const r = await t.console(`data get entity ${nome} Pos`)
@@ -14,6 +20,10 @@ const temAsa = async nome => /passed/i.test(await t.console(`execute at ${nome} 
 const perto = (a, b) => a.length === 3 && Math.abs(a[0] - b[0]) < 1 && Math.abs(a[2] - b[2]) < 1
 
 t.rodar(async () => {
+  if (/^\s+asas:\s*\{\s*\}/m.test(fs.readFileSync(CONFIG, 'utf8'))) {
+    console.log('As asas estão fora da loja (cosmeticos.asas vazio): nada pra testar.')
+    return t.terminar()
+  }
   const bot = await t.criarBot(t.nomeNovo('Asa'))
   const nome = bot.username
   await t.console(`execute in minecraft:spawn run minecraft:tp ${nome} 0.5 65 20.5`)

@@ -29,7 +29,8 @@ import java.util.Locale;
  * <ul>
  *   <li>Ninguém perde vida: todo dano em quem está lutando é cancelado. Um projétil de outro participante
  *       chama {@link Evento#aoAcertar} (o Vietnã empurra); soco não faz nada.</li>
- *   <li>Caiu (na água): eliminado e vai pra arquibancada. Desconectou: eliminado e volta pra onde estava.</li>
+ *   <li>Caiu (na água): {@link Evento#aoCair} (eliminado e vai pra arquibancada; na Corrida, volta pro
+ *       checkpoint). Desconectou: eliminado e volta pra onde estava.</li>
  *   <li>Na arena e na arquibancada só valem os comandos de {@code comandos-liberados} do evento (lutando,
  *       só o do evento); nenhum teleporte de fora leva alguém pra lá, só os do evento. Da arquibancada
  *       ninguém atira.</li>
@@ -117,7 +118,7 @@ public class EventosListener implements Listener {
     public void aoMover(PlayerMoveEvent evento) {
         Player p = evento.getPlayer();
         Evento e = lutando(p);
-        if (e != null && (p.isInWater() || e.caiu(evento.getTo()))) e.eliminar(p, "caiu na água", false);
+        if (e != null && (p.isInWater() || e.caiu(evento.getTo()))) e.aoCair(p);
     }
 
     /** Da arquibancada (ou de fora) não se atira na arena; nem na preparação. */
@@ -173,8 +174,8 @@ public class EventosListener implements Listener {
         boolean liberado = e.cfg().getStringList("comandos-liberados").contains(comando);
         if (liberado && (!lutando || comando.equals(e.id()))) return;
         evento.setCancelled(true);
-        p.sendMessage(lutando ? "§cNo " + e.nome() + ", só o §f/" + e.id() + " §cfunciona. Caiu, sai."
-                : "§cNa arena do " + e.nome() + ", só §f/" + e.id() + " §ce §f/spawn §cfuncionam.");
+        p.sendMessage(lutando ? "§c" + (e.feminino() ? "Na " : "No ") + e.nome() + ", só o §f/" + e.id() + " §cfunciona."
+                : "§cNa arena " + e.doNome() + ", só §f/" + e.id() + " §ce §f/spawn §cfuncionam.");
     }
 
     /**
@@ -195,7 +196,7 @@ public class EventosListener implements Listener {
         boolean jaDentro = destino.naArena(evento.getFrom()) || destino.naArquibancada(evento.getFrom());
         if (!jaDentro) {
             evento.setCancelled(true);
-            p.sendMessage("§cPra ver o " + destino.nome() + ", use §f/" + destino.id() + " assistir§c.");
+            p.sendMessage("§cPra ver " + destino.oNome() + ", use §f/" + destino.id() + " assistir§c.");
         }
     }
 

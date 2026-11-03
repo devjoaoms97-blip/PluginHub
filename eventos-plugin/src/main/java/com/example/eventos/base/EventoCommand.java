@@ -1,7 +1,6 @@
 package com.example.eventos.base;
 
 import com.example.eventos.EventosPlugin;
-import com.example.eventos.util.Formato;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -70,7 +69,7 @@ public class EventoCommand implements TabExecutor {
             }
             case "cancelar" -> {
                 if (!admin) return semPermissao(sender);
-                if (ev.getFase() == null) sender.sendMessage("§cNão há " + ev.nome() + " aberto.");
+                if (ev.getFase() == null) sender.sendMessage("§cNão há " + ev.nome() + (ev.feminino() ? " aberta." : " aberto."));
                 else ev.cancelar("pela staff");
             }
             case "construir" -> {
@@ -82,7 +81,7 @@ public class EventoCommand implements TabExecutor {
                 } else {
                     ev.construir();
                     int[][] c = ev.caixa();
-                    sender.sendMessage("§aArena do " + ev.nome() + " construída. Caixa (AreasPlugin): §f[" + c[0][0] + ", " + c[0][1] + ", "
+                    sender.sendMessage("§aArena " + ev.doNome() + " construída. Caixa (AreasPlugin): §f[" + c[0][0] + ", " + c[0][1] + ", "
                             + c[0][2] + "] a [" + c[1][0] + ", " + c[1][1] + ", " + c[1][2] + "]");
                 }
             }
@@ -104,7 +103,7 @@ public class EventoCommand implements TabExecutor {
 
     private void info(CommandSender sender) {
         sender.sendMessage(ev.titulo());
-        sender.sendMessage("§7" + ev.descricao() + " O último de pé leva um cheque de §f" + Formato.valor(ev.premio()) + "§7.");
+        sender.sendMessage("§7" + ev.descricao() + " " + ev.textoPremio());
         sender.sendMessage("§7Grátis, com o §finventário totalmente vazio §7(nem armadura), uma inscrição por IP.");
         String agenda = String.join(" e ", ev.cfg().getStringList("agenda"));
         sender.sendMessage("§7Todo dia" + (agenda.isEmpty() ? " (sem agenda)" : " às §f" + agenda) + "§7.");

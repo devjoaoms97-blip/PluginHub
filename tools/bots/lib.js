@@ -43,7 +43,7 @@ async function console_(cmd) {
  * usam qualquer comando (ajuda.comandos.todos), não só os da lista do AjudaPlugin; { comandos: true }
  * deixa o bot só com a lista, como um jogador (teste-ajuda.js).
  */
-function criarBot(nome, { antiflood = false, comandos = false } = {}) {
+function criarBot(nome, { antiflood = false, comandos = false, empurroes = false } = {}) {
   return new Promise((ok, falha) => {
     const bot = mineflayer.createBot({ host: 'localhost', port: Number(props['server-port'] || 25565), username: nome, version: VERSAO })
     bot.mensagens = []
@@ -59,6 +59,14 @@ function criarBot(nome, { antiflood = false, comandos = false } = {}) {
       andar(d.text)
       const m = semCor(textos.join(''))
       bot.mensagens.push('[barra] ' + m); console.log(`  [barra ${nome}] ${m}`)
+    })
+    // empurrões do servidor (setVelocity dos plugins, golpes): o pacote novo já vem em blocos por tique, mas
+    // o Mineflayer ainda divide por 8000 (o formato antigo) e o bot fica parado. Só com { empurroes: true }
+    // (a Corrida): os testes de combate contam com o bot parado na frente do outro. O dele roda depois deste
+    // (os plugins do Mineflayer se registram depois): por isso o nextTick, que corrige em seguida.
+    bot._client.on('entity_velocity', p => {
+      if (!empurroes || !p.velocity || !bot.entity || p.entityId !== bot.entity.id) return
+      process.nextTick(() => bot.entity.velocity.set(p.velocity.x, p.velocity.y, p.velocity.z))
     })
     // o PacotePlugin manda o resource pack (obrigatório): o bot aceita, senão é desconectado
     bot.on('resourcePack', () => { try { bot.acceptResourcePack() } catch {} })

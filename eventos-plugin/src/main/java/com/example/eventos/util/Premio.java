@@ -8,6 +8,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.UUID;
+
 /**
  * Paga o prêmio de um evento: um cheque do servidor (ChequePlugin#chequeDoServidor, por reflexão), que
  * só vira dinheiro quando é depositado no Bancário. Sem o ChequePlugin, o valor cai direto na conta (Vault).
@@ -35,6 +37,19 @@ public class Premio {
         } else {
             plugin.getLogger().warning("Sem ChequePlugin e sem Vault: o prêmio de " + jogador.getName() + " não foi pago.");
         }
+    }
+
+    /** Pelo UUID: online, como {@link #pagar(Player, double, String)}; quem saiu do servidor recebe direto na conta (Vault). */
+    public void pagar(UUID jogador, double valor, String origem) {
+        if (valor <= 0) return;
+        Player online = Bukkit.getPlayer(jogador);
+        if (online != null) {
+            pagar(online, valor, origem);
+            return;
+        }
+        RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
+        if (rsp != null) rsp.getProvider().depositPlayer(Bukkit.getOfflinePlayer(jogador), valor);
+        else plugin.getLogger().warning("Sem Vault: o prêmio de " + jogador + " (offline) não foi pago.");
     }
 
     private ItemStack cheque(double valor, String origem) {

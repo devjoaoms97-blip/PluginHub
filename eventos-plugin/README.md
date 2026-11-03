@@ -1,6 +1,6 @@
 # EventosPlugin
 
-Eventos de arena do servidor: o **Vietnã** (`/vietna`), o **Spleef** (`/spleef`), o **Corre ou Cai** (`/correoucai`) e a **Sobrevivência** (`/sobrevivencia`). Só um fica aberto por vez (a agenda pula o horário se outro estiver aberto, e a staff não abre um segundo).
+Eventos de arena do servidor: o **Vietnã** (`/vietna`), o **Spleef** (`/spleef`), o **Corre ou Cai** (`/correoucai`), a **Sobrevivência** (`/sobrevivencia`) e a **Corrida Maluca** (`/corrida`). Só um fica aberto por vez (a agenda pula o horário se outro estiver aberto, e a staff não abre um segundo).
 
 ## O que todos têm em comum
 
@@ -86,6 +86,17 @@ O único de todos juntos: com o mesmo kit de ferro, contra 10 ondas de invasores
 - **Ondas** (`ondas.lista`, pra 1 jogador; cada jogador a mais põe 50% a mais de mobs e de vida nos chefes, `ondas.a-mais-por-jogador`): saqueadores e vingadores, bruxas a partir da 3 e evocadores a partir da 7. Chefes (`ondas.chefes`): **Capitão Saqueador** (vingador com 120 de vida e 1,5x de dano) na 5 e **Devastador** (300 de vida) na 10. Os invasores saem dos 4 portões em rodízio e vão atrás do jogador mais perto; as vexes do evocador entram na onda. Eles não deixam cair nada nem experiência. Entre as ondas, 10 s de pausa (`ondas.pausa-segundos`), com aviso no chat de quem está na arena ou na galeria. O `/sobrevivencia` mostra a onda e quantos invasores faltam.
 - **Regras**: os mobs machucam de verdade; um jogador não machuca outro (nem com flecha). **Morreu, está fora**: não deixa nada no chão (só o kit estava com ele) e renasce na galeria. Quem estiver vivo quando a última onda cair divide o cheque; se todos morrerem, ninguém ganha; depois de 20 minutos, quem estiver vivo divide.
 
+## Corrida Maluca
+
+Uma pista de obstáculos num pavilhão comprido e fechado de parque de diversões no mundo `arenas`, de (0, 1800) pro norte, uns 145 blocos: a pista tem 13 de largura sobre uma piscina, paredes de listras vermelhas e brancas com uma faixa amarela, pisos coloridos, bandeirinhas atravessando a pista, teto com claraboias e as passarelas de quem assiste dos dois lados, em cima das paredes, atrás de um vidro até o teto. Todo dia às **9:00** e às **14:00** (`corrida.agenda`). Decisões de 2026-11-02.
+
+- **Sem kit**: só correr e pular. **Ninguém sai por cair**: quem cai na água volta pro último checkpoint (são 2, entre os trechos).
+- **Prêmio por colocação** (`premios: [5000, 3000, 2000]`): os 3 primeiros a cruzar a chegada levam os cheques, na ordem (só o 1º conta vitória no `/corrida top`). Quem chega vai pra passarela. Acaba quando o 3º chega, quando todos chegam ou em 5 minutos (`luta.tempo-maximo-minutos`); o prêmio de quem não chegou não é pago. Quem sai do servidor antes do pagamento recebe na conta.
+- **Trecho 1**: o portão de vidro da largada abre no "valendo"; duas fileiras de 3 portas iguais em que só uma abre (sorteada a cada corrida, `portas.abertas-por-fileira`: some pra todos quando alguém encosta; a falsa só faz barulho); o trampolim de slime, que joga por cima de um vão (`trampolim`); e a pista de gelo com buracos.
+- **Trecho 2**: as plataformas que somem, em dois grupos em xadrez que se alternam (firme 3 s, vermelha 1 s, sumida 2 s: `plataformas`); e o tapete rolante estreito, com as setas pra trás, que empurra quem está em cima (`tapete`).
+- **Trecho 3**: dois discos com barras giratórias na altura do pé (uma barra e depois uma cruz: `barras`), feitas de blocos de exibição; quem não pula leva um empurrão pra fora. Depois, a ponte estreita do vento, com 4 canhões nas paredes que soltam carga de vento revezando (`vento`); e a chegada quadriculada, com um arco.
+- Todos os obstáculos são do plugin (sem redstone). A cada corrida, só o portão, as portas e as plataformas voltam.
+
 ## Quiz
 
 O único sem arena: uma rodada de perguntas no chat, todo dia às **12:00** e às **15:00** (`quiz.agenda`). Sem inscrição e sem mínimo de jogadores: responde quem estiver online, de onde estiver, com **`/quiz <resposta>`**. Roda junto com os outros eventos. Decisões de 2026-11-02.
@@ -102,7 +113,7 @@ A agenda de todos os eventos do servidor (o Quiz também): o que está rolando a
 
 ## Comandos
 
-Iguais em todos os eventos (`/vietna ...`, `/spleef ...`, `/correoucai ...` e `/sobrevivencia ...`):
+Iguais em todos os eventos (`/vietna ...`, `/spleef ...`, `/correoucai ...`, `/sobrevivencia ...` e `/corrida ...`):
 
 | Comando | O que faz |
 |---|---|
@@ -115,8 +126,8 @@ Staff (`eventos.admin`): `abrir`, `iniciar` (fecha as inscrições e começa ago
 
 ## Config
 
-Uma seção por evento no `config.yml` (`vietna:`, `spleef:`, `correoucai:` e `sobrevivencia:`), com as mesmas chaves comuns (agenda, inscrição, mínimo de jogadores, prêmio, tempos da luta, comandos liberados) e as de cada um: no Vietnã, os pilares que somem, o kit e o reabastecimento, a força dos empurrões e a arena; no Spleef, o derretimento, a Eficiência da pá e a arena (centro, raio, andares e distância entre eles); no Corre ou Cai, o tempo até o bloco sumir, a graça do começo e a arena; na Sobrevivência, o kit, as ondas, os chefes e a arena. Mudou uma arena? Atualize a caixa dela no config do AreasPlugin com o que o `/<evento> construir` mostra.
+Uma seção por evento no `config.yml` (`vietna:`, `spleef:`, `correoucai:`, `sobrevivencia:` e `corrida:`), com as mesmas chaves comuns (agenda, inscrição, mínimo de jogadores, prêmio, tempos da luta, comandos liberados) e as de cada um: no Vietnã, os pilares que somem, o kit e o reabastecimento, a força dos empurrões e a arena; no Spleef, o derretimento, a Eficiência da pá e a arena (centro, raio, andares e distância entre eles); no Corre ou Cai, o tempo até o bloco sumir, a graça do começo e a arena; na Sobrevivência, o kit, as ondas, os chefes e a arena; na Corrida, os prêmios por colocação, as portas, o trampolim, o tapete, as plataformas, as barras, o vento e a arena. Mudou uma arena? Atualize a caixa dela no config do AreasPlugin com o que o `/<evento> construir` mostra.
 
 ## Teste
 
-`node tools/bots/teste-vietna.js`, `node tools/bots/teste-spleef.js` e `node tools/bots/teste-correoucai.js`, `node tools/bots/teste-sobrevivencia.js` e `node tools/bots/teste-quiz.js`
+`node tools/bots/teste-vietna.js`, `node tools/bots/teste-spleef.js` e `node tools/bots/teste-correoucai.js`, `node tools/bots/teste-sobrevivencia.js`, `node tools/bots/teste-corrida.js` e `node tools/bots/teste-quiz.js`
