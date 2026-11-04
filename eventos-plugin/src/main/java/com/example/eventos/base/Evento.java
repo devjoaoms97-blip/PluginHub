@@ -80,6 +80,8 @@ public abstract class Evento {
     private final Set<Integer> avisosDados = new HashSet<>();
     private final Set<UUID> teleporteLiberado = new HashSet<>();
     private final Set<UUID> renascerNaGaleria = new HashSet<>();
+    /** Quem foi assistir (sem lutar) e de onde veio: no fim, volta pra lá. */
+    private final Map<UUID, Location> espectadores = new HashMap<>();
     private final Map<UUID, Integer> vitorias = new HashMap<>();
     private final Map<UUID, String> nomes = new HashMap<>();
 
@@ -492,9 +494,13 @@ public abstract class Evento {
         verificarVencedor();
     }
 
-    /** Onde quem morreu na luta renasce (a galeria), uma vez; null se não é o caso. */
+    /**
+     * Onde quem morreu na luta renasce (a galeria), uma vez; null se não é o caso. Se o evento acabou antes
+     * de ele renascer, renasce no lugar de sempre (a arquibancada já foi esvaziada).
+     */
     public Location tirarRenascer(UUID jogador) {
-        return renascerNaGaleria.remove(jogador) ? arquibancada() : null;
+        boolean rolando = fase == Fase.PREPARACAO || fase == Fase.LUTA;
+        return renascerNaGaleria.remove(jogador) && rolando ? arquibancada() : null;
     }
 
     /** Pra onde vai quem sai da pista sem perder (retirar): a arquibancada; na Corrida, a da chegada. */
@@ -580,6 +586,7 @@ public abstract class Evento {
     private void resetarDepois() {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (fase == Fase.FIM) {
+                esvaziarArquibancada();
                 resetar();
                 fase = null;
                 participantes.clear();
@@ -650,6 +657,7 @@ public abstract class Evento {
                 removerPendente(jogador);
             }
         }
+        if (naArena) esvaziarArquibancada();
         fase = null;
         participantes.clear();
         anunciar(titulo() + " §cCancelado: " + motivo + ".");
@@ -684,12 +692,44 @@ public abstract class Evento {
 
     // ---------------------------------------------------------------- assistir e volta
 
-    public void assistir(Player p) {
+    /**
+     * Vai pra arquibancada: só com o evento rolando (preparação ou luta), menos a staff. Guarda de onde veio,
+     * pra voltar pra lá no fim. false se não está rolando.
+     */
+    public boolean assistir(Player p) {
+        boolean rolando = fase == Fase.PREPARACAO || fase == Fase.LUTA;
+        if (!rolando && !plugin.isAdmin(p)) return false;
+        if (rolando && !naArquibancada(p.getLocation()) && !naArena(p.getLocation())) espectadores.putIfAbsent(p.getUniqueId(), p.getLocation());
         teleportar(p, arquibancada());
+        return true;
+    }
+
+    /**
+     * No fim (ou no cancelamento): ninguém fica na arquibancada (menos a staff). Quem lutou volta pra onde
+     * estava antes de se inscrever; quem só assistia, pra onde estava quando foi assistir; sem saber, pro saguão.
+     */
+    private void esvaziarArquibancada() {
+        World w = mundo();
+        if (w != null) {
+            for (Player p : w.getPlayers()) {
+                if (!naArquibancada(p.getLocation()) || plugin.isAdmin(p)) continue;
+                Participante part = participantes.get(p.getUniqueId());
+                Location volta = part != null ? part.retorno : espectadores.get(p.getUniqueId());
+                teleportar(p, volta != null ? volta : plugin.getSaguao().chegada());
+                p.sendMessage("§7" + prefixo() + " §7Acabou: você saiu da arquibancada.");
+            }
+        }
+        espectadores.clear();
     }
 
     /** Ao entrar no servidor: quem estava lutando quando caiu perde o kit e volta pra onde estava. */
     public void aoEntrar(Player p) {
+        // saiu do jogo na arquibancada e voltou com o evento já acabado: vai pro saguão
+        if (fase != Fase.PREPARACAO && fase != Fase.LUTA && naArquibancada(p.getLocation()) && !plugin.isAdmin(p)) {
+            teleportar(p, plugin.getSaguao().chegada());
+            p.sendMessage("§7" + prefixo() + " §7O evento já acabou: você está no saguão dos eventos.");
+            return;
+        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(arquivoPendentes);
         Location volta = yaml.getLocation(p.getUniqueId().toString());
         if (volta == null || lutando(p.getUniqueId()) != null) return;

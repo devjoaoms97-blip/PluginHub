@@ -3,7 +3,8 @@
 // da abertura tem o botão [ENTRAR]; quem se inscreve pelo comando, de fora, vem pro saguão, e pelo portal
 // fica nele; a barra do alto mostra quanto falta e quantos inscritos; sair do saguão cancela a inscrição;
 // o /<evento> sair e o cancelamento devolvem pra onde estava; com a luta rolando, o portal leva pra
-// arquibancada; e o portal da frente volta pro spawn.
+// arquibancada (só durante o evento: sem nada rolando, o /<evento> assistir não leva), e no fim ninguém
+// fica na arquibancada; e o portal da frente volta pro spawn.
 // Uso: node teste-saguao.js
 const { Vec3 } = require('vec3')
 const t = require('./lib')
@@ -74,6 +75,10 @@ t.rodar(async () => {
     let msgs = await entrarNoPortal(a, 'corrida')
     t.verificar(msgs.some(m => m.includes('abre') && /(hoje|amanhã) \d\d:\d\d/.test(m)), 'diz quando abre', msgs.find(m => m.includes('abre')))
 
+    console.log('\n== Assistir, sem nada rolando ==')
+    msgs = await t.capturar(b, () => b.chat('/corrida assistir'), 1200)
+    t.verificar(msgs.some(m => m.includes('não está rolando')) && noSpawn(b), 'sem o evento rolando, /corrida assistir não leva', msgs.find(m => m.includes('rolando')))
+
     console.log('\n== Inscrição ==')
     msgs = await t.capturar(b, () => t.console('corrida abrir'), 800)
     t.verificar(msgs.some(m => m.includes('[ENTRAR]')), 'o anúncio da abertura tem o botão [ENTRAR]', msgs.find(m => m.includes('ENTRAR')))
@@ -115,9 +120,15 @@ t.rodar(async () => {
     await t.espera(500)
     msgs = await entrarNoPortal(c, 'correoucai')
     t.verificar(msgs.some(m => m.includes('Na arquibancada')) && !noSaguao(c), 'o portal leva pra arquibancada', `${pos(c).floored()}`)
+    await paraSpawn(b)
+    await t.espera(500)
+    await t.capturar(b, () => b.chat('/correoucai assistir'), 1500)
+    t.verificar(!noSpawn(b), 'com o evento rolando, /correoucai assistir leva', `${pos(b).floored()}`)
     await t.console('correoucai cancelar')
     await t.espera(1000)
     t.verificar(noSaguao(a) && noSpawn(d), 'no fim, cada um volta pra onde estava (o A pro saguão, o D pro spawn)', `${pos(a).floored()} | ${pos(d).floored()}`)
+    t.verificar(noSaguao(c) && noSpawn(b), 'e ninguém fica na arquibancada: quem assistia volta de onde veio (o C pro saguão, o B pro spawn)',
+      `${pos(c).floored()} | ${pos(b).floored()}`)
 
     console.log('\n== De volta pro spawn ==')
     await tp(a, CX + 0.5, Y, VOLTA - 3.5, 0)

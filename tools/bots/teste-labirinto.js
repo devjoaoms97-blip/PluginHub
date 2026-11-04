@@ -89,6 +89,9 @@ t.rodar(async () => {
     const p0 = pos(a).floored()
     const escuro = await t.console(`execute in minecraft:arenas positioned ${p0.x} ${p0.y} ${p0.z} if predicate {condition:"minecraft:location_check",predicate:{light:{light:{max:0}}}}`)
     t.verificar(/passed/i.test(escuro), 'lá dentro é escuro: luz 0, nem do céu', escuro)
+    const efeitos = await t.console(`data get entity ${a.username} active_effects`)
+    t.verificar(/darkness/.test(efeitos), 'e quem luta fica com o efeito Escuridão (pulsos, sem enxergar longe)', efeitos.slice(0, 120))
+    t.verificar(!/darkness/.test(await t.console(`data get entity ${d.username} active_effects`)), 'quem assiste, não')
     const bausA = baus(a)
     t.verificar(bausA.length >= 15, 'os baús estão no labirinto', `${bausA.length} baús`)
     if (bausA.length) {
@@ -141,6 +144,7 @@ t.rodar(async () => {
     t.verificar(!!venceu && venceu.includes(a.username) && venceu.includes('10.000'), 'o último vivo vence e leva R$ 10.000', venceu)
     t.verificar(await quantos(a.username, 'paper') === 1 && await quantos(a.username, 'iron_sword') === 0, 'o vencedor leva o cheque e perde o que achou')
     t.verificar(!noLabirinto(a) && !noTeto(a), 'e volta pra onde estava', `${pos(a).floored()}`)
+    t.verificar(!/darkness/.test(await t.console(`data get entity ${a.username} active_effects`)), 'sem a Escuridão')
     await t.espera(2500)
     t.verificar(await conta(husk) === 0 && await conta(`@e[type=minecraft:item_display,${CAIXA}]`) === 0, 'o Fauno some no fim')
 

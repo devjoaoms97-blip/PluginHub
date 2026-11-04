@@ -327,6 +327,10 @@ labirinto:
     preparacao-segundos: 10
     tempo-maximo-minutos: 10
 
+  # Quem luta fica com o efeito Escuridão (o do Warden): a tela escurece em pulsos, sem ligar pro brilho do
+  # jogo de cada um, e uma névoa preta esconde o que está longe (nem o céu pelo vidro do teto se vê).
+  escuridao: true
+
   baus:
     quantos: 20
     # de quantos a quantos itens cada baú tem

@@ -42,9 +42,10 @@ public class EventoCommand implements TabExecutor {
                 if (!(sender instanceof Player p)) return semConsole(sender);
                 if (plugin.eventoLutando(p.getUniqueId()) != null) {
                     p.sendMessage("§cVocê está lutando!");
+                } else if (ev.assistir(p)) {
+                    p.sendMessage(pre + "§7Na arquibancada. Pra sair: §f/spawn§7. No fim, você volta pra onde estava.");
                 } else {
-                    ev.assistir(p);
-                    p.sendMessage(pre + "§7Na arquibancada. Pra sair: §f/spawn§7.");
+                    p.sendMessage("§c" + ev.nome() + " não está rolando agora: dá pra assistir só durante o evento. Agenda: §f/eventos");
                 }
             }
             case "top" -> {

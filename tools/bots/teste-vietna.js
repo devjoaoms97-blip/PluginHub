@@ -117,7 +117,14 @@ t.rodar(async () => {
     t.verificar(await quantos(a.username, 'paper') === 1, 'e ganha o cheque', msgsA.find(m => m.includes('cheque')))
     t.verificar(a.entity.position.distanceTo(new Vec3(0.5, 65, 43.5)) < 3, 'e volta pra onde estava', `${a.entity.position.floored()}`)
     await t.espera(2500)
-    t.verificar(pilaresDePe() === 36, 'a arena volta inteira depois', `${pilaresDePe()} de 36`)
+    // pelo servidor: no fim, quem assistia (o D) sai da arquibancada e não enxerga mais os pilares
+    let inteiros = 0
+    await t.console('execute in minecraft:arenas run forceload add -20 580 20 620')
+    for (const [x, z] of PILARES) {
+      if (/passed/i.test(await t.console(`execute in minecraft:arenas if block ${x} ${TOPO} ${z} minecraft:moss_block`))) inteiros++
+    }
+    await t.console('execute in minecraft:arenas run forceload remove -20 580 20 620')
+    t.verificar(inteiros === 36, 'a arena volta inteira depois', `${inteiros} de 36`)
     msgs = await t.capturar(d, () => d.chat('/spawn'), 4500)
     t.verificar(!naArquibancada(d), 'da arquibancada, /spawn funciona', `${d.entity.position.floored()}`)
 

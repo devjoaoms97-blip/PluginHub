@@ -34,6 +34,8 @@ import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
@@ -53,7 +55,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * O Labirinto do Fauno: PvP num labirinto escuro, sorteado a cada evento, com baús escondidos nos becos sem
  * saída. Todos entram sem nada; o que se acha nos baús é do evento (some no fim, como o kit dos outros).
  * Morreu (pra outro jogador ou pro Fauno), está fora e vai pra cima do teto assistir. O último vivo leva o
- * cheque; se o tempo acabar com mais de um vivo, ninguém vence.
+ * cheque; se o tempo acabar com mais de um vivo, ninguém vence. Quem luta fica com o efeito Escuridão
+ * (pulsos de visão, sem enxergar nada lá fora), que o brilho do jogo de cada um não clareia.
  * <p>
  * O Fauno acorda na clareira do meio uns segundos depois da largada e caça o jogador vivo mais perto. Ele
  * não morre (ninguém acerta ele): só dá pra fugir. É um mob invisível (um husk, que anda e bate) carregando
@@ -287,6 +290,26 @@ public class LabirintoDoFauno extends Evento implements Listener {
 
     // ---------------------------------------------------------------- luta
 
+    /** Já no labirinto, antes do "valendo": a escuridão começa. */
+    @Override
+    protected void aoComecarPreparacao(int segundos) {
+        escurecer();
+    }
+
+    /**
+     * O efeito Escuridão (o do Warden) em quem luta: escurece a tela em pulsos, ignorando o brilho do jogo de
+     * cada um, e fecha uma névoa preta em volta (não se vê o céu pelo vidro do teto). Sai junto com o kit, no
+     * fim; quem morre perde na morte. Quem assiste, em cima do teto, não tem.
+     */
+    private void escurecer() {
+        if (!cfg().getBoolean("escuridao", true)) return;
+        for (Player p : jogadoresVivos()) {
+            if (!p.hasPotionEffect(PotionEffectType.DARKNESS)) {
+                p.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS, PotionEffect.INFINITE_DURATION, 0, false, false, false));
+            }
+        }
+    }
+
     @Override
     protected void aoComecarLuta(long agora) {
         segundos = 0;
@@ -299,6 +322,7 @@ public class LabirintoDoFauno extends Evento implements Listener {
     @Override
     protected void tickLuta(long agora) {
         segundos++;
+        escurecer();
         if (fauno == null && agora >= acordaEm) acordarFauno();
         if (mobDoFauno() instanceof Husk h) {
             mirar(h);

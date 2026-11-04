@@ -111,7 +111,7 @@ Uma pista de obstáculos num pavilhão comprido e fechado no mundo `arenas`, uns
 
 ## Labirinto do Fauno
 
-PvP num labirinto escuro no mundo `arenas`, em (-200, 1800): 21 x 21 células (64 x 64 blocos), corredores de 2, paredes de sculk de 4 de altura e teto de vidro escurecido, sem luz nenhuma lá dentro (só o brilho das paredes). Todo dia às **8:00** e às **23:00** (`labirinto.agenda`). Decisões de 2026-11-04.
+PvP num labirinto escuro no mundo `arenas`, em (-200, 1800): 21 x 21 células (64 x 64 blocos), corredores de 2, paredes de sculk de 4 de altura e teto de vidro escurecido, sem luz nenhuma lá dentro (só o brilho das paredes). Quem luta fica com o **efeito Escuridão** (o do Warden, `escuridao`): a tela escurece em pulsos, sem ligar pro brilho do jogo de cada um, e uma névoa preta esconde o que está longe, até o céu pelo vidro do teto. Todo dia às **8:00** e às **23:00** (`labirinto.agenda`). Decisões de 2026-11-04.
 
 - **Um labirinto novo a cada evento**: um caminho aleatório que passa por todas as células, alguns atalhos a mais (`arena.atalhos`, pra ter mais de um caminho) e uma clareira de 3 x 3 células no meio. Cada um nasce numa célula da borda, espalhados por igual em volta, olhando pro meio.
 - **Sem kit**: todos entram sem nada. Os **baús** (`baus.quantos`: 20) ficam nos becos sem saída, com 2 a 4 itens sorteados da tabela (`baus.tabela`, pelo peso): espadas, machados, arco e flechas, escudo, armaduras de couro a diamante (as de diamante, raras) e maçãs douradas. **O que se acha é do evento**: some no fim, de todo mundo (o vencedor leva só o cheque).
@@ -161,7 +161,7 @@ Iguais em todos os eventos (`/vietna ...`, `/spleef ...`, `/correoucai ...`, `/s
 |---|---|
 | `/<evento>` ou `/<evento> info` | Como funciona, a agenda e o que está acontecendo agora |
 | `/<evento> entrar` / `/<evento> sair` | Inscrição (sair só antes de começar) |
-| `/<evento> assistir` | Vai pra arquibancada |
+| `/<evento> assistir` | Vai pra arquibancada, só com o evento rolando (a staff, sempre). No fim, todos saem de lá: quem lutou volta pra onde estava antes de se inscrever, quem só assistia pra onde estava quando foi assistir (sem saber, pro saguão dos eventos) |
 | `/<evento> top` | Quem mais venceu |
 
 Staff (`eventos.admin`): `abrir`, `iniciar` (fecha as inscrições e começa agora), `cancelar`, `construir` (refaz a arena e mostra a caixa pro AreasPlugin) e `reload` (recarrega o config de todos). O saguão dos eventos: `/eventos construir`.
