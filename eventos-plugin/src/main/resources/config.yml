@@ -307,6 +307,84 @@ corrida:
   comandos-liberados: [corrida, spawn]
 
 # ---------------------------------------------------------------------------------------------
+# Labirinto do Fauno: PvP num labirinto escuro, sorteado de novo a cada evento, com baús escondidos nos
+# becos sem saída. Todos entram sem nada; o que se acha nos baús é do evento e some no fim (como o kit dos
+# outros). Morreu, está fora e vai pra cima do teto assistir. O Fauno acorda na clareira do meio e caça o
+# vivo mais perto: não morre, só dá pra fugir. O último vivo leva o prêmio; se o tempo acabar com mais de
+# um vivo, ninguém vence. Mesmas regras de inscrição dos outros. Decisões de 2026-11-04.
+# ---------------------------------------------------------------------------------------------
+labirinto:
+  agenda: ["08:00", "23:00"]
+
+  inscricao:
+    duracao-segundos: 180
+    avisos-segundos: [120, 60, 30, 10]
+  minimo-jogadores: 3
+  # só pro último vivo (no tempo, com mais de um vivo, ninguém leva)
+  premio: 10000
+
+  luta:
+    preparacao-segundos: 10
+    tempo-maximo-minutos: 10
+
+  baus:
+    quantos: 20
+    # de quantos a quantos itens cada baú tem
+    itens-por-bau: [2, 4]
+    # o sorteio de cada item: quanto maior o peso, mais comum ("quantidade": [min, max] ou um número)
+    tabela:
+      - {item: WOODEN_SWORD, peso: 8}
+      - {item: STONE_SWORD, peso: 10}
+      - {item: IRON_SWORD, peso: 5}
+      - {item: DIAMOND_SWORD, peso: 1}
+      - {item: STONE_AXE, peso: 4}
+      - {item: IRON_AXE, peso: 2}
+      - {item: BOW, peso: 4}
+      - {item: ARROW, peso: 8, quantidade: [4, 12]}
+      - {item: SHIELD, peso: 3}
+      - {item: LEATHER_HELMET, peso: 5}
+      - {item: LEATHER_CHESTPLATE, peso: 5}
+      - {item: LEATHER_LEGGINGS, peso: 5}
+      - {item: LEATHER_BOOTS, peso: 5}
+      - {item: CHAINMAIL_HELMET, peso: 3}
+      - {item: CHAINMAIL_CHESTPLATE, peso: 3}
+      - {item: CHAINMAIL_LEGGINGS, peso: 3}
+      - {item: CHAINMAIL_BOOTS, peso: 3}
+      - {item: IRON_HELMET, peso: 2}
+      - {item: IRON_CHESTPLATE, peso: 2}
+      - {item: IRON_LEGGINGS, peso: 2}
+      - {item: IRON_BOOTS, peso: 2}
+      - {item: DIAMOND_HELMET, peso: 1}
+      - {item: DIAMOND_CHESTPLATE, peso: 1}
+      - {item: GOLDEN_APPLE, peso: 4, quantidade: [1, 2]}
+
+  # O Fauno: acorda na clareira do meio uns segundos depois da largada e vai atrás do vivo mais perto.
+  # Ninguém acerta ele. "dano" é o golpe (em pontos de vida: 2 = 1 coração, antes da armadura);
+  # "velocidade" é a do mob (o zumbi anda a 0.23: correndo, dá pra fugir); "escala" é o tamanho (1.5 = 3
+  # blocos de altura); "brilho" (0 a 15) é quanto o modelo aparece no escuro; "coracao-blocos" é de quão
+  # longe se ouve o coração dele.
+  fauno:
+    acorda-segundos: 45
+    dano: 7
+    velocidade: 0.25
+    escala: 1.5
+    brilho: 2
+    coracao-blocos: 14
+
+  # O labirinto, construído pelo plugin (/labirinto construir) e sorteado de novo a cada evento. "celulas"
+  # por lado (ímpar), "corredor" é a largura dos corredores (as paredes têm 1): 21 x 3 + 1 = 64 blocos de
+  # lado. "atalhos" é a chance de cada parede a mais cair (mais de um caminho). "chao-y" é o bloco do chão.
+  arena:
+    mundo: arenas
+    centro: [-200, 1800]
+    chao-y: 64
+    celulas: 21
+    corredor: 2
+    atalhos: 0.08
+
+  comandos-liberados: [labirinto, spawn]
+
+# ---------------------------------------------------------------------------------------------
 # Quiz: uma rodada de perguntas no chat, sem arena e sem inscrição (responde quem estiver online, de
 # onde estiver, com /quiz <resposta>). Cada pergunta vale 1 ponto pra quem acertar primeiro; quem fizer
 # mais pontos leva o prêmio (dividido no empate). A resposta não liga pra acento, maiúscula nem pra

@@ -28,7 +28,8 @@ import java.util.Locale;
  * As regras de todos os eventos de arena:
  * <ul>
  *   <li>Ninguém perde vida: todo dano em quem está lutando é cancelado. Um projétil de outro participante
- *       chama {@link Evento#aoAcertar} (o Vietnã empurra); soco não faz nada.</li>
+ *       chama {@link Evento#aoAcertar} (o Vietnã empurra); soco não faz nada. No Labirinto ({@link Evento#pvp}),
+ *       quem luta machuca os outros que lutam no mesmo evento.</li>
  *   <li>Caiu (na água): {@link Evento#aoCair} (eliminado e vai pra arquibancada; na Corrida, volta pro
  *       checkpoint). Desconectou: eliminado e volta pra onde estava.</li>
  *   <li>Na arena e na arquibancada só valem os comandos de {@code comandos-liberados} do evento (lutando,
@@ -69,6 +70,9 @@ public class EventosListener implements Listener {
         if (daVitima != null && batedor == null && daVitima.danoDeMobs() && daVitima.getFase() == Evento.Fase.LUTA) return;
         Evento doBatedor = batedor == null ? null : lutando(batedor);
         if (daVitima == null && doBatedor != null && doBatedor.podeAcertar(evento.getEntity())) return;
+        // o Labirinto: PvP de verdade entre quem luta nele
+        if (daVitima != null && doBatedor == daVitima && batedor != evento.getEntity() && daVitima.pvp()
+                && daVitima.getFase() == Evento.Fase.LUTA) return;
         // quem está fora não acerta quem luta, e quem luta não acerta ninguém de fora
         if (daVitima == null && doBatedor == null) return;
         evento.setCancelled(true);
@@ -85,12 +89,14 @@ public class EventosListener implements Listener {
         if (e != null && !(e.danoDeMobs() && e.getFase() == Evento.Fase.LUTA)) evento.setCancelled(true);
     }
 
-    /** Morreu na luta (a Sobrevivência): o kit não cai, nem a experiência, e está fora. */
+    /** Morreu na luta (a Sobrevivência, o Labirinto): o kit não cai, nem a experiência, e está fora. */
     @EventHandler(priority = EventPriority.HIGH)
     public void aoMorrer(org.bukkit.event.entity.PlayerDeathEvent evento) {
         Player p = evento.getPlayer();
         Evento e = lutando(p);
         if (e == null) return;
+        // nem com keepInventory: o que ele tinha era do evento
+        evento.setKeepInventory(false);
         evento.getDrops().clear();
         evento.setDroppedExp(0);
         evento.setKeepLevel(true);

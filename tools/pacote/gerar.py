@@ -17,6 +17,8 @@ Tudo fica no namespace "servidor":
   caixas, o item montaria_<id> (parado) e montaria_<id>_0..3 (o ciclo andando), todos com a textura de
   paleta item/montaria_paleta; e o equipamento "invisivel" (sem camada nenhuma), que esconde a sela do
   cavalo invisível que carrega o modelo;
+- criaturas (montarias.py, CRIATURAS): o mesmo tipo de modelo, pros plugins: o item criatura_<id> e
+  criatura_<id>_0..3 (andando). O Fauno do Labirinto (EventosPlugin) é um mob invisível carregando um deles;
 - asas e chapéus de terceiros (terceiros/artillex, ver o LEIA-ME de lá): os modelos vêm prontos; aqui só
   mudam de lugar (texturas em servidor:item/asas e servidor:item/chapeus) e ganham os itens asa_<id> e chapeu_<id>;
 - ícones das montarias do FreeMinecraftModels (terceiros/frenchkrab): icones.py desenha o .bbmodel inteiro
@@ -103,6 +105,11 @@ def montar():
             nome = f"montaria_{bicho}" if quadro == "parado" else f"montaria_{bicho}_{quadro}"
             j(f"assets/servidor/models/montaria/{nome}.json", MO.modelo(bicho, quadro, indices))
             j(f"assets/servidor/items/{nome}.json", {"model": {"type": "minecraft:model", "model": f"servidor:montaria/{nome}"}})
+    for criatura in MO.CRIATURAS:
+        for quadro in MO.QUADROS:
+            nome = f"criatura_{criatura}" if quadro == "parado" else f"criatura_{criatura}_{quadro}"
+            j(f"assets/servidor/models/criatura/{nome}.json", MO.modelo(criatura, quadro, indices))
+            j(f"assets/servidor/items/{nome}.json", {"model": {"type": "minecraft:model", "model": f"servidor:criatura/{nome}"}})
     j("assets/servidor/equipment/invisivel.json", {"layers": {}})
 
     for pasta, (tipo, prefixo, antigo) in PACOTES_DE_TERCEIROS.items():

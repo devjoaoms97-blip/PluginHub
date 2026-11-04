@@ -23,7 +23,7 @@ async function voltar(bots) {
 }
 
 t.rodar(async () => {
-  for (const e of ['vietna', 'spleef', 'correoucai', 'sobrevivencia', 'corrida']) await t.console(`${e} cancelar`)
+  for (const e of ['vietna', 'spleef', 'correoucai', 'sobrevivencia', 'corrida', 'labirinto']) await t.console(`${e} cancelar`)
   const a = await t.criarBot(t.nomeNovo('Rka'))
   const b = await t.criarBot(t.nomeNovo('Rkb'))
   const todos = [a, b]

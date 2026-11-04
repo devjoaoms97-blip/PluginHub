@@ -238,6 +238,53 @@ BICHOS = {
 QUADROS = ("parado", "0", "1", "2", "3")
 
 
+# ---------------------------------------------------------------- criaturas (não são montaria)
+
+def fauno():
+    """
+    O Fauno do Labirinto (EventosPlugin): alto e magro, em pé, de casca de árvore com musgo, pernas de bode
+    com cascos, braços compridos de dedos longos, cara comprida e chifres de carneiro enrolados dos lados.
+    Uns 3,6 blocos de altura, de frente pra +z.
+    """
+    CASCA, CASCA_ESC, MUSGO, CHIFRE, CHIFRE_ESC, OLHO, CABELO, CASCO = (
+        (104, 86, 64), (66, 54, 42), (78, 98, 54), (168, 150, 118), (116, 100, 76), (214, 210, 172), (58, 48, 38), (40, 34, 30))
+    c = [
+        Caixa((-5, 24, -3), (5, 30, 3), CASCA_ESC),  # quadril
+        Caixa((-6, 30, -3), (6, 44, 3), CASCA),  # tronco, comprido e fino
+        Caixa((-4, 32, 3), (-3, 42, 3.4), CASCA_ESC),  # sulcos da casca
+        Caixa((1, 31, 3), (2, 40, 3.4), CASCA_ESC),
+        Caixa((3.5, 35, 3), (4.5, 43, 3.4), CASCA_ESC),
+        Caixa((-5, 38, 3), (-1, 41, 3.5), MUSGO),
+        Caixa((-2, 44, -1), (2, 47, 2), CASCA_ESC),  # pescoço
+        Caixa((-4, 47, -3), (4, 56, 4), CASCA),  # cabeça comprida
+        Caixa((-2.5, 47, 4), (2.5, 52, 6.5), CASCA),  # focinho
+        Caixa((-1.5, 47, 6.5), (1.5, 48.5, 7), CASCA_ESC),
+        Caixa((-4.5, 40, -4.5), (4.5, 56, -3), CABELO),  # a juba que desce pelas costas
+        Caixa((-3, 55, -3.2), (3, 56.6, 3), MUSGO),  # musgo no alto da cabeça
+    ]
+    c += par(Caixa((1.2, 52, 4), (3.4, 53.6, 4.4), OLHO))  # olhos claros
+    # chifres de carneiro: saem do alto da cabeça, vão pra trás, descem e voltam pra frente
+    c += par(Caixa((3.5, 55, -3), (7.5, 58, 1), CHIFRE))
+    c += par(Caixa((7, 51.5, -5.5), (10.5, 57, -1), CHIFRE))
+    c += par(Caixa((7.5, 47.5, -3.5), (10.5, 52, 1), CHIFRE_ESC))
+    c += par(Caixa((6.5, 46.5, 1), (9.5, 49.5, 3.5), CHIFRE_ESC))
+    c += par(Caixa((5, 42, -3.3), (8, 45, 3.3), MUSGO))  # ombros com musgo
+    # braços compridos (até o joelho) com os dedos longos, balançando ao contrário das pernas
+    c += par(Caixa((6, 20, -1.5), (9, 44, 1.5), CASCA, "braco_e"))
+    c += par(Caixa((6.3, 13, -1.2), (8.7, 20, 1.6), CASCA_ESC, "braco_e"))
+    # pernas de bode, com cascos
+    for p in perna(1.5, 5, -2, 2, 26, CASCA_ESC, "pe_fe", CASCO):
+        c += par(p)
+    c += par(Caixa((1.2, 18, -2.4), (5.3, 26, 2.4), CABELO, "pe_fe"))  # pelo da coxa
+    return c
+
+
+# id -> (desenho, tipo de animação): modelos pros plugins (o item criatura_<id>), fora da loja de montarias
+CRIATURAS = {
+    "fauno": (fauno, "bipede"),
+}
+
+
 def _animar(caixas, tipo, quadro):
     """As caixas do quadro: as dos grupos ganham a rotação do momento (perna ±22,5°, asa batendo, onda)."""
     perna = {"parado": 0, "0": 22.5, "1": 0, "2": -22.5, "3": 0}[quadro]
@@ -250,7 +297,12 @@ def _animar(caixas, tipo, quadro):
             saida.append(c)
             continue
         (x0, y0, z0), (x1, y1, z1) = c.de, c.ate
-        if g.startswith("pe_"):
+        if g.startswith("braco_"):
+            # o braço balança ao contrário da perna do mesmo lado, girando no ombro
+            ang = -perna if g == "braco_e" else perna
+            ombro = max(cc.ate[1] for cc in caixas if cc.grupo == g)
+            saida.append(Caixa(c.de, c.ate, c.cor, None, ("x", ang, ((x0 + x1) / 2, ombro, 0)) if ang else None))
+        elif g.startswith("pe_"):
             ang = perna if g in ("pe_fe", "pe_td") else -perna
             # a pata vai junto com a perna: gira no topo da perna (altura do grupo inteiro)
             topo = max(cc.ate[1] for cc in caixas if cc.grupo == g and abs(cc.de[0] - x0) < 1)
@@ -280,7 +332,7 @@ def _ruido(x, y):
 def paleta():
     """Todas as cores dos bichos, cada uma num quadrado 4x4 da textura. Devolve (imagem, cor -> índice)."""
     cores = []
-    for desenho, _ in BICHOS.values():
+    for desenho, _ in list(BICHOS.values()) + list(CRIATURAS.values()):
         for c in desenho():
             if c.cor not in cores:
                 cores.append(c.cor)
@@ -303,7 +355,7 @@ def _m(p):
 
 
 def modelo(id_, quadro, indices):
-    desenho, tipo = BICHOS[id_]
+    desenho, tipo = BICHOS[id_] if id_ in BICHOS else CRIATURAS[id_]
     caixas = _animar(desenho(), tipo, quadro)
     por_linha = ATLAS // CELULA
     unidade = 16 / (ATLAS // CELULA)  # tamanho de uma célula em coordenadas de uv (0..16)

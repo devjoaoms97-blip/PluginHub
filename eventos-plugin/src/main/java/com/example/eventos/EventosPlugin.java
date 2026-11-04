@@ -5,6 +5,7 @@ import com.example.eventos.base.EventoCommand;
 import com.example.eventos.base.EventosListener;
 import com.example.eventos.correoucai.CorreOuCai;
 import com.example.eventos.corrida.CorridaMaluca;
+import com.example.eventos.labirinto.LabirintoDoFauno;
 import com.example.eventos.quiz.Quiz;
 import com.example.eventos.quiz.QuizCommand;
 import com.example.eventos.sobrevivencia.Sobrevivencia;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Eventos do servidor: o Vietnã ({@link Vietna}), o Spleef ({@link Spleef}), o Corre ou Cai ({@link CorreOuCai}), a Sobrevivência ({@link Sobrevivencia}) e a Corrida Maluca ({@link CorridaMaluca}). Cada um abre sozinho nos
+ * Eventos do servidor: o Vietnã ({@link Vietna}), o Spleef ({@link Spleef}), o Corre ou Cai ({@link CorreOuCai}), a Sobrevivência ({@link Sobrevivencia}), a Corrida Maluca ({@link CorridaMaluca}) e o Labirinto do Fauno ({@link LabirintoDoFauno}). Cada um abre sozinho nos
  * horários de {@code <evento>.agenda}, e só um fica aberto por vez. O que é comum a todos (inscrição,
  * regras, prêmio) está em {@link Evento} e {@link EventosListener}.
  */
@@ -45,7 +46,7 @@ public class EventosPlugin extends JavaPlugin {
         QuizCommand comandoQuiz = new QuizCommand(this);
         getCommand("quiz").setExecutor(comandoQuiz);
         getCommand("quiz").setTabCompleter(comandoQuiz);
-        this.eventos = List.of(new Vietna(this), new Spleef(this), new CorreOuCai(this), new Sobrevivencia(this), new CorridaMaluca(this));
+        this.eventos = List.of(new Vietna(this), new Spleef(this), new CorreOuCai(this), new Sobrevivencia(this), new CorridaMaluca(this), new LabirintoDoFauno(this));
 
         for (Evento e : eventos) {
             EventoCommand comando = new EventoCommand(this, e);

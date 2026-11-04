@@ -63,6 +63,9 @@ pvp-so-nas-caixas:
     - {nome: "arena do vietnã", min: [-16, 60, 584], max: [16, 81, 616]}
     # A torre do Spleef (EventosPlugin) por dentro da parede, com os 3 pisos de neve; a galeria fica fora.
     - {nome: "arena do spleef", min: [-16, 60, 884], max: [16, 93, 916]}
+    # O Labirinto do Fauno (EventosPlugin), do chão ao teto de vidro escurecido: lá o PvP é de verdade, só
+    # entre quem luta (o EventosPlugin decide). Quem assiste, em cima do teto, fica fora.
+    - {nome: "labirinto do fauno", min: [-232, 63, 1768], max: [-169, 69, 1831]}
 
 # Caixas (de pvp-so-nas-caixas) em que a carga de vento vale, mesmo com bloquear.carga-de-vento: o
 # Vietnã usa ela pra empurrar e pra pular de um pilar pro outro.
@@ -85,7 +88,7 @@ teleporte-por-comando:
 # acima em pvp-so-nas-caixas; as câmaras do tesouro são dinâmicas e vêm do TesourosPlugin.
 sethome:
   comandos: [sethome, createhome]
-  caixas-pvp: ["arena do boss", "piso do X1", "piso do coliseu", "arena do vietnã", "arena do spleef"]
+  caixas-pvp: ["arena do boss", "piso do X1", "piso do coliseu", "arena do vietnã", "arena do spleef", "labirinto do fauno"]
   camaras-do-tesouro: true
 
 # %coisa% vira o que foi barrado ("voar", "usar pérola do fim"...).

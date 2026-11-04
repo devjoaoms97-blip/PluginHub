@@ -19,12 +19,13 @@
 //     spawn      o spawn inteiro (EstruturasPlugin "spring"), as barracas dele e os hologramas da fonte
 //     barracas   só as 32 barracas do spawn (redesenha e cadastra as que faltam; aluguéis e NPCs ficam)
 //     arenas     saguão, X1 ("axepvp") e Gladiador ("coliseu"), bem longe um do outro, e limpa o que
-//                sobrou das versões anteriores no mundo das arenas (e faz o vietna, o spleef, o correoucai, a sobrevivencia e a corrida junto)
+//                sobrou das versões anteriores no mundo das arenas (e faz o vietna, o spleef, o correoucai, a sobrevivencia, a corrida e o labirinto junto)
 //     vietna     só a arena do Vietnã (EventosPlugin) e o holograma dele no saguão das arenas
 //     spleef     só a arena do Spleef (EventosPlugin) e o holograma dele no saguão das arenas
 //     correoucai só a arena do Corre ou Cai (EventosPlugin) e o holograma dele no saguão das arenas
 //     sobrevivencia  só o castelo da Sobrevivência (EventosPlugin) e o holograma dele no saguão das arenas
 //     corrida    só a pista da Corrida Maluca (EventosPlugin) e o holograma dela no saguão das arenas
+//     labirinto  só o Labirinto do Fauno (EventosPlugin) e o holograma dele no saguão das arenas
 //     marcar     spawn dos jogadores, warps e local do boss (com o bot da staff)
 //     limpar-antigo   apaga o mapa antigo (praça, mercado, loja, portais e as barracas n1..n8, e1, e2).
 //                     Só uma vez, ao trocar o mapa antigo por este, e ANTES do spawn: fora isso, apagaria
@@ -350,6 +351,7 @@ async function construirArenas() {
   await construirCorreOuCai()
   await construirSobrevivencia()
   await construirCorrida()
+  await construirLabirinto()
 }
 
 // O EventosPlugin constrói as arenas dos eventos (e de novo a cada evento). No saguão das arenas, um
@@ -378,6 +380,13 @@ async function construirCorrida() {
   console.log(await t.console('corrida construir'))
   // na parede leste, de frente pro da Sobrevivência
   await holograma('arenas', [6, CHAO + 1, 2], [['/corrida', 'yellow'], ['todo dia, 9h e 14h', null], ['/corrida assistir', 'gray'], ['', null]])
+}
+
+async function construirLabirinto() {
+  console.log('\n== Labirinto do Fauno (-200, 1800) e holograma no saguão ==')
+  console.log(await t.console('labirinto construir'))
+  // na parede oeste, entre o do Vietnã e o da Sobrevivência
+  await holograma('arenas', [-6, CHAO + 1, -1], [['/labirinto', 'dark_green'], ['todo dia, 8h e 23h', null], ['/labirinto assistir', 'gray'], ['', null]])
 }
 
 async function construirSpleef() {
@@ -423,6 +432,7 @@ const DICAS = [
     '&fE às &e12h&f e às &e15h&f tem &eQuiz&f no chat: responda com &e/quiz <resposta>&f de onde estiver. Quem acertar mais leva um cheque!',
     '&fTodo dia às &e22h&f tem a &6Sobrevivência&f: todos juntos contra 10 ondas de invasores no castelo. Quem chegar vivo ao fim divide o prêmio! &e/sobrevivencia entrar&f.',
     '&fÀs &e9h&f e às &e14h&f tem a &eCorrida Maluca&f: uma pista de obstáculos, e quem cai volta pro checkpoint. Os 3 primeiros levam cheque! &e/corrida entrar&f, com o inventário vazio.',
+    '&fÀs &e8h&f e às &e23h&f tem o &2Labirinto do Fauno&f: PvP no escuro, com baús escondidos nos becos sem saída e o Fauno à caça. O último vivo leva o cheque! &e/labirinto entrar&f, com o inventário vazio.',
     '&fÀs &e11h&f e às &e17h&f tem o &dCorre ou Cai&f: o chão some onde você pisa, então não pare! &e/correoucai entrar&f, com o inventário vazio.',
     '&fQuer um cantinho seu? &e/terreno&f. Madeira e bicho você acha no &e/warp recursos&f.',
     '&fMorreu e não achou suas coisas? Olhe o &e/achados&f: o que a limpeza recolheu do chão fica guardado por 1 hora, e cada pilha volta por R$ 10.000.',
@@ -644,7 +654,7 @@ if (fase === 'cadastrar') {
 } else if (fase === 'construir' || fase === 'marcar') {
   const partes = {
     'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
-    boss: construirBoss, oficinas: construirOficinas, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, corrida: construirCorrida, marcar: marcarComBot,
+    boss: construirBoss, oficinas: construirOficinas, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, corrida: construirCorrida, labirinto: construirLabirinto, marcar: marcarComBot,
   }
   // "marcar" sozinho era o atalho antigo pra só a parte do bot
   const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)

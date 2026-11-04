@@ -99,6 +99,7 @@ comandos-permitidos:
     - correoucai
     - sobrevivencia
     - corrida
+    - labirinto
     - quiz
     # teleporte e casas
     - tpa
@@ -236,6 +237,8 @@ comandos:
         - "/sobrevivencia entrar | Se inscreve na Sobrevivência"
         - "/corrida | Evento Corrida Maluca: pista de obstáculos (inventário vazio)"
         - "/corrida entrar | Se inscreve na Corrida Maluca"
+        - "/labirinto | Evento Labirinto do Fauno: PvP no escuro, com baús escondidos (inventário vazio)"
+        - "/labirinto entrar | Se inscreve no Labirinto do Fauno"
         - "/quiz <resposta> | Responde a pergunta do Quiz"
         - "/boss proximo | Quando o próximo boss aparece"
         - "/bounty colocar <jogador> <valor> | Recompensa pela cabeça de alguém"

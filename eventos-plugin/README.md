@@ -109,6 +109,17 @@ Uma pista de obstáculos num pavilhão comprido e fechado no mundo `arenas`, uns
   - **ponte do vento**, com canhões nas paredes que soltam carga de vento revezando (`vento`).
 - Todos os obstáculos são do plugin (sem redstone): as barras, os martelos e os raios do carrossel são blocos de exibição, que aparecem na largada e somem no fim. Durante a corrida, os chunks do mapa ficam carregados (a pista é comprida demais pra depender de quem está perto). A cada corrida, só o portão, as portas e as plataformas voltam. Depois de mudar um traçado ou um tema (`MapasCorrida`, `TemaCorrida`), `/corrida construir` de novo.
 
+## Labirinto do Fauno
+
+PvP num labirinto escuro no mundo `arenas`, em (-200, 1800): 21 x 21 células (64 x 64 blocos), corredores de 2, paredes de sculk de 4 de altura e teto de vidro escurecido, sem luz nenhuma lá dentro (só o brilho das paredes). Todo dia às **8:00** e às **23:00** (`labirinto.agenda`). Decisões de 2026-11-04.
+
+- **Um labirinto novo a cada evento**: um caminho aleatório que passa por todas as células, alguns atalhos a mais (`arena.atalhos`, pra ter mais de um caminho) e uma clareira de 3 x 3 células no meio. Cada um nasce numa célula da borda, espalhados por igual em volta, olhando pro meio.
+- **Sem kit**: todos entram sem nada. Os **baús** (`baus.quantos`: 20) ficam nos becos sem saída, com 2 a 4 itens sorteados da tabela (`baus.tabela`, pelo peso): espadas, machados, arco e flechas, escudo, armaduras de couro a diamante (as de diamante, raras) e maçãs douradas. **O que se acha é do evento**: some no fim, de todo mundo (o vencedor leva só o cheque).
+- **PvP de verdade** entre quem luta (no AreasPlugin, a caixa "labirinto do fauno"). **Morreu, está fora**: não deixa nada no chão e renasce em cima do teto, de onde se assiste (o anúncio diz quem matou: "foi derrotado por Fulano", "foi pego pelo Fauno").
+- **O Fauno** acorda na clareira 45 s depois da largada (`fauno.acorda-segundos`) e caça o vivo mais perto, pelos corredores. Ninguém acerta ele: só dá pra fugir (correndo, dá; andando, não: `fauno.velocidade`). O golpe tira 3,5 corações antes da armadura (`fauno.dano`); perto dele (`fauno.coracao-blocos`), ouve-se o coração batendo. É um husk invisível, maior (`fauno.escala`), carregando um item display com o modelo do Fauno (`servidor:criatura_fauno`, do resource pack do PacotePlugin: alto, de casca de árvore com musgo, chifres de carneiro e braços compridos), que vira com ele e mexe as pernas e os braços enquanto anda.
+- **Tempo restante** numa barra no alto da tela, com quantos estão vivos ("☽ Labirinto do Fauno · 7:32 restantes · 4 vivos"); no último minuto, fica vermelha.
+- **Fim**: o último vivo leva o **cheque de R$ 10.000**. Se em **10 minutos** (`luta.tempo-maximo-minutos`) sobrar mais de um, **ninguém vence**: todos voltam pra onde estavam, sem o que acharam.
+
 ## Quiz
 
 O único sem arena: uma rodada de perguntas no chat, todo dia às **12:00** e às **15:00** (`quiz.agenda`). Sem inscrição e sem mínimo de jogadores: responde quem estiver online, de onde estiver, com **`/quiz <resposta>`**. Roda junto com os outros eventos. Decisões de 2026-11-02.
@@ -130,11 +141,11 @@ Os vencedores de todos os eventos juntos: as vitórias de cada evento deste plug
 
 ## /eventos
 
-A agenda de todos os eventos do servidor (o Quiz também): o que está rolando agora (com o comando pra entrar ou assistir), o próximo (dia, hora e quanto falta) e os horários de cada um. Os horários vêm do config de cada plugin, então mudou lá, muda aqui: Vietnã e Spleef (`<evento>.agenda`), Gladiador (`agenda` do GladiadorPlugin), Boss (`agenda` do BossPlugin, com o boss do dia, ex.: Wither no domingo), Dragão do End (`end.dragao.hora` do RecursosPlugin) e Mine-sena (`minesena.horario` do ChequePlugin). Plugin desligado, a linha some.
+A agenda de todos os eventos do servidor (o Quiz também): o que está rolando agora (com o comando pra entrar ou assistir), o próximo (dia, hora e quanto falta) e a agenda, um evento por linha na ordem do horário (quem tem dois horários aparece duas vezes: "☽ Labirinto do Fauno - 08:00", embaixo "⚑ Corrida Maluca - 09:00"...). Os horários vêm do config de cada plugin, então mudou lá, muda aqui: Vietnã e Spleef (`<evento>.agenda`), Gladiador (`agenda` do GladiadorPlugin), Boss (`agenda` do BossPlugin, com o boss do dia, ex.: Wither no domingo), Dragão do End (`end.dragao.hora` do RecursosPlugin) e Mine-sena (`minesena.horario` do ChequePlugin). Plugin desligado, a linha some.
 
 ## Comandos
 
-Iguais em todos os eventos (`/vietna ...`, `/spleef ...`, `/correoucai ...`, `/sobrevivencia ...` e `/corrida ...`):
+Iguais em todos os eventos (`/vietna ...`, `/spleef ...`, `/correoucai ...`, `/sobrevivencia ...`, `/corrida ...` e `/labirinto ...`):
 
 | Comando | O que faz |
 |---|---|
@@ -147,7 +158,7 @@ Staff (`eventos.admin`): `abrir`, `iniciar` (fecha as inscrições e começa ago
 
 ## Config
 
-Uma seção por evento no `config.yml` (`vietna:`, `spleef:`, `correoucai:`, `sobrevivencia:` e `corrida:`), com as mesmas chaves comuns (agenda, inscrição, mínimo de jogadores, prêmio, tempos da luta, comandos liberados) e as de cada um: no Vietnã, os pilares que somem, o kit e o reabastecimento, a força dos empurrões e a arena; no Spleef, o derretimento, a Eficiência da pá e a arena (centro, raio, andares e distância entre eles); no Corre ou Cai, o tempo até o bloco sumir, a graça do começo e a arena; na Sobrevivência, o kit, as ondas, os chefes e a arena; na Corrida, os prêmios por colocação, as portas, o trampolim, o tapete, as plataformas, as barras, o vento e a arena. Mudou uma arena? Atualize a caixa dela no config do AreasPlugin com o que o `/<evento> construir` mostra.
+Uma seção por evento no `config.yml` (`vietna:`, `spleef:`, `correoucai:`, `sobrevivencia:`, `corrida:` e `labirinto:`), com as mesmas chaves comuns (agenda, inscrição, mínimo de jogadores, prêmio, tempos da luta, comandos liberados) e as de cada um: no Vietnã, os pilares que somem, o kit e o reabastecimento, a força dos empurrões e a arena; no Spleef, o derretimento, a Eficiência da pá e a arena (centro, raio, andares e distância entre eles); no Corre ou Cai, o tempo até o bloco sumir, a graça do começo e a arena; na Sobrevivência, o kit, as ondas, os chefes e a arena; na Corrida, os prêmios por colocação, as portas, o trampolim, o tapete, as plataformas, as barras, o vento e a arena; no Labirinto, os baús (quantos e a tabela de itens), o Fauno e a arena (centro, células, corredor e atalhos). Mudou uma arena? Atualize a caixa dela no config do AreasPlugin com o que o `/<evento> construir` mostra.
 
 ## Teste
 

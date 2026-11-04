@@ -3,23 +3,23 @@
 📅 **`/eventos`**: a agenda, o que está rolando e o próximo. 🏆 **`/eventos top`**: o ranking de vencedores.
 
 **Boss mundial**
-Na agenda atual do servidor de teste, um boss aparece na arena todos os dias às **20h**: de segunda a sábado é sorteado entre os bosses normais; no domingo aparece o **Wither**. `/boss proximo` mostra o próximo horário. Entre pela passagem sul do spawn ou use `/warp boss`; o PvP começa depois do túnel. Torres e contêineres têm escadas: suba para fugir dos mobs ou atirar de cima.
+Na agenda do servidor de teste, um boss aparece todos os dias às **20h**: de segunda a sábado, um dos normais, sorteado; no domingo aparece o **Wither**. `/boss proximo` mostra o próximo horário. Entre pelo sul do spawn ou por `/warp boss`; o PvP começa depois do túnel.
 
-O campeão é quem dá o golpe final e recebe o prêmio especial e a tag de campeão. Os três maiores danos ganham coins, e quem ajudou recebe XP de skill proporcional ao dano causado. Se o boss escapar após uma hora, o servidor fica amaldiçoado: o XP de skill cai 10% por até 24 horas, ou até o próximo boss ser derrotado.
+Quem dá o golpe final leva o prêmio especial e a tag de campeão. Os três maiores danos ganham coins, e quem ajudou ganha XP de skill pelo dano causado. Se o boss escapar após uma hora, o servidor fica amaldiçoado: o XP de skill cai 10% por até 24 horas, ou até o próximo boss ser derrotado.
 
-O **Dragão do End** é outra luta: acontece no mundo de recursos, com PvP fora da plataforma verde. Ele renasce às 21h se não estiver vivo; veja **Dragão do End** antes de ir.
+O **Dragão do End** é outra luta: acontece no mundo de recursos, com PvP fora da plataforma verde. Ele renasce às 21h; veja o tutorial **Dragão do End** antes de ir.
 
 **Gladiador**
-Na agenda do servidor de teste, o modo **por clã** abre sábado às **19h** e o **individual**, domingo às **19h**. As inscrições duram 5 minutos: entre com `/gladiador entrar` e consulte a fase com `/gladiador`.
+Na agenda do servidor de teste, o modo **por clã** abre sábado às **19h** e o **individual**, domingo às **19h**. Entre com `/gladiador entrar` e consulte a fase com `/gladiador`.
 
 Pote, borda e vitória: veja o tutorial **Gladiador**.
 
 **Eventos de arena**
-Eventos rápidos e grátis em que **ninguém perde itens**: entre com o inventário **totalmente vazio** (inclusive armadura e a outra mão), uma inscrição por conexão. Todos recebem o mesmo kit, e quem sai do jogo vai pra galeria, em cima da arena (sai dela com `/spawn`). O prêmio é um **cheque de R$ 10.000**. Na arena só vale o comando do evento (nada de `/tpa` ou `/home`).
+Grátis, e **ninguém perde itens**: entre com o inventário **totalmente vazio** (inclusive armadura e a outra mão), uma inscrição por conexão. Todos recebem o mesmo kit, e quem sai do jogo vai pra galeria, em cima da arena (sai dela com `/spawn`). O prêmio é um **cheque de R$ 10.000**. Na arena só vale o comando do evento (nada de `/tpa` ou `/home`).
 
 Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o último de pé leva o cheque (depois de 8 minutos, quem estiver de pé divide).
 
-☘ **Vietnã**, todo dia às **10h** e **16h** (`/vietna entrar`): pilares sobre a água. Kit: arco com Impulso, bolas de neve, cargas de vento (empurram e servem pra pular de um pilar pro outro) e vara de pesca. Os golpes só empurram. Depois de 2 minutos, o topo de um pilar fica **vermelho** e ele cai pouco depois: saia de cima!
+☘ **Vietnã**, todo dia às **10h** e **16h** (`/vietna entrar`): pilares sobre a água. Kit: arco com Impulso, bolas de neve, cargas de vento e vara de pesca. Os golpes só empurram. Depois de 2 minutos, o topo de um pilar fica **vermelho** e ele cai pouco depois: saia de cima!
 
 ❄ **Spleef**, todo dia às **13h** e **18h** (`/spleef entrar`): três pisos de neve. Kit: uma pá que quebra a neve na hora. Quebre o chão debaixo dos outros; quem cai vai pro piso de baixo, e do último cai na água. Depois de 2 minutos, a neve começa a virar **gelo** e sumir.
 
@@ -28,6 +28,8 @@ Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o últ
 ⚔ **Sobrevivência**, todo dia às **22h** (`/sobrevivencia entrar`): todos **juntos**, com kit de ferro, contra 10 ondas de invasores no pátio de um castelo, com chefe na 5 e na 10. Aqui os mobs machucam de verdade: morreu, está fora (sem perder nada). Quem estiver vivo no fim da última onda divide o prêmio.
 
 ⚑ **Corrida Maluca**, todo dia às **9h** e **14h** (`/corrida entrar`): pista de obstáculos em 3 fases, num dos 5 mapas, sem kit. Caiu na água, volta pro último checkpoint. Os 3 primeiros na chegada levam **R$ 5.000**, **R$ 3.000** e **R$ 2.000**.
+
+☽ **Labirinto do Fauno**, às **8h** e **23h** (`/labirinto entrar`): PvP no escuro, sem kit: os itens estão em baús escondidos e somem no fim. O **Fauno** caça quem está perto e não morre: fuja! O último vivo leva o cheque; em 10 minutos, com mais de um vivo, ninguém vence.
 
 Pra assistir: `/<evento> assistir`.
 

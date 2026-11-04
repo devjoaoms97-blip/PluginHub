@@ -94,8 +94,26 @@ public class AgendaCommand implements CommandExecutor {
         }
 
         sender.sendMessage("§7Agenda:");
-        for (Linha l : linhas) sender.sendMessage(" " + l.nome() + " §7- §f" + texto(l.horarios()) + " §8· §7" + l.como());
+        for (String linha : agenda(linhas)) sender.sendMessage(linha);
         return true;
+    }
+
+    /**
+     * Um evento por linha, na ordem do horário ("☽ Labirinto do Fauno - 08:00", embaixo "⚑ Corrida Maluca -
+     * 09:00"...): quem tem dois horários aparece duas vezes. Os de certos dias dizem quais ("sáb 19:00 (clã)").
+     */
+    private static List<String> agenda(List<Linha> linhas) {
+        record Item(LocalTime hora, String texto) {
+        }
+        List<Item> itens = new ArrayList<>();
+        for (Linha l : linhas) {
+            Map<LocalTime, List<Horario>> porHora = new TreeMap<>();
+            for (Horario h : l.horarios()) porHora.computeIfAbsent(h.hora(), k -> new ArrayList<>()).add(h);
+            porHora.forEach((hora, hs) -> itens.add(new Item(hora,
+                    " " + l.nome() + " §7- §f" + texto(hs).replaceFirst("^todo dia ", "") + " §8· §7" + l.como())));
+        }
+        itens.sort(Comparator.comparing(Item::hora));
+        return itens.stream().map(Item::texto).toList();
     }
 
     /** O top 10 geral, a posição de quem pediu e quem mais venceu cada evento. */

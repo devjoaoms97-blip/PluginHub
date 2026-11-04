@@ -37,7 +37,7 @@ t.rodar(async () => {
     await t.espera(1000)
 
     let msgs = await t.capturar(b, () => b.chat('/eventos'))
-    t.verificar(msgs.some(m => m.includes('Quiz') && m.includes('12:00') && m.includes('15:00')), '/eventos mostra o Quiz às 12h e 15h',
+    t.verificar(['12:00', '15:00'].every(h => msgs.some(m => m.includes('Quiz') && m.includes(h))), '/eventos mostra o Quiz às 12h e 15h',
       msgs.find(m => m.includes('Quiz')))
     msgs = await t.capturar(b, () => b.chat('/quiz resposta qualquer'))
     t.verificar(msgs.some(m => m.includes('Não tem pergunta aberta')), 'sem rodada, /quiz não aceita resposta', msgs.find(m => m.includes('pergunta')))

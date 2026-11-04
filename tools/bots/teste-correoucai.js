@@ -45,7 +45,7 @@ t.rodar(async () => {
 
     console.log('\n== /eventos e inscrição ==')
     let msgs = await t.capturar(d, () => d.chat('/eventos'))
-    t.verificar(msgs.some(m => m.includes('Corre ou Cai') && m.includes('11:00') && m.includes('17:00')),
+    t.verificar(['11:00', '17:00'].every(h => msgs.some(m => m.includes('Corre ou Cai') && m.includes(h))),
       '/eventos mostra o Corre ou Cai às 11h e 17h', msgs.find(m => m.includes('Corre')))
     await t.console('correoucai abrir')
     for (const bot of [a, b, c]) await t.capturar(bot, () => bot.chat('/correoucai entrar'), 600)

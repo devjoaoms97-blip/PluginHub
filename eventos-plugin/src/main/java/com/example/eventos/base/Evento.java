@@ -186,9 +186,27 @@ public abstract class Evento {
         return null;
     }
 
-    /** Os mobs machucam quem luta de verdade (a Sobrevivência)? Nos outros, ninguém perde vida. */
+    /**
+     * Os mobs machucam quem luta de verdade (a Sobrevivência, o Fauno do Labirinto)? Nos outros, ninguém
+     * perde vida. Quando sim, a queda e o resto também machucam.
+     */
     public boolean danoDeMobs() {
         return false;
+    }
+
+    /** Quem luta machuca os outros que lutam (o Labirinto)? Nos outros, os golpes não tiram vida. */
+    public boolean pvp() {
+        return false;
+    }
+
+    /** Como sai no anúncio quem morreu na luta ("morreu"; no Labirinto, quem matou). */
+    protected String motivoDaMorte(Player p) {
+        return "morreu";
+    }
+
+    /** O tempo máximo da luta acabou: quem estiver de pé divide o prêmio (no Labirinto, ninguém vence). */
+    protected void aoAcabarOTempo() {
+        finalizar(vivos());
     }
 
     /** Quem luta pode acertar essa entidade (que não é participante)? (a Sobrevivência: os mobs dela) */
@@ -404,6 +422,8 @@ public abstract class Evento {
     }
 
     private static void tirarKit(Player p) {
+        // fecha antes: o que estava na grade de criação (ou num baú aberto, no cursor) voltaria pro inventário
+        p.closeInventory();
         p.getInventory().clear();
         p.setItemOnCursor(null);
         restaurar(p);
@@ -436,7 +456,7 @@ public abstract class Evento {
         part.vivo = false;
         renascerNaGaleria.add(p.getUniqueId());
         removerPendente(p.getUniqueId());
-        anunciar(prefixo() + " §f" + part.nome + " §7morreu. " + cor() + "Restam §f" + vivos().size() + cor() + ".");
+        anunciar(prefixo() + " §f" + part.nome + " §7" + motivoDaMorte(p) + ". " + cor() + "Restam §f" + vivos().size() + cor() + ".");
         verificarVencedor();
     }
 
@@ -505,7 +525,27 @@ public abstract class Evento {
             anunciar(resultado);
             plugin.getDiscord().enviar("eventos", resultado);
         }
-        // a arena volta inteira pro próximo
+        resetarDepois();
+    }
+
+    /** Termina sem ninguém ganhar (o Labirinto, no tempo): quem estava de pé volta sem o kit. */
+    protected void finalizarSemVencedor(String motivo) {
+        fase = Fase.FIM;
+        for (UUID jogador : vivos()) {
+            Player p = Bukkit.getPlayer(jogador);
+            if (p == null) continue;
+            tirarKit(p);
+            teleportar(p, participantes.get(jogador).retorno);
+            removerPendente(jogador);
+        }
+        String resultado = titulo() + " §7" + motivo;
+        anunciar(resultado);
+        plugin.getDiscord().enviar("eventos", resultado);
+        resetarDepois();
+    }
+
+    /** A arena volta inteira pro próximo, uns instantes depois do fim. */
+    private void resetarDepois() {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (fase == Fase.FIM) {
                 resetar();
@@ -553,13 +593,7 @@ public abstract class Evento {
             anunciar(resultado);
             plugin.getDiscord().enviar("eventos", resultado);
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (fase == Fase.FIM) {
-                resetar();
-                fase = null;
-                participantes.clear();
-            }
-        }, 40L);
+        resetarDepois();
     }
 
     /** Pela staff, por falta de gente ou no desligamento. Quem estava na arena volta (sem o kit). */
@@ -604,7 +638,7 @@ public abstract class Evento {
         if (fase != Fase.LUTA) return;
         tickLuta(agora);
         long maximo = Math.max(1, cfg().getInt("luta.tempo-maximo-minutos")) * 60_000L;
-        if (fase == Fase.LUTA && agora - inicioLuta > maximo) finalizar(vivos());
+        if (fase == Fase.LUTA && agora - inicioLuta > maximo) aoAcabarOTempo();
     }
 
     // ---------------------------------------------------------------- assistir e volta
