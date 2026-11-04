@@ -368,8 +368,8 @@ labirinto:
   # blocos de altura); "brilho" (0 a 15) é quanto o modelo aparece no escuro; "coracao-blocos" é de quão
   # longe se ouve o coração dele.
   fauno:
-    # quantos Faunos caçam (num labirinto de 124 x 124, 3), cada um atrás do vivo mais perto dele
-    quantos: 3
+    # quantos Faunos caçam, cada um atrás do vivo mais perto dele (2026-11-04: voltou pra 1)
+    quantos: 1
     acorda-segundos: 45
     dano: 7
     velocidade: 0.25

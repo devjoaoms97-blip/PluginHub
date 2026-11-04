@@ -115,11 +115,11 @@ t.rodar(async () => {
     await t.console(`effect give ${b.username} minecraft:instant_health 1 3 true`)
 
     console.log('\n== O Fauno ==')
-    t.verificar(a.mensagens.some(m => m.includes('Os 3 Faunos acordaram')), 'os 3 Faunos acordam', a.mensagens.find(m => m.includes('acordaram')))
+    t.verificar(a.mensagens.some(m => m.includes('O Fauno acordou')), 'o Fauno acorda', a.mensagens.find(m => m.includes('acordou')))
     const husk = `@e[type=minecraft:husk,${CAIXA}]`
-    t.verificar(await conta(husk) === 3, 'os 3 Faunos estão lá (mobs que andam e batem)')
-    t.verificar(await conta(`@e[type=minecraft:item_display,${CAIXA}]`) === 3, 'cada um com o modelo do Fauno')
-    // a e b ficam a salvo (Resistência V); os Faunos vão pra cima do c
+    t.verificar(await conta(husk) === 1, 'o Fauno está lá (um mob que anda e bate)')
+    t.verificar(await conta(`@e[type=minecraft:item_display,${CAIXA}]`) === 1, 'com o modelo do Fauno')
+    // a e b ficam a salvo (Resistência V); o Fauno vai pra cima do c
     for (const x of [a, b]) await t.console(`effect give ${x.username} minecraft:resistance 600 4 true`)
     await t.console(`execute in minecraft:arenas run minecraft:tp ${husk} ${c.username}`)
     await t.espera(1500)

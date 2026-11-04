@@ -58,7 +58,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * cheque; se o tempo acabar com mais de um vivo, ninguém vence. Quem luta fica com o efeito Escuridão
  * (pulsos de visão, sem enxergar nada lá fora), que o brilho do jogo de cada um não clareia.
  * <p>
- * Os Faunos ({@code fauno.quantos}, 3) acordam na clareira do meio uns segundos depois da largada, e cada um caça o jogador vivo mais perto. Ele
+ * O Fauno ({@code fauno.quantos}: 1; dá pra pôr mais) acorda na clareira do meio uns segundos depois da largada, e cada um caça o jogador vivo mais perto. Ele
  * não morre (ninguém acerta ele): só dá pra fugir. É um mob invisível (um husk, que anda e bate) carregando
  * um item display com o modelo do Fauno do resource pack ({@code servidor:criatura_fauno}, do PacotePlugin),
  * que vira com ele e troca de quadro enquanto anda. Perto dele, ouve-se o coração batendo.
@@ -132,7 +132,7 @@ public class LabirintoDoFauno extends Evento implements Listener {
 
     @Override
     public String descricao() {
-        return "PvP num labirinto escuro e diferente a cada vez, com baús escondidos nos becos sem saída e três Faunos à caça. "
+        return "PvP num labirinto escuro e diferente a cada vez, com baús escondidos nos becos sem saída e o Fauno à caça. "
                 + "Todos entram sem nada. Morreu, está fora. O último vivo leva o prêmio; se o tempo acabar com mais de um vivo, ninguém vence.";
     }
 
