@@ -2,6 +2,9 @@ package com.example.eventos.base;
 
 import com.example.eventos.EventosPlugin;
 import com.example.eventos.util.Formato;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -38,6 +41,9 @@ import java.util.logging.Level;
  * Cada evento diz a arena (onde é a luta, a arquibancada, o que é "cair"), como constrói, onde cada um
  * começa, o kit e o que acontece a cada segundo da luta. As regras de comando, teleporte, dano e
  * quebra de bloco ficam no {@link EventosListener}.
+ * <p>
+ * Quem se inscreve espera no saguão dos eventos ({@link com.example.eventos.saguao.SaguaoEventos}) até começar:
+ * sair de lá cancela a inscrição. No fim, volta pra onde estava antes de se inscrever.
  * <p>
  * Quem está lutando fica em {@code <id>-pendentes.yml} (com o lugar de volta) até sair da arena: se o
  * servidor cair ou o jogador desconectar no meio, ao entrar de novo ele perde o kit e volta pra onde estava.
@@ -300,8 +306,22 @@ public abstract class Evento {
         // curto: como funciona fica no /<evento> e no tutorial do Discord
         String abertura = titulo() + " " + cor() + "começa em §f" + Formato.tempo(duracao) + cor() + "! Prêmio: §f"
                 + Formato.valor(premio()) + cor() + ". Inventário vazio e §f/" + id + " entrar §7(como funciona: /" + id + ")";
-        anunciar(abertura);
+        Bukkit.broadcast(LegacyComponentSerializer.legacySection().deserialize(abertura).append(Component.text(" "))
+                .append(LegacyComponentSerializer.legacySection().deserialize("§a§l[ENTRAR]")
+                        .clickEvent(ClickEvent.runCommand("/" + id + " entrar"))
+                        .hoverEvent(HoverEvent.showText(Component.text("Se inscrever e ir pro saguão dos eventos")))));
         plugin.getDiscord().enviar("eventos", abertura);
+    }
+
+    /** Quanto falta pro fim das inscrições, em ms. */
+    public long faltaInscricao() {
+        return Math.max(0, fimInscricao - System.currentTimeMillis());
+    }
+
+    /** Quanto das inscrições ainda falta (1 = começou agora, 0 = acabou). */
+    public double fracaoInscricao() {
+        long duracao = Math.max(10, cfg().getInt("inscricao.duracao-segundos")) * 1000L;
+        return (double) faltaInscricao() / duracao;
     }
 
     /** null se entrou; senão, o motivo. */
@@ -311,7 +331,8 @@ public abstract class Evento {
         Evento outro = plugin.eventoInscrito(p.getUniqueId());
         if (outro != null && outro != this) return "Você já está " + outro.noNome() + ".";
         if (!inventarioVazio(p)) return "Pra entrar, o inventário precisa estar totalmente vazio, sem armadura e sem nada na outra mão.";
-        if (p.getWorld().equals(mundo())) return "Saia do mundo das arenas pra se inscrever.";
+        boolean noSaguao = plugin.getSaguao().dentro(p.getLocation());
+        if (p.getWorld().equals(mundo()) && !noSaguao) return "Pra se inscrever, venha pelo saguão dos eventos (/warp eventos) ou saia do mundo das arenas.";
         String ip = ip(p);
         if (!p.hasPermission("eventos.ip.ignorar")) {
             for (Participante part : participantes.values()) {
@@ -319,11 +340,22 @@ public abstract class Evento {
             }
         }
         participantes.put(p.getUniqueId(), new Participante(p.getName(), ip, p.getLocation()));
+        // a espera é no saguão (quem já está nele, fica; no fim, volta pra onde estava antes de vir)
+        if (!noSaguao) teleportar(p, plugin.getSaguao().chegada());
         anunciar(prefixo() + " §f" + p.getName() + " " + cor() + "entrou. §7(" + participantes.size() + " inscrito(s))");
         return null;
     }
 
+    /** /<evento> sair (ou desconectou): perde a inscrição e, se está esperando no saguão, volta pra onde estava. */
     public boolean sair(Player p) {
+        Participante part = fase == Fase.INSCRICAO ? participantes.get(p.getUniqueId()) : null;
+        if (!desinscrever(p)) return false;
+        if (plugin.getSaguao().dentro(p.getLocation()) && !plugin.getSaguao().dentro(part.retorno)) teleportar(p, part.retorno);
+        return true;
+    }
+
+    /** Perde a inscrição, sem sair do lugar (saiu do saguão por conta própria). */
+    public boolean desinscrever(Player p) {
         if (fase != Fase.INSCRICAO || participantes.remove(p.getUniqueId()) == null) return false;
         anunciar(prefixo() + " §f" + p.getName() + " §7saiu. (" + participantes.size() + " inscrito(s))");
         return true;
@@ -349,7 +381,7 @@ public abstract class Evento {
         for (UUID jogador : new ArrayList<>(participantes.keySet())) {
             Player p = Bukkit.getPlayer(jogador);
             String motivo = p == null ? null : !inventarioVazio(p) ? "o inventário não está mais vazio"
-                    : p.getWorld().equals(mundo()) ? "você está no mundo das arenas" : null;
+                    : !plugin.getSaguao().dentro(p.getLocation()) ? "você saiu do saguão dos eventos" : null;
             if (p == null || motivo != null) {
                 participantes.remove(jogador);
                 if (p != null) p.sendMessage("§c" + prefixo() + " §cVocê ficou de fora: " + motivo + ".");
@@ -600,6 +632,15 @@ public abstract class Evento {
     public void cancelar(String motivo) {
         if (fase == null) return;
         boolean naArena = fase == Fase.PREPARACAO || fase == Fase.LUTA;
+        if (fase == Fase.INSCRICAO) {
+            // quem esperava no saguão volta pra onde estava
+            for (Map.Entry<UUID, Participante> e : participantes.entrySet()) {
+                Player p = Bukkit.getPlayer(e.getKey());
+                if (p != null && plugin.getSaguao().dentro(p.getLocation()) && !plugin.getSaguao().dentro(e.getValue().retorno)) {
+                    teleportar(p, e.getValue().retorno);
+                }
+            }
+        }
         if (naArena) {
             for (UUID jogador : vivos()) {
                 Player p = Bukkit.getPlayer(jogador);

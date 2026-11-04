@@ -22,6 +22,7 @@ com\example\eventos\AgendaCommand$Linha.class
 com\example\eventos\corrida\TracadoCorrida.class
 com\example\eventos\corrida\CorridaMaluca.class
 com\example\eventos\vietna\ArenaVietna.class
+com\example\eventos\saguao\SaguaoEventos.class
 com\example\eventos\util\Premio.class
 com\example\eventos\corrida\TracadoCorrida$Tapete.class
 com\example\eventos\RankingGeral.class
@@ -35,7 +36,9 @@ com\example\eventos\vietna\ArenaVietna$Pilar.class
 com\example\eventos\base\EventoCommand.class
 com\example\eventos\corrida\ArenaCorrida.class
 com\example\eventos\AgendaCommand$1Item.class
+com\example\eventos\saguao\SaguaoEventos$Tinta.class
 com\example\eventos\base\Evento$Fase.class
+com\example\eventos\saguao\SaguaoEventos$1.class
 com\example\eventos\base\EventoCommand$1.class
 com\example\eventos\quiz\QuizCommand.class
 com\example\eventos\spleef\ArenaSpleef.class

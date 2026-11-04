@@ -8,6 +8,7 @@ import com.example.eventos.corrida.CorridaMaluca;
 import com.example.eventos.labirinto.LabirintoDoFauno;
 import com.example.eventos.quiz.Quiz;
 import com.example.eventos.quiz.QuizCommand;
+import com.example.eventos.saguao.SaguaoEventos;
 import com.example.eventos.sobrevivencia.Sobrevivencia;
 import com.example.eventos.spleef.Spleef;
 import com.example.eventos.util.DiscordIntegration;
@@ -34,6 +35,8 @@ public class EventosPlugin extends JavaPlugin {
     private Premio premio;
     private Quiz quiz;
     private RankingGeral ranking;
+    private SaguaoEventos saguao;
+    private AgendaCommand agenda;
     private String ultimoMinutoAgenda = "";
 
     @Override
@@ -43,6 +46,7 @@ public class EventosPlugin extends JavaPlugin {
         this.premio = new Premio(this);
         this.quiz = new Quiz(this);
         this.ranking = new RankingGeral(this);
+        this.saguao = new SaguaoEventos(this);
         QuizCommand comandoQuiz = new QuizCommand(this);
         getCommand("quiz").setExecutor(comandoQuiz);
         getCommand("quiz").setTabCompleter(comandoQuiz);
@@ -53,11 +57,14 @@ public class EventosPlugin extends JavaPlugin {
             getCommand(e.id()).setExecutor(comando);
             getCommand(e.id()).setTabCompleter(comando);
         }
-        getCommand("eventos").setExecutor(new AgendaCommand(this));
+        this.agenda = new AgendaCommand(this);
+        getCommand("eventos").setExecutor(agenda);
         getServer().getPluginManager().registerEvents(new EventosListener(this), this);
+        getServer().getPluginManager().registerEvents(saguao, this);
         for (Evento e : eventos) if (e instanceof org.bukkit.event.Listener l) getServer().getPluginManager().registerEvents(l, this);
         getServer().getScheduler().runTaskTimer(this, this::tick, 20L, 20L);
         getServer().getScheduler().runTaskTimer(this, () -> eventos.forEach(Evento::tickRapido), 2L, 2L);
+        getServer().getScheduler().runTaskTimer(this, saguao::particulas, 10L, 10L);
         // o holograma do ranking: as vitórias do Gladiador mudam fora daqui, e o lugar pode ter acabado de carregar
         getServer().getScheduler().runTaskTimer(this, ranking::atualizarHolograma, 100L, 1200L);
         // um /reload com gente que tinha caído no meio de um evento: volta pra onde estava
@@ -70,12 +77,14 @@ public class EventosPlugin extends JavaPlugin {
         if (eventos != null) eventos.forEach(e -> e.cancelar("o servidor está desligando"));
         if (quiz != null) quiz.cancelar("o servidor está desligando");
         if (ranking != null) ranking.removerHolograma();
+        if (saguao != null) saguao.removerDisplays();
     }
 
     private void tick() {
         agenda();
         eventos.forEach(Evento::tick);
         quiz.tick();
+        saguao.tick();
     }
 
     /** Abre cada evento nos horários do dia ({@code <evento>.agenda: ["10:00", "16:00"]}), uma vez por minuto agendado. */
@@ -143,6 +152,14 @@ public class EventosPlugin extends JavaPlugin {
 
     public RankingGeral getRanking() {
         return ranking;
+    }
+
+    public SaguaoEventos getSaguao() {
+        return saguao;
+    }
+
+    public AgendaCommand getAgenda() {
+        return agenda;
     }
 
     public Premio getPremio() {

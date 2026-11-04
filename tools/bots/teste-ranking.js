@@ -1,10 +1,16 @@
 // Ranking geral de vencedores (EventosPlugin): soma as vitórias de todos os eventos (1 por vitória). Dois
 // bots ganham: o B vence uma Corrida Maluca (o A chega em 2º, que não conta) e o A vence dois Vietnãs (o B
 // cai na água). Confere o /eventos top (a ordem dos dois e a posição de quem pediu), o /eventos top
-// <jogador> (as vitórias por evento), os recordes e o holograma do saguão das arenas.
+// <jogador> (as vitórias por evento), os recordes e o holograma do saguão dos eventos.
 // Os bots vão por teleporte (com eventos.admin, que libera teleporte na luta).
 // Uso: node teste-ranking.js
+const fs = require('fs')
+const path = require('path')
 const t = require('./lib')
+
+// a Corrida no parque (mapa-fixo), com a chegada em z 1800 + 441 (a pista de 3 fases)
+const CONFIG = path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'EventosPlugin', 'config.yml')
+const CHEGADA = 1800 + 441.5
 
 const tp = (bot, mundo, x, y, z) => t.console(`execute in minecraft:${mundo} run minecraft:tp ${bot.username} ${x} ${y} ${z} 0 0`)
 
@@ -24,6 +30,9 @@ async function voltar(bots) {
 
 t.rodar(async () => {
   for (const e of ['vietna', 'spleef', 'correoucai', 'sobrevivencia', 'corrida', 'labirinto']) await t.console(`${e} cancelar`)
+  const original = fs.readFileSync(CONFIG, 'utf8')
+  fs.writeFileSync(CONFIG, original.replace(/(\n  mapa-fixo:).*/, '$1 "parque"'))
+  await t.console('corrida reload')
   const a = await t.criarBot(t.nomeNovo('Rka'))
   const b = await t.criarBot(t.nomeNovo('Rkb'))
   const todos = [a, b]
@@ -42,9 +51,9 @@ t.rodar(async () => {
     console.log('\n== B vence a Corrida, A chega em 2º ==')
     await comecar('corrida', todos)
     for (const bot of todos) await t.console(`lp user ${bot.username} permission set eventos.admin true`)
-    await tp(b, 'arenas', 0.5, 71, 1937.5)
+    await tp(b, 'arenas', 0.5, 71, CHEGADA)
     await t.espera(1200)
-    await tp(a, 'arenas', 0.5, 71, 1937.5)
+    await tp(a, 'arenas', 0.5, 71, CHEGADA)
     await t.espera(3000)
     for (const bot of todos) await t.console(`minecraft:clear ${bot.username}`)
     await voltar(todos)
@@ -83,15 +92,17 @@ t.rodar(async () => {
 
     console.log('\n== Holograma ==')
     // o holograma só nasce com o saguão carregado (alguém perto): aparece em até 1 minuto
-    await tp(a, 'arenas', 0.5, 65, 0.5)
+    await tp(a, 'arenas', 0.5, 65, 306.5)
     let holo = ''
     for (const fim = Date.now() + 65000; Date.now() < fim && !/VENCEDORES/.test(holo);) {
       await t.espera(3000)
-      holo = await t.console('execute in minecraft:arenas positioned 0.5 65.5 5.5 run data get entity @e[type=minecraft:text_display,tag=eventos-ranking,limit=1,distance=..2] text')
+      holo = await t.console('execute in minecraft:arenas positioned -18.5 67.2 300.5 run data get entity @e[type=minecraft:text_display,tag=eventos-ranking,limit=1,distance=..2] text')
     }
     t.verificar(/VENCEDORES DE EVENTOS/.test(holo), 'o holograma do saguão mostra o ranking', holo.slice(0, 160))
   } finally {
     for (const e of ['vietna', 'corrida']) await t.console(`${e} cancelar`)
+    fs.writeFileSync(CONFIG, original)
+    await t.console('corrida reload')
     for (const bot of todos) {
       await t.console(`minecraft:clear ${bot.username}`)
       await t.console(`lp user ${bot.username} permission unset eventos.ip.ignorar`)

@@ -14,7 +14,7 @@ commands:
     permission-message: "§cVocê não tem permissão para os eventos."
   eventos:
     description: Agenda dos eventos, o que está rolando e o próximo; /eventos top, o ranking de vencedores.
-    usage: "Uso: /eventos | /eventos top [jogador]"
+    usage: "Uso: /eventos | /eventos top [jogador] | /eventos construir (staff: o saguão)"
     permission: eventos.usar
     permission-message: "§cVocê não tem permissão para os eventos."
   vietna:

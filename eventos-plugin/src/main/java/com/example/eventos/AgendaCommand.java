@@ -24,7 +24,8 @@ import java.util.TreeMap;
 /**
  * /eventos: o que está acontecendo agora, o próximo evento e a agenda de todos. Os horários vêm do config
  * de cada plugin (o deles manda; sem o plugin, a linha some): os eventos deste plugin, Gladiador,
- * Boss, Dragão do End (RecursosPlugin) e Mine-sena (ChequePlugin).
+ * Boss, Dragão do End (RecursosPlugin) e Mine-sena (ChequePlugin). A staff constrói o saguão dos eventos
+ * com {@code /eventos construir}.
  */
 public class AgendaCommand implements CommandExecutor {
 
@@ -50,6 +51,17 @@ public class AgendaCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("construir")) {
+            if (!sender.hasPermission("eventos.admin")) {
+                sender.sendMessage("§cSó a staff.");
+            } else if (plugin.getSaguao().mundo() == null) {
+                sender.sendMessage("§cO mundo do saguão (saguao.mundo) não existe.");
+            } else {
+                plugin.getSaguao().construir();
+                sender.sendMessage("§aSaguão dos eventos construído. Chegada (pro /setwarp eventos): §f" + texto(plugin.getSaguao().chegada()));
+            }
+            return true;
+        }
         if (args.length > 0 && args[0].equalsIgnoreCase("top")) {
             if (args.length > 1) jogador(sender, args[1]);
             else top(sender);
@@ -96,6 +108,15 @@ public class AgendaCommand implements CommandExecutor {
         sender.sendMessage("§7Agenda:");
         for (String linha : agenda(linhas)) sender.sendMessage(linha);
         return true;
+    }
+
+    /** A agenda de todos, um evento por linha, na ordem do horário (o painel do saguão usa a mesma). */
+    public List<String> agenda() {
+        return agenda(linhas());
+    }
+
+    private static String texto(org.bukkit.Location l) {
+        return String.format(Locale.ROOT, "%s %.1f %.1f %.1f", l.getWorld().getName(), l.getX(), l.getY(), l.getZ());
     }
 
     /**

@@ -1,12 +1,12 @@
 # EventosPlugin
 
-Eventos de arena do servidor: o **Vietnã** (`/vietna`), o **Spleef** (`/spleef`), o **Corre ou Cai** (`/correoucai`), a **Sobrevivência** (`/sobrevivencia`) e a **Corrida Maluca** (`/corrida`). Só um fica aberto por vez (a agenda pula o horário se outro estiver aberto, e a staff não abre um segundo).
+Eventos de arena do servidor: o **Vietnã** (`/vietna`), o **Spleef** (`/spleef`), o **Corre ou Cai** (`/correoucai`), a **Sobrevivência** (`/sobrevivencia`), a **Corrida Maluca** (`/corrida`) e o **Labirinto do Fauno** (`/labirinto`), com o **saguão dos eventos** (`/warp eventos`) e o Quiz no chat. Só um fica aberto por vez (a agenda pula o horário se outro estiver aberto, e a staff não abre um segundo).
 
 ## O que todos têm em comum
 
 O código comum fica em `base/` (`Evento`, `EventosListener` e `EventoCommand`); cada evento só define a arena, o kit e o que acontece durante a luta.
 
-- **Inscrição grátis** (3 minutos, com lembretes), com o **inventário totalmente vazio** (mochila, barra, armadura, outra mão e cursor) e **uma por IP** (`eventos.ip.ignorar` pula a trava: só pros bots de teste). Quem está no mundo das arenas, ou já inscrito no outro evento, não entra.
+- **Inscrição grátis** (3 minutos, com lembretes), com o **inventário totalmente vazio** (mochila, barra, armadura, outra mão e cursor) e **uma por IP** (`eventos.ip.ignorar` pula a trava: só pros bots de teste). Quem está no mundo das arenas (fora do saguão dos eventos), ou já inscrito no outro evento, não entra. **A espera é no saguão dos eventos**: quem se inscreve de fora é levado pra lá, e sair do saguão cancela a inscrição (ver abaixo).
 - **Mínimo de 3** inscritos (`minimo-jogadores`); sem isso, o evento é cancelado. Com 1 (só no servidor de teste, pra testar sozinho), quem entra sozinho não vence na hora: joga até cair ou o tempo acabar. Em produção, 3 ou 4 (`docs/producao-vps.md`).
 - **Preparação** de 10 s sem kit, depois a **luta** com o mesmo kit pra todos.
 - **Ninguém perde vida**: todo dano em quem luta é cancelado.
@@ -130,6 +130,16 @@ O único sem arena: uma rodada de perguntas no chat, todo dia às **12:00** e à
 - **Prêmio**: cada pergunta vale 1 ponto pra quem acertar primeiro; quem fizer mais pontos leva o cheque de **R$ 5.000** (`premio`), dividido no empate (quem saiu antes do fim recebe na conta). Vitórias em `quiz-vitorias.yml` (`/quiz top`).
 - Staff (`eventos.admin`): `/quiz abrir`, `/quiz cancelar` e `/quiz resposta` (a resposta da pergunta aberta).
 
+## Saguão dos eventos (/warp eventos)
+
+Um salão no mundo `arenas`, em (0, 300), construído pelo plugin (`/eventos construir`; depois, `/setwarp eventos` na chegada, que o `montar-mapa` faz): piso xadrez escuro, paredes de carvalho escuro com colunas, friso de ouro e teto com lanternas do mar. Decisões de 2026-11-04.
+
+- **Um portal por evento** na parede do fundo, na cor dele (moldura de concreto, topo de vidro colorido e brilho de partículas), com o nome, os horários e o que está acontecendo em cima ("INSCRIÇÕES ABERTAS! 4 inscrito(s)", "ROLANDO AGORA", "Próximo: hoje 14:00"). **Andar no portal**: com as inscrições abertas, inscreve (as mesmas regras do `/<evento> entrar`); com a luta rolando, leva pra arquibancada; fora disso, diz quando abre.
+- **A espera**: quem se inscreve, pelo portal ou pelo comando de qualquer lugar (inclusive pelo botão **[ENTRAR]** do anúncio da abertura), espera aqui até começar, com uma barra no alto ("⚑ Corrida Maluca começa em 1:20 · 5 inscrito(s)"). **Sair do saguão cancela a inscrição** (`/spawn`, o portal de volta, desconectar). O `/<evento> sair` e o cancelamento devolvem quem veio de fora pra onde estava; no fim do evento, cada um volta pra onde estava antes de se inscrever (quem entrou pelo portal, pro saguão).
+- **O painel "Eventos de hoje"** na parede leste (a mesma agenda do `/eventos`, um por linha na ordem do horário) e o **ranking de vencedores** na oeste (`ranking.holograma`).
+- **O portal de volta** pro spawn, atrás de quem chega (`saguao.volta`).
+- Os textos são text displays não persistentes, refeitos a cada segundo com o saguão carregado. O saguão das arenas (`/warp arenas`) ficou só com o duelo, o Gladiador e um holograma apontando pra cá.
+
 ## Ranking geral (/eventos top)
 
 Os vencedores de todos os eventos juntos: as vitórias de cada evento deste plugin (os de arena e o Quiz) e do **Gladiador individual** (o por clã não conta), **1 por vitória**, desde sempre. Vitória é o que cada evento já conta no `/<evento> top`: o último de pé (ou quem divide no tempo esgotado), todo sobrevivente da Sobrevivência, só o 1º da Corrida e quem fez mais pontos no Quiz. Decisões de 2026-11-03.
@@ -154,7 +164,7 @@ Iguais em todos os eventos (`/vietna ...`, `/spleef ...`, `/correoucai ...`, `/s
 | `/<evento> assistir` | Vai pra arquibancada |
 | `/<evento> top` | Quem mais venceu |
 
-Staff (`eventos.admin`): `abrir`, `iniciar` (fecha as inscrições e começa agora), `cancelar`, `construir` (refaz a arena e mostra a caixa pro AreasPlugin) e `reload` (recarrega o config de todos).
+Staff (`eventos.admin`): `abrir`, `iniciar` (fecha as inscrições e começa agora), `cancelar`, `construir` (refaz a arena e mostra a caixa pro AreasPlugin) e `reload` (recarrega o config de todos). O saguão dos eventos: `/eventos construir`.
 
 ## Config
 

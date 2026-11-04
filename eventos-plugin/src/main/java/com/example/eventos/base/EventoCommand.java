@@ -32,7 +32,7 @@ public class EventoCommand implements TabExecutor {
             case "entrar" -> {
                 if (!(sender instanceof Player p)) return semConsole(sender);
                 String erro = ev.entrar(p);
-                p.sendMessage(erro == null ? pre + ev.cor() + "Inscrito! Fique com o inventário vazio até começar." : "§c" + erro);
+                p.sendMessage(erro == null ? pre + ev.cor() + "Inscrito! Espere aqui no saguão dos eventos: sair dele cancela a inscrição." : "§c" + erro);
             }
             case "sair" -> {
                 if (!(sender instanceof Player p)) return semConsole(sender);
@@ -104,7 +104,7 @@ public class EventoCommand implements TabExecutor {
     private void info(CommandSender sender) {
         sender.sendMessage(ev.titulo());
         sender.sendMessage("§7" + ev.descricao() + " " + ev.textoPremio());
-        sender.sendMessage("§7Grátis, com o §finventário totalmente vazio §7(nem armadura), uma inscrição por IP.");
+        sender.sendMessage("§7Grátis, com o §finventário totalmente vazio §7(nem armadura), uma inscrição por IP. A espera é no saguão dos eventos (§f/warp eventos§7).");
         String agenda = String.join(" e ", ev.cfg().getStringList("agenda"));
         sender.sendMessage("§7Todo dia" + (agenda.isEmpty() ? " (sem agenda)" : " às §f" + agenda) + "§7.");
         if (ev.getFase() == null) {
