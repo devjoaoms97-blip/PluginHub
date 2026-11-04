@@ -12,7 +12,7 @@ const t = require('./lib')
 
 const CONFIG = path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'EventosPlugin', 'config.yml')
 const CENTRO = [-200, 1800]
-const LADO = 64
+const LADO = 124
 const X0 = CENTRO[0] - LADO / 2, Z0 = CENTRO[1] - LADO / 2
 const CHAO = 64
 const TETO = CHAO + 5
@@ -68,7 +68,9 @@ t.rodar(async () => {
     let msgs = await t.capturar(d, () => d.chat('/eventos'))
     t.verificar(['08:00', '23:00'].every(h => msgs.some(m => m.includes('Labirinto do Fauno') && m.includes(h))), '/eventos mostra o Labirinto às 8h e às 23h',
       msgs.find(m => m.includes('Labirinto')))
-    const linha = (nome, hora) => msgs.findIndex(m => m.includes(nome) && m.includes(hora))
+    // só as linhas da agenda (o "Próximo:" de cima também tem nome e hora)
+    const agenda = msgs.indexOf(msgs.find(m => m.includes('Agenda:')))
+    const linha = (nome, hora) => msgs.findIndex((m, i) => i > agenda && m.includes(nome) && m.includes(hora))
     const ordem = [linha('Labirinto', '08:00'), linha('Corrida', '09:00'), linha('Corrida', '14:00'), linha('Labirinto', '23:00')]
     t.verificar(ordem.every((i, k) => i >= 0 && (k === 0 || i > ordem[k - 1])), '/eventos: um evento por linha, na ordem do horário', ordem.join(', '))
     msgs = await t.capturar(d, () => d.chat('/labirinto'))
@@ -113,11 +115,11 @@ t.rodar(async () => {
     await t.console(`effect give ${b.username} minecraft:instant_health 1 3 true`)
 
     console.log('\n== O Fauno ==')
-    t.verificar(a.mensagens.some(m => m.includes('O Fauno acordou')), 'o Fauno acorda', a.mensagens.find(m => m.includes('acordou')))
+    t.verificar(a.mensagens.some(m => m.includes('Os 3 Faunos acordaram')), 'os 3 Faunos acordam', a.mensagens.find(m => m.includes('acordaram')))
     const husk = `@e[type=minecraft:husk,${CAIXA}]`
-    t.verificar(await conta(husk) === 1, 'o Fauno está lá (um mob que anda e bate)')
-    t.verificar(await conta(`@e[type=minecraft:item_display,${CAIXA}]`) === 1, 'com o modelo do Fauno')
-    // a e b ficam a salvo (Resistência V); o Fauno vai pra cima do c
+    t.verificar(await conta(husk) === 3, 'os 3 Faunos estão lá (mobs que andam e batem)')
+    t.verificar(await conta(`@e[type=minecraft:item_display,${CAIXA}]`) === 3, 'cada um com o modelo do Fauno')
+    // a e b ficam a salvo (Resistência V); os Faunos vão pra cima do c
     for (const x of [a, b]) await t.console(`effect give ${x.username} minecraft:resistance 600 4 true`)
     await t.console(`execute in minecraft:arenas run minecraft:tp ${husk} ${c.username}`)
     await t.espera(1500)

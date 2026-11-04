@@ -332,7 +332,7 @@ labirinto:
   escuridao: true
 
   baus:
-    quantos: 20
+    quantos: 60
     # de quantos a quantos itens cada baú tem
     itens-por-bau: [2, 4]
     # o sorteio de cada item: quanto maior o peso, mais comum ("quantidade": [min, max] ou um número)
@@ -368,6 +368,8 @@ labirinto:
   # blocos de altura); "brilho" (0 a 15) é quanto o modelo aparece no escuro; "coracao-blocos" é de quão
   # longe se ouve o coração dele.
   fauno:
+    # quantos Faunos caçam (num labirinto de 124 x 124, 3), cada um atrás do vivo mais perto dele
+    quantos: 3
     acorda-segundos: 45
     dano: 7
     velocidade: 0.25
@@ -376,13 +378,13 @@ labirinto:
     coracao-blocos: 14
 
   # O labirinto, construído pelo plugin (/labirinto construir) e sorteado de novo a cada evento. "celulas"
-  # por lado (ímpar), "corredor" é a largura dos corredores (as paredes têm 1): 21 x 3 + 1 = 64 blocos de
+  # por lado (ímpar), "corredor" é a largura dos corredores (as paredes têm 1): 41 x 3 + 1 = 124 blocos de
   # lado. "atalhos" é a chance de cada parede a mais cair (mais de um caminho). "chao-y" é o bloco do chão.
   arena:
     mundo: arenas
     centro: [-200, 1800]
     chao-y: 64
-    celulas: 21
+    celulas: 41
     corredor: 2
     atalhos: 0.08
 

@@ -65,7 +65,7 @@ pvp-so-nas-caixas:
     - {nome: "arena do spleef", min: [-16, 60, 884], max: [16, 93, 916]}
     # O Labirinto do Fauno (EventosPlugin), do chão ao teto de vidro escurecido: lá o PvP é de verdade, só
     # entre quem luta (o EventosPlugin decide). Quem assiste, em cima do teto, fica fora.
-    - {nome: "labirinto do fauno", min: [-232, 63, 1768], max: [-169, 69, 1831]}
+    - {nome: "labirinto do fauno", min: [-262, 63, 1738], max: [-139, 69, 1861]}
 
 # Caixas (de pvp-so-nas-caixas) em que a carga de vento vale, mesmo com bloquear.carga-de-vento: o
 # Vietnã usa ela pra empurrar e pra pular de um pilar pro outro.

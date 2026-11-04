@@ -25,7 +25,8 @@ import java.util.Random;
  * alguns atalhos abertos a mais (pra ter mais de um caminho e ninguém ficar encurralado à toa) e uma clareira
  * de 3 x 3 células no meio, onde o Fauno acorda. Os baús ficam nos becos sem saída.
  * <p>
- * Quem assiste fica em cima do teto de vidro escurecido, cercado de vidro, vendo os corredores lá embaixo.
+ * Quem assiste fica em cima do teto de vidro escurecido, numa sala fechada (parede de vidro e teto de ardósia
+ * com lanternas), vendo os corredores lá embaixo.
  */
 public class ArenaLabirinto {
 
@@ -141,7 +142,7 @@ public class ArenaLabirinto {
 
     // ---------------------------------------------------------------- construção
 
-    /** O que não muda: o chão, o teto de vidro escurecido, o cercado de quem assiste. E um labirinto. */
+    /** O que não muda: o chão, o teto de vidro escurecido, a sala de quem assiste. E um labirinto. */
     public void construir() {
         World w = mundo();
         if (w == null) return;
@@ -164,12 +165,13 @@ public class ArenaLabirinto {
         // o teto: vidro escurecido (não deixa passar luz nenhuma), com a borda de cima das paredes de fora lisa
         encher(w, x0, teto, z0, x0 + lado - 1, teto, z0 + lado - 1, Material.TINTED_GLASS);
         anel(w, x0, z0, x0 + lado - 1, z0 + lado - 1, teto, Material.POLISHED_DEEPSLATE);
-        // o cercado de quem assiste, com lanternas por fora (a luz não atravessa o vidro escurecido)
+        // a sala de quem assiste, fechada: parede de vidro e teto de ardósia com lanternas do mar (a luz delas
+        // não atravessa o vidro escurecido: o labirinto continua no escuro)
         for (int y = teto; y <= teto + 3; y++) anel(w, x0 - 1, z0 - 1, x0 + lado, z0 + lado, y, Material.GLASS);
         anel(w, x0 - 1, z0 - 1, x0 + lado, z0 + lado, teto - 1, Material.POLISHED_DEEPSLATE);
+        encher(w, x0 - 1, teto + 4, z0 - 1, x0 + lado, teto + 4, z0 + lado, Material.DEEPSLATE_TILES);
         for (int x = x0 + 3; x < x0 + lado; x += 8) {
-            w.getBlockAt(x, teto + 4, z0 - 1).setType(Material.LANTERN, false);
-            w.getBlockAt(x, teto + 4, z0 + lado).setType(Material.LANTERN, false);
+            for (int z = z0 + 3; z < z0 + lado; z += 8) w.getBlockAt(x, teto + 4, z).setType(Material.SEA_LANTERN, false);
         }
         gerar(new Random());
     }

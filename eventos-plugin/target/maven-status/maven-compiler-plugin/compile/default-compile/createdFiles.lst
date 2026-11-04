@@ -8,6 +8,7 @@ com\example\eventos\quiz\Quiz.class
 com\example\eventos\corrida\TracadoCorrida$Plataforma.class
 com\example\eventos\corrida\TracadoCorrida$Gelo.class
 com\example\eventos\RankingGeral$Fonte.class
+com\example\eventos\labirinto\LabirintoDoFauno$Fauno.class
 com\example\eventos\AgendaCommand.class
 com\example\eventos\correoucai\ArenaCorreOuCai.class
 com\example\eventos\util\Formato.class

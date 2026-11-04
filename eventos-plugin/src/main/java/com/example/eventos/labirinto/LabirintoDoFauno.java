@@ -58,7 +58,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * cheque; se o tempo acabar com mais de um vivo, ninguém vence. Quem luta fica com o efeito Escuridão
  * (pulsos de visão, sem enxergar nada lá fora), que o brilho do jogo de cada um não clareia.
  * <p>
- * O Fauno acorda na clareira do meio uns segundos depois da largada e caça o jogador vivo mais perto. Ele
+ * Os Faunos ({@code fauno.quantos}, 3) acordam na clareira do meio uns segundos depois da largada, e cada um caça o jogador vivo mais perto. Ele
  * não morre (ninguém acerta ele): só dá pra fugir. É um mob invisível (um husk, que anda e bate) carregando
  * um item display com o modelo do Fauno do resource pack ({@code servidor:criatura_fauno}, do PacotePlugin),
  * que vira com ele e troca de quadro enquanto anda. Perto dele, ouve-se o coração batendo.
@@ -73,10 +73,22 @@ public class LabirintoDoFauno extends Evento implements Listener {
 
     private ArenaLabirinto arena;
     private final NamespacedKey marca;
-    private UUID fauno, modelo;
+    /** Um Fauno: o husk que anda e bate, o modelo em cima dele e o quadro da animação. */
+    private static final class Fauno {
+        final UUID mob, modelo;
+        int quadro, passos;
+        Location ultima;
+
+        Fauno(UUID mob, UUID modelo, Location onde) {
+            this.mob = mob;
+            this.modelo = modelo;
+            this.ultima = onde;
+        }
+    }
+
+    private final List<Fauno> faunos = new ArrayList<>();
+    private boolean acordaram;
     private final ItemStack[] quadros = new ItemStack[5];
-    private int quadro = -1, passos;
-    private Location ultima;
     private long acordaEm;
     private int segundos;
 
@@ -120,7 +132,7 @@ public class LabirintoDoFauno extends Evento implements Listener {
 
     @Override
     public String descricao() {
-        return "PvP num labirinto escuro e diferente a cada vez, com baús escondidos nos becos sem saída e o Fauno à caça. "
+        return "PvP num labirinto escuro e diferente a cada vez, com baús escondidos nos becos sem saída e três Faunos à caça. "
                 + "Todos entram sem nada. Morreu, está fora. O último vivo leva o prêmio; se o tempo acabar com mais de um vivo, ninguém vence.";
     }
 
@@ -323,15 +335,15 @@ public class LabirintoDoFauno extends Evento implements Listener {
     protected void tickLuta(long agora) {
         segundos++;
         escurecer();
-        if (fauno == null && agora >= acordaEm) acordarFauno();
-        if (mobDoFauno() instanceof Husk h) {
+        if (!acordaram && agora >= acordaEm) acordarFaunos();
+        double ouvir = cfg().getDouble("fauno.coracao-blocos");
+        for (Fauno f : faunos) {
+            if (!(Bukkit.getEntity(f.mob) instanceof Husk h)) continue;
             mirar(h);
-            if (segundos % 2 == 0) {
-                double ouvir = cfg().getDouble("fauno.coracao-blocos");
-                for (Player p : jogadoresVivos()) {
-                    if (p.getWorld().equals(h.getWorld()) && p.getLocation().distanceSquared(h.getLocation()) <= ouvir * ouvir) {
-                        p.playSound(h.getLocation(), Sound.ENTITY_WARDEN_HEARTBEAT, 1f, 0.8f);
-                    }
+            if (segundos % 2 != 0) continue;
+            for (Player p : jogadoresVivos()) {
+                if (p.getWorld().equals(h.getWorld()) && p.getLocation().distanceSquared(h.getLocation()) <= ouvir * ouvir) {
+                    p.playSound(h.getLocation(), Sound.ENTITY_WARDEN_HEARTBEAT, 1f, 0.8f);
                 }
             }
         }
@@ -343,22 +355,34 @@ public class LabirintoDoFauno extends Evento implements Listener {
         animar();
     }
 
-    /** No /labirinto, durante a luta: quantos vivos e se o Fauno já acordou. */
+    /** No /labirinto, durante a luta: quantos vivos e se os Faunos já acordaram. */
     @Override
     public String detalheLuta() {
-        return vivos().size() + " vivo(s), " + (fauno == null ? "o Fauno ainda dorme" : "o Fauno está caçando");
+        return vivos().size() + " vivo(s), " + (acordaram ? faunos.size() + " Fauno(s) caçando" : "os Faunos ainda dormem");
     }
 
     // ---------------------------------------------------------------- o Fauno
 
-    private Entity mobDoFauno() {
-        return fauno == null ? null : Bukkit.getEntity(fauno);
+    /**
+     * Os Faunos ({@code fauno.quantos}) aparecem na clareira, um em cada canto dela (o primeiro no meio), e
+     * cada um caça o vivo mais perto de si.
+     */
+    private void acordarFaunos() {
+        acordaram = true;
+        int quantos = Math.max(1, cfg().getInt("fauno.quantos", 1));
+        int[][] lugares = {{0, 0}, {3, 3}, {-3, -3}, {3, -3}, {-3, 3}, {3, 0}, {-3, 0}, {0, 3}, {0, -3}};
+        for (int i = 0; i < quantos; i++) {
+            int[] l = lugares[i % lugares.length];
+            acordarFauno(arena.clareira().add(l[0], 0, l[1]));
+        }
+        anunciarNaArena(cor() + "§l☠ " + (quantos == 1 ? "O Fauno acordou! §7Ele está" : "Os " + quantos + " Faunos acordaram! §7Eles estão")
+                + " na clareira do meio, caçando quem estiver mais perto.");
+        for (Player p : jogadoresVivos()) p.playSound(p.getLocation(), Sound.ENTITY_WARDEN_EMERGE, 0.8f, 0.7f);
     }
 
-    /** O Fauno aparece na clareira: o husk invisível (que anda e bate) e o modelo em cima dele. */
-    private void acordarFauno() {
+    /** Um Fauno: o husk invisível (que anda e bate) e o modelo em cima dele. */
+    private void acordarFauno(Location onde) {
         World w = mundo();
-        Location onde = arena.clareira();
         Husk h = w.spawn(onde, Husk.class, m -> {
             m.getPersistentDataContainer().set(marca, PersistentDataType.BYTE, (byte) 1);
             m.setAdult();
@@ -375,7 +399,6 @@ public class LabirintoDoFauno extends Evento implements Listener {
             atributo(m, Attribute.SPAWN_REINFORCEMENTS, 0);
             atributo(m, Attribute.SCALE, cfg().getDouble("fauno.escala", 1.5));
         });
-        fauno = h.getUniqueId();
         int brilho = Math.max(0, Math.min(15, cfg().getInt("fauno.brilho")));
         ItemDisplay d = w.spawn(onde, ItemDisplay.class, m -> {
             m.getPersistentDataContainer().set(marca, PersistentDataType.BYTE, (byte) 1);
@@ -387,11 +410,7 @@ public class LabirintoDoFauno extends Evento implements Listener {
             m.setTeleportDuration(2);
             m.setBrightness(new Display.Brightness(brilho, 0));
         });
-        modelo = d.getUniqueId();
-        quadro = 0;
-        ultima = onde;
-        anunciarNaArena(cor() + "§l☠ O Fauno acordou! §7Ele está na clareira do meio, caçando quem estiver mais perto.");
-        for (Player p : jogadoresVivos()) p.playSound(p.getLocation(), Sound.ENTITY_WARDEN_EMERGE, 0.8f, 0.7f);
+        faunos.add(new Fauno(h.getUniqueId(), d.getUniqueId(), onde));
     }
 
     private static void atributo(LivingEntity e, Attribute a, double valor) {
@@ -408,28 +427,31 @@ public class LabirintoDoFauno extends Evento implements Listener {
                 });
     }
 
-    /** A cada 2 ticks: o modelo vai junto com o husk, vira com o corpo e, andando, troca de quadro. */
+    /** A cada 2 ticks: cada modelo vai junto com o seu husk, vira com o corpo e, andando, troca de quadro. */
     private void animar() {
-        if (!(mobDoFauno() instanceof Husk h) || modelo == null || !(Bukkit.getEntity(modelo) instanceof ItemDisplay d)) return;
-        Location agora = h.getLocation();
-        Location destino = agora.clone();
-        destino.setYaw(h.getBodyYaw() + 180);
-        destino.setPitch(0);
-        d.teleport(destino);
-        boolean andando = ultima != null && ultima.getWorld().equals(agora.getWorld())
-                && (agora.getX() - ultima.getX()) * (agora.getX() - ultima.getX()) + (agora.getZ() - ultima.getZ()) * (agora.getZ() - ultima.getZ()) > 0.0025;
-        ultima = agora;
-        int novo = andando ? 1 + (passos++ / 2) % 4 : 0;
-        if (!andando) passos = 0;
-        if (novo != quadro) {
-            quadro = novo;
-            d.setItemStack(quadros[novo]);
+        for (Fauno f : faunos) {
+            if (!(Bukkit.getEntity(f.mob) instanceof Husk h) || !(Bukkit.getEntity(f.modelo) instanceof ItemDisplay d)) continue;
+            Location agora = h.getLocation();
+            Location destino = agora.clone();
+            destino.setYaw(h.getBodyYaw() + 180);
+            destino.setPitch(0);
+            d.teleport(destino);
+            Location ultima = f.ultima;
+            boolean andando = ultima != null && ultima.getWorld().equals(agora.getWorld())
+                    && (agora.getX() - ultima.getX()) * (agora.getX() - ultima.getX()) + (agora.getZ() - ultima.getZ()) * (agora.getZ() - ultima.getZ()) > 0.0025;
+            f.ultima = agora;
+            int novo = andando ? 1 + (f.passos++ / 2) % 4 : 0;
+            if (!andando) f.passos = 0;
+            if (novo != f.quadro) {
+                f.quadro = novo;
+                d.setItemStack(quadros[novo]);
+            }
         }
     }
 
     private void removerFauno() {
-        fauno = null;
-        modelo = null;
+        faunos.clear();
+        acordaram = false;
         World w = mundo();
         if (w == null) return;
         for (Entity e : w.getEntities()) if (sobra(e)) e.remove();
@@ -440,7 +462,7 @@ public class LabirintoDoFauno extends Evento implements Listener {
      * exemplo) e o que ficou no chão do labirinto (flechas, itens).
      */
     private boolean sobra(Entity e) {
-        if (ehDoEvento(e)) return !e.getUniqueId().equals(fauno) && !e.getUniqueId().equals(modelo);
+        if (ehDoEvento(e)) return faunos.stream().noneMatch(f -> f.mob.equals(e.getUniqueId()) || f.modelo.equals(e.getUniqueId()));
         return (e instanceof Item || e instanceof AbstractArrow) && naArena(e.getLocation());
     }
 

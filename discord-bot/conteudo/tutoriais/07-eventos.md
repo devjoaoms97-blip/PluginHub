@@ -29,7 +29,7 @@ Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o últ
 
 ⚑ **Corrida Maluca**, todo dia às **9h** e **14h** (`/corrida entrar`): pista de obstáculos em 3 fases, num dos 5 mapas, sem kit. Caiu na água, volta pro último checkpoint. Os 3 primeiros na chegada levam **R$ 5.000**, **R$ 3.000** e **R$ 2.000**.
 
-☽ **Labirinto do Fauno**, às **8h** e **23h** (`/labirinto entrar`): PvP no escuro, sem kit: os itens vêm de baús escondidos e somem no fim. O **Fauno** caça quem está perto e não morre: fuja! O último vivo leva o cheque; em 10 minutos, com mais de um vivo, ninguém vence.
+☽ **Labirinto do Fauno**, às **8h** e **23h** (`/labirinto entrar`): PvP no escuro, sem kit: os itens vêm de baús escondidos e somem no fim. Três **Faunos** caçam quem está perto e não morrem: fuja! O último vivo leva o cheque; em 10 minutos, com mais de um vivo, ninguém vence.
 
 Pra assistir: `/<evento> assistir`.
 
