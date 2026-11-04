@@ -88,14 +88,26 @@ O único de todos juntos: com o mesmo kit de ferro, contra 10 ondas de invasores
 
 ## Corrida Maluca
 
-Uma pista de obstáculos num pavilhão comprido e fechado de parque de diversões no mundo `arenas`, de (0, 1800) pro norte, uns 145 blocos: a pista tem 13 de largura sobre uma piscina, paredes de listras vermelhas e brancas com uma faixa amarela, pisos coloridos, bandeirinhas atravessando a pista, teto com claraboias e as passarelas de quem assiste dos dois lados, em cima das paredes, atrás de um vidro até o teto. Todo dia às **9:00** e às **14:00** (`corrida.agenda`). Decisões de 2026-11-02.
+Uma pista de obstáculos num pavilhão comprido e fechado no mundo `arenas`, uns **450 blocos** em **3 fases**, cada uma mais difícil: a pista tem 13 de largura sobre uma piscina, paredes listradas com uma faixa no alto, pisos coloridos, bandeirinhas atravessando a pista, teto com claraboias e as passarelas de quem assiste dos dois lados, em cima das paredes, atrás de um vidro até o teto. Todo dia às **9:00** e às **14:00** (`corrida.agenda`). Decisões de 2026-11-02; a pista de 3 fases, os obstáculos novos, os 10 minutos e a contagem regressiva, de 2026-11-03; os 5 mapas, a barra do tempo e a arquibancada da chegada, também de 2026-11-03.
 
-- **Sem kit**: só correr e pular. **Ninguém sai por cair**: quem cai na água volta pro último checkpoint (são 2, entre os trechos).
-- **Prêmio por colocação** (`premios: [5000, 3000, 2000]`): os 3 primeiros a cruzar a chegada levam os cheques, na ordem (só o 1º conta vitória no `/corrida top`). Quem chega vai pra passarela. Acaba quando o 3º chega, quando todos chegam ou em 5 minutos (`luta.tempo-maximo-minutos`); o prêmio de quem não chegou não é pago. Quem sai do servidor antes do pagamento recebe na conta.
-- **Trecho 1**: o portão de vidro da largada abre no "valendo"; duas fileiras de 3 portas iguais em que só uma abre (sorteada a cada corrida, `portas.abertas-por-fileira`: some pra todos quando alguém encosta; a falsa só faz barulho); o trampolim de slime, que joga por cima de um vão (`trampolim`); e a pista de gelo com buracos.
-- **Trecho 2**: as plataformas que somem, em dois grupos em xadrez que se alternam (firme 3 s, vermelha 1 s, sumida 2 s: `plataformas`); e o tapete rolante estreito, com as setas pra trás, que empurra quem está em cima (`tapete`).
-- **Trecho 3**: dois discos com barras giratórias na altura do pé (uma barra e depois uma cruz: `barras`), feitas de blocos de exibição; quem não pula leva um empurrão pra fora. Depois, a ponte estreita do vento, com 4 canhões nas paredes que soltam carga de vento revezando (`vento`); e a chegada quadriculada, com um arco.
-- Todos os obstáculos são do plugin (sem redstone). A cada corrida, só o portão, as portas e as plataformas voltam.
+- **5 mapas**, um do lado do outro, de (0, 1800) pro norte, a cada 40 blocos em x (`mapas`): **Parque de Diversões** (`parque`, x 0), **Fábrica de Doces** (`doces`, x 40), **Polo Norte** (`gelo`, x 80), **Neon** (`neon`, x 120) e **Selva** (`selva`, x 160). Cada um tem o seu tema (cores das paredes, dos pisos, das bandeirinhas, das portas e das peças) e o seu traçado (os mesmos tipos de obstáculo, em outra ordem e combinação), sempre com 3 fases e 6 ou 7 checkpoints. **A cada corrida, um é sorteado** e anunciado na largada ("Mapa: Neon"); `mapa-fixo` prende um (pros testes). `/corrida construir` faz todos os ligados, um a cada 2 s (todos de uma vez travariam o servidor), com um aviso no console a cada um.
+- **Sem kit**: só correr e pular. **Ninguém sai por cair**: quem cai na água volta pro último checkpoint (a barra de ação mostra "Checkpoint 2 de 6").
+- **Largada**: nos 10 s de preparação, uma **contagem regressiva** até o portão de vidro abrir: "O portão abre em N s" na barra de ação (com um tique), os últimos 5 em número grande na tela (com um "plim" que fica mais agudo) e o **"JÁ!"**, com fogos e o vidro quebrando.
+- **Tempo restante**: numa barra no alto da tela (que vai esvaziando), pra quem corre, quem já chegou e quem assiste: "⚑ Corrida Maluca · 7:32 restantes · 1/3 na chegada". No último minuto, fica vermelha.
+- **Prêmio por colocação** (`premios: [5000, 3000, 2000]`): os 3 primeiros a cruzar a chegada levam os cheques, na ordem (só o 1º conta vitória no `/corrida top`). Quem chega vai pra **arquibancada da chegada**, logo depois da linha, atrás de um vidro e de frente pra ela, assistir quem vem atrás. Acaba quando o 3º chega, quando todos chegam ou em **10 minutos** (`luta.tempo-maximo-minutos`); o prêmio de quem não chegou não é pago. Quem sai do servidor antes do pagamento recebe na conta.
+- **Os obstáculos** (cada um com a força da fase em que está: no config, onde há lista, cada posição é de uma fase):
+  - **portas**: fileiras de 3 portas iguais em que só uma abre (sorteada a cada corrida, `portas.abertas-por-fileira`: some pra todos quando alguém encosta; a falsa só faz barulho);
+  - **trampolim** de slime, que joga por cima de um vão, mirando no chão do outro lado (`trampolim`);
+  - **gelo** com buracos (mais buracos da fase 2 em diante);
+  - **plataformas que somem**, em dois grupos em xadrez que se alternam (firme, vermelha e sumida: `plataformas`);
+  - **tapete rolante** estreito, com as setas pra trás (`tapete`);
+  - **pula-pula**: blocos de slime soltos sobre a água que jogam de um pro outro, mirando no meio do próximo (`pula-pula`);
+  - **discos com barras giratórias** na altura do pé (uma barra; em cruz, nas fases 2 e 3; num par de discos, o segundo gira pro outro lado: `barras`);
+  - **martelos de pêndulo**, que balançam atravessando uma ponte estreita e jogam na água quem está no caminho (`martelos`);
+  - **carrossel**, um disco que gira e leva junto quem está em cima, empurrando um pouco pra fora (`carrossel`);
+  - **parkour**: blocos 2 x 2 soltos sobre a água, em zigue-zague e em alturas diferentes;
+  - **ponte do vento**, com canhões nas paredes que soltam carga de vento revezando (`vento`).
+- Todos os obstáculos são do plugin (sem redstone): as barras, os martelos e os raios do carrossel são blocos de exibição, que aparecem na largada e somem no fim. Durante a corrida, os chunks do mapa ficam carregados (a pista é comprida demais pra depender de quem está perto). A cada corrida, só o portão, as portas e as plataformas voltam. Depois de mudar um traçado ou um tema (`MapasCorrida`, `TemaCorrida`), `/corrida construir` de novo.
 
 ## Quiz
 

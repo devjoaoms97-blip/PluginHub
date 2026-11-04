@@ -27,7 +27,7 @@ Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o últ
 
 ⚔ **Sobrevivência**, todo dia às **22h** (`/sobrevivencia entrar`): todos **juntos**, com kit de ferro, contra 10 ondas de invasores no pátio de um castelo, com chefe na 5 e na 10. Aqui os mobs machucam de verdade: morreu, está fora (sem perder nada). Quem estiver vivo no fim da última onda divide o prêmio.
 
-⚑ **Corrida Maluca**, todo dia às **9h** e **14h** (`/corrida entrar`): pista de obstáculos, sem kit. Caiu na água, volta pro último checkpoint. Os 3 primeiros na chegada levam **R$ 5.000**, **R$ 3.000** e **R$ 2.000**.
+⚑ **Corrida Maluca**, todo dia às **9h** e **14h** (`/corrida entrar`): pista de obstáculos em 3 fases, num dos 5 mapas, sem kit. Caiu na água, volta pro último checkpoint. Os 3 primeiros na chegada levam **R$ 5.000**, **R$ 3.000** e **R$ 2.000**.
 
 Pra assistir: `/<evento> assistir`.
 

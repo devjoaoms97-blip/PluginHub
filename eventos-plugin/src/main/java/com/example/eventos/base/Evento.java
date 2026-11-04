@@ -156,6 +156,10 @@ public abstract class Evento {
 
     protected abstract void darKit(Player p);
 
+    /** Quando todos já estão na arena, antes dos segundos de preparação (a Corrida: a contagem regressiva). */
+    protected void aoComecarPreparacao(int segundos) {
+    }
+
     /** Quando a luta começa (depois do kit). */
     protected void aoComecarLuta(long agora) {
     }
@@ -358,6 +362,7 @@ public abstract class Evento {
         fase = Fase.PREPARACAO;
         int preparacao = Math.max(0, cfg().getInt("luta.preparacao-segundos"));
         anunciar(titulo() + " " + cor() + "Começou com §f" + participantes.size() + " " + cor() + "jogador(es)! Assista: §f/" + id + " assistir");
+        aoComecarPreparacao(preparacao);
         Bukkit.getScheduler().runTaskLater(plugin, this::comecarLuta, preparacao * 20L);
     }
 
@@ -440,13 +445,18 @@ public abstract class Evento {
         return renascerNaGaleria.remove(jogador) ? arquibancada() : null;
     }
 
-    /** Saiu da luta sem ser eliminado (a Corrida: cruzou a chegada): perde o kit e vai pra arquibancada. */
+    /** Pra onde vai quem sai da pista sem perder (retirar): a arquibancada; na Corrida, a da chegada. */
+    protected Location localDeQuemSai() {
+        return arquibancada();
+    }
+
+    /** Saiu da luta sem ser eliminado (a Corrida: cruzou a chegada): perde o kit e vai pra {@link #localDeQuemSai()}. */
     protected void retirar(Player p) {
         Participante part = lutando(p.getUniqueId());
         if (part == null) return;
         part.vivo = false;
         tirarKit(p);
-        teleportar(p, arquibancada());
+        teleportar(p, localDeQuemSai());
         removerPendente(p.getUniqueId());
         verificarVencedor();
     }
