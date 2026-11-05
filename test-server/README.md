@@ -13,7 +13,7 @@ O servidor fica **fora do repositório** (padrão: `C:\mc-teste`). Aqui só fica
 Rodar o `montar.bat` significa aceitar o [EULA do Minecraft](https://aka.ms/MinecraftEULA), porque ele grava `eula=true`.
 
 O `montar.bat`:
-- baixa o Paper 26.2, o VaultUnlocked, o EssentialsX (com o EssentialsXSpawn, do `/spawn`), o LuckPerms, o Multiverse-Core, o WorldEdit, o ViaVersion e o ViaBackwards nas versões fixas do `montar.ps1`, conferindo o sha256 (o ViaVersion e o ViaBackwards são para os bots de `tools/bots`);
+- baixa o Paper 26.2, o VaultUnlocked, o EssentialsX (com o EssentialsXSpawn, do `/spawn`), o LuckPerms, o Multiverse-Core, o WorldEdit, o ViaVersion, o ViaBackwards e o GrimAC (antihack) nas versões fixas do `montar.ps1`, conferindo o sha256 (o ViaVersion e o ViaBackwards são para os bots de `tools/bots`);
 - copia os nossos jars;
 - grava o `server.properties`: offline, só `127.0.0.1`, RCON ligado com uma senha gerada na hora;
 - coloca os configs de teste de `configs/`;

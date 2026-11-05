@@ -1,5 +1,6 @@
 package com.example.eventos.labirinto;
 
+import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -8,6 +9,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.MultipleFacing;
+import org.bukkit.block.data.Orientable;
+import org.bukkit.block.data.type.Lantern;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayDeque;
@@ -25,13 +29,17 @@ import java.util.Random;
  * alguns atalhos abertos a mais (pra ter mais de um caminho e ninguém ficar encurralado à toa) e uma clareira
  * de 3 x 3 células no meio, onde o Fauno acorda. Os baús ficam nos becos sem saída.
  * <p>
- * Quem assiste fica em cima do teto de vidro escurecido, numa sala fechada (parede de vidro e teto de ardósia
- * com lanternas), vendo os corredores lá embaixo.
+ * Quem assiste fica em cima do teto de vidro escurecido, numa sala fechada (uma ruína de pedra com musgo,
+ * pilares e teto de vigas com lanternas), vendo os corredores lá embaixo.
  */
 public class ArenaLabirinto {
 
     /** A altura das paredes; o teto fica logo acima. */
     static final int ALTURA = 4;
+    /** A altura de dentro da sala de quem assiste, do vidro do teto às vigas. */
+    static final int SALA = 8;
+    /** A distância entre os pilares da sala (e entre as vigas do teto dela). */
+    private static final int VAO = 8;
 
     private final String mundo;
     private final int chao, celulas, corredor, lado, x0, z0;
@@ -89,7 +97,7 @@ public class ArenaLabirinto {
     public boolean naArquibancada(Location l) {
         return l.getWorld() != null && l.getWorld().getName().equals(mundo)
                 && l.getX() >= x0 - 1 && l.getX() < x0 + lado + 1 && l.getZ() >= z0 - 1 && l.getZ() < z0 + lado + 1
-                && l.getY() >= teto() && l.getY() < teto() + 6;
+                && l.getY() >= teto() && l.getY() < teto() + SALA + 2;
     }
 
     /** Em cima do teto, na borda sul, olhando pro labirinto. */
@@ -147,7 +155,7 @@ public class ArenaLabirinto {
         World w = mundo();
         if (w == null) return;
         int teto = teto();
-        encher(w, x0 - 3, chao - 2, z0 - 3, x0 + lado + 2, teto + 6, z0 + lado + 2, Material.AIR);
+        encher(w, x0 - 3, chao - 2, z0 - 3, x0 + lado + 2, teto + SALA + 3, z0 + lado + 2, Material.AIR);
         encher(w, x0 - 1, chao - 2, z0 - 1, x0 + lado, chao - 1, z0 + lado, Material.DEEPSLATE);
         Random r = new Random(7);
         for (int x = 0; x < lado; x++) {
@@ -165,15 +173,91 @@ public class ArenaLabirinto {
         // o teto: vidro escurecido (não deixa passar luz nenhuma), com a borda de cima das paredes de fora lisa
         encher(w, x0, teto, z0, x0 + lado - 1, teto, z0 + lado - 1, Material.TINTED_GLASS);
         anel(w, x0, z0, x0 + lado - 1, z0 + lado - 1, teto, Material.POLISHED_DEEPSLATE);
-        // a sala de quem assiste, fechada: parede de vidro e teto de ardósia com lanternas do mar (a luz delas
-        // não atravessa o vidro escurecido: o labirinto continua no escuro)
-        for (int y = teto; y <= teto + 3; y++) anel(w, x0 - 1, z0 - 1, x0 + lado, z0 + lado, y, Material.GLASS);
         anel(w, x0 - 1, z0 - 1, x0 + lado, z0 + lado, teto - 1, Material.POLISHED_DEEPSLATE);
-        encher(w, x0 - 1, teto + 4, z0 - 1, x0 + lado, teto + 4, z0 + lado, Material.DEEPSLATE_TILES);
-        for (int x = x0 + 3; x < x0 + lado; x += 8) {
-            for (int z = z0 + 3; z < z0 + lado; z += 8) w.getBlockAt(x, teto + 4, z).setType(Material.SEA_LANTERN, false);
-        }
+        construirSala(w, teto);
         gerar(new Random());
+    }
+
+    /**
+     * A sala de quem assiste, fechada: uma ruína de pedra com musgo, pilares de ardósia a cada {@link #VAO}
+     * blocos, vigas de carvalho escuro no teto, lanternas penduradas em correntes, raízes e trepadeiras. A luz
+     * das lanternas não atravessa o vidro escurecido: o labirinto continua no escuro.
+     */
+    private void construirSala(World w, int teto) {
+        int ax = x0 - 1, az = z0 - 1, bx = x0 + lado, bz = z0 + lado, topo = teto + SALA + 1;
+        Random r = new Random(11);
+        Material[] pedras = {Material.STONE_BRICKS, Material.MOSSY_STONE_BRICKS, Material.MOSSY_STONE_BRICKS,
+                Material.CRACKED_STONE_BRICKS, Material.STONE_BRICKS};
+        // as paredes, com os pilares saindo um bloco pra dentro
+        for (int x = ax; x <= bx; x++) {
+            for (int z = az; z <= bz; z++) {
+                boolean ladoX = x == ax || x == bx, ladoZ = z == az || z == bz;
+                if (!ladoX && !ladoZ) continue;
+                boolean canto = ladoX && ladoZ;
+                boolean pilar = canto || (ladoX && (z - az) % VAO == 0) || (ladoZ && (x - ax) % VAO == 0);
+                for (int y = teto; y < topo; y++) {
+                    Material m;
+                    if (pilar) m = y == teto || y == topo - 1 ? Material.CHISELED_DEEPSLATE : Material.DEEPSLATE_BRICKS;
+                    else if (y == teto) m = Material.MOSSY_COBBLESTONE;
+                    else if (y == topo - 1) m = Material.POLISHED_DEEPSLATE;
+                    else m = pedras[r.nextInt(pedras.length)];
+                    w.getBlockAt(x, y, z).setType(m, false);
+                }
+                if (pilar && !canto) {
+                    int dx = x == ax ? 1 : x == bx ? -1 : 0, dz = z == az ? 1 : z == bz ? -1 : 0;
+                    encher(w, x + dx, teto + 1, z + dz, x + dx, topo - 1, z + dz, Material.DEEPSLATE_BRICKS);
+                    w.getBlockAt(x + dx, teto + 1, z + dz).setType(Material.CHISELED_DEEPSLATE, false);
+                } else if (!pilar && r.nextInt(4) == 0) {
+                    // trepadeira descendo do alto da parede, do lado de dentro
+                    BlockFace parede = x == ax ? BlockFace.WEST : x == bx ? BlockFace.EAST : z == az ? BlockFace.NORTH : BlockFace.SOUTH;
+                    int ix = x - parede.getModX(), iz = z - parede.getModZ();
+                    int ate = topo - 2 - r.nextInt(SALA - 2);
+                    for (int y = topo - 1; y >= ate; y--) {
+                        Block b = w.getBlockAt(ix, y, iz);
+                        if (b.getType() != Material.AIR) break;
+                        b.setType(Material.VINE, false);
+                        if (b.getBlockData() instanceof MultipleFacing f) {
+                            f.setFace(parede, true);
+                            b.setBlockData(f, false);
+                        }
+                    }
+                }
+            }
+        }
+        // o teto: tábuas de carvalho escuro, com vigas por baixo indo de pilar a pilar
+        encher(w, ax, topo, az, bx, topo, bz, Material.DARK_OAK_PLANKS);
+        for (int x = ax + 1; x < bx; x++) {
+            for (int z = az + 1; z < bz; z++) {
+                boolean vigaX = (z - az) % VAO == 0, vigaZ = (x - ax) % VAO == 0;
+                if (!vigaX && !vigaZ) continue;
+                Block b = w.getBlockAt(x, topo - 1, z);
+                b.setType(Material.STRIPPED_DARK_OAK_LOG, false);
+                if (vigaX != vigaZ && b.getBlockData() instanceof Orientable o) {
+                    o.setAxis(vigaX ? Axis.X : Axis.Z);
+                    b.setBlockData(o, false);
+                }
+            }
+        }
+        // no meio de cada vão: uma lanterna na corrente; e raízes penduradas aqui e ali (e umas flores de esporo)
+        for (int x = ax + 1; x < bx; x++) {
+            for (int z = az + 1; z < bz; z++) {
+                Block b = w.getBlockAt(x, topo - 1, z);
+                if (b.getType() != Material.AIR) continue;
+                if ((x - ax) % VAO == VAO / 2 && (z - az) % VAO == VAO / 2) {
+                    b.setType(Material.IRON_CHAIN, false);
+                    Block l = w.getBlockAt(x, topo - 2, z);
+                    l.setType(Material.LANTERN, false);
+                    if (l.getBlockData() instanceof Lantern lanterna) {
+                        lanterna.setHanging(true);
+                        l.setBlockData(lanterna, false);
+                    }
+                } else {
+                    int s = r.nextInt(200);
+                    if (s < 12) b.setType(Material.HANGING_ROOTS, false);
+                    else if (s < 13) b.setType(Material.SPORE_BLOSSOM, false);
+                }
+            }
+        }
     }
 
     /** Sorteia um labirinto novo e o constrói (paredes, baús vazios). */

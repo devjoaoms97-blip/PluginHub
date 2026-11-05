@@ -55,7 +55,12 @@ $downloads = @(
     # com o nick de outro. Build Paper oficial (github.com/AuthMe/AuthMeReloaded).
     @{ arquivo = 'plugins\AuthMe-6.0.1-Paper.jar'; remover = 'AuthMe-*.jar'
        url = 'https://cdn.modrinth.com/data/9js4IEHC/versions/fPuH4uYs/AuthMe-6.0.1-Paper.jar'
-       sha256 = '7704335e9e73a634d9d926344f77897f4c74f78f82453a59f5aa0f8d2722450a' }
+       sha256 = '7704335e9e73a634d9d926344f77897f4c74f78f82453a59f5aa0f8d2722450a' },
+    # antihack (GrimAC, GPLv3): com a config padrão só avisa a staff e puxa de volta quem se move
+    # impossível; não expulsa ninguém. Os bots de tools/bots ficam isentos (grim.exempt).
+    @{ arquivo = 'plugins\grimac-bukkit-2.3.75-1299a2a.jar'; remover = 'grimac-bukkit-*.jar'
+       url = 'https://cdn.modrinth.com/data/LJNGWSvH/versions/QNc4r5Qj/grimac-bukkit-2.3.75-1299a2a.jar'
+       sha256 = '080e01c5545695b7e755f705d73da49c5eae9b86d67f1425f88f2c7b414f8da9' }
 )
 
 function Get-Sha256([string]$caminho) {

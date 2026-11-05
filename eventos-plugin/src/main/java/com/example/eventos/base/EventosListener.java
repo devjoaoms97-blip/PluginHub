@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * As regras de todos os eventos de arena:
@@ -165,18 +166,25 @@ public class EventosListener implements Listener {
         if (!plugin.isAdmin(evento.getPlayer()) && arenaEm(evento.getBlock().getLocation()) != null) evento.setCancelled(true);
     }
 
+    /**
+     * Os do AuthMe (os mesmos do allowCommands dele) valem sempre. Um admin que sai do jogo na arquibancada
+     * volta lá (admin não vai pro saguão), mas até o /login o AuthMe tira o op dele: sem isto, ficaria preso.
+     */
+    private static final Set<String> LOGIN = Set.of("login", "l", "log", "register", "reg", "email", "captcha", "totp", "2fa");
+
     /** Na arena e na arquibancada, só os comandos liberados do evento (lutando, só o do próprio evento). */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void aoUsarComando(PlayerCommandPreprocessEvent evento) {
         Player p = evento.getPlayer();
         if (plugin.isAdmin(p)) return;
+        String comando = evento.getMessage().substring(1).split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
+        if (comando.contains(":")) comando = comando.substring(comando.indexOf(':') + 1);
+        if (LOGIN.contains(comando)) return;
         Evento e = lutando(p);
         boolean lutando = e != null;
         if (e == null) e = arenaEm(p.getLocation());
         if (e == null) e = arquibancadaEm(p.getLocation());
         if (e == null) return;
-        String comando = evento.getMessage().substring(1).split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
-        if (comando.contains(":")) comando = comando.substring(comando.indexOf(':') + 1);
         boolean liberado = e.cfg().getStringList("comandos-liberados").contains(comando);
         if (liberado && (!lutando || comando.equals(e.id()))) return;
         evento.setCancelled(true);
