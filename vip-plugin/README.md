@@ -16,8 +16,9 @@ Todos os comandos, de jogador e de staff, entram por `/vip <ação>` — não te
 | `/vip fly` | quem tem VIP | Liga/desliga voo |
 | `/vip heal` | quem tem VIP | Cura instantânea (cooldown por tier) |
 | `/vip feed` | quem tem VIP | Restaura a fome (cooldown por tier) |
-| `/vip kit` | quem tem VIP | Resgata o kit do seu tier (cooldown por tier) |
-| `/vip kitmensal` | quem tem VIP | Resgata o equipamento encantado do seu tier (armadura, armas e ferramentas), uma vez a cada 30 dias |
+| `/vip kit` | quem tem VIP | Resgata o kit diário do seu tier (comida, maçãs, XP), a cada 24 h |
+| `/vip kitsemanal` | quem tem VIP | Resgata o kit semanal (minérios, totens e maçãs), uma vez a cada 7 dias |
+| `/vip kitmensal` | quem tem VIP | Resgata o equipamento encantado do seu tier (armadura, armas e ferramentas), mais máquinas e mapas do tesouro sorteados, uma vez a cada 30 dias |
 | `/vip particula <tipo\|off>` | quem tem VIP | Escolhe o efeito de partícula que te segue |
 | `/vip warp` | quem tem VIP | Teleporta pra área exclusiva de VIP |
 | `/vip add <jogador> <tier>` | staff | Concede VIP direto por 30 dias (sem passar por código). Com o mesmo tier já ativo, soma os 30 dias aos que faltam |
@@ -213,7 +214,8 @@ Vá até o local desejado e anote as coordenadas (`F3`), depois edite `warp-vip.
 
 | Benefício | Bronze | Prata | Ouro | Diamante |
 |---|---|---|---|---|
-| Kit mensal (`/vip kitmensal`) | Diamante, nível IV | Netherite, nível V | Netherite, nível VI | Netherite, nível VII |
+| Kits (`/vip kit`, `kitsemanal`, `kitmensal`) | diário, semanal e mensal | diário, semanal e mensal | diário, semanal e mensal | diário, semanal e mensal |
+| Máquinas e mapas do tesouro no kit mensal | 1 e 1 | 1 e 2 | 1 e 3 | 2 e 3 |
 | Fortuna da picareta | III | III | IV | V |
 | Bônus de ativação: dinheiro | 10% do próximo rank | 20% | 35% | 50% |
 | Bônus de ativação: XP em cada skill | 500 | 1.500 | 3.000 | 5.000 |
@@ -229,34 +231,67 @@ Na tab, o nome fica com o rank (RankupPlugin), a tag do clã (ClasPlugin) e a ta
 
 Os benefícios que moram em outros plugins (XP, Pix, missões, venda automática, terrenos, descontos) funcionam por permissão, dada pelos grupos do LuckPerms (veja "Setup"). Cada plugin tem a sua lista de permissões no próprio `config.yml`.
 
-### Kit mensal
+### Kits (decisão de 2026-11-04)
 
-O `/vip kitmensal` entrega, uma vez a cada `cooldown-kit-mensal-dias` (30), um equipamento completo. O Bronze recebe itens de diamante, e os outros recebem netherite. O **nível** é o dos encantamentos de força, e passa do máximo normal do Minecraft: Proteção, Afiação, Força, e Densidade e Empalamento nos itens do Diamante. O Saque vem só no Bronze (IV) e no Prata (V): no Ouro e no Diamante ele saiu, porque o Cambista vende Saque até VI. Os de utilidade ficam no máximo normal: Inquebrável III, Remendo (Ouro e Diamante), Infinidade, Lealdade III e Peso-pena IV.
+São três, com cooldowns separados: o **diário** (`/vip kit`, `cooldown-kit-horas`: 24), o **semanal** (`/vip kitsemanal`, `cooldown-kit-semanal-dias`: 7) e o **mensal** (`/vip kitmensal`, `cooldown-kit-mensal-dias`: 30).
+
+- **O diário** só tem consumível que não vende na loja (comida, maçã dourada, frasco de XP, pérola, foguete).
+- **O semanal** tem o que vira dinheiro (minério) e os totens.
+- **O mensal** tem o equipamento encantado, mais as máquinas e os mapas do tesouro sorteados.
+
+Até 2026-11-04 havia só o "kit", a cada 24 h no Bronze e no Prata, 12 h no Ouro e 6 h no Diamante. O do Diamante vendia por uns 13.800 coins por dia na loja (8 blocos de diamante e 4 netheritas), o que passava uns 3 ranks por dia no começo do jogo.
 
 | | Bronze | Prata | Ouro | Diamante |
 |---|---|---|---|---|
+| **Diário** | 16 pães, 1 maçã dourada, 8 frascos de XP | 32 carnes, 2 maçãs, 16 frascos de XP, 4 pérolas | 32 carnes, 4 maçãs, 32 frascos de XP, 8 pérolas | 64 carnes, 6 maçãs, 64 frascos de XP, 16 pérolas, 16 foguetes |
+| **Semanal** | 32 ferros, 4 diamantes, 4 maçãs | 16 diamantes, 1 totem, 8 maçãs | 3 blocos de diamante, 1 totem, 1 maçã encantada | 4 blocos de diamante, 1 netherite, 2 totens, 2 maçãs encantadas |
+| **Mensal: material** | Diamante | Netherite | Netherite com Remendo | Netherite com Remendo |
+| Proteção | IV | IV | V | V |
 | Picareta | Fortuna III, Eficiência III | Fortuna III, Eficiência IV | Fortuna IV, Eficiência V | Fortuna V, Eficiência V |
-| Machado, armadura completa, espada, arco, escudo | ✔ | ✔ | ✔ | ✔ |
+| Espada | Afiação IV, Saque IV | Afiação V, Saque V | Afiação V | Afiação VI, Aspecto Flamejante II |
+| Arco | Força IV | Força V | Força VI | Força VII, Chama |
+| Machado, escudo | ✔ | ✔ | ✔ | ✔ |
 | Besta e lança (skill Lanceiro) | — | — | ✔ | ✔ |
 | Maça (skill Marreteiro), tridente e elytra | — | — | — | ✔ |
-| Maçãs douradas | 8 | 16 | 16 + 1 encantada | 32 + 3 encantadas |
-| Outros | — | 16 pérolas | 16 pérolas, 2 totens | 16 pérolas, 4 totens, 64 foguetes |
+| **Máquinas sorteadas** | 1 | 1 | 1 | 2 |
+| **Mapas do tesouro sorteados** | 1 | 2 | 3 | 3 |
 
-A espada do Diamante também tem Aspecto Flamejante II, e o arco tem Chama.
+**Chance de cada máquina** (cada sorteio é separado):
+
+| | Tear (12 mil) | Forja (35 mil) | Destilaria (60 mil) | Lapidadora (140 mil) |
+|---|---|---|---|---|
+| Bronze | 100% | — | — | — |
+| Prata | 60% | 40% | — | — |
+| Ouro | 30% | 45% | 25% | — |
+| Diamante | — | 35% | 40% | 25% |
+
+O Reator Arcano (700 mil) não sai nos kits. A máquina acima do rank do jogador fica guardada, porque o MaquinasPlugin só deixa colocar quem tem o rank dela.
+
+**Chance de cada mapa do tesouro:**
+
+| | Comum (5 mil) | Raro (20 mil) | Arcano (50 mil) | Lendário (100 mil) |
+|---|---|---|---|---|
+| Bronze | 80% | 20% | — | — |
+| Prata | 60% | 35% | 5% | — |
+| Ouro | 40% | 45% | 13% | 2% |
+| Diamante | 20% | 50% | 25% | 5% |
 
 **Sobre o equilíbrio:**
-- **Proteção** acima de V não faz diferença. Quatro peças com Proteção V já dão o limite do Minecraft, que é 80% menos dano. Do Prata para cima, a armadura está no máximo.
-- **Afiação VII** dá +4 de dano por golpe (a V dá +3).
-- O VIP de tier alto fica bem mais forte em PvP, no bounty e no boss. Essa foi a escolha, para incentivar a compra.
+- **Proteção** acima de V não faz diferença. Quatro peças com Proteção V já dão o limite do Minecraft, que é 80% menos dano. Por isso o kit para no V.
+- **Afiação VI**, só no Diamante, dá +3,5 de dano por golpe (a V dá +3). É a vantagem de PvP do tier mais alto.
+- O Saque vem só no Bronze (IV) e no Prata (V): no Ouro e no Diamante ele saiu, porque o Cambista vende Saque até VI.
 
-Pela simulação do rankup (`tools/economia`), quem não é VIP e encanta Fortuna III na mesa chega ao Rei em cerca de 150 h. O Bronze leva o mesmo tempo, sem precisar juntar XP para encantar. O Prata leva cerca de 131 h, o Ouro 112 h e o Diamante 107 h, sem contar o bônus de ativação.
+Pela simulação do rankup (`tools/economia`), quem não é VIP e encanta Fortuna III na mesa chega ao Rei em cerca de 150 h. O Bronze leva o mesmo tempo, sem precisar juntar XP para encantar. O Prata leva cerca de 131 h, o Ouro 112 h e o Diamante 107 h, sem contar o bônus de ativação, os kits semanais nem as máquinas e os mapas.
 
-**Formato dos itens:** `MATERIAL:quantidade:nome=nivel,...`, com os nomes do Minecraft (`fortune`, `sharpness`, `protection`...). Vale para os dois kits. Exemplo:
+**Formato dos itens:** `MATERIAL:quantidade:nome=nivel,...`, com os nomes do Minecraft (`fortune`, `sharpness`, `protection`...). Vale para os três kits. Os sorteios são `maquina:<id>=<peso>,...` (MaquinasPlugin, entregue com `maquinas dar`) e `tesouro:<raridade>=<peso>,...` (TesourosPlugin, com `tesouro dar`); cada linha sorteia uma vez, então repetir a linha dá mais um. Exemplo:
 ```yaml
 kit-mensal:
-  - "NETHERITE_SWORD:1:sharpness=7,looting=7,unbreaking=3,mending=1"
+  - "NETHERITE_SWORD:1:sharpness=6,unbreaking=3,mending=1"
+  - "maquina:forja=35,destilaria=40,lapidadora=25"
+  - "tesouro:comum=20,raro=50,arcano=25,lendario=5"
 cooldown-kit-mensal-dias: 30
 ```
+Sem o MaquinasPlugin ou o TesourosPlugin, o sorteio é pulado e avisado no console.
 Um item com nome ou encantamento errado é pulado e avisado no console. Um tier sem `kit-mensal` responde "Seu tier de VIP não tem kit mensal" e não gasta o cooldown.
 
 ### Bônus de ativação
@@ -323,7 +358,7 @@ O `.jar` sai em `target/VipPlugin.jar`.
 `/vip gerarevento <tier> <dias> [usos] [validade-dias]` (staff) gera um código de VIP de **3, 7 ou 15 dias** (`codigos-evento.dias-permitidos`) pra premiar eventos do servidor. Ele **não é vendido** (nem na loja de créditos, que só tem o VIP de 30 dias) e **não dá pra revender** (`/vip vender` recusa). O VIP que ele dá tem **só os benefícios passivos**, os que vêm do grupo do LuckPerms (desconto na loja, venda a mais, XP a mais, montaria, voo, heal...):
 
 - **sem o bônus de ativação** (coins e XP);
-- **sem o kit mensal** (`/vip kitmensal` recusa); o kit diário (`/vip kit`) vale.
+- **sem o kit semanal nem o mensal** (`/vip kitsemanal` e `/vip kitmensal` recusam); o kit diário (`/vip kit`) vale.
 
 Quem já tem VIP ativo não resgata (trocaria o VIP comprado por um mais curto): guarda o código pra quando o seu acabar. Comprar um VIP de verdade por cima de um de evento do **mesmo tier soma** os dias e ele vira VIP normal (com o kit mensal); de outro tier, substitui. O `/vip check` mostra "de evento". O campeão do boss (`recompensas.codigo-vip` no BossPlugin) recebe esse tipo de código.
 
@@ -335,8 +370,8 @@ A tag de apoiador e a cor do nome compradas com créditos entram depois da tag d
 
 1. **A tag de chat/tablist vem do prefixo do LuckPerms** — com `tag-do-luckperms: true` (o padrão), o VipPlugin lê o `meta setprefix` do grupo do tier (`grupo-luckperms`) e usa como tag no chat e na tab, então ela se configura num lugar só. O grupo sem prefixo usa o `nome-exibicao` do `config.yml`, que continua sendo o nome do tier nas mensagens (kit, ativação, revenda). Quem monta o chat e a tab continua sendo o plugin: não precisa de PlaceholderAPI nem de plugin de chat. Depois de mudar um prefixo no LuckPerms, a tab de quem está online atualiza quando o jogador entrar de novo ou o rank/clã/VIP mudar.
 2. **`/vip warp` é um único ponto fixo pra todos os tiers** — não tem um warp por tier.
-3. **Cooldowns de heal/feed/kit/kit mensal ficam salvos em `cooldowns.yml`**, então reiniciar o servidor não dá um uso grátis pra ninguém. Registros que já passaram do maior cooldown configurado são descartados ao salvar, pro arquivo não crescer pra sempre.
-4. **`/vip kit` e `/vip kitmensal` sempre entregam o kit inteiro do tier atual** — não acumulam nem somam kits de tiers anteriores. O cooldown do kit mensal é por jogador, não por tier: quem resgata no Bronze e sobe pro Diamante no mesmo mês espera o mês acabar.
+3. **Cooldowns de heal/feed e dos três kits ficam salvos em `cooldowns.yml`**, então reiniciar o servidor não dá um uso grátis pra ninguém. Registros que já passaram do maior cooldown configurado são descartados ao salvar, pro arquivo não crescer pra sempre.
+4. **`/vip kit`, `/vip kitsemanal` e `/vip kitmensal` sempre entregam o kit inteiro do tier atual** — não acumulam nem somam kits de tiers anteriores. Os cooldowns são por jogador, não por tier: quem resgata no Bronze e sobe pro Diamante no mesmo mês espera o mês acabar.
 5. **A validade do código vem desligada** (`codigos.validade-padrao-dias: 0`). Por padrão, um código só some quando é totalmente usado ou revogado. Ligue no `config.yml` se quiser um prazo pra resgatar (veja "Validade do código").
 6. **A integração com o site é via RCON, ainda não construída** — quando o site existir de verdade, ele precisa só rodar `vip gerarcodigo <tier>` via RCON depois de confirmar o pagamento. Nenhuma mudança no plugin é necessária pra isso funcionar; se quiser, mais pra frente, uma API HTTP própria em vez de RCON, é um projeto à parte.
 7. **Um jogador só pode ter um código à venda por vez** — checado explicitamente (`buscarCodigoDeVenda`), não uma consequência de outra coisa. Se quiser permitir múltiplas vendas simultâneas, é só tirar essa checagem.

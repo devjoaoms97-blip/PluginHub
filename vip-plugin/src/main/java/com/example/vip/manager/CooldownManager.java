@@ -24,7 +24,7 @@ import java.util.logging.Level;
 public class CooldownManager {
 
     public enum Perk {
-        HEAL, FEED, KIT, KIT_MENSAL
+        HEAL, FEED, KIT, KIT_SEMANAL, KIT_MENSAL
     }
 
     private final VipPlugin plugin;
@@ -59,6 +59,7 @@ public class CooldownManager {
             case HEAL -> plugin::getCooldownHealMinutos;
             case FEED -> plugin::getCooldownFeedMinutos;
             case KIT -> tier -> plugin.getCooldownKitHoras(tier) * 60;
+            case KIT_SEMANAL -> tier -> plugin.getCooldownKitSemanalDias(tier) * 24 * 60;
             case KIT_MENSAL -> tier -> plugin.getCooldownKitMensalDias(tier) * 24 * 60;
         };
         int maior = 0;

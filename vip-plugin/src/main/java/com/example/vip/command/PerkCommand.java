@@ -17,12 +17,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Lógica dos perks de VIP (fly, heal, feed, kit, kitmensal, particula, warp, pocoes). Não é mais um
+ * Lógica dos perks de VIP (fly, heal, feed, kit, kitsemanal, kitmensal, particula, warp, pocoes). Não é mais um
  * {@code CommandExecutor} — desde que tudo virou subcomando de {@code /vip}, é só um
  * helper chamado por {@link VipCommand#onCommand}, que já garantiu que quem chamou é um
  * {@link Player}. Continua checando aqui, por dentro, se esse player tem VIP ativo e a
@@ -36,7 +38,7 @@ public class PerkCommand {
         this.plugin = plugin;
     }
 
-    /** Ponto de entrada único, chamado pelo VipCommand pra "fly", "heal", "feed", "kit", "kitmensal", "particula", "warp" e "pocoes". */
+    /** Ponto de entrada único, chamado pelo VipCommand pra "fly", "heal", "feed", "kit", "kitsemanal", "kitmensal", "particula", "warp" e "pocoes". */
     public void executar(Player player, String subcomando, String[] args) {
         VipTier tier = plugin.getVipManager().getTierAtivo(player.getUniqueId());
         if (tier == null) {
@@ -49,6 +51,7 @@ public class PerkCommand {
             case "heal" -> tratarHeal(player, tier);
             case "feed" -> tratarFeed(player, tier);
             case "kit" -> tratarKit(player, tier);
+            case "kitsemanal" -> tratarKitSemanal(player, tier);
             case "kitmensal" -> tratarKitMensal(player, tier);
             case "particula" -> tratarParticula(player, tier, args);
             case "warp" -> tratarWarp(player, tier);
@@ -111,11 +114,11 @@ public class PerkCommand {
         player.sendMessage("§aFome restaurada.");
     }
 
-    /** O VIP de evento (prêmio) tem o kit diário, mas não o mensal (o equipamento encantado). */
-    private boolean vipDeEvento(Player player) {
+    /** O VIP de evento (prêmio) tem o kit diário, mas não o semanal (o que vira dinheiro) nem o mensal (o equipamento encantado). */
+    private boolean vipDeEvento(Player player, String kit) {
         var ativo = plugin.getVipManager().getVipAtivo(player.getUniqueId());
         if (ativo == null || !ativo.evento()) return false;
-        player.sendMessage("§cO VIP de evento não dá o kit mensal: só o kit diário e os benefícios passivos (desconto, venda, montaria...).");
+        player.sendMessage("§cO VIP de evento não dá o kit " + kit + ": só o kit diário e os benefícios passivos (desconto, venda, montaria...).");
         return true;
     }
 
@@ -135,9 +138,26 @@ public class PerkCommand {
         player.sendMessage("§aKit de VIP " + plugin.getNomeExibicao(tier) + " §aentregue! §7(" + entregues + " itens)");
     }
 
-    /** Kit com ferramentas encantadas, uma vez a cada {@code cooldown-kit-mensal-dias}. Usa a mesma permissão do kit. */
+    /** Kit com minérios e totens, uma vez a cada {@code cooldown-kit-semanal-dias}. Usa a mesma permissão do kit. */
+    private void tratarKitSemanal(Player player, VipTier tier) {
+        if (!perkPermitido(player, "kit", "vip.perk.kit") || vipDeEvento(player, "semanal")) {
+            return;
+        }
+        List<String> itens = plugin.getKitSemanal(tier);
+        if (itens.isEmpty()) {
+            player.sendMessage("§7Seu tier de VIP não tem kit semanal.");
+            return;
+        }
+        if (!passouCooldown(Perk.KIT_SEMANAL, player, plugin.getCooldownKitSemanalDias(tier) * 24 * 60)) {
+            return;
+        }
+        int entregues = entregarItens(player, tier, itens);
+        player.sendMessage("§aKit semanal de VIP " + plugin.getNomeExibicao(tier) + " §aentregue! §7(" + entregues + " itens)");
+    }
+
+    /** Kit com ferramentas encantadas, uma máquina e mapas do tesouro, uma vez a cada {@code cooldown-kit-mensal-dias}. Usa a mesma permissão do kit. */
     private void tratarKitMensal(Player player, VipTier tier) {
-        if (!perkPermitido(player, "kit", "vip.perk.kit") || vipDeEvento(player)) {
+        if (!perkPermitido(player, "kit", "vip.perk.kit") || vipDeEvento(player, "mensal")) {
             return;
         }
         List<String> itens = plugin.getKitMensal(tier);
@@ -156,10 +176,16 @@ public class PerkCommand {
      * Cada linha é {@code MATERIAL[:quantidade[:encantamento=nivel,...]]}, por exemplo
      * {@code NETHERITE_PICKAXE:1:fortune=5,efficiency=5}. Os encantamentos usam o nome do Minecraft
      * e podem passar do nível máximo normal (Fortuna V). O que não cabe no inventário cai no chão.
+     * {@code maquina:tear=60,forja=40} e {@code tesouro:comum=70,raro=30} sorteiam uma máquina do MaquinasPlugin ou um
+     * mapa do TesourosPlugin pelos pesos (veja {@link #sortear}); repetir a linha sorteia de novo.
      */
     private int entregarItens(Player player, VipTier tier, List<String> itens) {
         int entregues = 0;
         for (String linha : itens) {
+            if (linha.startsWith("maquina:") || linha.startsWith("tesouro:")) {
+                if (sortear(player, tier, linha)) entregues++;
+                continue;
+            }
             String[] partes = linha.split(":");
             try {
                 Material material = Material.valueOf(partes[0].trim().toUpperCase(Locale.ROOT));
@@ -176,6 +202,46 @@ public class PerkCommand {
             }
         }
         return entregues;
+    }
+
+    /**
+     * {@code maquina:<id>=<peso>,...} ou {@code tesouro:<raridade>=<peso>,...}: sorteia um pelos pesos e entrega pelo
+     * comando do outro plugin, rodado no console ({@code maquinas dar} ou {@code tesouro dar}). Sem o plugin, avisa no console.
+     */
+    private boolean sortear(Player player, VipTier tier, String linha) {
+        boolean maquina = linha.startsWith("maquina:");
+        Map<String, Integer> pesos = new LinkedHashMap<>();
+        int total = 0;
+        try {
+            for (String par : linha.substring(linha.indexOf(':') + 1).split(",")) {
+                String[] idPeso = par.split("=");
+                int peso = idPeso.length > 1 ? Integer.parseInt(idPeso[1].trim()) : 1;
+                if (peso <= 0) continue;
+                pesos.put(idPeso[0].trim().toLowerCase(Locale.ROOT), peso);
+                total += peso;
+            }
+        } catch (NumberFormatException e) {
+            total = 0;
+        }
+        String outro = maquina ? "MaquinasPlugin" : "TesourosPlugin";
+        if (total == 0 || plugin.getServer().getPluginManager().getPlugin(outro) == null) {
+            plugin.getLogger().warning("Sorteio inválido no kit de " + tier + " (ou sem o " + outro + "): \"" + linha + "\"");
+            return false;
+        }
+        int sorteio = ThreadLocalRandom.current().nextInt(total);
+        String escolhido = null;
+        for (Map.Entry<String, Integer> e : pesos.entrySet()) {
+            sorteio -= e.getValue();
+            if (sorteio < 0) {
+                escolhido = e.getKey();
+                break;
+            }
+        }
+        String comando = (maquina ? "maquinas dar " : "tesouro dar ") + player.getName() + " " + escolhido;
+        if (!plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), comando)) return false;
+        String nome = Character.toUpperCase(escolhido.charAt(0)) + escolhido.substring(1);
+        player.sendMessage("§6✦ §eSorteio do kit: §f" + (maquina ? "máquina " : "Mapa do Tesouro ") + nome + "§e!");
+        return true;
     }
 
     private void encantar(ItemStack item, String encantamentos) {

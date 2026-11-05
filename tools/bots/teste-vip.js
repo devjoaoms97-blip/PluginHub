@@ -48,9 +48,23 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => m.includes('Kit mensal')), 'kit entregue', `${bot.inventory.items().length} itens`)
   // o Mineflayer não lê os encantamentos nessa versão: pergunta ao servidor
   const espada = await t.console(`minecraft:data get entity ${nome} Inventory[{id:"minecraft:netherite_sword"}].components."minecraft:enchantments"`)
-  t.verificar(/sharpness": 7/.test(espada), 'espada com Afiação VII')
+  t.verificar(/sharpness": 6/.test(espada), 'espada com Afiação VI')
+  const sorteios = msgs.filter(m => m.includes('Sorteio do kit'))
+  t.verificar(sorteios.filter(m => m.includes('máquina')).length === 2, 'sorteia 2 máquinas', sorteios.join(' | '))
+  t.verificar(sorteios.filter(m => m.includes('Mapa do Tesouro')).length === 3, 'e 3 mapas do tesouro', sorteios.join(' | '))
+  t.verificar(!sorteios.some(m => /Tear|Reator/.test(m)), 'só máquinas do Diamante (Forja, Destilaria ou Lapidadora)', sorteios.join(' | '))
   msgs = await t.capturar(bot, () => bot.chat('/vip kitmensal'))
   t.verificar(msgs.some(m => m.includes('cooldown')), 'segundo pedido recusado pelo cooldown')
+
+  console.log('\n== Kit semanal ==')
+  await t.console(`minecraft:clear ${nome}`)
+  msgs = await t.capturar(bot, () => bot.chat('/vip kitsemanal'), 2000)
+  t.verificar(msgs.some(m => m.includes('Kit semanal')), 'kit semanal entregue', msgs.join(' | ').slice(0, 120))
+  // clear com 0 só conta: "Found 4 matching item(s) on player"
+  const blocos = await t.console(`minecraft:clear ${nome} minecraft:diamond_block 0`)
+  t.verificar(/Found 4 /.test(blocos), '4 blocos de diamante', blocos)
+  msgs = await t.capturar(bot, () => bot.chat('/vip kitsemanal'))
+  t.verificar(msgs.some(m => m.includes('cooldown')), 'segundo pedido do semanal recusado pelo cooldown')
 
   console.log('\n== /vip pocoes ==')
   await t.console(`minecraft:clear ${nome}`)

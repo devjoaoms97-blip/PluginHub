@@ -36,6 +36,8 @@ t.rodar(async () => {
   t.verificar(/de evento/.test(r), 'o /vip check mostra que é de evento', r)
   msgs = await t.capturar(bot, () => bot.chat('/vip kitmensal'))
   t.verificar(msgs.some(m => /não dá o kit mensal/.test(m)), 'o kit mensal é recusado', msgs[0])
+  msgs = await t.capturar(bot, () => bot.chat('/vip kitsemanal'))
+  t.verificar(msgs.some(m => /não dá o kit semanal/.test(m)), 'o kit semanal também', msgs[0])
   msgs = await t.capturar(bot, () => bot.chat('/vip kit'), 1500)
   t.verificar(msgs.some(m => /Kit de VIP/.test(m)), 'o kit diário vale', msgs.join(' | ').slice(0, 120))
   msgs = await t.capturar(bot, () => bot.chat('/montaria'), 2000)

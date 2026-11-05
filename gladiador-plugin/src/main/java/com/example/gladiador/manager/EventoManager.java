@@ -5,6 +5,9 @@ import com.example.gladiador.model.Arena;
 import com.example.gladiador.model.Evento;
 import com.example.gladiador.model.Evento.Participante;
 import com.example.gladiador.util.Formato;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -123,10 +126,14 @@ public class EventoManager {
         long duracao = Math.max(10, plugin.getConfig().getInt("inscricao.duracao-segundos", 300)) * 1000L;
         evento = new Evento(modo, inscricao, System.currentTimeMillis() + duracao);
         avisosDados.clear();
-        String abertura = "§6§l⚔ GLADIADOR " + (modo == Evento.Modo.CLA ? "POR CLÃ" : "INDIVIDUAL") + " ⚔ §einscrições abertas por §f"
-                + Formato.tempo(duracao) + "§e! Inscrição: §f" + (inscricao > 0 ? Formato.valor(inscricao) : "grátis")
-                + "§e. Prêmio: §f" + Formato.valor(premioServidor()) + " §emais as inscrições. §cQuem morre perde os itens. §eEntre com §f/gladiador entrar§e.";
-        anunciar(abertura);
+        // no formato dos eventos do EventosPlugin: título, quando começa, prêmio, como entrar e o botão
+        String abertura = "§6§l⚔ GLADIADOR " + (modo == Evento.Modo.CLA ? "POR CLÃ" : "INDIVIDUAL") + " ⚔ §ecomeça em §f"
+                + Formato.tempo(duracao) + "§e! Prêmio: §f" + Formato.valor(premioServidor()) + " §emais as inscrições ("
+                + (inscricao > 0 ? "§f" + Formato.valor(inscricao) + " §ecada" : "§fgrátis§e") + "). §cQuem morre perde os itens. §f/gladiador entrar §7(como funciona: /gladiador)";
+        Bukkit.broadcast(LegacyComponentSerializer.legacySection().deserialize(abertura).append(Component.text(" "))
+                .append(LegacyComponentSerializer.legacySection().deserialize("§a§l[ENTRAR]")
+                        .clickEvent(ClickEvent.runCommand("/gladiador entrar"))
+                        .hoverEvent(HoverEvent.showText(Component.text("Se inscrever no Gladiador")))));
         plugin.getDiscord().enviar("gladiador", abertura);
     }
 
@@ -366,9 +373,9 @@ public class EventoManager {
             long falta = (evento.getFimInscricao() - agora) / 1000;
             for (int s : plugin.getConfig().getIntegerList("inscricao.avisos-segundos")) {
                 if (falta <= s && falta > s - 2 && avisosDados.add(s)) {
-                    anunciar("§6[Gladiador] §eInscrições fecham em §f" + Formato.tempo(s * 1000L) + "§e. §f"
+                    anunciar("§6[Gladiador] §eComeça em §f" + Formato.tempo(s * 1000L) + " §e(§f"
                             + evento.getParticipantes().size() + " §einscrito(s), pote de §f" + Formato.valor(pote())
-                            + "§e. Entre com §f/gladiador entrar§e.");
+                            + "§e): §f/gladiador entrar");
                 }
             }
             if (agora >= evento.getFimInscricao()) iniciar();

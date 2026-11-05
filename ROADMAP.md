@@ -34,6 +34,21 @@ O resto não tem ordem definida e pode ser puxado quando fizer sentido.
 
 Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes antigos). Os custos do Cambista e a chance do fragmento (1 em 4.000 blocos) são a primeira calibragem: conferir no `analisar.py` com jogadores de verdade.
 
+## Pedidos de 2026-11-04
+
+1. ~~Kit de iniciante~~ ✅: `/kit iniciante` (RankupPlugin), a cada 2 h, só no Camponês e sem prestígio. Ferramentas de madeira, pão, tochas e bancada, nada que venda na loja.
+2. ~~Anúncios dos eventos no mesmo formato~~ ✅: o Gladiador (título, quando começa, prêmio, como entrar e o botão **[ENTRAR]**) e o Boss (o botão **[IR]**, `/warp boss`) seguem o formato dos eventos do EventosPlugin.
+3. ~~Kits do VIP~~ ✅: diário (`/vip kit`, 24 h), semanal (`/vip kitsemanal`, 7 dias) e mensal (`/vip kitmensal`, 30 dias) em cada tier. O minério saiu do diário (o do Diamante vendia uns 13.800 coins por dia). O mensal agora também sorteia máquinas e mapas do tesouro (Bronze 1 e 1, Prata 1 e 2, Ouro 1 e 3, Diamante 2 e 3), com mais chance das melhores quanto maior o tier. A tabela está no README do VipPlugin, e o tutorial `19-vip-kits-e-beneficios` do Discord mostra os kits e os benefícios de cada VIP.
+4. **Hub principal numa rede Velocity** 🔴: uma ilha grande e flutuante como entrada do servidor, de onde se vai pro rankup. É um servidor próprio, atrás de um proxy Velocity, porque depois vêm outros modos (survival, skyblock...). Precisa de:
+   - **Proxy Velocity** com `player-info-forwarding` moderno, e cada Paper com `online-mode=false` atrás dele.
+   - **Login no hub:** o AuthMe passa pro hub, com uma ponte que avisa o proxy (tipo o AuthMeVelocity), e só quem logou sai do hub.
+   - **Seletor de servidores** (NPC ou portal na ilha): o Rankup entra, e os outros aparecem como "em breve".
+   - **Por servidor:** a ponte do Discord, o Pix e o chat passam a saber de que servidor a mensagem veio. O chat global entre servidores fica pra depois.
+   - **Teste:** os scripts de `tools/bots` sobem o proxy e os dois servidores. Na VPS, o `docs/producao-vps.md` ganha a parte do Velocity.
+   - **A ilha** sai de código, como as estruturas do spawn (`estruturas-plugin`).
+5. **Modpack oficial (opcional)** 🟡: Fabric com a textura do servidor (o `pacote.zip`), um shader (Iris, com um shader cuja licença deixe incluir em modpack) e mods de desempenho (Sodium e afins), distribuído pelo Modrinth ou CurseForge. É a "versão bonita": quem entra sem ele continua jogando. Antes, conferir se o Fabric e o Iris já saíram pro 26.2.
+6. **Antihack no servidor** 🟡: o Grim (ou parecido), que vale pra todo mundo, com ou sem o modpack. Conferir a versão pro Paper 26.2, calibrar com o Combate 1.8 (`combate-plugin`) e com as montarias, e testar com os bots. Não dá pra garantir que só entra quem usa o modpack (um mod de verificação pode ser copiado), então o antihack de verdade fica no servidor.
+
 ## Mapa do rankup (decisões de 2026-10-23)
 
 O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividido em mundos, cada um com as próprias regras (PvP, proteção, mobs). Para isso, entram o Multiverse-Core (vários mundos) e o WorldEdit ou o FAWE (colar schematics).

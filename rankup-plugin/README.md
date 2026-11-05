@@ -15,6 +15,7 @@ Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro �
 | `/mina` | todos | Abre o menu das minas: rank, blocos, tempo até o reset e quanto já foi minerado (clicar teleporta). `/mina lista` mostra no chat |
 | `/mina <id>` | todos | Teleporta pra mina, se você tiver o rank |
 | `/prestigio [confirmar]` | todos | No último rank, volta pro primeiro com um nível de prestígio |
+| `/kit iniciante` | todos | Kit de quem está começando (ferramentas de madeira, pão, tochas e bancada), a cada 2 h (`kit-iniciante.cooldown-horas`), só no primeiro rank e sem prestígio. O `/kit` sozinho lista os kits e aponta o `/vip kit` |
 | `/ranks admin set <jogador> <rank>` | staff | Muda o rank de alguém (roda os `comandos-ao-subir`) |
 | `/ranks admin reload` | staff | Recarrega o config (ranks e preços) |
 | `/mina admin pos1` / `pos2` | staff | Marca os cantos da mina (o bloco pra onde você olha) |

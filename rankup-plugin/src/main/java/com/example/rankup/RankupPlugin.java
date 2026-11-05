@@ -1,6 +1,7 @@
 package com.example.rankup;
 
 import com.example.rankup.util.MissoesIntegration;
+import com.example.rankup.command.KitCommand;
 import com.example.rankup.command.MinaCommand;
 import com.example.rankup.command.PrestigioCommand;
 import com.example.rankup.command.RanksCommand;
@@ -84,6 +85,10 @@ public class RankupPlugin extends JavaPlugin {
         PrestigioCommand prestigio = new PrestigioCommand(this);
         getCommand("prestigio").setExecutor(prestigio);
         getCommand("prestigio").setTabCompleter(prestigio);
+        KitCommand kit = new KitCommand(this);
+        getCommand("kit").setExecutor(kit);
+        getCommand("kit").setTabCompleter(kit);
+        getServer().getPluginManager().registerEvents(kit, this);
         getServer().getPluginManager().registerEvents(menus, this);
 
         getServer().getPluginManager().registerEvents(new MinaListener(this), this);

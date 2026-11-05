@@ -12,6 +12,10 @@ import com.example.boss.manager.Maldicao;
 import com.example.boss.manager.Recompensas;
 import com.example.boss.manager.ScheduleManager;
 import com.example.boss.util.DiscordIntegration;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -85,10 +89,22 @@ public class BossPlugin extends JavaPlugin {
         String mensagem = ChatColor.translateAlternateColorCodes('&',
                 getConfig().getString("aviso-agenda.mensagem", "&e⚠ Um boss vai aparecer em &f%minutos% min&e! Preparem-se.")
                         .replace("%minutos%", String.valueOf(minutos)));
-        Bukkit.broadcastMessage(mensagem);
+        anunciarComBotao(mensagem);
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 0.8f);
         }
+    }
+
+    /** No formato dos eventos: a mensagem e um botão que leva pra arena (boss.botao-comando, /warp boss). */
+    public void anunciarComBotao(String mensagem) {
+        String comando = getConfig().getString("botao-comando", "/warp boss");
+        Component texto = LegacyComponentSerializer.legacySection().deserialize(mensagem);
+        if (comando != null && !comando.isBlank()) {
+            texto = texto.append(Component.text(" ")).append(LegacyComponentSerializer.legacySection().deserialize("§c§l[IR]")
+                    .clickEvent(ClickEvent.runCommand(comando))
+                    .hoverEvent(HoverEvent.showText(Component.text("Ir pra arena do boss (" + comando + ")"))));
+        }
+        Bukkit.broadcast(texto);
     }
 
     public ArenaManager getArenaManager() {

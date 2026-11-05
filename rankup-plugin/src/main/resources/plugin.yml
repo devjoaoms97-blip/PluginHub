@@ -31,6 +31,13 @@ commands:
     permission: rankup.usar
     permission-message: "§cVocê não tem permissão."
 
+  kit:
+    description: Kit de iniciante (só no primeiro rank) e o caminho pros kits do VIP.
+    usage: "Uso: /kit iniciante"
+    aliases: [kits]
+    permission: rankup.usar
+    permission-message: "§cVocê não tem permissão para pegar kits."
+
 permissions:
   rankup.usar:
     description: Permite subir de rank, ver os ranks e ir pras minas.

@@ -5,25 +5,33 @@
 # que cada grupo realmente concede (perks, desconto na loja, prefixo, etc.) são configuradas
 # no PRÓPRIO LuckPerms — veja o README pra copiar os comandos prontos de setup.
 
-# Itens dos kits: "MATERIAL:quantidade" ou, com encantamentos, "MATERIAL:quantidade:nome=nivel,..."
-# (nomes do Minecraft: fortune, efficiency, unbreaking, mending...). O nível pode passar do
-# máximo normal: fortune=5 dá Fortuna V. O "kit" sai a cada cooldown-kit-horas (/vip kit) e o
-# "kit-mensal", com as ferramentas, a cada cooldown-kit-mensal-dias (/vip kitmensal).
-# Fortuna acima de III acelera o rankup: veja tools/economia no repositório antes de mudar.
-# Armas e armaduras também passam do máximo normal (Afiação VII, Força VII no
-# Diamante, diminuindo nos outros). A Proteção para de fazer diferença no V: 4 peças com
-# Proteção V já dão o limite do Minecraft (80% menos dano).
+# Kits: o "kit" (/vip kit) é o diário, a cada cooldown-kit-horas; o "kit-semanal" (/vip kitsemanal), a cada
+# cooldown-kit-semanal-dias; e o "kit-mensal" (/vip kitmensal), a cada cooldown-kit-mensal-dias.
+# O diário só tem consumível que não vende na loja; o que vira dinheiro (minério) fica no semanal.
+# Itens: "MATERIAL:quantidade" ou, com encantamentos, "MATERIAL:quantidade:nome=nivel,..." (nomes do
+# Minecraft: fortune, efficiency, unbreaking, mending...). O nível pode passar do máximo normal:
+# fortune=5 dá Fortuna V. Fortuna acima de III acelera o rankup: veja tools/economia no repositório
+# antes de mudar. A Proteção para no V: 4 peças com Proteção V já dão o limite do Minecraft (80% menos
+# dano). Afiação acima de V (só no Diamante) é vantagem no PvP sobre quem não é VIP.
+# Sorteios: "maquina:tear=60,forja=40" dá uma máquina do MaquinasPlugin sorteada pelos pesos, e
+# "tesouro:comum=70,raro=30" um Mapa do Tesouro do TesourosPlugin. Repetir a linha sorteia de novo.
+# A máquina acima do rank do jogador fica guardada até ele chegar no rank dela.
 tiers:
   BRONZE:
     nome-exibicao: "&7[Bronze]"
     grupo-luckperms: vip_bronze
     desconto-loja-percentual: 5
+    particulas-disponiveis: [FLAME, HEART]
     kit:
-      - "IRON_INGOT:8"
       - "BREAD:16"
       - "GOLDEN_APPLE:1"
-    particulas-disponiveis: [FLAME, HEART]
+      - "EXPERIENCE_BOTTLE:8"
     cooldown-kit-horas: 24
+    kit-semanal:
+      - "IRON_INGOT:32"
+      - "DIAMOND:4"
+      - "GOLDEN_APPLE:4"
+    cooldown-kit-semanal-dias: 7
     kit-mensal:
       - "DIAMOND_PICKAXE:1:fortune=3,efficiency=3,unbreaking=3"
       - "DIAMOND_AXE:1:efficiency=3,unbreaking=3"
@@ -35,7 +43,8 @@ tiers:
       - "BOW:1:power=4,infinity=1,unbreaking=3"
       - "ARROW:1"
       - "SHIELD:1:unbreaking=3"
-      - "GOLDEN_APPLE:8"
+      - "maquina:tear=100"
+      - "tesouro:comum=80,raro=20"
     cooldown-kit-mensal-dias: 30
     # Ao ativar o VIP (/vip add, /vip resgatar). Todo VIP dura 30 dias.
     # O XP sobe os níveis das skills sem pagar o dinheiro por nível delas.
@@ -49,25 +58,32 @@ tiers:
     nome-exibicao: "&f[&bPrata&f]"
     grupo-luckperms: vip_prata
     desconto-loja-percentual: 10
-    kit:
-      - "DIAMOND:2"
-      - "GOLDEN_APPLE:2"
-      - "COOKED_BEEF:32"
     particulas-disponiveis: [FLAME, HEART, HAPPY_VILLAGER]
+    kit:
+      - "COOKED_BEEF:32"
+      - "GOLDEN_APPLE:2"
+      - "EXPERIENCE_BOTTLE:16"
+      - "ENDER_PEARL:4"
     cooldown-kit-horas: 24
+    kit-semanal:
+      - "DIAMOND:16"
+      - "TOTEM_OF_UNDYING:1"
+      - "GOLDEN_APPLE:8"
+    cooldown-kit-semanal-dias: 7
     kit-mensal:
       - "NETHERITE_PICKAXE:1:fortune=3,efficiency=4,unbreaking=3"
       - "NETHERITE_AXE:1:efficiency=4,unbreaking=3"
-      - "NETHERITE_HELMET:1:protection=5,unbreaking=3"
-      - "NETHERITE_CHESTPLATE:1:protection=5,unbreaking=3"
-      - "NETHERITE_LEGGINGS:1:protection=5,unbreaking=3"
-      - "NETHERITE_BOOTS:1:protection=5,feather_falling=4,unbreaking=3"
+      - "NETHERITE_HELMET:1:protection=4,unbreaking=3"
+      - "NETHERITE_CHESTPLATE:1:protection=4,unbreaking=3"
+      - "NETHERITE_LEGGINGS:1:protection=4,unbreaking=3"
+      - "NETHERITE_BOOTS:1:protection=4,feather_falling=4,unbreaking=3"
       - "NETHERITE_SWORD:1:sharpness=5,looting=5,unbreaking=3"
       - "BOW:1:power=5,infinity=1,unbreaking=3"
       - "ARROW:1"
       - "SHIELD:1:unbreaking=3"
-      - "GOLDEN_APPLE:16"
-      - "ENDER_PEARL:16"
+      - "maquina:tear=60,forja=40"
+      - "tesouro:comum=60,raro=35,arcano=5"
+      - "tesouro:comum=60,raro=35,arcano=5"
     cooldown-kit-mensal-dias: 30
     # Ao ativar o VIP (/vip add, /vip resgatar). Todo VIP dura 30 dias
     bonus-ativacao:
@@ -80,29 +96,35 @@ tiers:
     nome-exibicao: "&6[Ouro]"
     grupo-luckperms: vip_ouro
     desconto-loja-percentual: 15
-    kit:
-      - "DIAMOND:4"
-      - "GOLDEN_APPLE:4"
-      - "ENDER_PEARL:8"
     particulas-disponiveis: [FLAME, HEART, HAPPY_VILLAGER, PORTAL]
-    cooldown-kit-horas: 12
+    kit:
+      - "COOKED_BEEF:32"
+      - "GOLDEN_APPLE:4"
+      - "EXPERIENCE_BOTTLE:32"
+      - "ENDER_PEARL:8"
+    cooldown-kit-horas: 24
+    kit-semanal:
+      - "DIAMOND_BLOCK:3"
+      - "TOTEM_OF_UNDYING:1"
+      - "ENCHANTED_GOLDEN_APPLE:1"
+    cooldown-kit-semanal-dias: 7
     kit-mensal:
       - "NETHERITE_PICKAXE:1:fortune=4,efficiency=5,unbreaking=3,mending=1"
       - "NETHERITE_AXE:1:efficiency=5,unbreaking=3,mending=1"
-      - "NETHERITE_HELMET:1:protection=6,unbreaking=3,mending=1"
-      - "NETHERITE_CHESTPLATE:1:protection=6,unbreaking=3,mending=1"
-      - "NETHERITE_LEGGINGS:1:protection=6,unbreaking=3,mending=1"
-      - "NETHERITE_BOOTS:1:protection=6,feather_falling=4,unbreaking=3,mending=1"
-      - "NETHERITE_SWORD:1:sharpness=6,unbreaking=3,mending=1"
+      - "NETHERITE_HELMET:1:protection=5,unbreaking=3,mending=1"
+      - "NETHERITE_CHESTPLATE:1:protection=5,unbreaking=3,mending=1"
+      - "NETHERITE_LEGGINGS:1:protection=5,unbreaking=3,mending=1"
+      - "NETHERITE_BOOTS:1:protection=5,feather_falling=4,unbreaking=3,mending=1"
+      - "NETHERITE_SWORD:1:sharpness=5,unbreaking=3,mending=1"
       - "BOW:1:power=6,infinity=1,unbreaking=3,mending=1"
       - "ARROW:1"
       - "SHIELD:1:unbreaking=3"
       - "CROSSBOW:1:quick_charge=3,multishot=1,unbreaking=3,mending=1"
-      - "NETHERITE_SPEAR:1:sharpness=6,unbreaking=3,mending=1"
-      - "GOLDEN_APPLE:16"
-      - "ENCHANTED_GOLDEN_APPLE:1"
-      - "TOTEM_OF_UNDYING:2"
-      - "ENDER_PEARL:16"
+      - "NETHERITE_SPEAR:1:sharpness=5,unbreaking=3,mending=1"
+      - "maquina:tear=30,forja=45,destilaria=25"
+      - "tesouro:comum=40,raro=45,arcano=13,lendario=2"
+      - "tesouro:comum=40,raro=45,arcano=13,lendario=2"
+      - "tesouro:comum=40,raro=45,arcano=13,lendario=2"
     cooldown-kit-mensal-dias: 30
     # Ao ativar o VIP (/vip add, /vip resgatar). Todo VIP dura 30 dias
     bonus-ativacao:
@@ -115,33 +137,41 @@ tiers:
     nome-exibicao: "&b[Diamante]"
     grupo-luckperms: vip_diamante
     desconto-loja-percentual: 20
-    kit:
-      - "DIAMOND_BLOCK:2"
-      - "NETHERITE_INGOT:1"
-      - "GOLDEN_APPLE:8"
     particulas-disponiveis: [FLAME, HEART, HAPPY_VILLAGER, PORTAL, TOTEM_OF_UNDYING]
-    cooldown-kit-horas: 6
+    kit:
+      - "COOKED_BEEF:64"
+      - "GOLDEN_APPLE:6"
+      - "EXPERIENCE_BOTTLE:64"
+      - "ENDER_PEARL:16"
+      - "FIREWORK_ROCKET:16"
+    cooldown-kit-horas: 24
+    kit-semanal:
+      - "DIAMOND_BLOCK:4"
+      - "NETHERITE_INGOT:1"
+      - "TOTEM_OF_UNDYING:2"
+      - "ENCHANTED_GOLDEN_APPLE:2"
+    cooldown-kit-semanal-dias: 7
     kit-mensal:
       - "NETHERITE_PICKAXE:1:fortune=5,efficiency=5,unbreaking=3,mending=1"
       - "NETHERITE_AXE:1:efficiency=5,unbreaking=3,mending=1"
-      - "NETHERITE_HELMET:1:protection=7,unbreaking=3,mending=1"
-      - "NETHERITE_CHESTPLATE:1:protection=7,unbreaking=3,mending=1"
-      - "NETHERITE_LEGGINGS:1:protection=7,unbreaking=3,mending=1"
-      - "NETHERITE_BOOTS:1:protection=7,feather_falling=4,unbreaking=3,mending=1"
-      - "NETHERITE_SWORD:1:sharpness=7,unbreaking=3,mending=1,fire_aspect=2"
+      - "NETHERITE_HELMET:1:protection=5,unbreaking=3,mending=1"
+      - "NETHERITE_CHESTPLATE:1:protection=5,unbreaking=3,mending=1"
+      - "NETHERITE_LEGGINGS:1:protection=5,unbreaking=3,mending=1"
+      - "NETHERITE_BOOTS:1:protection=5,feather_falling=4,unbreaking=3,mending=1"
+      - "NETHERITE_SWORD:1:sharpness=6,unbreaking=3,mending=1,fire_aspect=2"
       - "BOW:1:power=7,infinity=1,unbreaking=3,mending=1,flame=1"
       - "ARROW:1"
       - "SHIELD:1:unbreaking=3"
       - "CROSSBOW:1:quick_charge=3,multishot=1,unbreaking=3,mending=1"
-      - "NETHERITE_SPEAR:1:sharpness=7,unbreaking=3,mending=1"
+      - "NETHERITE_SPEAR:1:sharpness=6,unbreaking=3,mending=1"
       - "MACE:1:density=7,unbreaking=3,mending=1"
       - "TRIDENT:1:impaling=7,loyalty=3,unbreaking=3,mending=1"
       - "ELYTRA:1:unbreaking=3,mending=1"
-      - "GOLDEN_APPLE:32"
-      - "ENCHANTED_GOLDEN_APPLE:3"
-      - "TOTEM_OF_UNDYING:4"
-      - "ENDER_PEARL:16"
-      - "FIREWORK_ROCKET:64"
+      - "maquina:forja=35,destilaria=40,lapidadora=25"
+      - "maquina:forja=35,destilaria=40,lapidadora=25"
+      - "tesouro:comum=20,raro=50,arcano=25,lendario=5"
+      - "tesouro:comum=20,raro=50,arcano=25,lendario=5"
+      - "tesouro:comum=20,raro=50,arcano=25,lendario=5"
     cooldown-kit-mensal-dias: 30
     # Ao ativar o VIP (/vip add, /vip resgatar). Todo VIP dura 30 dias
     bonus-ativacao:

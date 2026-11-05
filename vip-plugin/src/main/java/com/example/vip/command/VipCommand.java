@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 public class VipCommand implements CommandExecutor, TabCompleter {
 
     private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private static final Set<String> SUBCOMANDOS_PERK = Set.of("fly", "heal", "feed", "kit", "kitmensal", "particula", "warp", "pocoes");
+    private static final Set<String> SUBCOMANDOS_PERK = Set.of("fly", "heal", "feed", "kit", "kitsemanal", "kitmensal", "particula", "warp", "pocoes");
 
     private final VipPlugin plugin;
     private final PerkCommand perkCommand;
@@ -565,7 +565,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         long horas = (restanteMs / (60L * 60 * 1000)) % 24;
         String data = FORMATO_DATA.format(Instant.ofEpochMilli(vip.expiraEm()).atZone(ZoneId.systemDefault()));
         sender.sendMessage("§f" + nome + " §7tem VIP " + plugin.getNomeExibicao(vip.tier())
-                + (vip.evento() ? " §6(de evento: sem kit mensal)" : "")
+                + (vip.evento() ? " §6(de evento: sem kit semanal nem mensal)" : "")
                 + " §7— expira em §f" + dias + "d " + horas + "h §7(§f" + data + "§7)");
     }
 
@@ -649,7 +649,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/vip resgatar <codigo> §7- resgata um código comprado na lojinha ou de outro jogador");
         sender.sendMessage("§f/vip vender <preco> <codigo> §7- revende um código ainda não resgatado por coins");
         sender.sendMessage("§f/vip cancelarvenda §7- cancela sua venda em aberto e recupera o VIP");
-        sender.sendMessage("§f/vip fly|heal|feed|kit|kitmensal|warp|pocoes §7- perks de quem tem VIP ativo");
+        sender.sendMessage("§f/vip fly|heal|feed|kit|kitsemanal|kitmensal|warp|pocoes §7- perks de quem tem VIP ativo");
         sender.sendMessage("§f/vip particula <tipo|off> §7- escolhe a partícula que te segue");
         if (sender.hasPermission("vip.admin")) {
             sender.sendMessage("§7--- Staff ---");
@@ -673,7 +673,7 @@ public class VipCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             List<String> opcoes = new ArrayList<>(List.of("check", "tiers", "resgatar", "vender", "cancelarvenda",
-                    "fly", "heal", "feed", "kit", "kitmensal", "particula", "warp", "pocoes"));
+                    "fly", "heal", "feed", "kit", "kitsemanal", "kitmensal", "particula", "warp", "pocoes"));
             if (sender.hasPermission("vip.admin")) {
                 opcoes.addAll(List.of("add", "remove", "list", "reload", "gerarcodigo", "codigos", "revogarcodigo", "setwarp"));
             }

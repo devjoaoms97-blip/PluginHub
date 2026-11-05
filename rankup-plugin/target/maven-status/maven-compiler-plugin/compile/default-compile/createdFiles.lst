@@ -21,4 +21,5 @@ com\example\rankup\manager\RankManager.class
 com\example\rankup\command\MinaCommand.class
 com\example\rankup\listener\FragmentosListener.class
 com\example\rankup\listener\MinaListener.class
+com\example\rankup\command\KitCommand.class
 com\example\rankup\util\PixIntegration.class

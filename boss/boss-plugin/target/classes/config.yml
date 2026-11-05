@@ -16,7 +16,10 @@ explosao:
   cooldown-segundos: 3
   knockback: 1.0
 
-mensagem-spawn: "&4&l⚠ Um boss apareceu! Corram para enfrentá-lo! ⚠"
+# Os anúncios do boss (os avisos da agenda e o de quando ele aparece) ganham um botão [IR] que roda este comando.
+botao-comando: "/warp boss"
+
+mensagem-spawn: "&4&l☠ BOSS ☠ &capareceu na arena! Quem der o último golpe vira o campeão. &f/warp boss"
 mensagem-vitoria: "&6&l★ &e%jogador% &6derrotou o boss e agora é o novo campeão! ★"
 
 barra:
@@ -63,7 +66,7 @@ maldicao:
 # manual). Lista vazia desativa. %minutos% é trocado pelo tempo que falta.
 aviso-agenda:
   minutos-antes: [10, 5, 1]
-  mensagem: "&e&l⚠ &eUm boss vai aparecer em &f%minutos% min&e! Preparem-se."
+  mensagem: "&4&l☠ BOSS ☠ &caparece em &f%minutos% min&c! Último golpe e ranking de dano valem prêmio. &f/warp boss"
 
 # Ranking de quem mais causou dano, anunciado no chat quando o boss morre. Conta dano
 # direto e de projéteis (flecha, tridente). O campeão continua sendo quem deu o último hit.
@@ -84,7 +87,7 @@ elite:
   rolagens-loot: 2
   prefixo-nome: "&6&l✦ ELITE ✦ "
   barra-cor: PURPLE
-  mensagem-spawn: "&6&l✦ UM BOSS ELITE APARECEU! ✦ &eDobro de vida, dobro de dano e recompensa em dobro!"
+  mensagem-spawn: "&6&l✦ BOSS ELITE ✦ &eapareceu na arena! Dobro de vida, dobro de dano e recompensa em dobro. &f/warp boss"
 
 campeao:
   grupo-luckperms: "boss_campeao"

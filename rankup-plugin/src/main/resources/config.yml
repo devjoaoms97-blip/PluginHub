@@ -97,6 +97,19 @@ prestigio:
   # Marca antes do rank no chat e na tab. %nivel% vira o nível.
   formato: "&d✦%nivel% "
 
+# /kit iniciante: só no primeiro rank e sem prestígio, a cada cooldown-horas. Itens "MATERIAL:quantidade".
+# Nenhum deles vende na loja (pão, tocha e bancada têm venda: false), pra não virar dinheiro de graça.
+kit-iniciante:
+  cooldown-horas: 2
+  itens:
+    - "WOODEN_SWORD:1"
+    - "WOODEN_PICKAXE:1"
+    - "WOODEN_AXE:1"
+    - "WOODEN_SHOVEL:1"
+    - "BREAD:16"
+    - "TORCH:16"
+    - "CRAFTING_TABLE:1"
+
 menus:
   # /ranks e /mina sem argumento abrem um menu. /ranks lista e /mina lista mostram no chat.
   ativado: true

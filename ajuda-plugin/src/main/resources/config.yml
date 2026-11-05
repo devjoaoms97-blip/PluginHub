@@ -160,6 +160,7 @@ comandos:
         - "/mina | Menu das minas (clicar teleporta)"
         - "/mina <id> | Vai direto pra uma mina"
         - "/prestigio | No último rank, recomeça com bônus de venda"
+        - "/kit iniciante | Kit de quem começa, a cada 2 h (só Camponês)"
     dinheiro:
       titulo: "Dinheiro"
       resumo: "Pix, cheques e loja"

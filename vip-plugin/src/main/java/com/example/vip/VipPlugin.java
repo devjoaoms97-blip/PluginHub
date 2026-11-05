@@ -193,6 +193,14 @@ public class VipPlugin extends JavaPlugin {
         return getConfig().getInt(chaveTier(tier, "cooldown-kit-horas"), 24);
     }
 
+    public List<String> getKitSemanal(VipTier tier) {
+        return getConfig().getStringList(chaveTier(tier, "kit-semanal"));
+    }
+
+    public int getCooldownKitSemanalDias(VipTier tier) {
+        return getConfig().getInt(chaveTier(tier, "cooldown-kit-semanal-dias"), 7);
+    }
+
     public List<String> getKitMensal(VipTier tier) {
         return getConfig().getStringList(chaveTier(tier, "kit-mensal"));
     }
