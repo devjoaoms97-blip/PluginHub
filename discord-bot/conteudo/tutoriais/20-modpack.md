@@ -24,5 +24,6 @@ O modpack é **opcional**: traz mais FPS (Sodium e companhia) e shaders (Iris co
 • **A versão não aparece no launcher:** instale e abra o Minecraft 26.2 normal uma vez pelo launcher e rode o instalador de novo.
 • **O servidor não está na lista:** se você já tinha uma lista de servidores, ela não é trocada. Adicione o endereço do servidor ({ip}) no jogo.
 • **PC pesado:** desligue o shader em *Opções → Vídeo → Shaders*.
+• **O jogo fecha com o aviso "RivaTuner Statistics Server (RTSS)":** o RTSS (vem junto com o MSI Afterburner) está aberto numa versão antiga, que o Sodium não aceita. Feche o RTSS e o Afterburner (inclusive perto do relógio do Windows) ou atualize o RTSS para a 7.3.4 ou mais nova.
 
 O Windows pode avisar que o arquivo veio da internet: clique em **Mais informações → Executar assim mesmo**. Os mods são baixados do Modrinth e conferidos um por um.
