@@ -1,5 +1,5 @@
 // Textos fixos do Discord, escritos em discord-bot/conteudo/*.md: boas-vindas (com os botões dos
-// cargos de aviso 🔔), regras e um post por tutorial no fórum #tutoriais. Na primeira linha vai o
+// cargos de aviso 🔔), regras, os downloads do modpack e um post por tutorial no fórum #tutoriais. Na primeira linha vai o
 // título ("# ..."); no texto, {ip} vira o IP do servidor e {#chave} vira o link do canal.
 // Cada mensagem é publicada uma vez e editada quando o arquivo muda (nada de duplicar).
 const fs = require('fs');
@@ -91,6 +91,7 @@ async function tutoriais(guild) {
 async function publicar(guild) {
   await boasVindas(guild);
   await fixa(guild, 'regras', 'regras', { embeds: [embed(ler(path.join(PASTA, 'regras.md')))] });
+  await fixa(guild, 'modpack', 'modpack', { embeds: [embed(ler(path.join(PASTA, 'modpack.md')))] });
   await tutoriais(guild);
 }
 

@@ -67,6 +67,7 @@ module.exports = {
         { chave: 'anuncios', nome: '📢・anuncios', tipo: 'anuncios', topico: 'Novidades e avisos oficiais da BrasaMC.' },
         { chave: 'changelog', nome: '📝・changelog', topico: 'O que mudou no servidor, atualização por atualização.' },
         { chave: 'status', nome: '🟢・status', topico: 'Servidor online, jogadores e próximos eventos (atualizado pelo bot).' },
+        { chave: 'modpack', nome: '🧩・modpack', topico: 'Modpack opcional: mais FPS e shaders. Downloads e como instalar.' },
       ],
     },
     {

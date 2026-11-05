@@ -59,6 +59,17 @@ O `.mrpack` tem só uns 3 KB: a lista dos arquivos com o link do CDN do Modrinth
 
 Na primeira vez, o shader já vem ligado. Em PC fraco, desligue em *Opções → Vídeo → Shaders*.
 
+## Publicar no GitHub e no Discord
+
+Os três arquivos ficam numa release do repositório (o `jogar.zip` passa do limite de anexo do bot no Discord), com a tag `modpack-<versão>`:
+
+```
+python tools/modpack/gerar.py --ip <endereço do servidor>
+gh release create modpack-1.0.0 tools/modpack/BrasaMC-1.0.0-jogar.zip tools/modpack/BrasaMC-1.0.0-instalador.zip tools/modpack/BrasaMC-1.0.0.mrpack --title "Modpack BrasaMC 1.0.0" --notes "..."
+```
+
+O canal `#modpack` do Discord (`discord-bot/conteudo/modpack.md`, publicado e editado pelo bot) tem os links dessa release, e o tutorial `20-modpack` explica a instalação. A cada versão nova: trocar `VERSAO` aqui, gerar, criar a release e trocar a versão nos links do `modpack.md`. O crédito do Complementary vai no fim do `modpack.md`.
+
 ## Publicar no Modrinth
 
 O jeito oficial de distribuir é a página do modpack no Modrinth. É também o que a licença do Complementary pede (veja abaixo). A publicação é feita pela conta do servidor no site, subindo o `BrasaMC-<versão>.mrpack`, e não por este script.
