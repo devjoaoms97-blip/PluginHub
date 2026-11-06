@@ -4,6 +4,7 @@ com\example\recursos\CentroDoEnd.class
 com\example\recursos\Mapas.class
 com\example\recursos\Mapas$Terreno.class
 com\example\recursos\ResetManager$1.class
+com\example\recursos\EsperaTeleporte.class
 com\example\recursos\Teleporte.class
 com\example\recursos\Mapas$Desenho.class
 com\example\recursos\ResetManager.class

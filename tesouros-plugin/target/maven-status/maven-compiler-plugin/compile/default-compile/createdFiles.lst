@@ -5,6 +5,7 @@ com\example\tesouros\Camaras.class
 com\example\tesouros\Loot$Premio.class
 com\example\tesouros\Loot.class
 com\example\tesouros\Integracoes.class
+com\example\tesouros\EsperaTeleporte.class
 com\example\tesouros\Mapas$Mapa.class
 com\example\tesouros\Camara$Estado.class
 com\example\tesouros\TesourosPlugin.class

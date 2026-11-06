@@ -34,18 +34,25 @@ public class Teleporte {
         this.plugin = plugin;
     }
 
-    /** Procura um lugar seguro no mundo e leva o jogador. Completa com true se conseguiu. */
-    public CompletableFuture<Boolean> levar(Player jogador, ResetManager m) {
+    /**
+     * Procura um lugar seguro no mundo e leva o jogador. Completa com true se conseguiu. Com {@code espera}
+     * (o /warp), passa pela espera do Essentials ({@link EsperaTeleporte}); sem (a volta depois do reset), na hora.
+     */
+    public CompletableFuture<Boolean> levar(Player jogador, ResetManager m, boolean espera) {
         World mundo = m.getWorld();
         if (mundo == null) return CompletableFuture.completedFuture(false);
         if (mundo.getEnvironment() == World.Environment.THE_END) {
             Location centro = plugin.getCentroDoEnd().chegada(mundo);
-            return centro == null ? CompletableFuture.completedFuture(false) : jogador.teleportAsync(centro);
+            return centro == null ? CompletableFuture.completedFuture(false) : ir(jogador, centro, espera);
         }
-        return tentar(jogador, mundo, m.getRaio(), Math.max(1, plugin.getConfig().getInt("teleporte.tentativas", 20)));
+        return tentar(jogador, mundo, m.getRaio(), Math.max(1, plugin.getConfig().getInt("teleporte.tentativas", 20)), espera);
     }
 
-    private CompletableFuture<Boolean> tentar(Player jogador, World mundo, int raioConfig, int restantes) {
+    private CompletableFuture<Boolean> ir(Player jogador, Location destino, boolean espera) {
+        return espera ? EsperaTeleporte.levar(jogador, destino, plugin.getLogger()) : jogador.teleportAsync(destino);
+    }
+
+    private CompletableFuture<Boolean> tentar(Player jogador, World mundo, int raioConfig, int restantes, boolean espera) {
         if (restantes <= 0 || !jogador.isOnline()) return CompletableFuture.completedFuture(false);
         int raio = (int) Math.min(raioConfig, raioDaBorda(mundo));
         WorldBorder borda = mundo.getWorldBorder();
@@ -53,8 +60,8 @@ public class Teleporte {
         int z = (int) borda.getCenter().getZ() + ThreadLocalRandom.current().nextInt(-raio, raio + 1);
         return mundo.getChunkAtAsync(x >> 4, z >> 4).thenCompose(chunk -> {
             Location seguro = lugarSeguro(mundo, x, z);
-            if (seguro == null) return tentar(jogador, mundo, raioConfig, restantes - 1);
-            return jogador.teleportAsync(seguro);
+            if (seguro == null) return tentar(jogador, mundo, raioConfig, restantes - 1, espera);
+            return ir(jogador, seguro, espera);
         });
     }
 

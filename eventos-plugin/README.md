@@ -139,7 +139,7 @@ Um salão no mundo `arenas`, em (0, 300), construído pelo plugin (`/eventos con
 - **A espera**: quem se inscreve, pelo portal ou pelo comando de qualquer lugar (inclusive pelo botão **[ENTRAR]** do anúncio da abertura), espera aqui até começar, com uma barra no alto ("⚑ Corrida Maluca começa em 1:20 · 5 inscrito(s)"). **Sair do saguão cancela a inscrição** (`/spawn`, o portal de volta, desconectar). O `/<evento> sair` e o cancelamento devolvem quem veio de fora pra onde estava; no fim do evento, cada um volta pra onde estava antes de se inscrever (quem entrou pelo portal, pro saguão).
 - **O painel "Eventos de hoje"** na parede leste (a mesma agenda do `/eventos`, um por linha na ordem do horário) e o **ranking de vencedores** na oeste (`ranking.holograma`).
 - **O portal de volta** pro spawn, atrás de quem chega (`saguao.volta`).
-- Os textos são text displays não persistentes, refeitos a cada segundo com o saguão carregado. O saguão das arenas (`/warp arenas`) ficou só com o duelo, o Gladiador e um holograma apontando pra cá.
+- Os textos são text displays não persistentes, refeitos a cada segundo com o saguão carregado. O saguão das arenas ficou só com o duelo, o Gladiador e um holograma apontando pra cá; desde 2026-11-06 ele não tem mais warp (o `/duelo` e o `/gladiador` levam pra lá).
 
 ## Ranking geral (/eventos top)
 

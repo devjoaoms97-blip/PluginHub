@@ -207,7 +207,7 @@ comandos:
       titulo: "Teleporte"
       resumo: "Warps, tpa e casas"
       texto:
-        - "Warps: loja, banco, mercado, minas, mobs, terrenos, arenas, eventos, boss, recursos, nether, end e tesouros."
+        - "Warps: loja, banco, minas, mobs, terrenos, eventos, boss, recursos, nether, end e tesouros."
       comandos:
         - "/spawn | Volta pro spawn"
         - "/warp | Lista as warps"

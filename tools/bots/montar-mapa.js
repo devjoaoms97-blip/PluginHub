@@ -569,10 +569,9 @@ async function marcarComBot() {
   await comando('/setspawn')
   await comando('/setspawn newbies')
   for (const [nome, mundo, x, z, yaw, y = CHAO + 1] of [
-    // mercado: na avenida leste do spawn, entre as barracas
     ['minas', 'spawn', 0.5, -24.5, 180],
-    ['banco', 'spawn', 0.5, -175.5, 180], // na praça do fim da Avenida das Minas, de frente pra escadaria do Banco ['mercado', 'spawn', SPAWN.x + 16.5, SPAWN.z + 0.5, -90],
-    ['arenas', 'arenas', 0.5, 0.5, 180], ['terrenos', 'terrenos', 34.5, 34.5, 0],
+    ['banco', 'spawn', 0.5, -175.5, 180], // na praça do fim da Avenida das Minas, de frente pra escadaria do Banco
+    ['terrenos', 'terrenos', 34.5, 34.5, 0],
     ['eventos', 'arenas', 0.5, 306.5, 180], // no saguão dos eventos, olhando pros portais
     ['loja', 'spawn', 67.5, SPAWN.z + 0.5, -90], // logo depois da porta da Loja Oficial, olhando pro salão
     ['mobs', 'spawn', -85.5, SPAWN.z + 0.5, 90, MOBS_PISO + 1], // no vestíbulo da warp mobs (pé da escadaria), olhando pras estátuas
@@ -583,8 +582,9 @@ async function marcarComBot() {
     await ir(mundo, x, y, z, yaw)
     await comando(`/setwarp ${nome}`)
   }
-  // os portais do spawn antigo não existem mais
-  await t.console('delwarp portais')
+  // os portais do spawn antigo não existem mais; a arenas e a mercado saíram em 2026-11-06 (o saguão das
+  // arenas só serve ao duelo e ao Gladiador, que levam por comando, e o mercado são as barracas do spawn)
+  for (const w of ['portais', 'arenas', 'mercado']) await t.console(`delwarp ${w}`)
   await t.console('deop BotStaff')
   await t.console('gamemode survival BotStaff')
   await ir('spawn', SPAWN.x + 0.5, CHAO + 1, SPAWN.z + 0.5, 180)

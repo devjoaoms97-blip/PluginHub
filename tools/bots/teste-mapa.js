@@ -89,7 +89,9 @@ t.rodar(async () => {
   t.verificar(await blocoE('spawn', 63, 65, 43, 'air') && await blocoE('spawn', 64, 65, 43, 'air')
     && await blocoE('spawn', 64, 64, 43, 'polished_andesite') && !(await blocoE('spawn', 64, 64, 30, 'air')),
     'o portão leste do spawn está colado na porta da loja')
-  await t.capturar(bot, () => bot.chat('/warp arenas'), 4500)
+  // (a /warp arenas saiu em 2026-11-06: o bot vai pelo console)
+  await t.console(`execute in minecraft:arenas run minecraft:tp ${bot.username} 0.5 65 0.5 180 0`)
+  await t.espera(1500)
   t.verificar(await pisar(bot, 'arenas', 0, 5, 'spawn'), 'o portal do saguão das arenas volta pro spawn')
 
   console.log('\n== Cadastros ==')

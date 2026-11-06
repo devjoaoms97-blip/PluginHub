@@ -251,10 +251,11 @@ public class TesourosPlugin extends JavaPlugin implements CommandExecutor, TabCo
             p.sendMessage("§cVocê está numa câmara. Use §f/tesouro sair§c depois que o baú destravar.");
             return;
         }
-        // como COMMAND, pra o CombatePlugin barrar quem está em combate
+        // como COMMAND, pra o CombatePlugin barrar quem está em combate, e com a espera do Essentials (3 s)
         // no meio do bloco central do templo, olhando pro norte (o spawn do mundo guarda só o canto do bloco)
-        p.teleport(new Location(mundo, 0.5, ySuperficie(mundo) + 1, 0.5, 180f, 0f), PlayerTeleportEvent.TeleportCause.COMMAND);
-        p.sendMessage("§6✦ §eBem-vindo ao mundo dos tesouros! §7Ande até o X do seu mapa e cave o chão.");
+        EsperaTeleporte.levar(p, new Location(mundo, 0.5, ySuperficie(mundo) + 1, 0.5, 180f, 0f), getLogger()).thenAccept(ok -> {
+            if (ok) p.sendMessage("§6✦ §eBem-vindo ao mundo dos tesouros! §7Ande até o X do seu mapa e cave o chão.");
+        });
     }
 
     private void convidar(CommandSender sender, String[] args, boolean convidar) {

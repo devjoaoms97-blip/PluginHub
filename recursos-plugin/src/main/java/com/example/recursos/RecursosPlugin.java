@@ -246,7 +246,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
                 cancel();
                 getServer().getScheduler().runTaskLater(RecursosPlugin.this, () -> {
                     if (!p.isOnline()) return;
-                    teleporte.levar(p, m).thenAccept(ok -> {
+                    teleporte.levar(p, m, false).thenAccept(ok -> {
                         if (!ok) p.teleport(mundoDeSaida().getSpawnLocation());
                     });
                     p.sendMessage("§eO " + m.getNome() + " foi resetado enquanto você estava fora, então você foi levado pra um lugar seguro dele.");
@@ -360,7 +360,7 @@ public class RecursosPlugin extends JavaPlugin implements Listener, CommandExecu
         }
         ultimoTeleporte.put(p.getUniqueId(), agora);
         p.sendMessage("§7Procurando um lugar seguro no " + m.getNome() + "...");
-        teleporte.levar(p, m).thenAccept(ok -> {
+        teleporte.levar(p, m, true).thenAccept(ok -> {
             if (ok) {
                 p.sendMessage("§aBem-vindo ao " + m.getNome() + "! §7Ele é resetado todo mês: §f/recursos info§7. "
                         + "Pra se localizar: §f/mapa§7.");
