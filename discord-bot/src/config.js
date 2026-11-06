@@ -2,9 +2,11 @@
 // DISCORD_PASTA (padrão C:\mc-teste\discord):
 //   .env                      DISCORD_TOKEN, GUILD_TESTE, GUILD_OFICIAL, BOT_SERVIDOR,
 //                             PLUGIN_API_URL, PLUGIN_API_TOKEN, IDADE_MINIMA_DIAS, SERVIDOR_IP,
-//                             MP_ACCESS_TOKEN (Mercado Pago; vazio: loja desligada). SERVIDOR_IP e
-//                             MP_ACCESS_TOKEN podem ter um valor só de um servidor, com o sufixo
-//                             (MP_ACCESS_TOKEN_OFICIAL=...), que vale antes do sem sufixo
+//                             MP_ACCESS_TOKEN (Mercado Pago; vazio: loja desligada). SERVIDOR_IP,
+//                             MP_ACCESS_TOKEN, PLUGIN_API_URL e PLUGIN_API_TOKEN podem ter um valor só
+//                             de um servidor, com o sufixo (MP_ACCESS_TOKEN_OFICIAL=...), que vale antes
+//                             do sem sufixo: o oficial fala com o servidor dos jogadores e o de teste
+//                             com o de desenvolvimento
 //   estado-<servidor>.json    IDs dos cargos e canais, gravado pelo tools/discord/estrutura.js
 //   bot-<servidor>.json       o que o próprio bot guarda (mensagem do painel, nicks aplicados)
 const fs = require('fs');
@@ -29,7 +31,7 @@ const guildId = env[`GUILD_${servidor.toUpperCase()}`];
 const doServidor = (chave) => env[`${chave}_${servidor.toUpperCase()}`] ?? env[chave] ?? '';
 if (!env.DISCORD_TOKEN) throw new Error('DISCORD_TOKEN vazio no .env.');
 if (!guildId) throw new Error(`GUILD_${servidor.toUpperCase()} vazio no .env.`);
-if (!env.PLUGIN_API_TOKEN) throw new Error('PLUGIN_API_TOKEN vazio no .env (é o api.token do config do DiscordPlugin).');
+if (!doServidor('PLUGIN_API_TOKEN')) throw new Error(`PLUGIN_API_TOKEN (ou PLUGIN_API_TOKEN_${servidor.toUpperCase()}) vazio no .env (é o api.token do config do DiscordPlugin).`);
 
 const arquivoEstado = path.join(PASTA, `estado-${servidor}.json`);
 if (!fs.existsSync(arquivoEstado)) throw new Error(`Não achei ${arquivoEstado}: rode o tools/discord/estrutura.js antes.`);
@@ -44,8 +46,8 @@ module.exports = {
   servidor,
   guildId,
   api: {
-    url: (env.PLUGIN_API_URL || 'http://127.0.0.1:8155').replace(/\/$/, ''),
-    token: env.PLUGIN_API_TOKEN,
+    url: (doServidor('PLUGIN_API_URL') || 'http://127.0.0.1:8155').replace(/\/$/, ''),
+    token: doServidor('PLUGIN_API_TOKEN'),
   },
   idadeMinimaDias: Number(env.IDADE_MINIMA_DIAS || 30),
   // Endereço pra entrar no servidor, mostrado no #status (vazio: não mostra).

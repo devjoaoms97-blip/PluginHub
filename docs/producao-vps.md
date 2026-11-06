@@ -2,6 +2,20 @@
 
 O que precisa ser feito ou conferido quando o servidor sair do PC (`C:\mc-teste`) e for pra VPS. No servidor de teste, os scripts de `test-server/` já fazem quase tudo. Na VPS, conferir item por item.
 
+## Antes da VPS: o servidor dos jogadores no PC (2026-11-06)
+
+Pra jogar com os amigos antes de abrir ao público, o PC roda dois servidores separados ao mesmo tempo:
+
+| | Desenvolvimento (`C:\mc-teste`) | Jogadores (`D:\BrasaMC`) |
+|---|---|---|
+| Quem entra | os bots de teste | só gente (nunca rodar bot aqui) |
+| Porta / RCON | 25566 / 25576, só no PC | 25565 (a do túnel do playit) / 25575 |
+| API do DiscordPlugin / pacote | 8156 / 8766 | 8155 / a release `pacote` do GitHub (`url-publica`) |
+| Avisos e bot do Discord | Discord de teste (`npm start`) | Discord oficial (`npm run oficial`) |
+| Ligar | `tools/bots/servidor.py` | `D:\BrasaMC\iniciar.bat` (console, backup ao desligar) |
+
+O `D:\BrasaMC` é uma cópia do de desenvolvimento com o mapa e os configs, sem nenhum dado de jogador (contas do AuthMe, dinheiro, ranks, skills, clãs, terrenos, VIPs, vínculos...), com o mundo dos terrenos recriado, op só na conta Admin e o mínimo de 2 jogadores nos eventos. No `.env` do bot, `PLUGIN_API_URL_TESTE`/`_OFICIAL` e `PLUGIN_API_TOKEN_OFICIAL` separam os dois. Mudou o pacote de texturas: troque o arquivo da release (o sha1 tem de ser o do log do PacotePlugin).
+
 ## Multiverse
 
 - [ ] **`confirm-mode: disable_console`** no `plugins/Multiverse-Core/config.yml` (ou `mv config confirm-mode disable_console` no console). **Sem isso, nenhum mundo de recursos é resetado:** o RecursosPlugin roda o `mv regen` pelo console, e o Multiverse ficaria esperando um `/mv confirm` que ninguém dá. O console mostra o erro "O regen de ... não aconteceu em 30 s".
@@ -25,7 +39,7 @@ O que precisa ser feito ou conferido quando o servidor sair do PC (`C:\mc-teste`
 
 ## Eventos (EventosPlugin)
 
-- [ ] **`minimo-jogadores` de 3 ou 4** em `vietna:`, `spleef:`, `correoucai:`, `sobrevivencia:`, `corrida:` e `labirinto:` no `plugins/EventosPlugin/config.yml`. O padrão do jar é 3; **no servidor de teste está 1** (decisão de 2026-11-02, pra testar sozinho), e não pode ir assim pra produção: com 1, quem entra sozinho joga até o tempo acabar e leva o cheque de R$ 10.000.
+- [ ] **`minimo-jogadores` de 2** (decisão de 2026-11-06; antes a ideia era 3 ou 4) em `vietna:`, `spleef:`, `correoucai:`, `sobrevivencia:`, `corrida:` e `labirinto:` no `plugins/EventosPlugin/config.yml`. O padrão do jar é 3; **no servidor de teste está 1** (decisão de 2026-11-02, pra testar sozinho), e não pode ir assim pra produção: com 1, quem entra sozinho joga até o tempo acabar e leva o cheque de R$ 10.000.
 - [ ] No `plugins/AreasPlugin/config.yml`, as caixas "arena do vietnã" ([-16, 60, 584] a [16, 81, 616]), "arena do spleef" ([-16, 60, 884] a [16, 93, 916]) e "labirinto do fauno" ([-262, 63, 1738] a [-139, 69, 1861]) em `pvp-so-nas-caixas.arenas` e em `sethome.caixas-pvp`, `carga-de-vento-liberada: ["arena do vietnã"]` e `quebrar-liberado: ["arena do spleef"]` (as listas que já existem no servidor não pegam o padrão novo do jar).
 - [ ] `/vietna construir`, `/spleef construir`, `/correoucai construir`, `/sobrevivencia construir`, `/corrida construir`, `/labirinto construir` e `/eventos construir` (o saguão dos eventos) uma vez (ou `node tools/bots/montar-mapa.js construir vietna spleef correoucai sobrevivencia corrida labirinto saguao`, que põe também os hologramas do saguão).
 - [ ] O mundo `arenas` numa dificuldade que não seja Pacífico (a Sobrevivência solta mobs hostis lá; o `spawn_mobs false` não atrapalha).

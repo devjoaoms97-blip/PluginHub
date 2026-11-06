@@ -13,7 +13,14 @@ param(
 
 . "$PSScriptRoot\comum.ps1"
 
-$nome = 'PluginHub - backup do servidor de teste'
+# Um nome por pasta: o servidor de desenvolvimento (C:\mc-teste) e o dos jogadores (D:\BrasaMC) têm cada
+# um a sua tarefa. A de antes tinha um nome fixo; se ela for desta pasta, sai.
+# (só o nome da pasta: o Agendador não aceita ":" no nome, e "\" vira subpasta dele)
+$nome = "PluginHub - backup de $(Split-Path $Servidor -Leaf)"
+$antiga = Get-ScheduledTask -TaskName 'PluginHub - backup do servidor de teste' -ErrorAction SilentlyContinue
+if ($antiga -and $antiga.Actions[0].Arguments -like "*$PSScriptRoot*") {
+    Unregister-ScheduledTask -TaskName $antiga.TaskName -Confirm:$false
+}
 
 if ($Remover) {
     Unregister-ScheduledTask -TaskName $nome -Confirm:$false -ErrorAction SilentlyContinue

@@ -47,7 +47,9 @@ A configuração fica fora do repositório, em `C:\mc-teste\discord\` (ou na pas
   IDADE_MINIMA_DIAS=30
   SERVIDOR_IP=jogar.brasamc.com.br   mostrado no #status e nas boas-vindas (vazio: "em breve")
   MP_ACCESS_TOKEN=...          Access Token do Mercado Pago (o de teste no servidor de teste; vazio: loja fechada)
-  MP_ACCESS_TOKEN_OFICIAL=     com o sufixo _TESTE ou _OFICIAL, vale só naquele servidor (SERVIDOR_IP também).
+  MP_ACCESS_TOKEN_OFICIAL=     com o sufixo _TESTE ou _OFICIAL, vale só naquele servidor (SERVIDOR_IP,
+                               PLUGIN_API_URL e PLUGIN_API_TOKEN também: o oficial fala com o servidor dos
+                               jogadores, em D:\BrasaMC, e o de teste com o de desenvolvimento)
                                Vazio no oficial: loja fechada lá até o token de produção
 estado-<servidor>.json         IDs dos cargos e canais, do tools/discord/estrutura.js
 bot-<servidor>.json            o que o bot guarda (mensagens dos painéis, apelidos aplicados, tickets abertos, pedidos da loja)

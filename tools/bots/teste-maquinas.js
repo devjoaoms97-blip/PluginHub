@@ -5,6 +5,8 @@
 const t = require('./lib')
 const http = require('http')
 const { Vec3 } = require('vec3')
+const fs = require('fs')
+const path = require('path')
 
 const dinheiro = r => Number((r.match(/\$([\d,.]+)/) || [, 'NaN'])[1].replace(/,/g, ''))
 const saldo = async nome => dinheiro(await t.console(`balance ${nome}`))
@@ -27,7 +29,10 @@ const janela = (bot, fn) => new Promise(ok => {
 
 t.rodar(async () => {
   console.log('\n== Pacote de texturas ==')
-  const pacote = await baixar('http://localhost:8765/pacote.zip')
+  // a porta do PacotePlugin desse servidor (no de desenvolvimento, 8766)
+  const cfgPacote = fs.readFileSync(path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'PacotePlugin', 'config.yml'), 'utf8')
+  const portaPacote = (cfgPacote.match(/^porta:\s*(\d+)/m) || [])[1] || 8765
+  const pacote = await baixar(`http://localhost:${portaPacote}/pacote.zip`)
   t.verificar(pacote.status === 200 && pacote.tam > 1000, 'o pacote.zip é servido pelo PacotePlugin', `${pacote.status}, ${pacote.tam} bytes`)
 
   const bot = await t.criarBot(t.nomeNovo('Maq'))
