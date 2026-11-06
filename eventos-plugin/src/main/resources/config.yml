@@ -201,6 +201,23 @@ sobrevivencia:
       "5": {tipo: VINDICATOR, nome: "&c&lCapitão Saqueador", vida: 120, dano: 1.5}
       "10": {tipo: RAVAGER, nome: "&4&lDevastador", vida: 300, dano: 1.0}
 
+  # Cartas de melhoria (2026-11-06): quando uma onda cai (menos a última), cada um vivo vê 3 cartas
+  # sorteadas e escolhe uma; sem escolher a tempo, ganha uma das 3 ao acaso. É individual, vale até o fim
+  # do evento, e a mesma carta de novo sobe o nível. Os valores são por nível.
+  melhorias:
+    ativado: true
+    segundos-pra-escolher: 3
+    # +10% de velocidade de movimento
+    velocidade: 0.10
+    # +15% de dano no golpe e na flecha, nos invasores
+    dano: 0.15
+    # +4 de vida máxima (2 corações), e cura isso na hora
+    vida: 4
+    # Regeneração I, II, III... até o fim do evento (depois do máximo, a carta não aparece mais)
+    regeneracao-nivel-maximo: 3
+    # -12% de dano recebido (multiplica: 2 cartas = -23%, 3 = -32%)
+    defesa: 0.12
+
   # O pátio do castelo, construído pelo plugin (/sobrevivencia construir). "raio" é a metade do lado
   # (15 = 31 x 31); "chao-y" é o bloco do chão.
   arena:

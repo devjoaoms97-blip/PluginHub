@@ -2,6 +2,8 @@
 // fogo amigo; a onda 1 chega (com mais invasores por ter 3 jogadores) e os mobs machucam de verdade;
 // vencida a onda, +16 flechas; quem morre não deixa nada no chão, está fora e renasce na galeria; as 10
 // ondas (o teste mata os invasores pelo console pra andar rápido) e quem chegar vivo divide o cheque.
+// As cartas de melhoria: vencida a onda, abre a janela com 3 cartas; clicou, ganhou; sem escolher, em 3 s
+// sai uma ao acaso; a vida e a velocidade a mais saem na morte e no fim do evento.
 // O teste encurta a pausa entre as ondas no config do servidor (e devolve o original no fim).
 // Uso: node teste-sobrevivencia.js
 const fs = require('fs')
@@ -17,6 +19,15 @@ const MATAR = `execute in minecraft:arenas run minecraft:kill @e[type=!player,x=
 const quantos = async (nome, item) => Number(((await t.console(`minecraft:clear ${nome} ${item} 0`)).match(/Found (\d+)/) || [, 0])[1])
 const noPatio = b => Math.abs(b.entity.position.x - CENTRO[0]) <= RAIO + 1 && Math.abs(b.entity.position.z - CENTRO[1]) <= RAIO + 1 && b.entity.position.y < CHAO + 4
 const naGaleria = b => b.entity.position.z < CENTRO[1] - RAIO - 1 && b.entity.position.y > CHAO + 7
+// os modificadores das cartas (vida e velocidade) que o jogador ainda tem
+const melhorias = async nome => {
+  let n = 0
+  for (const [atr, chave] of [['max_health', 'melhoria_vida'], ['movement_speed', 'melhoria_velocidade']]) {
+    // tem: "Value of modifier ... is 4.0"; não tem: um erro
+    if (/Value of modifier|is -?\d/i.test(await t.console(`attribute ${nome} minecraft:${atr} modifier value get eventosplugin:${chave}`))) n++
+  }
+  return n
+}
 const estado = async bot => (await t.capturar(bot, () => bot.chat('/sobrevivencia'), 1000)).find(m => m.includes('Agora')) || ''
 
 t.rodar(async () => {
@@ -78,12 +89,30 @@ t.rodar(async () => {
       await t.espera(500)
     }
     t.verificar(machucou, 'os invasores machucam de verdade', [a, b, c].map(x => x.health).join(', '))
+    // conferido o dano, os bots (parados) ficam imunes: o resto do teste demora, e um Vingador matava um
+    // deles antes da hora (o B morre depois, pelo /kill, que passa por cima da Resistência V)
+    for (const x of [a, b, c]) await t.console(`effect give ${x.username} minecraft:resistance 600 4 true`)
 
     // vence a onda 1 logo, antes que os invasores matem alguém
     const flechasAntes = await quantos(a.username, 'arrow')
-    await t.console(MATAR)
-    await t.espera(2500)
+    const janela = new Promise(res => { a.once('windowOpen', res); setTimeout(() => res(null), 4000) })
+    let msgsA = [], msgsC = []
+    msgsC = await t.capturar(c, async () => {
+      msgsA = await t.capturar(a, async () => {
+        await t.console(MATAR)
+        const w = await janela
+        const cartas = w ? [2, 4, 6].map(i => w.slots[i]).filter(Boolean) : []
+        t.verificar(cartas.length === 3, 'vencida a onda, abre a janela com 3 cartas de melhoria', cartas.map(x => x.name).join(', '))
+        if (w) await a.clickWindow(2, 0, 0)
+        await t.espera(1000)
+      }, 300)
+      await t.espera(3500) // o C não escolhe: em 3 s sai uma ao acaso
+    }, 300)
+    t.verificar(msgsA.some(m => m.includes('Melhoria:')), 'clicou na carta, ganhou a melhoria', msgsA.find(m => m.includes('Melhoria')))
+    t.verificar(msgsC.some(m => m.includes('O tempo acabou')), 'sem escolher, em 3 s sai uma das 3 ao acaso', msgsC.find(m => m.includes('tempo acabou')))
     t.verificar(await quantos(a.username, 'arrow') === flechasAntes + 16, 'vencida a onda, +16 flechas', `${flechasAntes} → ${await quantos(a.username, 'arrow')}`)
+    // uma carta de Vida certa pro B, pra conferir que sai na morte
+    await t.console(`attribute ${b.username} minecraft:max_health modifier add eventosplugin:melhoria_vida 4 add_value`)
 
     console.log('\n== Encostado na grade ==')
     // a grade do portão norte fica na fileira da muralha (z 1484): quem encosta nela fica com o meio do
@@ -107,6 +136,7 @@ t.rodar(async () => {
     t.verificar(msgsMorte.some(m => m.includes(b.username) && m.includes('morreu')), 'quem morre está fora', msgsMorte.find(m => m.includes('morreu')))
     t.verificar(naGaleria(b), 'e renasce na galeria', `${b.entity.position.floored()}`)
     t.verificar(await quantos(b.username, 'iron_sword') === 0, 'sem o kit')
+    t.verificar(await melhorias(b.username) === 0, 'e sem a vida e a velocidade das cartas')
     const noChao = await t.console(`execute in minecraft:arenas if entity @e[type=item,x=${CENTRO[0] - RAIO},y=${CHAO},z=${CENTRO[1] - RAIO},dx=${2 * RAIO},dy=14,dz=${2 * RAIO}]`)
     t.verificar(/failed/i.test(noChao), 'e nada do kit cai no chão', noChao)
 
@@ -114,12 +144,22 @@ t.rodar(async () => {
     let fim = []
     const capt = t.capturar(a, async () => {
       for (let n = 2; n <= 10; n++) {
-        await t.espera(3500) // a pausa (encurtada) e a onda chegar
-        if (n === 5 || n === 10) {
-          const e = await estado(d)
-          t.verificar(new RegExp(`onda ${n} de 10`).test(e), `a onda ${n} (com chefe) chega`, e)
+        // espera a onda chegar (a pausa encurtada), em vez de um tempo fixo: matar antes dela nascer
+        // deixava o teste uma onda atrasado
+        let e = ''
+        for (let i = 0; i < 20 && !new RegExp(`onda ${n} de 10, [1-9]`).test(e); i++) {
+          await t.espera(500)
+          e = await estado(d)
+          // um vex que o evocador chamou logo antes de morrer escapa do kill: mata de novo
+          if (new RegExp(`onda ${n - 1} de 10, [1-9]`).test(e)) await t.console(MATAR)
         }
+        if (n === 5 || n === 10) t.verificar(new RegExp(`onda ${n} de 10`).test(e), `a onda ${n} (com chefe) chega`, e)
         await t.console(MATAR)
+      }
+      // a última: até ela cair de vez (os vexes de novo)
+      for (let i = 0; i < 10 && /onda 10 de 10, [1-9]/.test(await estado(d)); i++) {
+        await t.console(MATAR)
+        await t.espera(500)
       }
       await t.espera(3000)
     }, 500)
@@ -130,6 +170,7 @@ t.rodar(async () => {
       && resultado.includes('5.000'), 'quem chegou vivo ao fim divide o prêmio (R$ 5.000 pra cada um)', resultado)
     await t.espera(1500)
     t.verificar(await quantos(a.username, 'paper') === 1 && await quantos(a.username, 'iron_sword') === 0, 'o vencedor perde o kit e ganha o cheque')
+    t.verificar(await melhorias(a.username) === 0 && await melhorias(c.username) === 0, 'e as cartas saem no fim do evento')
   } finally {
     fs.writeFileSync(CONFIG, original)
     await t.console('sobrevivencia cancelar')

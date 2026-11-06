@@ -435,6 +435,7 @@ public abstract class Evento {
     }
 
     protected static void restaurar(Player p) {
+        tirarMelhorias(p);
         AttributeInstance vida = p.getAttribute(Attribute.MAX_HEALTH);
         p.setHealth(vida != null ? vida.getValue() : 20);
         p.setFoodLevel(20);
@@ -443,6 +444,22 @@ public abstract class Evento {
         p.setFallDistance(0);
         p.getActivePotionEffects().forEach(e -> p.removePotionEffect(e.getType()));
         if (p.getGameMode() != GameMode.SURVIVAL && p.getGameMode() != GameMode.ADVENTURE) p.setGameMode(GameMode.SURVIVAL);
+    }
+
+    /**
+     * Tira os modificadores de atributo que um evento pôs ({@code eventosplugin:melhoria_*}: as cartas da
+     * Sobrevivência). Eles ficam salvos no jogador, então saem também na morte e na volta de quem caiu.
+     */
+    protected static void tirarMelhorias(Player p) {
+        for (Attribute atributo : List.of(Attribute.MAX_HEALTH, Attribute.MOVEMENT_SPEED, Attribute.ATTACK_DAMAGE)) {
+            AttributeInstance a = p.getAttribute(atributo);
+            if (a == null) continue;
+            for (var m : List.copyOf(a.getModifiers())) {
+                if (m.getKey().getNamespace().equals("eventosplugin") && m.getKey().getKey().startsWith("melhoria_")) a.removeModifier(m);
+            }
+        }
+        AttributeInstance vida = p.getAttribute(Attribute.MAX_HEALTH);
+        if (vida != null && p.getHealth() > vida.getValue()) p.setHealth(vida.getValue());
     }
 
     public void teleportar(Player p, Location destino) {
@@ -488,6 +505,7 @@ public abstract class Evento {
         Participante part = lutando(p.getUniqueId());
         if (part == null) return;
         part.vivo = false;
+        tirarMelhorias(p);
         renascerNaGaleria.add(p.getUniqueId());
         removerPendente(p.getUniqueId());
         anunciar(prefixo() + " §f" + part.nome + " §7" + motivoDaMorte(p) + ". " + cor() + "Restam §f" + vivos().size() + cor() + ".");

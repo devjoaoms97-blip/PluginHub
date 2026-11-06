@@ -1,11 +1,15 @@
 com\example\eventos\corrida\TracadoCorrida$Carrossel.class
+com\example\eventos\sobrevivencia\Melhorias$Tipo.class
 com\example\eventos\quiz\Quiz$Pergunta.class
+com\example\eventos\sobrevivencia\Melhorias.class
 com\example\eventos\corrida\TracadoCorrida$Pivo.class
+com\example\eventos\sobrevivencia\Melhorias$Escolha.class
 com\example\eventos\labirinto\LabirintoDoFauno$Sorteio.class
 com\example\eventos\AgendaCommand$Horario.class
 com\example\eventos\corrida\TracadoCorrida$Quica.class
 com\example\eventos\quiz\Quiz.class
 com\example\eventos\corrida\TracadoCorrida$Plataforma.class
+com\example\eventos\sobrevivencia\Melhorias$1.class
 com\example\eventos\corrida\TracadoCorrida$Gelo.class
 com\example\eventos\RankingGeral$Fonte.class
 com\example\eventos\labirinto\LabirintoDoFauno$Fauno.class

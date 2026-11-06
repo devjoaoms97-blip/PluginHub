@@ -44,7 +44,8 @@ import java.util.UUID;
  * <p>
  * As ondas ({@code ondas.lista}) crescem com o número de jogadores ({@code ondas.a-mais-por-jogador}).
  * Os mobs do evento são marcados ({@code eventosplugin:sobrevivencia}): só eles podem ser acertados por
- * quem luta, e não deixam cair nada nem experiência.
+ * quem luta, e não deixam cair nada nem experiência. Quando uma onda cai, cada um escolhe uma carta de
+ * melhoria ({@link Melhorias}).
  */
 public class Sobrevivencia extends Evento implements Listener {
 
@@ -55,10 +56,13 @@ public class Sobrevivencia extends Evento implements Listener {
     private boolean esperando;
     private long proximaOnda;
     private int jogadoresNoComeco;
+    private final Melhorias melhorias;
 
     public Sobrevivencia(EventosPlugin plugin) {
         super(plugin, "sobrevivencia");
         this.marca = new NamespacedKey(plugin, "sobrevivencia");
+        this.melhorias = new Melhorias(plugin, this);
+        plugin.getServer().getPluginManager().registerEvents(melhorias, plugin);
         recarregar();
     }
 
@@ -132,6 +136,7 @@ public class Sobrevivencia extends Evento implements Listener {
     @Override
     protected void resetar() {
         limparMobs();
+        melhorias.zerar();
     }
 
     @Override
@@ -197,6 +202,7 @@ public class Sobrevivencia extends Evento implements Listener {
     @Override
     protected void aoComecarLuta(long agora) {
         limparMobs();
+        melhorias.zerar();
         onda = 0;
         jogadoresNoComeco = Math.max(1, getParticipantes().size());
         esperando = true;
@@ -229,6 +235,7 @@ public class Sobrevivencia extends Evento implements Listener {
             }
             anunciarNaArena(cor() + "§lOnda " + onda + " vencida! §f" + (flechas > 0 ? "+" + flechas + " flechas. " : "")
                     + cor() + "A onda " + (onda + 1) + " chega em " + pausa + " s.");
+            melhorias.oferecer(jogadoresVivos());
         } else if (esperando && agora >= proximaOnda) {
             esperando = false;
             onda++;

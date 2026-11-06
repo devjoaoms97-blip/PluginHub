@@ -25,7 +25,7 @@ Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o últ
 
 ✦ **Corre ou Cai**, todo dia às **11h** e **17h** (`/correoucai entrar`): três pisos coloridos e nenhum kit. O bloco onde você pisa fica **vermelho** e some meio segundo depois: não pare de correr! Quem cai vai pro piso de baixo, e do último cai na água.
 
-⚔ **Sobrevivência**, todo dia às **22h** (`/sobrevivencia entrar`): todos **juntos**, com kit de ferro, contra 10 ondas de invasores no pátio de um castelo, com chefe na 5 e na 10. Aqui os mobs machucam de verdade: morreu, está fora (sem perder nada). Quem estiver vivo no fim da última onda divide o prêmio.
+⚔ **Sobrevivência**, todo dia às **22h** (`/sobrevivencia entrar`): todos **juntos**, com kit de ferro, contra 10 ondas de invasores no pátio de um castelo, com chefe na 5 e na 10. A cada onda vencida, escolha **1 de 3 cartas de melhoria** (velocidade, dano, vida, regeneração ou defesa) em 3 s. Aqui os mobs machucam de verdade: morreu, está fora (sem perder nada). Quem estiver vivo no fim da última onda divide o prêmio.
 
 ⚑ **Corrida Maluca**, todo dia às **9h** e **14h** (`/corrida entrar`): pista de obstáculos em 3 fases, num dos 5 mapas, sem kit. Caiu na água, volta pro último checkpoint. Os 3 primeiros na chegada levam **R$ 5.000**, **R$ 3.000** e **R$ 2.000**.
 
@@ -34,15 +34,12 @@ Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o últ
 Pra assistir: `/<evento> assistir`.
 
 **Quiz**
-✎ Todo dia às **12h** e **15h**, sem inscrição: 10 perguntas no chat (sobre o servidor, o Minecraft, contas e palavras embaralhadas). Responda com `/quiz <resposta>`, de onde estiver: quem acertar primeiro marca 1 ponto, e quem fizer mais pontos leva **R$ 5.000** (dividido no empate). Acento e maiúscula não importam.
+✎ Todo dia às **12h** e **15h**, sem inscrição: 10 perguntas no chat. Responda com `/quiz <resposta>`, de onde estiver: quem acertar primeiro marca 1 ponto, e quem fizer mais pontos leva **R$ 5.000** (dividido no empate).
 
 **Mine-sena**
 Sorteio todo dia às 18h: veja o tutorial **Dinheiro, loja e Pix**.
 
 **Loja e skills**
-📈 Em eventos de **ALTA**, alguns itens pagam mais na Loja Oficial. ✨ O XP de skill costuma dobrar aos sábados e domingos. Acompanhe os anúncios em {#eventos}.
-
-**Todo dia**
-Resgate `/diaria` e confira as tarefas em `/missoes`.
+📈 Em eventos de **ALTA**, alguns itens pagam mais na Loja Oficial. ✨ XP de skill em dobro aos sábados e domingos. Anúncios em {#eventos}.
 
 🔔 Para receber menções, ative os cargos de aviso em {#boas-vindas}.
