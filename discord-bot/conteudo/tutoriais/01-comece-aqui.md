@@ -11,7 +11,7 @@ O `/tutorial` guia esses primeiros passos e dá um **Mapa do Tesouro** no fim (u
 4. Suba de rank, libere minas melhores e repita. A diária tem uma sequência de 7 dias; as missões diárias e semanais mostram o próprio progresso em `/missoes`.
 
 **3. Encontre os lugares**
-No spawn, o portão **norte** leva à Avenida das Minas e o **sul** à arena do boss, o **leste** à Loja Oficial e o **oeste** à warp mobs. Também dá pra ir com `/warp loja`, `/warp mobs`, `/warp terrenos` ou `/warp recursos`. Os NPCs pelo spawn dão mais dicas: clique neles.
+No spawn, o portão **norte** leva à Avenida das Minas e o **sul** à arena do boss, o **leste** à Loja Oficial e o **oeste** à warp mobs. Também dá pra ir com `/warp loja`, `/warp banco`, `/warp mobs`, `/warp terrenos` ou `/warp recursos`. Os NPCs pelo spawn dão mais dicas: clique neles.
 
 **4. Saiba onde há PvP**
 O spawn, a Loja Oficial, a Avenida das Minas e os terrenos são seguros. Há PvP na arena do boss (depois do túnel), na `/warp mobs` quando o ciclo estiver ligado, nos mundos de recursos e nas lutas de X1 e Gladiador. No End, o quadrado verde de chegada é seguro. Em áreas de risco, a morte pode fazer você perder o equipamento. Veja **Skills e combate** antes de levar itens valiosos.

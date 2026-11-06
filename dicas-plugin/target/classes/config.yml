@@ -14,3 +14,24 @@ balao:
   letras-por-tick: 1
   # Depois de escrito, o balão fica 2 s + isso aqui por letra (em ticks), até no máximo 12 s.
   ticks-por-letra-lida: 1.2
+
+# Texto embaixo do nome dos NPCs que seguram um livro.
+descricao-livro: "&7Clique pra ler"
+
+# Livros que um NPC segura e abre no clique (/dica livro <npc> <livro>). Cada página é um texto (cores
+# com &, \n quebra linha); cabem umas 14 linhas de 19 letras por página. Fundo claro: use cores escuras.
+livros:
+  eventos:
+    titulo: "Livro dos Eventos"
+    autor: "Mestre dos Eventos"
+    paginas:
+      - "&4&l   Livro dos\n     Eventos\n\n&0Todos são &lgrátis&0 e ninguém perde nada: entre com o &linventário vazio&0, até sem armadura.\n\nAnde no portal do evento quando as inscrições abrirem."
+      - "&lComo funciona\n\n&0Espere aqui no saguão: &csair dele cancela a inscrição&0.\n\nPreparação de 10 s, e todos recebem o mesmo kit.\n\nPrêmio: &2cheque de\nR$ 10.000&0.\n\n&8/eventos: a agenda\n/eventos top: ranking"
+      - "&2&l☘ Vietnã\n&810h e 16h\n\n&0Pilares sobre a água. Ninguém perde vida: arco, bola de neve, carga de vento e vara só empurram.\n\nCaiu na água, está fora. Depois de 2 min, os pilares ficam &cvermelhos&0 e caem."
+      - "&3&l❄ Spleef\n&813h e 18h\n\n&0Três pisos de neve. Kit: uma pá.\n\nQuebre a neve debaixo dos outros: quem cai desce um piso; do último, cai na água e está fora.\n\nDepois de 2 min, a neve vira gelo e some."
+      - "&5&l✦ Corre ou Cai\n&811h e 17h\n\n&0Sem kit. O bloco em que você pisa fica &cvermelho&0 e some meio segundo depois.\n\nNão pare de correr! Quem cai desce um piso; do último, cai na água."
+      - "&6&l⚔ Sobrevivência\n&822h\n\n&0Todos juntos, com kit de ferro, contra 10 ondas de invasores. Chefe na 5 e na 10.\n\nOs mobs machucam: morreu, está fora (sem perder nada). Quem sobreviver divide o prêmio."
+      - "&6&l⚑ Corrida Maluca\n&89h e 14h\n\n&0Pista de obstáculos em 3 fases, sem kit. Caiu na água, volta pro checkpoint.\n\nOs 3 primeiros levam &2R$ 5.000&0, &2R$ 3.000&0 e &2R$ 2.000&0. Até 10 minutos."
+      - "&5&l☽ Labirinto do\n   Fauno\n&88h e 23h\n\n&0PvP no escuro, sem kit: os itens estão nos baús dos becos e somem no fim.\n\nO &5Fauno&0 caça quem está perto e não morre: fuja! O último vivo vence; em 10 min, com mais de um, ninguém."
+      - "&1&l✎ Quiz\n&812h e 15h\n\n&0Sem inscrição: 10 perguntas no chat. Responda de onde estiver com\n&l/quiz <resposta>&0.\n\nQuem fizer mais pontos leva &2R$ 5.000&0."
+      - "&lPra assistir\n\n&0&l/<evento> assistir&0 leva pra arquibancada. Pra sair: &l/spawn&0.\n\nNa arena, só vale o comando do evento.\n\n&8Boss, Gladiador e o Dragão do End também estão no /eventos."

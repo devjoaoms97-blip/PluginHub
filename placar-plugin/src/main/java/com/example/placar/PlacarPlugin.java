@@ -23,6 +23,7 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +37,8 @@ import java.util.UUID;
  * clã, missões do dia, skill em uso, próximo boss e jogadores online. As linhas vêm do config com
  * placeholders; cada informação é lida dos outros plugins por reflexão (sem o plugin, a linha
  * mostra "—"). /placar liga e desliga pra quem quiser a tela limpa. Como é ele que dá um scoreboard a
- * cada jogador, é ele também que põe as tags no nome acima da cabeça ({@link NomesNaCabeca}).
+ * cada jogador, é ele também que põe as tags no nome acima da cabeça ({@link NomesNaCabeca}) e a vida
+ * embaixo do nome ({@link VidaNaCabeca}).
  */
 public class PlacarPlugin extends JavaPlugin implements Listener {
 
@@ -49,6 +51,7 @@ public class PlacarPlugin extends JavaPlugin implements Listener {
     private final Set<String> avisouFalha = new HashSet<>();
     private File arquivoDesligados;
     private NomesNaCabeca nomes;
+    private VidaNaCabeca vida;
 
     @Override
     public void onEnable() {
@@ -68,6 +71,8 @@ public class PlacarPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         long intervalo = Math.max(10, getConfig().getLong("intervalo-ticks", 40));
         nomes = new NomesNaCabeca(this);
+        vida = new VidaNaCabeca(this);
+        getServer().getPluginManager().registerEvents(vida, this);
         getServer().getScheduler().runTaskTimer(this, this::atualizarTodos, 20L, intervalo);
         atualizarTodos();
         getLogger().info("PlacarPlugin ativado!");
@@ -91,6 +96,12 @@ public class PlacarPlugin extends JavaPlugin implements Listener {
     public void aoSair(PlayerQuitEvent evento) {
         placares.remove(evento.getPlayer().getUniqueId());
         linhasUsadas.remove(evento.getPlayer().getUniqueId());
+        vida.esquecer(evento.getPlayer().getName());
+    }
+
+    /** Os scoreboards do placar (o principal fica de fora: quem precisa junta). */
+    Collection<Scoreboard> placaresEmUso() {
+        return placares.values();
     }
 
     @Override
@@ -147,10 +158,11 @@ public class PlacarPlugin extends JavaPlugin implements Listener {
     // Montagem
     // ---------------------------------------------------------------------
 
-    /** O placar de todo mundo e, depois, as tags acima da cabeça em todos os scoreboards. */
+    /** O placar de todo mundo e, depois, as tags e a vida acima da cabeça em todos os scoreboards. */
     private void atualizarTodos() {
         Bukkit.getOnlinePlayers().forEach(this::atualizar);
         nomes.atualizar(placares.values());
+        vida.atualizar(placares.values());
     }
 
     private void atualizar(Player jogador) {

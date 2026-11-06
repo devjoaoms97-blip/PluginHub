@@ -526,10 +526,15 @@ public class Camaras implements Listener {
             return;
         }
         if (evento.getEntity().getPersistentDataContainer().has(BOSS, PersistentDataType.BYTE) && plugin.getConfig().getBoolean("drops.boss.ativado", true)) {
-            String raridade = plugin.getMapas().sortearRaridade(plugin.getConfig().getConfigurationSection("drops.boss.pesos"));
+            // o Wither (o boss de domingo) paga tudo em dobro, os mapas também
+            int quantos = Math.max(1, evento.getEntityType() == org.bukkit.entity.EntityType.WITHER
+                    ? plugin.getConfig().getInt("drops.boss.mapas-wither", 2) : 1);
             Location l = evento.getEntity().getLocation();
-            l.getWorld().dropItemNaturally(l, plugin.getMapas().criar(raridade));
-            Bukkit.broadcastMessage("§6✦ §eO boss deixou cair um §fMapa do Tesouro " + plugin.nomeRaridade(raridade) + "§e!");
+            for (int i = 0; i < quantos; i++) {
+                String raridade = plugin.getMapas().sortearRaridade(plugin.getConfig().getConfigurationSection("drops.boss.pesos"));
+                l.getWorld().dropItemNaturally(l, plugin.getMapas().criar(raridade));
+                Bukkit.broadcastMessage("§6✦ §eO boss deixou cair um §fMapa do Tesouro " + plugin.nomeRaridade(raridade) + "§e!");
+            }
         }
     }
 

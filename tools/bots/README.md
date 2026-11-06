@@ -56,6 +56,7 @@ node teste-diaria.js        # recompensa diária e a sequência de dias
 node teste-gladiador-borda.js # borda do Gladiador fechando (muda o config por alguns segundos)
 node teste-boss-maldicao.js # boss que escapa amaldiçoa (XP -10%) e o próximo morto quebra (o teste põe o limite de 2 min no config e devolve os 60 no fim)
 node teste-boss-vip.js      # só o campeão do Wither ganha o código de VIP de evento de 7 dias; o boss normal não
+node loot-boss.js           # não é teste: cadastra do zero o loot do boss (itens de PvP, armadura P5)
 node teste-vip-evento.js    # código de VIP de evento: só 3/7/15 dias, sem bônus nem kit mensal, não vende, quem tem VIP resgata depois
 node teste-creditos.js      # loja de créditos: créditos pelo console, cosmético com confirmação, cor na tab, VIP e código, apoiador
 node teste-montaria.js      # montaria do VIP (velocidade, some ao descer, não entra na arena do boss nem na warp mobs da linha vermelha pra dentro) e PvP só na arena do boss

@@ -403,9 +403,9 @@ async function construirSpleef() {
   console.log(await t.console('spleef construir'))
 }
 
-// NPCs de dicas (DicasPlugin). Os 4 primeiros ficam em volta da fonte, nas diagonais entre as avenidas,
-// virados pra fora (o do norte pro lado das minas, o do sul pro lado do boss); os outros ficam perto
-// dos portões, no fim das avenidas e nos jardins, virados pra fonte. Posição relativa ao centro do
+// NPCs de dicas (DicasPlugin). Os 4 primeiros ficam em volta da fonte, nas diagonais entre as avenidas;
+// os outros ficam perto dos portões, no fim das avenidas e nos jardins. Todos virados pra fonte (os da
+// fonte ficavam de costas pra ela até 2026-11-06). Posição relativa ao centro do
 // spawn; falas com cores do Minecraft (&).
 const DICAS = [
   { id: 'minerador', skin: 'd267bf0162a31605043c68901412f94eb3e76bc2d97bb55fb9167d958d84cd13', nome: '&6Velho Minerador', pos: [-6, -6], falas: [
@@ -427,9 +427,9 @@ const DICAS = [
     '&fMuito cuidado ao enfrentar o boss... o primo do cunhado de um conhecido meu foi morto pela &dFeiticeira Maldita&f.',
     '&fO portão &cBOSS&f, ao sul, desce até a arena. Lá embaixo tem um degrau alto: desceu, só volta com &e/spawn&f!',
     '&fQuem dá o último golpe no boss vira campeão e leva o melhor prêmio. Quem só assiste leva... boas lembranças.',
-    '&fTodo &cdomingo&f vem o &8Flagelo das Trevas&f. Quem derrubar ele leva até um VIP de presente... se sobreviver.',
+    '&fTodo &cdomingo&f vem o &8Flagelo das Trevas&f. Ele paga tudo em dobro, e quem derrubar ainda leva um VIP de presente... se sobreviver.',
     '&fE o &5Dragão do End&f renasce toda noite, às 21h. Chegando pelo &e/warp end&f, o quadradinho verde é o único lugar sem PvP.',
-    '&fÀs vezes o boss vem &6✦ ELITE ✦&f: o dobro de vida, o dobro de dano e o dobro de prêmio. Eu, nesses dias, fico em casa.',
+    '&fÀs vezes o boss vem &6✦ ELITE ✦&f: o dobro de vida, bem mais dano e o dobro de prêmio. Eu, nesses dias, fico em casa.',
   ] },
   { id: 'guia', skin: 'eeaf43c747497e20fe0667d67810aa1f3cb0aeb96fcc94b7ce18f5d165c8284d', nome: '&aZé, o Guia', pos: [6, 6], falas: [
     '&fBem-vindo! Pegue sua recompensa de todo dia com &e/diaria&f. Quanto mais dias seguidos, melhor.',
@@ -447,29 +447,31 @@ const DICAS = [
     '&fMorreu e não achou suas coisas? Olhe o &e/achados&f: o que a limpeza recolheu do chão fica guardado por 1 hora, e cada pilha volta por R$ 10.000.',
     '&fVIP tem &e/montaria&f: um cavalo na hora, bem mais rápido que a pé. Só não entra nas minas nem na arena do boss.',
   ] },
-  { id: 'guarda-minas', skin: '6ee1acb2b58e2db54aa7668be2eda0f57d6b81e186d1ee87a530354a2f2a3ef8', nome: '&7Guarda do Portão', pos: [6, -38], virado: 'centro', falas: [
+  { id: 'guarda-minas', skin: '6ee1acb2b58e2db54aa7668be2eda0f57d6b81e186d1ee87a530354a2f2a3ef8', nome: '&7Guarda do Portão', pos: [6, -38], falas: [
     '&fDaqui pra frente é a &bAvenida das Minas&f. Cada mina tem um holograma com o rank, o que tem nela e quando enche de novo.',
     '&fSó minera quem tem o rank da mina. Não adianta me olhar assim, a regra não é minha.',
     '&f&e/mina&f abre o menu das minas: clicou, foi. Bem mais rápido que andar, mas você perde a paisagem.',
     '&fNas minas, o que você quebra é vendido na hora. VIP ainda ganha de 3% a 12% a mais em toda venda.',
   ] },
-  { id: 'ranzinza', skin: 'd19038bc9e56e655f1ba2e47b27e758791dbcca17ea2026e5525becb81f86d5c', nome: '&8Dona Neusa, a Ranzinza', pos: [-6, -38], virado: 'centro', falas: [
+  { id: 'ranzinza', skin: 'd19038bc9e56e655f1ba2e47b27e758791dbcca17ea2026e5525becb81f86d5c', nome: '&8Dona Neusa, a Ranzinza', pos: [-6, -38], falas: [
     '&fNo meu tempo não tinha &e/rankup max&f. A gente subia um rank por vez e ainda agradecia!',
     '&fChegou no &6Rei&f? Tem o &e/prestigio&f: você volta pro começo, mas com uma estrelinha. Eu acho uma bobagem. Tenho três.',
     '&fNão empurra! As minas se enchem sozinhas. Quem estiver dentro na hora vai pro ponto de teleporte, inteirinho.',
     '&fEsse povo de hoje quer tudo de graça. Faz as &e/missoes&f, menino, que paga bem.',
     '&fPicareta gasta? No meu tempo a gente jogava fora. Hoje tem o &7Ferreiro&f, na avenida, que conserta. Moleza.',
   ] },
-  { id: 'sentinela-boss', skin: '2241cc1466e4bde22f0756b88f79fa4def38e1dcc66b7522ab81558534c36b0a', nome: '&cSentinela do Portão', pos: [-6, 38], virado: 'centro', falas: [
+  { id: 'sentinela-boss', skin: '2241cc1466e4bde22f0756b88f79fa4def38e1dcc66b7522ab81558534c36b0a', nome: '&cSentinela do Portão', pos: [-6, 38], falas: [
     '&fTem boss &ctodo dia às 20h&f. No &cdomingo&f é o &8Flagelo das Trevas&f. Dez minutos antes, o chat avisa. &e/boss proximo&f diz quando.',
     '&fQuem dá o último golpe vira &6campeão&f e ganha a tag. Quem bate mais aparece no ranking de dano.',
     '&fO boss só espera &c1 hora&f. Se ninguém derrotar, ele vai embora e o mal reina: XP de skill &c-10%&f até alguém derrubar o próximo.',
     '&fQuem morre na arena deixa os itens lá. Não leve nada que você não aceita perder.',
     '&fA arena tem cara de tóxica, mas pode pisar à vontade. O que mata mesmo é o boss. E o orgulho.',
+    '&fQuando o boss cai, chove equipamento no chão: netherite com &bProteção V&f, espadas, machados, maçãs... Corra pegar, que a arena tem PvP!',
+    '&fO boss de hoje bate como gente grande: venha de &bnetherite&f com proteção no máximo, e traga maçã dourada. Contra a &5Feiticeira&f e o &8Flagelo&f, leite também.',
     '&fNo spawn, o PvP fica sempre na &carena do boss&f e na &bwarp mobs&f quando o ciclo está ligado. O resto é seguro.',
   ] },
-  { id: 'cacador', skin: '98168ad709b573e59ab2807a0eff61ebfd7403da73806f9f88962ba4d9c091bb', nome: '&6Caçador de Tesouros', pos: [6, 38], virado: 'centro', falas: [
-    '&fO boss sempre deixa cair um &6Mapa do Tesouro&f quando morre. Quanto mais raro, mais perigoso e mais rico: &fcomum&f, &9raro&f, &darcano&f e &6lendário&f.',
+  { id: 'cacador', skin: '98168ad709b573e59ab2807a0eff61ebfd7403da73806f9f88962ba4d9c091bb', nome: '&6Caçador de Tesouros', pos: [6, 38], falas: [
+    '&fO boss sempre deixa cair um &6Mapa do Tesouro&f quando morre (o &8Flagelo&f, dois). Quanto mais raro, mais perigoso e mais rico: &fcomum&f, &9raro&f, &darcano&f e &6lendário&f.',
     '&fNas minas, a picareta às vezes acha um mapa também. Esse vai direto pra sua mochila.',
     '&fCom o mapa, é &e/warp tesouros&f. No templo da chegada, os hologramas dizem pra que lado fica cada direção. Segure o mapa na mão pra ver quanto falta até o X e cave o chão bem em cima dele.',
     '&fEmbaixo do X tem uma câmara cheia de guardiões, que vêm em ondas. O baú só destrava quando o último cair.',
@@ -477,13 +479,13 @@ const DICAS = [
     '&fMapa se vende e se troca. Uma barraca cheia de mapas lendários... isso sim é negócio.',
     '&cQuem morre na câmara perde tudo&f: o mapa, o tesouro e o que estiver carregando. E sair do servidor no meio da luta conta como morrer.',
   ] },
-  { id: 'leiloeiro', skin: '78a757b18d9121820b77937c2bd2dab78652941881cf7115cf9f8c96687f8e04', nome: '&6Leiloeiro Matias', pos: [38, -6], virado: 'centro', falas: [
+  { id: 'leiloeiro', skin: '78a757b18d9121820b77937c2bd2dab78652941881cf7115cf9f8c96687f8e04', nome: '&6Leiloeiro Matias', pos: [38, -6], falas: [
     '&fAs barracas &6★&f vão a leilão quando ficam livres: &e/barraca lance <id> <valor>&f. Cada lance precisa ser 5% maior.',
     '&fLance nos últimos 30 segundos estende o leilão. Aqui ninguém ganha no susto!',
     '&fFoi superado? Seu dinheiro volta na hora. Eu sou leiloeiro, não ladrão.',
     '&fBarraca normal pode renovar sozinha: &e/barraca autorenovar&f, enquanto tiver saldo na conta.',
   ] },
-  { id: 'mestre-armas', skin: '3f230b7b1b09b471491a61675a3efa3ba65522cc4d004090d28ee6f3d133b822', nome: '&4Mestre de Armas Duda', pos: [-36, -6], virado: 'centro', falas: [
+  { id: 'mestre-armas', skin: '3f230b7b1b09b471491a61675a3efa3ba65522cc4d004090d28ee6f3d133b822', nome: '&4Mestre de Armas Duda', pos: [-36, -6], falas: [
     '&fAqui o combate é à moda antiga: sem barra de recarga, todo golpe sai com o dano inteiro. E quem alterna as duas mãos bate o dobro.',
     '&fBloquear com a espada tira metade do dano. Mas com escudo na outra mão, a espada não bloqueia: escolha.',
     '&fDá pra lutar com uma arma em cada mão, e cada mão treina a skill da própria arma. Veja em &e/skills&f.',
@@ -491,21 +493,21 @@ const DICAS = [
     '&fLevante o escudo bem na hora do golpe: o &6Escudo Perfeito&f anula o dano e deixa o outro tonto por um segundo.',
     '&fSkill no 50? &e/skills prestigio <skill>&f volta pro 1, mas cada prestígio deixa ela mais forte. E no sábado e no domingo o XP de skill vale o dobro!',
   ] },
-  { id: 'banqueira', skin: '2dcabf4751f4ad60c6e92d0fc9724fe252474de90c5d4ed8f62b15633455f42d', nome: '&2Banqueira Rosa', pos: [25, -9], virado: 'centro', falas: [
+  { id: 'banqueira', skin: '2dcabf4751f4ad60c6e92d0fc9724fe252474de90c5d4ed8f62b15633455f42d', nome: '&2Banqueira Rosa', pos: [25, -9], falas: [
     '&fPra pagar alguém: &e/pix pagar <jogador> <valor>&f. Rápido, seguro e sem fila.',
     '&fConta que se repete? &e/pix agendar <jogador> <valor> <dias>&f paga agora e de novo a cada tantos dias.',
-    '&fQuer dar dinheiro de presente? Compre uma folha de cheque com o &6Bancário&f, no Banco do fim da Avenida das Minas, e use &e/cheque <valor>&f. Quem ganhar deposita com ele.',
-    '&fO preço da loja muda com a oferta. Olhe o &e/shop&f antes de vender tudo de uma vez.',
+    '&fQuer dar dinheiro de presente? Compre uma folha de cheque com o &6Bancário&f, no Banco do fim da Avenida das Minas (&e/warp banco&f), e use &e/cheque <valor>&f. Quem ganhar deposita com ele.',
+    '&fNa &6Loja Oficial&f, cada venda baixa um pouco o preço daquele item, e ele se recupera com o tempo. Venda aos poucos que rende mais.',
     '&fQuer saber pra onde foi seu dinheiro? O &6Bancário&f te dá o extrato num livro, com tudo o que entrou e saiu.',
     '&fJá jogou na &6Mine-sena&f? Bilhete de R$ 500 no Bancário, sorteio todo dia às 18h, e o pote inteiro vai pra quem acertar.',
   ] },
-  { id: 'escriba', skin: 'a6dd9b9c598e6f51ea5f5ad5c74ba05388c72ea3da996e3e34a34d5aba46ee68', nome: '&9Escriba dos Clãs', pos: [-30, 12], virado: 'centro', falas: [
+  { id: 'escriba', skin: 'a6dd9b9c598e6f51ea5f5ad5c74ba05388c72ea3da996e3e34a34d5aba46ee68', nome: '&9Escriba dos Clãs', pos: [-30, 12], falas: [
     '&fJunte os amigos: &e/cla criar&f funda um clã, e &e/cla convidar&f chama a turma.',
     '&fO clã tem banco em comum (&e/cla banco&f) e chat próprio: &e/cc <mensagem>&f.',
     '&fNo &6Gladiador por clã&f, ninguém do mesmo clã se machuca. Já a briga pelo prêmio no grupo... aí é com vocês.',
     '&fO &e/cla top&f mostra os clãs mais fortes. O meu está em último, mas por escolha própria.',
   ] },
-  { id: 'juca', skin: '7a8ab2267ae443e83b05e3a8d67b8b760adfaad335c9047338c0e1774a65c372', nome: '&aSeu Juca do Terreno', pos: [12, 30], virado: 'centro', falas: [
+  { id: 'juca', skin: '7a8ab2267ae443e83b05e3a8d67b8b760adfaad335c9047338c0e1774a65c372', nome: '&aSeu Juca do Terreno', pos: [12, 30], falas: [
     '&fQuer um lugar só seu? &e/terreno auto&f compra o primeiro terreno livre.',
     '&fTerreno paga imposto! Ligue o &e/terreno autopagar&f e esqueça. Se atrasar muito, o terreno vai a leilão.',
     '&fChame os amigos pra construir junto com &e/terreno amigo&f.',
@@ -520,13 +522,20 @@ async function construirDicas() {
   console.log('\n== NPCs de dicas (DicasPlugin) ==')
   for (const npc of DICAS) {
     const [dx, dz] = npc.pos
-    // de costas pra fonte, ou (virado: 'centro') de frente pra ela
-    const yaw = Math.round((npc.virado === 'centro' ? Math.atan2(dx, -dz) : Math.atan2(-dx, dz)) * 180 / Math.PI)
+    // de frente pra fonte
+    const yaw = Math.round(Math.atan2(dx, -dz) * 180 / Math.PI)
     await t.console(`dica remover ${npc.id}`) // refaz igual
     await t.console(`dica criar ${npc.id} em spawn ${SPAWN.x + dx + 0.5} ${CHAO + 1} ${SPAWN.z + dz + 0.5} ${yaw} ${npc.nome}`)
     for (const fala of npc.falas) await t.console(`dica fala ${npc.id} ${fala}`)
     if (npc.skin) await t.console(`dica skin ${npc.id} textura:${npc.skin}`)
   }
+  // no saguão dos eventos (/warp eventos), do lado da chegada e virado pra ela: segura o Livro dos
+  // Eventos (livros.eventos do config do DicasPlugin) e abre ele no clique (pedido de 2026-11-06)
+  await t.console('dica remover mestre-eventos')
+  await t.console('dica criar mestre-eventos em arenas -3.5 65 303.5 -53 &6Mestre dos Eventos')
+  await t.console('dica livro mestre-eventos eventos')
+  // mestre de picadeiro: fraque vermelho com botões dourados, cartola e bigode (MineSkin "Ringmaster")
+  await t.console('dica skin mestre-eventos textura:94a393a425a8a9fcdf25fcccb30c42da5b35564add777dfedc6d4cb3b4bb43')
 }
 
 async function construirBoss() {
@@ -561,7 +570,8 @@ async function marcarComBot() {
   await comando('/setspawn newbies')
   for (const [nome, mundo, x, z, yaw, y = CHAO + 1] of [
     // mercado: na avenida leste do spawn, entre as barracas
-    ['minas', 'spawn', 0.5, -24.5, 180], ['mercado', 'spawn', SPAWN.x + 16.5, SPAWN.z + 0.5, -90],
+    ['minas', 'spawn', 0.5, -24.5, 180],
+    ['banco', 'spawn', 0.5, -175.5, 180], // na praça do fim da Avenida das Minas, de frente pra escadaria do Banco ['mercado', 'spawn', SPAWN.x + 16.5, SPAWN.z + 0.5, -90],
     ['arenas', 'arenas', 0.5, 0.5, 180], ['terrenos', 'terrenos', 34.5, 34.5, 0],
     ['eventos', 'arenas', 0.5, 306.5, 180], // no saguão dos eventos, olhando pros portais
     ['loja', 'spawn', 67.5, SPAWN.z + 0.5, -90], // logo depois da porta da Loja Oficial, olhando pro salão

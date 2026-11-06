@@ -3,16 +3,16 @@
 📅 **`/eventos`**: a agenda, o que está rolando e o próximo. 🏆 **`/eventos top`**: o ranking de vencedores.
 
 **Boss mundial**
-Na agenda do servidor de teste, um boss aparece todos os dias às **20h**: de segunda a sábado, um dos normais, sorteado; no domingo aparece o **Wither**. `/boss proximo` mostra o próximo horário. Entre pelo sul do spawn ou por `/warp boss`; o PvP começa depois do túnel.
+Um boss aparece todo dia às **20h**: de segunda a sábado, um dos normais, sorteado; no domingo, o **Wither**. `/boss proximo` mostra o próximo horário. Entre por `/warp boss`; o PvP começa depois do túnel.
 
-Quem dá o golpe final leva o prêmio especial e a tag de campeão. Os três maiores danos ganham coins, e quem ajudou ganha XP de skill pelo dano causado. Se o boss escapar após uma hora, o servidor fica amaldiçoado: o XP de skill cai 10% por até 24 horas (ou até o próximo boss cair).
+Venha de **netherite com Proteção** e maçãs douradas. Quando ele cai, chove equipamento de PvP no chão (netherite com **Proteção V**, armas, maçãs) e um **Mapa do Tesouro**: corra, que a arena tem PvP. O golpe final leva um prêmio sorteado e a tag de campeão; os três maiores danos ganham coins, e quem ajudou ganha XP de skill. O **Wither** paga **tudo em dobro**. Se o boss escapar após uma hora, o XP de skill cai 10% por até 24 h (ou até o próximo boss cair).
 
 O **Dragão do End** é outra luta: acontece no mundo de recursos, com PvP fora da plataforma verde. Renasce às 21h; veja o tutorial **Dragão do End**.
 
 **Gladiador**
-Na agenda do servidor de teste, o modo **por clã** abre sábado às **19h** e o **individual**, domingo às **19h**. Entre com `/gladiador entrar` e consulte a fase com `/gladiador`.
+O modo **por clã** abre sábado às **19h** e o **individual**, domingo às **19h**. Entre com `/gladiador entrar` e consulte a fase com `/gladiador`.
 
-Pote, borda e vitória: tutorial **Gladiador**.
+Pote e borda: tutorial **Gladiador**.
 
 **Eventos de arena**
 Grátis, e **ninguém perde itens**: entre com o inventário **totalmente vazio** (até armadura e a outra mão), uma inscrição por conexão. A espera é no **`/warp eventos`**, com um portal pra cada evento: sair de lá cancela a inscrição. Todos recebem o mesmo kit, e quem sai do jogo vai pra galeria, em cima da arena (sai dela com `/spawn`). O prêmio é um **cheque de R$ 10.000**. Na arena só vale o comando do evento.
@@ -37,7 +37,7 @@ Pra assistir: `/<evento> assistir`.
 ✎ Todo dia às **12h** e **15h**, sem inscrição: 10 perguntas no chat (sobre o servidor, o Minecraft, contas e palavras embaralhadas). Responda com `/quiz <resposta>`, de onde estiver: quem acertar primeiro marca 1 ponto, e quem fizer mais pontos leva **R$ 5.000** (dividido no empate). Acento e maiúscula não importam.
 
 **Mine-sena**
-O sorteio é todo dia às 18h. Veja como escolher seus números e apostar no tutorial **Dinheiro, loja e Pix**.
+Sorteio todo dia às 18h: veja o tutorial **Dinheiro, loja e Pix**.
 
 **Loja e skills**
 📈 Em eventos de **ALTA**, alguns itens pagam mais na Loja Oficial. ✨ O XP de skill costuma dobrar aos sábados e domingos. Acompanhe os anúncios em {#eventos}.

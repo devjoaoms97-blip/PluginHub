@@ -106,6 +106,10 @@ public class NpcsManager implements Listener {
             e.customName(LEGADO.deserialize(npc.getNome()));
             e.setDescription(LEGADO.deserialize(plugin.getConfig().getString("descricao", "&7Clique pra conversar")));
             if (npc.getSkin() != null) e.setProfile(perfil(npc.getSkin()));
+            if (npc.getLivro() != null) {
+                e.getEquipment().setItemInMainHand(new org.bukkit.inventory.ItemStack(org.bukkit.Material.WRITTEN_BOOK));
+                e.setDescription(LEGADO.deserialize(plugin.getConfig().getString("descricao-livro", "&7Clique pra ler")));
+            }
             e.getPersistentDataContainer().set(chave, PersistentDataType.STRING, npc.getId());
         });
         entidades.put(npc.getId(), m);
@@ -131,6 +135,14 @@ public class NpcsManager implements Listener {
 
     public void carregarTodos() {
         npcs.values().forEach(this::atualizar);
+    }
+
+    /** Lê o npcs.yml de novo (editado à mão) e refaz todas as entidades. */
+    public void recarregar() {
+        removerTodos();
+        npcs.clear();
+        carregar();
+        carregarTodos();
     }
 
     public void removerTodos() {
@@ -195,6 +207,7 @@ public class NpcsManager implements Listener {
             NpcDica npc = new NpcDica(id, s.getString("nome", id), s.getString("mundo", "world"),
                     s.getDouble("x"), s.getDouble("y"), s.getDouble("z"), (float) s.getDouble("yaw"));
             npc.setSkin(s.getString("skin"));
+            npc.setLivro(s.getString("livro"));
             npc.getFalas().addAll(s.getStringList("falas"));
             npcs.put(id, npc);
         }
@@ -211,6 +224,7 @@ public class NpcsManager implements Listener {
             yaml.set(base + ".z", npc.getZ());
             yaml.set(base + ".yaw", (double) npc.getYaw());
             yaml.set(base + ".skin", npc.getSkin());
+            yaml.set(base + ".livro", npc.getLivro());
             yaml.set(base + ".falas", npc.getFalas());
         }
         try {

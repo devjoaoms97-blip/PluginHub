@@ -30,6 +30,12 @@ linhas:
 nome-na-cabeca:
   ativado: true
 
+# A vida embaixo do nome, acima da cabeça: "18 ❤" (a vida em pontos, 20 = 10 corações; a absorção,
+# dos corações dourados, entra junto). Pedido de 2026-11-06.
+vida-na-cabeca:
+  ativado: true
+  simbolo: "&c❤"
+
 textos:
   sem-cla: "&7nenhum"
   sem-skill: "&7nenhuma"

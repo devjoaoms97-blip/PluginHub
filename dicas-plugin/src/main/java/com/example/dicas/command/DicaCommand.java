@@ -9,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -17,13 +18,13 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * /dica (staff): criar, fala, falas, tirarfala, nome, skin, mover, remover, lista, reload. Criar e
+ * /dica (staff): criar, fala, falas, tirarfala, nome, skin, livro, mover, remover, lista, reload. Criar e
  * mover pegam o lugar de quem roda; pelo console, criar aceita o lugar depois de "em".
  * Os textos aceitam cores com &.
  */
 public class DicaCommand implements CommandExecutor, TabCompleter {
 
-    private static final List<String> SUBS = List.of("criar", "fala", "falas", "tirarfala", "nome", "skin", "mover", "remover", "lista", "reload");
+    private static final List<String> SUBS = List.of("criar", "fala", "falas", "tirarfala", "nome", "skin", "livro", "mover", "remover", "lista", "reload");
 
     private final DicasPlugin plugin;
 
@@ -48,10 +49,10 @@ public class DicaCommand implements CommandExecutor, TabCompleter {
             }
             case "reload" -> {
                 plugin.reloadConfig();
-                plugin.getNpcs().carregarTodos();
-                sender.sendMessage("§aConfig recarregado.");
+                plugin.getNpcs().recarregar();
+                sender.sendMessage("§aConfig e npcs.yml recarregados.");
             }
-            case "fala", "falas", "tirarfala", "nome", "skin", "mover", "remover" -> {
+            case "fala", "falas", "tirarfala", "nome", "skin", "livro", "mover", "remover" -> {
                 if (args.length < 2) {
                     enviarAjuda(sender);
                     return true;
@@ -162,6 +163,21 @@ public class DicaCommand implements CommandExecutor, TabCompleter {
                 plugin.getNpcs().atualizar(npc);
                 sender.sendMessage("§aSkin trocada.");
             }
+            case "livro" -> {
+                if (args.length < 3) {
+                    sender.sendMessage("§cUso: §f/dica livro <id> <livro|nenhum> §7(os livros ficam em §flivros: §7no config)");
+                    return;
+                }
+                boolean tirar = args[2].equalsIgnoreCase("nenhum");
+                if (!tirar && !plugin.getConfig().isConfigurationSection("livros." + args[2])) {
+                    sender.sendMessage("§cNão tem o livro §f" + args[2] + " §cno config (livros:).");
+                    return;
+                }
+                npc.setLivro(tirar ? null : args[2]);
+                plugin.getNpcs().salvar();
+                plugin.getNpcs().atualizar(npc);
+                sender.sendMessage(tirar ? "§aO NPC voltou a falar." : "§aAgora o NPC segura o livro §f" + args[2] + " §ae abre ele no clique.");
+            }
             case "mover" -> {
                 if (!(sender instanceof Player p)) {
                     sender.sendMessage("§cSó jogadores podem usar esse comando.");
@@ -196,6 +212,7 @@ public class DicaCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/dica fala <id> <texto> §7- adiciona uma fala (cores com &)");
         sender.sendMessage("§f/dica falas <id> §7| §f/dica tirarfala <id> <número>");
         sender.sendMessage("§f/dica nome <id> <nome> §7| §f/dica skin <id> <nick|textura:<hash>|padrao>");
+        sender.sendMessage("§f/dica livro <id> <livro|nenhum> §7- segura e abre um livro do config");
         sender.sendMessage("§f/dica mover <id> §7| §f/dica remover <id> §7| §f/dica lista §7| §f/dica reload");
     }
 
@@ -209,6 +226,10 @@ public class DicaCommand implements CommandExecutor, TabCompleter {
             opcoes.addAll(plugin.getNpcs().getNpcs().keySet());
         } else if (args.length == 3 && args[0].equalsIgnoreCase("skin")) {
             opcoes.add("padrao");
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("livro")) {
+            ConfigurationSection livros = plugin.getConfig().getConfigurationSection("livros");
+            if (livros != null) opcoes.addAll(livros.getKeys(false));
+            opcoes.add("nenhum");
         }
         String digitado = args[args.length - 1].toLowerCase(Locale.ROOT);
         opcoes.removeIf(o -> !o.toLowerCase(Locale.ROOT).startsWith(digitado));

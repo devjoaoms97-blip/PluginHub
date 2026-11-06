@@ -10,8 +10,8 @@ O preço de compra do servidor é fixo. O preço de venda é dinâmico: cada ven
 
 `/pix agendar <jogador> <valor> <dias>` paga a primeira parcela na hora e repete a cada tantos dias; consulte ou cancele com `/pix agendamentos`. No servidor de teste, a taxa é **1%** e sai do valor recebido; o pagador perde o valor cheio. O limite diário está desativado atualmente; `/pix limite` mostra o teto caso ele seja ligado. `/pix historico` orienta a procurar o **Extrato no Bancário**.
 
-**Bancário e Mine-sena**
-No Bancário, veja o **Extrato** e deposite cheques. Para emitir um, compre uma folha e use `/cheque <valor> [jogador]`; um cheque nominal só pode ser depositado pela pessoa indicada.
+**Bancário e Mine-sena** · `/warp banco`
+O Banco fica no fim da Avenida das Minas. No Bancário, veja o **Extrato** e deposite cheques. Para emitir um, compre uma folha e use `/cheque <valor> [jogador]`; um cheque nominal só pode ser depositado pela pessoa indicada.
 
 No botão **Mine-sena**, escolha um número de 1 a 100. Cada bilhete custa R$ 500, vale para o próximo sorteio e fica registrado no seu nome; o limite é 20 bilhetes por sorteio. O resultado sai diariamente às 18h. O pote é dividido entre os bilhetes vencedores; sem ganhador, acumula. `/minesena` mostra o pote e seus números.
 

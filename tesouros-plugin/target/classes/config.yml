@@ -14,9 +14,10 @@ coordenadas:
 
 # De onde vêm os mapas. Os pesos sorteiam a raridade (não precisam somar 100).
 drops:
-  # O boss sempre deixa 1 mapa no chão quando morre.
+  # O boss sempre deixa 1 mapa no chão quando morre; o Wither, que paga tudo em dobro, mapas-wither.
   boss:
     ativado: true
+    mapas-wither: 2
     pesos: {comum: 45, raro: 30, arcano: 18, lendario: 7}
   # O Dragão do End sempre dá 1 mapa: direto pro inventário de quem deu o último golpe (quem é, o
   # RecursosPlugin decide). Sem ninguém com o crédito, ele cai do lado do portal de saída.

@@ -126,6 +126,11 @@ public class BossCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage("§aItem adicionado à lista de prêmios do campeão com peso " + peso + ".");
             }
 
+            case "limparloot" -> {
+                plugin.getLootManager().limpar();
+                sender.sendMessage("§aLoot do chão e do campeão apagados.");
+            }
+
             case "reload" -> {
                 plugin.reloadConfig();
                 plugin.getBossManager().recarregarPerfis();
@@ -188,6 +193,7 @@ public class BossCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§f/boss setlocal [mundo x y z] §7- define a arena na sua posição atual (ou no lugar informado)");
         sender.sendMessage("§f/boss additem <chance%> §7- adiciona item ao loot do chão (segure na mão)");
         sender.sendMessage("§f/boss addchampionitem <peso%> §7- adiciona item ao sorteio do campeão (segure na mão)");
+        sender.sendMessage("§f/boss limparloot §7- apaga o loot do chão e do campeão");
         sender.sendMessage("§f/boss reload §7- recarrega o config.yml");
     }
 
@@ -198,7 +204,7 @@ public class BossCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 1) {
             List<String> opcoes = new ArrayList<>(List.of(
-                    "proximo", "start", "list", "stop", "setlocal", "additem", "addchampionitem", "reload"));
+                    "proximo", "start", "list", "stop", "setlocal", "additem", "addchampionitem", "limparloot", "reload"));
             String digitado = args[0].toLowerCase(Locale.ROOT);
             opcoes.removeIf(o -> !o.startsWith(digitado));
             return opcoes;

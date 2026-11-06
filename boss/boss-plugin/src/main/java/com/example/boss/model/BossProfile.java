@@ -21,6 +21,8 @@ public class BossProfile {
     private final Double escalaOverride;
     private final List<FaseConfig> fases;
     private final List<FaseConfig> ataquesAleatorios;
+    /** Quanto o boss paga a mais: dinheiro, XP de skill, loot do chão e prêmio do campeão (1 = normal). */
+    private double multiplicadorRecompensas = 1;
 
     public BossProfile(String id, EntityType mob, String nome, boolean especial,
                         Double vidaMaximaOverride, Double danoAtaqueOverride, Double escalaOverride,
@@ -70,5 +72,13 @@ public class BossProfile {
 
     public List<FaseConfig> getAtaquesAleatorios() {
         return ataquesAleatorios;
+    }
+
+    public double getMultiplicadorRecompensas() {
+        return multiplicadorRecompensas;
+    }
+
+    public void setMultiplicadorRecompensas(double multiplicadorRecompensas) {
+        this.multiplicadorRecompensas = Math.max(1, multiplicadorRecompensas);
     }
 }

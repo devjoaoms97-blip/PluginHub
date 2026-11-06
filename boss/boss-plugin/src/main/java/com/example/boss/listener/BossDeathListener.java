@@ -34,8 +34,10 @@ public class BossDeathListener implements Listener {
         event.getDrops().clear();
         event.setDroppedExp(0);
 
-        // o elite rola o loot do chão mais vezes
-        int rolagens = plugin.getBossManager().multiplicadorRecompensas() > 1 ? Math.max(1, plugin.getConfig().getInt("elite.rolagens-loot", 2)) : 1;
+        // o elite rola o loot do chão mais vezes (isElite() já é falso aqui: o boss está morto), e o boss
+        // que paga em dobro (o Wither) rola tudo de novo, o prêmio do campeão também
+        int vezes = (int) Math.max(1, Math.round(plugin.getBossManager().multiplicadorDoPerfil()));
+        int rolagens = (plugin.getBossManager().multiplicadorRecompensas() > plugin.getBossManager().multiplicadorDoPerfil() ? Math.max(1, plugin.getConfig().getInt("elite.rolagens-loot", 2)) : 1) * vezes;
         for (int r = 0; r < rolagens; r++) {
             for (ItemStack item : plugin.getLootManager().sortearLootChao()) {
                 event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), item);
@@ -46,8 +48,9 @@ public class BossDeathListener implements Listener {
         StringBuilder discord = new StringBuilder(); // o mesmo anúncio, numa mensagem só pro Discord
 
         if (matador != null) {
-            ItemStack premio = plugin.getLootManager().sortearItemCampeao();
-            if (premio != null) {
+            for (int i = 0; i < vezes; i++) {
+                ItemStack premio = plugin.getLootManager().sortearItemCampeao();
+                if (premio == null) break;
                 Map<Integer, ItemStack> sobras = matador.getInventory().addItem(premio);
                 sobras.values().forEach(item -> matador.getWorld().dropItemNaturally(matador.getLocation(), item));
             }

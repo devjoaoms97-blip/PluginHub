@@ -10,7 +10,8 @@ import java.util.List;
 /**
  * Um NPC de dicas: parado num lugar, com um nome em cima e uma lista de falas. Cada clique mostra a
  * próxima fala (a ordem é por jogador). {@code skin} é o nick de quem empresta a skin, ou null pra
- * skin padrão.
+ * skin padrão. {@code livro} é o id de um livro do config ({@code livros:}): com ele, o NPC segura o
+ * livro e o clique abre o livro em vez de falar.
  */
 public class NpcDica {
 
@@ -20,6 +21,7 @@ public class NpcDica {
     private double x, y, z;
     private float yaw;
     private String skin;
+    private String livro;
     private final List<String> falas = new ArrayList<>();
 
     public NpcDica(String id, String nome, Location local) {
@@ -90,6 +92,14 @@ public class NpcDica {
 
     public void setSkin(String skin) {
         this.skin = skin;
+    }
+
+    public String getLivro() {
+        return livro;
+    }
+
+    public void setLivro(String livro) {
+        this.livro = livro;
     }
 
     public List<String> getFalas() {

@@ -175,6 +175,14 @@ if (Test-Path -LiteralPath $bukkitYml) {
     [IO.File]::WriteAllText($bukkitYml, $texto, (New-Object Text.UTF8Encoding $false))
 }
 
+# A vida dos bosses passa de 1024, o teto padrão do spigot.yml pra vida de mob (o BossPlugin usa 25.000;
+# o Wither, 60.000; o elite, o dobro). Também só existe depois do primeiro boot.
+$spigotYml = Join-Path $Destino 'spigot.yml'
+if (Test-Path -LiteralPath $spigotYml) {
+    $texto = [IO.File]::ReadAllText($spigotYml) -replace '(?m)^(\s*maxHealth:\s*\r?\n\s*max:\s*)1024(\.0)?', '${1}200000.0'
+    [IO.File]::WriteAllText($spigotYml, $texto, (New-Object Text.UTF8Encoding $false))
+}
+
 # 5. Nossos plugins
 & (Join-Path $Destino 'scripts\atualizar-plugins.ps1')
 

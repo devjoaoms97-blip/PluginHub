@@ -19,10 +19,11 @@ Todos exigem `dicas.admin` (padrão: op). Nome e falas aceitam cores com `&`.
 | `/dica tirarfala <id> <número>` | Remove uma fala |
 | `/dica nome <id> <nome>` | Troca o nome |
 | `/dica skin <id> <nick\|textura:<hash>\|padrao>` | Usa a skin de um jogador, uma textura direto do textures.minecraft.net (ex: do mineskin.org) ou a padrão |
+| `/dica livro <id> <livro\|nenhum>` | O NPC segura um livro do config (`livros:`) e o clique abre o livro em vez de falar |
 | `/dica mover <id>` | Leva o NPC pra onde você está |
 | `/dica remover <id>` | Apaga o NPC |
 | `/dica lista` | Todos os NPCs de dicas |
-| `/dica reload` | Recarrega o `config.yml` |
+| `/dica reload` | Recarrega o `config.yml` e o `npcs.yml` (o que foi editado à mão) |
 
 ## Configuração
 
@@ -38,15 +39,17 @@ balao:
 
 Os NPCs e as falas ficam no `npcs.yml`.
 
+**Livros** (`livros:` no config): título, autor e as páginas, cada uma um texto com `&` e `\n` (cabem umas 14 linhas de 19 letras). O NPC com livro segura ele na mão, mostra `descricao-livro` embaixo do nome ("Clique pra ler") e o clique abre o livro. O `eventos` é o Livro dos Eventos do Mestre dos Eventos, no saguão dos eventos (`/warp eventos`): uma página por evento, com os horários, o kit e como se ganha.
+
 ## No mapa do servidor
 
-O `tools/bots/montar-mapa.js construir dicas` cria 13 NPCs pelo spawn, com 4 a 7 falas cada:
+O `tools/bots/montar-mapa.js construir dicas` cria 13 NPCs pelo spawn, com 4 a 7 falas cada, todos virados pra fonte, e o Mestre dos Eventos, com o livro, no saguão dos eventos:
 
 | Onde | NPC | Assunto |
 |---|---|---|
 | Em volta da fonte | Velho Minerador, Dona Cida (a Mercadora), Veterano Bartolomeu, Zé (o Guia) | minas, rank, Fragmento Arcano e Compactador; barracas e Pix; boss, Wither de domingo, boss elite e o Dragão do End às 21h; diária, X1, Gladiador, terreno, `/achados` e `/montaria` |
 | Portão das minas | Guarda do Portão, Dona Neusa (a Ranzinza) | `/mina`, a venda automática e o guia de cada mina; `/rankup max`, `/prestigio`, `/missoes` e o Ferreiro |
-| Portão do boss | Sentinela do Portão, Caçador de Tesouros | agenda do boss, tempo limite e maldição, campeão, perda de itens e PvP na arena; mapas do tesouro (`/warp tesouros` e o templo), câmara, clã e convidados, e quem morre perde tudo |
+| Portão do boss | Sentinela do Portão, Caçador de Tesouros | agenda do boss, tempo limite e maldição, campeão, os drops e o equipamento pra ir, perda de itens e PvP na arena; mapas do tesouro (`/warp tesouros` e o templo), câmara, clã e convidados, e quem morre perde tudo |
 | Fim das avenidas leste e oeste | Leiloeiro Matias, Mestre de Armas Duda | leilão das barracas ★ e renovação; combate, Escudo Perfeito, prestígio de skill, XP em dobro e `/bounty` |
 | Jardins | Banqueira Rosa, Escriba dos Clãs, Seu Juca do Terreno | `/pix`, `/cheque`, `/shop`, extrato e Mine-sena; `/cla` e `/cc`; `/terreno`, `/warp recursos`, `/warp nether`, `/warp end` (e os dias dos resets), `/mapa` e `/luz` |
 

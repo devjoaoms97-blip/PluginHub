@@ -73,6 +73,13 @@ public class LootManager {
         return lootCampeao.get(lootCampeao.size() - 1).getItem().clone();
     }
 
+    /** Esvazia as duas listas (pra cadastrar de novo do zero). */
+    public void limpar() {
+        lootChao.clear();
+        lootCampeao.clear();
+        salvar();
+    }
+
     private void salvar() {
         YamlConfiguration yaml = new YamlConfiguration();
         salvarLista(yaml, "chao", lootChao);

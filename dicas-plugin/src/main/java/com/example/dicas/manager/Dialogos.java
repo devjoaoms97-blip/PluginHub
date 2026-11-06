@@ -2,7 +2,10 @@ package com.example.dicas.manager;
 
 import com.example.dicas.DicasPlugin;
 import com.example.dicas.model.NpcDica;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -23,6 +26,7 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -35,6 +39,8 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * Um NPC fala uma coisa por vez: clicar enquanto ele escreve completa o texto na hora, e clicar
  * depois de completo já passa pra próxima fala.
+ *
+ * Um NPC com livro ({@code livros:} no config) abre o livro pra quem clicou, em vez de falar.
  */
 public class Dialogos implements Listener {
 
@@ -62,6 +68,13 @@ public class Dialogos implements Listener {
         long agora = System.currentTimeMillis();
         Long anterior = ultimoClique.put(evento.getPlayer().getUniqueId(), agora);
         if (anterior != null && agora - anterior < 200) return;
+        if (npc.getLivro() != null) {
+            Book livro = livro(npc.getLivro());
+            if (livro != null) {
+                evento.getPlayer().openBook(livro);
+                return;
+            }
+        }
         if (npc.getFalas().isEmpty()) return;
 
         Fala atual = falando.get(npc.getId());
@@ -79,6 +92,18 @@ public class Dialogos implements Listener {
         Fala fala = new Fala(npc, (Mannequin) evento.getRightClicked(), jogador, npc.getFalas().get(indice));
         falando.put(npc.getId(), fala);
         fala.runTaskTimer(plugin, 1L, 1L);
+    }
+
+    /** O livro {@code livros.<id>} do config: título, autor e as páginas (cada uma um texto, com & e 
+). */
+    private Book livro(String id) {
+        ConfigurationSection s = plugin.getConfig().getConfigurationSection("livros." + id);
+        if (s == null) {
+            plugin.getLogger().warning("Livro '" + id + "' não existe no config (livros:).");
+            return null;
+        }
+        List<Component> paginas = s.getStringList("paginas").stream().map(p -> (Component) LEGADO.deserialize(p)).toList();
+        return Book.book(LEGADO.deserialize(s.getString("titulo", id)), LEGADO.deserialize(s.getString("autor", "")), paginas);
     }
 
     @EventHandler

@@ -8,7 +8,7 @@ description: NPCs de dicas pelo spawn. Clique direito e ele fala, num balão ani
 commands:
   dica:
     description: Gerencia os NPCs de dicas.
-    usage: "Uso: /dica <criar|fala|falas|tirarfala|nome|skin|mover|remover|lista|reload>"
+    usage: "Uso: /dica <criar|fala|falas|tirarfala|nome|skin|livro|mover|remover|lista|reload>"
     aliases: [dicas]
     permission: dicas.admin
     permission-message: "§cVocê não tem permissão para isso."

@@ -36,6 +36,7 @@ Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases din
 | `/boss setlocal [mundo x y z]` | Define a arena na sua posição atual (ou, pelo console, no lugar informado) |
 | `/boss additem <chance%>` | Adiciona o item na mão ao loot do chão |
 | `/boss addchampionitem <peso%>` | Adiciona o item na mão ao sorteio de prêmio do campeão |
+| `/boss limparloot` | Apaga o loot do chão e o do campeão (pra cadastrar de novo) |
 | `/boss reload` | Recarrega o `config.yml` |
 
 ## Recompensas
@@ -63,9 +64,17 @@ O boss fica vivo por `tempo-limite-minutos` (60). O chat avisa antes (`avisos-fu
 
 Enquanto o boss vive, os chunks da arena ficam carregados. Antes, sem ninguém perto, o chunk descarregava e o boss sumia sem morrer nem ir embora.
 
+## Balanceamento
+
+Calibrado em 2026-11-06 pra quem chega de **netherite com Proteção IV e Afiação V** (o mínimo esperado): 25.000 de vida (uns 6 min com 6 jogadores) e 60.000 no Wither (uns 10 min com 10), golpe de 30 (36 no Wither). Nenhum ataque passa de 60 de dano, o que tira 14,7 de 20 nessa armadura: dói muito, mas ninguém morre de um golpe só de vida cheia (o elite, sim, nas ondas de choque). O comentário dos perfis no `config.yml` tem a conta de cada dano. A vida acima de 1024 precisa do `settings.attribute.maxHealth.max` do `spigot.yml` maior (o `test-server/montar.ps1` põe 200000).
+
+## O Wither paga em dobro
+
+Com `multiplicador-recompensas: 2` no perfil, o Wither (o de domingo) paga tudo em dobro: o dinheiro do ranking e do campeão, o XP de skill, o loot do chão (sorteado 2 vezes) e o prêmio do campeão (2 sorteios). O TesourosPlugin dá 2 mapas do tesouro em vez de 1 (`drops.boss.mapas-wither`). O código de VIP fica igual (7 dias: o VIP só aceita 3, 7 ou 15). Num Wither elite, os dois se multiplicam (4x o dinheiro e o XP).
+
 ## Boss elite
 
-A cada boss aleatório (agenda ou `/boss start` sem id), há `elite.chance` (10%) de ele vir **elite**: `elite.multiplicador-vida` (2×) de vida, `elite.multiplicador-dano` (2×) em tudo o que ele causa (golpe, flechas da chuva, onda de choque e explosão), brilho, o prefixo `elite.prefixo-nome` no nome, barra roxa e anúncio próprio (`elite.mensagem-spawn`, também no Discord). As coins do ranking e do campeão e o XP de skill por participar saem multiplicados por `elite.multiplicador-recompensas` (2×), e o loot do chão é sorteado `elite.rolagens-loot` (2) vezes. A staff força com `/boss start [id] elite`.
+A cada boss aleatório (agenda ou `/boss start` sem id), há `elite.chance` (10%) de ele vir **elite**: `elite.multiplicador-vida` (2×) de vida, `elite.multiplicador-dano` (1,5×) em tudo o que ele causa (golpe, flechas da chuva, onda de choque e explosão), brilho, o prefixo `elite.prefixo-nome` no nome, barra roxa e anúncio próprio (`elite.mensagem-spawn`, também no Discord). As coins do ranking e do campeão e o XP de skill por participar saem multiplicados por `elite.multiplicador-recompensas` (2×), e o loot do chão é sorteado `elite.rolagens-loot` (2) vezes. A staff força com `/boss start [id] elite`.
 
 ## Arena pronta
 
@@ -113,6 +122,13 @@ Vá até o local onde quer que o boss apareça e rode:
 (o nome do grupo precisa bater com `campeao.grupo-luckperms` no `config.yml`, que já vem como `boss_campeao` por padrão)
 
 ### 3. Cadastrar o loot do chão
+
+**No servidor:** o `tools/bots/loot-boss.js` cadastra tudo do zero (2026-11-06): itens de PvP, sem totem nem garrafa de XP.
+- **Chão (chance de cada um):** cada peça de netherite com Proteção V (acima do máximo) e Inquebrável III a 8%; espada e machado de netherite com Afiação V a 12%; arco Força V a 10%; 8 maçãs douradas a 50%; 32 diamantes a 40%; 2 lingotes de netherite a 15%; maçã encantada a 15%; livro de Remendo a 10%.
+- **Campeão (peso):** peitoral P5 com Remendo (25), espada Afiação V com Aspecto Flamejante II e Remendo (25), machado Afiação V com Remendo (20), 2 maçãs encantadas (20) e élitro (10).
+- O Mapa do Tesouro vem à parte: o TesourosPlugin faz todo boss deixar 1.
+
+À mão:
 Segure o item na mão e rode, por exemplo:
 ```
 /boss additem 25

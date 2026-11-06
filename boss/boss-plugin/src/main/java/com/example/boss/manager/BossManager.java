@@ -125,8 +125,18 @@ public class BossManager {
     }
 
     /** Multiplicador das coins e do XP das recompensas (1 no boss normal). Lido antes do finalizar. */
+    /**
+     * Quanto as recompensas valem a mais: o do elite vezes o do perfil ({@code multiplicador-recompensas}
+     * no boss, como o Wither, que paga em dobro). 1 no boss normal.
+     */
     public double multiplicadorRecompensas() {
-        return elite ? Math.max(1, plugin.getConfig().getDouble("elite.multiplicador-recompensas", 2)) : 1;
+        double doElite = elite ? Math.max(1, plugin.getConfig().getDouble("elite.multiplicador-recompensas", 2)) : 1;
+        return doElite * multiplicadorDoPerfil();
+    }
+
+    /** O multiplicador de recompensas do perfil ativo (o Wither: 2), sem o do elite. */
+    public double multiplicadorDoPerfil() {
+        return perfilAtivo == null ? 1 : perfilAtivo.getMultiplicadorRecompensas();
     }
 
     // ---------------------------------------------------------------------
@@ -171,7 +181,9 @@ public class BossManager {
                     }
                 }
 
-                perfis.put(id, new BossProfile(id, mob, nome, especial, vidaOverride, danoOverride, escalaOverride, fases, ataquesAleatorios));
+                BossProfile perfil = new BossProfile(id, mob, nome, especial, vidaOverride, danoOverride, escalaOverride, fases, ataquesAleatorios);
+                perfil.setMultiplicadorRecompensas(secaoBoss.getDouble("multiplicador-recompensas", 1));
+                perfis.put(id, perfil);
             } catch (Exception e) {
                 plugin.getLogger().warning("Perfil de boss inválido: '" + id + "' (" + e.getMessage() + ")");
             }
