@@ -28,8 +28,11 @@ Com o servidor do Minecraft desligado, o vínculo avisa que ele está fora do ar
 ```bash
 cd discord-bot
 npm install
-npm start
+npm start          # no Discord de teste (ou o do BOT_SERVIDOR)
+npm run oficial    # no oficial
 ```
+
+Os dois rodam juntos, com o mesmo token: cada processo só responde no seu servidor. Os avisos do jogo (webhooks do DiscordPlugin) vão pro Discord cujo `--plugin` foi aplicado por último no `tools/discord/estrutura.js` (hoje, o oficial).
 
 A configuração fica fora do repositório, em `C:\mc-teste\discord\` (ou na pasta de `DISCORD_PASTA`):
 
@@ -44,6 +47,8 @@ A configuração fica fora do repositório, em `C:\mc-teste\discord\` (ou na pas
   IDADE_MINIMA_DIAS=30
   SERVIDOR_IP=jogar.brasamc.com.br   mostrado no #status e nas boas-vindas (vazio: "em breve")
   MP_ACCESS_TOKEN=...          Access Token do Mercado Pago (o de teste no servidor de teste; vazio: loja fechada)
+  MP_ACCESS_TOKEN_OFICIAL=     com o sufixo _TESTE ou _OFICIAL, vale só naquele servidor (SERVIDOR_IP também).
+                               Vazio no oficial: loja fechada lá até o token de produção
 estado-<servidor>.json         IDs dos cargos e canais, do tools/discord/estrutura.js
 bot-<servidor>.json            o que o bot guarda (mensagens dos painéis, apelidos aplicados, tickets abertos, pedidos da loja)
 ```

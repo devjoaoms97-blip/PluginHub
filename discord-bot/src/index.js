@@ -1,5 +1,6 @@
 // Bot do Discord da BrasaMC. Fala com o servidor do Minecraft pela API local do DiscordPlugin.
 //   npm start            (lê a config de C:\mc-teste\discord\.env; BOT_SERVIDOR escolhe teste/oficial)
+//   npm run oficial      (o mesmo, no oficial; rodam os dois juntos)
 const { Client, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 const config = require('./config');
 const plugin = require('./plugin');
@@ -39,9 +40,13 @@ cliente.on(Events.GuildMemberAdd, async (membro) => {
   }
 });
 
-cliente.on(Events.ChannelDelete, (canal) => tickets.canalApagado(canal.id));
+cliente.on(Events.ChannelDelete, (canal) => {
+  if (canal.guildId === config.guildId) tickets.canalApagado(canal.id);
+});
 
+// O mesmo bot roda num processo por servidor (teste e oficial): cada um só responde no seu.
 cliente.on(Events.InteractionCreate, async (interacao) => {
+  if (interacao.guildId !== config.guildId) return;
   try {
     for (const modulo of [vinculo, tickets, conteudo, loja]) {
       if (await modulo.tratar(interacao)) break;

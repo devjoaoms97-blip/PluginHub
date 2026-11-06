@@ -1,6 +1,7 @@
 // Evento Labirinto do Fauno (EventosPlugin): o /eventos mostra às 8h e às 23h; os 3 nascem na borda do
 // labirinto, sem nada; quem assiste fica em cima do teto; lá dentro é escuro (luz 0); os baús estão no
-// labirinto, com itens; a barra no alto mostra o tempo e os vivos; o PvP vale entre quem luta; o Fauno
+// labirinto, com itens; a barra no alto mostra o tempo e os vivos; o PvP vale entre quem luta (até entre
+// dois do mesmo clã, que fora do evento não se machucam); o Fauno
 // acorda, com o modelo junto, e mata quem está perto ("foi pego pelo Fauno"); quem morre não deixa nada
 // e vai pro teto; o último vivo leva o cheque e perde o que achou. Na segunda rodada: o labirinto é outro
 // e, no tempo, com 2 vivos, ninguém vence.
@@ -52,6 +53,12 @@ t.rodar(async () => {
   const d = await t.criarBot(t.nomeNovo('Lbd'))
   const todos = [a, b, c, d]
   const jogadores = [a, b, c]
+  // a e b no mesmo clã: fora do evento, o ClasPlugin não deixa um machucar o outro; no Labirinto, deixa
+  const tag = 'L' + Date.now().toString(36).slice(-4)
+  await t.console(`eco give ${a.username} 5000`)
+  await t.capturar(a, () => a.chat(`/cla criar ${tag} Labirinto`))
+  await t.capturar(b, () => a.chat(`/cla convidar ${b.username}`))
+  await t.capturar(b, () => b.chat(`/cla aceitar ${tag}`))
   const preparar = async () => {
     for (const bot of todos) {
       await t.console(`minecraft:clear ${bot.username}`)
@@ -111,7 +118,7 @@ t.rodar(async () => {
     const vida = b.health
     await t.console(`damage ${b.username} 4 minecraft:player_attack by ${a.username}`)
     await t.espera(600)
-    t.verificar(b.health < vida, 'o PvP vale entre quem luta', `vida ${vida} → ${b.health}`)
+    t.verificar(b.health < vida, 'o PvP vale entre quem luta, até do mesmo clã', `vida ${vida} → ${b.health}`)
     await t.console(`effect give ${b.username} minecraft:instant_health 1 3 true`)
 
     console.log('\n== O Fauno ==')

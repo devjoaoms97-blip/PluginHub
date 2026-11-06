@@ -2,7 +2,9 @@
 // DISCORD_PASTA (padrão C:\mc-teste\discord):
 //   .env                      DISCORD_TOKEN, GUILD_TESTE, GUILD_OFICIAL, BOT_SERVIDOR,
 //                             PLUGIN_API_URL, PLUGIN_API_TOKEN, IDADE_MINIMA_DIAS, SERVIDOR_IP,
-//                             MP_ACCESS_TOKEN (Mercado Pago; vazio: loja desligada)
+//                             MP_ACCESS_TOKEN (Mercado Pago; vazio: loja desligada). SERVIDOR_IP e
+//                             MP_ACCESS_TOKEN podem ter um valor só de um servidor, com o sufixo
+//                             (MP_ACCESS_TOKEN_OFICIAL=...), que vale antes do sem sufixo
 //   estado-<servidor>.json    IDs dos cargos e canais, gravado pelo tools/discord/estrutura.js
 //   bot-<servidor>.json       o que o próprio bot guarda (mensagem do painel, nicks aplicados)
 const fs = require('fs');
@@ -22,8 +24,9 @@ function lerEnv() {
 }
 
 const env = lerEnv();
-const servidor = (env.BOT_SERVIDOR || 'teste').toLowerCase();
+const servidor = (process.argv[2] || env.BOT_SERVIDOR || 'teste').toLowerCase();
 const guildId = env[`GUILD_${servidor.toUpperCase()}`];
+const doServidor = (chave) => env[`${chave}_${servidor.toUpperCase()}`] ?? env[chave] ?? '';
 if (!env.DISCORD_TOKEN) throw new Error('DISCORD_TOKEN vazio no .env.');
 if (!guildId) throw new Error(`GUILD_${servidor.toUpperCase()} vazio no .env.`);
 if (!env.PLUGIN_API_TOKEN) throw new Error('PLUGIN_API_TOKEN vazio no .env (é o api.token do config do DiscordPlugin).');
@@ -46,8 +49,8 @@ module.exports = {
   },
   idadeMinimaDias: Number(env.IDADE_MINIMA_DIAS || 30),
   // Endereço pra entrar no servidor, mostrado no #status (vazio: não mostra).
-  ipDoServidor: env.SERVIDOR_IP || '',
-  mercadoPago: { token: env.MP_ACCESS_TOKEN || '' },
+  ipDoServidor: doServidor('SERVIDOR_IP'),
+  mercadoPago: { token: doServidor('MP_ACCESS_TOKEN') },
   cargo: (chave) => estrutura.cargos[chave],
   canal: (chave) => estrutura.canais[chave],
   // Tier do VipPlugin → chave do cargo no estrutura-brasamc.js.

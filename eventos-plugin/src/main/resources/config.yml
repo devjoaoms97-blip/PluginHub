@@ -371,7 +371,8 @@ labirinto:
     # quantos Faunos caçam, cada um atrás do vivo mais perto dele (2026-11-04: voltou pra 1)
     quantos: 1
     acorda-segundos: 45
-    dano: 7
+    # 2026-11-05: de 7 pra 21 (3x)
+    dano: 21
     velocidade: 0.25
     escala: 1.5
     brilho: 2

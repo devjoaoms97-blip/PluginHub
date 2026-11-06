@@ -71,9 +71,13 @@ public class EventosListener implements Listener {
         if (daVitima != null && batedor == null && daVitima.danoDeMobs() && daVitima.getFase() == Evento.Fase.LUTA) return;
         Evento doBatedor = batedor == null ? null : lutando(batedor);
         if (daVitima == null && doBatedor != null && doBatedor.podeAcertar(evento.getEntity())) return;
-        // o Labirinto: PvP de verdade entre quem luta nele
+        // o Labirinto: PvP de verdade entre quem luta nele, até entre gente do mesmo clã (o ClasPlugin
+        // cancela o golpe no colega antes, sem fogo amigo; no evento é cada um por si)
         if (daVitima != null && doBatedor == daVitima && batedor != evento.getEntity() && daVitima.pvp()
-                && daVitima.getFase() == Evento.Fase.LUTA) return;
+                && daVitima.getFase() == Evento.Fase.LUTA) {
+            evento.setCancelled(false);
+            return;
+        }
         // quem está fora não acerta quem luta, e quem luta não acerta ninguém de fora
         if (daVitima == null && doBatedor == null) return;
         evento.setCancelled(true);
