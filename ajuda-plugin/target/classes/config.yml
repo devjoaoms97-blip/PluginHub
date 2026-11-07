@@ -84,6 +84,11 @@ comandos-permitidos:
     - loja
     - barraca
     - pix
+    - ricos
+    - milionarios
+    - tophoras
+    - horas
+    - tempojogado
     - cheque
     - minesena
     - achados
@@ -122,6 +127,10 @@ comandos-permitidos:
     - vip
     - creditos
     - tag
+    - echest
+    - skin
+    - ec
+    - bau
     - placar
     - pacote
 
@@ -169,6 +178,8 @@ comandos:
         - "Venda nos NPCs da &f/warp loja&7. O Bancário (&f/warp banco&7) vende folhas de cheque e mostra o extrato."
       comandos:
         - "/warp banco | O Banco, no fim da Avenida das Minas"
+        - "/ricos | Os mais ricos do servidor"
+        - "/tophoras | Quem mais jogou no servidor"
         - "/pix pagar <jogador> <valor> | Paga alguém"
         - "/pix receber <jogador> <valor> | Cobra alguém (ele aceita)"
         - "/pix pendentes | Cobranças em aberto"
@@ -296,5 +307,7 @@ comandos:
         - "/vip pocoes | Junta as poções iguais em pilhas de até 10 (VIP)"
         - "/vincular | Vincula sua conta ao Discord"
         - "/tag | Escolhe a tag acima da sua cabeça (VIP, clã, rank...)"
+        - "/skin <nick> | Usa a skin de outro nick (conta original já vem com a sua)"
+        - "/echest | Seu baú pessoal, de qualquer lugar (9 espaços; mais no VIP)"
         - "/placar | Liga e desliga o placar lateral"
         - "/pacote | Manda o pacote de texturas de novo"

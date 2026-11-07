@@ -113,6 +113,7 @@ public class ProfissoesListener implements Listener {
 
         if (mina != null) {
             plugin.getXpManager().adicionarXp(jogador, Skill.MINERADOR, cfg("minerador.xp-por-bloco"));
+            plugin.getXpManager().marcarEmUso(jogador.getUniqueId(), Skill.MINERADOR);
             if (ehPicareta(jogador.getInventory().getItemInMainHand()) && sorteio(jogador, Skill.MINERADOR, "minerador.chance-3x3-por-nivel")) {
                 quebrar3x3(jogador, bloco);
             }
@@ -121,6 +122,7 @@ public class ProfissoesListener implements Listener {
         if (Tag.LOGS.isTagged(tipo)) {
             if (troncosColocados.remove(chave(bloco)) != null) return;
             plugin.getXpManager().adicionarXp(jogador, Skill.LENHADOR, cfg("lenhador.xp-por-tronco"));
+            plugin.getXpManager().marcarEmUso(jogador.getUniqueId(), Skill.LENHADOR);
             if (sorteio(jogador, Skill.LENHADOR, "lenhador.chance-tora-extra-por-nivel")) marcarDropExtra(bloco, Skill.LENHADOR);
             if (mina == null && ehMachado(jogador.getInventory().getItemInMainHand())
                     && plugin.getConfig().getStringList("lenhador.derrubar-mundos").contains(bloco.getWorld().getName())
@@ -132,6 +134,7 @@ public class ProfissoesListener implements Listener {
 
         if (PLANTAS.contains(tipo) && bloco.getBlockData() instanceof Ageable planta && planta.getAge() >= planta.getMaximumAge()) {
             plugin.getXpManager().adicionarXp(jogador, Skill.AGRICULTOR, cfg("agricultor.xp-por-colheita"));
+            plugin.getXpManager().marcarEmUso(jogador.getUniqueId(), Skill.AGRICULTOR);
             if (sorteio(jogador, Skill.AGRICULTOR, "agricultor.chance-colheita-dupla-por-nivel")) marcarDropExtra(bloco, Skill.AGRICULTOR);
         }
     }
@@ -269,6 +272,7 @@ public class ProfissoesListener implements Listener {
         Player jogador = evento.getPlayer();
         if (jogador.getGameMode() != GameMode.SURVIVAL) return;
         plugin.getXpManager().adicionarXp(jogador, Skill.PESCADOR, cfg("pescador.xp-por-pesca"));
+        plugin.getXpManager().marcarEmUso(jogador.getUniqueId(), Skill.PESCADOR);
 
         if (sorteio(jogador, Skill.PESCADOR, "pescador.chance-mapa-por-nivel")) {
             String raridade = sortearRaridade(plugin.getSkillDataManager().get(jogador.getUniqueId()).getNivel(Skill.PESCADOR));

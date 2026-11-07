@@ -109,8 +109,9 @@ public class Precificacao {
         double bruto = 0;
         boolean travou = false;
         int vendidas = 0;
+        boolean dinamico = plugin.getConfig().getBoolean("preco-dinamico", false);
         for (int i = 0; i < quantidade; i++) {
-            double unidade = item.venderUnidade();
+            double unidade = item.venderUnidade(dinamico);
             base += unidade;
             double comBonus = unidade * multiplicador;
             if (doInventario && comBonus > teto) {

@@ -8,6 +8,17 @@ circulacao:
   # Quantos jogadores o /economia top consegue mostrar.
   top-maximo: 20
 
+# /ricos (2026-11-07): os mais ricos, pra todo mundo. Usa a mesma conta do /economia top (atualiza a
+# cada circulacao.cache-minutos). Ops e os nicks de "esconder" (contas da staff) ficam de fora.
+ricos:
+  quantos: 10
+  esconder: []
+
+# /tophoras (2026-11-07): quem mais jogou (estatística do Minecraft, conta o tempo AFK). Esconde os
+# mesmos de ricos.esconder e os ops; quem está offline atualiza a cada circulacao.cache-minutos.
+tophoras:
+  quantos: 10
+
 historico:
   # Quantos dias de entrada/saída e de "foto" da circulação ficam guardados em historico.yml.
   dias-guardados: 90

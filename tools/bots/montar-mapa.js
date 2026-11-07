@@ -497,7 +497,7 @@ const DICAS = [
     '&fPra pagar alguém: &e/pix pagar <jogador> <valor>&f. Rápido, seguro e sem fila.',
     '&fConta que se repete? &e/pix agendar <jogador> <valor> <dias>&f paga agora e de novo a cada tantos dias.',
     '&fQuer dar dinheiro de presente? Compre uma folha de cheque com o &6Bancário&f, no Banco do fim da Avenida das Minas (&e/warp banco&f), e use &e/cheque <valor>&f. Quem ganhar deposita com ele.',
-    '&fNa &6Loja Oficial&f, cada venda baixa um pouco o preço daquele item, e ele se recupera com o tempo. Venda aos poucos que rende mais.',
+    '&fNa &6Loja Oficial&f o preço de venda é fixo: pode vender tudo de uma vez, que cada item vale o mesmo. Fica de olho nos eventos de &aALTA&f, que pagam mais!',
     '&fQuer saber pra onde foi seu dinheiro? O &6Bancário&f te dá o extrato num livro, com tudo o que entrou e saiu.',
     '&fJá jogou na &6Mine-sena&f? Bilhete de R$ 500 no Bancário, sorteio todo dia às 18h, e o pote inteiro vai pra quem acertar.',
   ] },

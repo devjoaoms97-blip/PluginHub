@@ -352,6 +352,10 @@ public class AreasPlugin extends JavaPlugin implements Listener {
 
     /** Nome da arena onde não se pode marcar home, ou null fora das áreas bloqueadas. */
     private String arenaSemHome(Location local) {
+        // mundos inteiros sem home (o dos tesouros: a casa ficaria em cima do X de alguém)
+        if (local.getWorld() != null && getConfig().getStringList("sethome.mundos").contains(local.getWorld().getName())) {
+            return "o mundo " + local.getWorld().getName();
+        }
         for (String nome : getConfig().getStringList("sethome.caixas-pvp")) {
             if (dentroDaCaixaDaArena(local, nome)) return nome;
         }
@@ -388,7 +392,7 @@ public class AreasPlugin extends JavaPlugin implements Listener {
             String arena = arenaSemHome(p.getLocation());
             if (arena != null) {
                 evento.setCancelled(true);
-                avisar(p, "marcar uma home dentro de " + arena);
+                avisar(p, "marcar uma home " + (arena.startsWith("o mundo ") ? "n" + arena : "dentro de " + arena));
                 return;
             }
         }

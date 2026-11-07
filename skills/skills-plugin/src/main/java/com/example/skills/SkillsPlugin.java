@@ -175,14 +175,21 @@ public class SkillsPlugin extends JavaPlugin {
     }
 
     /**
-     * A skill "em uso", pro PlacarPlugin: a da arma do último golpe no último minuto ou, sem
-     * nenhum, a da arma na mão. Mão vazia sem luta recente não mostra nada (senão seria sempre Porradeiro).
+     * A skill "em uso", pro PlacarPlugin: a do último golpe ou da última profissão treinada (minerar,
+     * cortar, colher, pescar) no último minuto ou, sem nenhuma, a do item na mão: arma, ou ferramenta de
+     * profissão (picareta, enxada, vara; o machado conta como arma). Mão vazia sem uso recente não mostra
+     * nada (senão seria sempre Porradeiro).
      */
     private Skill skillEmUso(Player jogador) {
         Skill recente = xpManager.ultimaSkill(jogador.getUniqueId(), 60);
         if (recente != null) return recente;
-        if (jogador.getInventory().getItemInMainHand().getType() == Material.AIR) return null;
-        return skillDoItem(jogador.getInventory().getItemInMainHand());
+        ItemStack mao = jogador.getInventory().getItemInMainHand();
+        if (mao.getType() == Material.AIR) return null;
+        String nome = mao.getType().name();
+        if (nome.endsWith("_PICKAXE")) return Skill.MINERADOR;
+        if (nome.endsWith("_HOE")) return Skill.AGRICULTOR;
+        if (mao.getType() == Material.FISHING_ROD) return Skill.PESCADOR;
+        return skillDoItem(mao);
     }
 
     /** PlacarPlugin ({skill}): "Espadas ✦2 nv 23", ou null sem skill em uso. */

@@ -49,6 +49,8 @@ public class MissaoManager {
     private final Map<Periodo, Map<String, Missao>> pools = new EnumMap<>(Periodo.class);
     private final Map<Periodo, Map<UUID, ProgressoJogador>> jogadores = new EnumMap<>(Periodo.class);
     private final Map<UUID, Long> ultimoAvisoBarra = new HashMap<>();
+    /** A última missão diária em que cada um avançou (a que a barra do alto mostra). */
+    private final Map<UUID, String> ultimaMissao = new HashMap<>();
 
     // Anti-farm da missão de vender: quanto de cada material o jogador COMPROU na loja hoje.
     // Vender isso de volta não conta (senão era só comprar e revender). Em memória, zera por dia.
@@ -245,6 +247,7 @@ public class MissaoManager {
             int depois = Math.min(missao.quantidade(), antes + quantidade);
             entrada.setValue(depois);
             sujo = true;
+            if (periodo == Periodo.DIARIA) ultimaMissao.put(jogador.getUniqueId(), missao.id());
 
             if (depois >= missao.quantidade()) {
                 concluir(jogador, missao);
@@ -353,8 +356,14 @@ public class MissaoManager {
                 .deserialize("§e" + missao.descricao() + " §f" + atual + "/" + missao.quantidade()));
     }
 
+    /** O id da última missão diária em que o jogador avançou, ou null. */
+    public String ultimaMissao(UUID jogador) {
+        return ultimaMissao.get(jogador);
+    }
+
     public void esquecerAviso(UUID jogador) {
         ultimoAvisoBarra.remove(jogador);
+        ultimaMissao.remove(jogador);
     }
 
     // ---------------------------------------------------------------------

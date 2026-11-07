@@ -1,5 +1,10 @@
 # Configuração da Loja Dinâmica
 
+# Preço de venda dinâmico (cair a cada unidade vendida e voltar com o tempo pra âncora). Desligado desde
+# 2026-11-07: a loja (e a venda automática das minas) paga sempre a âncora. Os preços dos ranks foram
+# recalculados pra manter ~150 h até o Rei (tools/economia/simular.py lê esta chave).
+preco-dinamico: false
+
 regeneracao:
   # A cada quantos segundos o preço de venda tenta se recuperar um pouco em direção à âncora
   intervalo-segundos: 60

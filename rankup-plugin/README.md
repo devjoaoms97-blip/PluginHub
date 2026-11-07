@@ -51,7 +51,7 @@ No reset, quem está dentro (ou em cima) vai pro ponto de teleporte da mina, e n
 
 **Proteção do mundo.** Em `protecao.mundos`, liste os mundos em que, **fora das minas**, ninguém quebra nem coloca blocos. É o normal num mundo de rankup, em que só as minas são mineráveis.
 
-**Venda automática (pra todos).** Dentro de uma mina, o que você quebra é vendido na hora pela loja (preço dinâmico, bônus do rank e do VIP, imposto), e o dinheiro aparece na barra acima do inventário. O que a loja não compra vai direto pro inventário, e a experiência vai direto pra você (com o Remendo consertando a ferramenta, como o orbe faria). Não sobram itens nem orbes no chão, o que também reduz o lag. Só cai no chão o que não couber no inventário. No painel, aparece como "Venda automática (minas)".
+**Venda automática (pra todos).** Dentro de uma mina, o que você quebra é vendido na hora pela loja (preço fixo da loja, bônus do rank e do VIP, imposto), e o dinheiro aparece na barra acima do inventário. O que a loja não compra vai direto pro inventário, e a experiência vai direto pra você (com o Remendo consertando a ferramenta, como o orbe faria). Não sobram itens nem orbes no chão, o que também reduz o lag. Só cai no chão o que não couber no inventário. No painel, aparece como "Venda automática (minas)".
 
 **Chat.** O rank aparece antes do nome e convive com as tags do clã e do VIP: `[Fazendeiro] [ABC] [VIP Ouro] Nome: mensagem`.
 

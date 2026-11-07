@@ -48,6 +48,10 @@ public class MissoesPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new ProgressoListener(this), this);
         getServer().getPluginManager().registerEvents(missoesGUI, this);
+        // as missões do dia numa barra no alto da tela
+        com.example.missoes.manager.BarraMissoes barra = new com.example.missoes.manager.BarraMissoes(this);
+        getServer().getPluginManager().registerEvents(barra, this);
+        getServer().getScheduler().runTaskTimer(this, barra::atualizarTodos, 40L, 20L);
 
         long cincoMin = 20L * 60 * 5;
         getServer().getScheduler().runTaskTimer(this, missaoManager::salvarSeMudou, cincoMin, cincoMin);

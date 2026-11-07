@@ -85,9 +85,11 @@ teleporte-por-comando:
              back, return, home, homes, delhome, remhome, rmhome]
 
 # Criar uma home é proibido apenas dentro destas áreas. As caixas fixas reutilizam os limites definidos
-# acima em pvp-so-nas-caixas; as câmaras do tesouro são dinâmicas e vêm do TesourosPlugin.
+# acima em pvp-so-nas-caixas; as câmaras do tesouro são dinâmicas e vêm do TesourosPlugin. "mundos" são
+# mundos inteiros sem home (o dos tesouros, desde 2026-11-07).
 sethome:
   comandos: [sethome, createhome]
+  mundos: [tesouros]
   caixas-pvp: ["arena do boss", "piso do X1", "piso do coliseu", "arena do vietnã", "arena do spleef", "labirinto do fauno"]
   camaras-do-tesouro: true
 

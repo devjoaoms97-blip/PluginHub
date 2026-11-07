@@ -10,6 +10,10 @@ commands:
   vip:
     description: Sistema de VIPs — perks, consulta e resgate de código pros jogadores; gestão pra staff.
     usage: "Uso: /vip <check|tiers|resgatar|vender|cancelarvenda|fly|heal|feed|kit|particula|warp|pocoes|add|remove|list|reload|gerarcodigo|codigos|revogarcodigo|setwarp>"
+  echest:
+    description: Abre o seu baú pessoal, de qualquer lugar (9 espaços; mais no VIP).
+    usage: "Uso: /echest"
+    aliases: [ec, bau]
   tag:
     description: Escolhe qual tag aparece acima da sua cabeça (VIP, apoiador, clã, rank ou nenhuma).
     usage: "Uso: /tag [vip|apoiador|cla|rank|nenhuma]"

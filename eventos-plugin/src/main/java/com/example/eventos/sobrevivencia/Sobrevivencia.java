@@ -2,7 +2,10 @@ package com.example.eventos.sobrevivencia;
 
 import com.example.eventos.EventosPlugin;
 import com.example.eventos.base.Evento;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,6 +32,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +61,10 @@ public class Sobrevivencia extends Evento implements Listener {
     private long proximaOnda;
     private int jogadoresNoComeco;
     private final Melhorias melhorias;
+    /** A barra no alto da tela (2026-11-07): a onda e quantos invasores faltam, pra quem luta e quem assiste. */
+    private final BossBar barra = BossBar.bossBar(Component.empty(), 1f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
+    private final Set<UUID> vendoBarra = new HashSet<>();
+    private int invasoresDaOnda;
 
     public Sobrevivencia(EventosPlugin plugin) {
         super(plugin, "sobrevivencia");
@@ -137,6 +145,7 @@ public class Sobrevivencia extends Evento implements Listener {
     protected void resetar() {
         limparMobs();
         melhorias.zerar();
+        esconderBarra();
     }
 
     @Override
@@ -218,6 +227,7 @@ public class Sobrevivencia extends Evento implements Listener {
             return e == null || e.isDead() || !e.isValid();
         });
         mirar();
+        atualizarBarra(agora);
 
         if (!esperando && mobs.isEmpty()) {
             if (onda >= lista().size()) {
@@ -262,6 +272,7 @@ public class Sobrevivencia extends Evento implements Listener {
             int quantos = (int) Math.ceil(Integer.parseInt(p[1].trim()) * fator);
             for (int k = 0; k < quantos; k++) soltar(tipo, portoes.get(i++ % portoes.size()), null, 0, 1);
         }
+        invasoresDaOnda = mobs.size();
         ConfigurationSection chefe = cfg().getConfigurationSection("ondas.chefes." + n);
         boolean temChefe = chefe != null;
         if (temChefe) {
@@ -273,6 +284,7 @@ public class Sobrevivencia extends Evento implements Listener {
                 plugin.getLogger().warning("Sobrevivência: chefe inválido na onda " + n);
             }
         }
+        invasoresDaOnda = mobs.size();
         anunciarNaArena(cor() + "§l⚔ ONDA " + n + (n == lista().size() ? " (A ÚLTIMA)" : "") + (temChefe ? " §c§lCOM CHEFE" : "")
                 + cor() + "§l! §f" + mobs.size() + cor() + " invasores.");
         for (Player p : jogadoresVivos()) p.playSound(p.getLocation(), Sound.EVENT_RAID_HORN, 1f, 1f);
@@ -329,6 +341,54 @@ public class Sobrevivencia extends Evento implements Listener {
         // e qualquer um marcado que tenha sobrado (de antes de um reinício, por exemplo)
         for (Entity e : w.getEntities()) if (ehDoEvento(e) || (e instanceof Vex && arena.naArena(e.getLocation()))) e.remove();
     }
+
+    /** A onda e os invasores vivos (na pausa, quanto falta pra próxima), pra quem luta e quem assiste. */
+    private void atualizarBarra(long agora) {
+        int total = lista().size();
+        if (esperando) {
+            long falta = Math.max(0, (proximaOnda - agora + 999) / 1000);
+            barra.name(LEGADO_BARRA.deserialize(cor() + "⚔ Sobrevivência §7· " + (onda == 0 ? "§fa onda 1" : "§fonda " + onda + " vencida! §7A " + (onda + 1))
+                    + " §7chega em §f" + falta + " s"));
+            barra.progress(1f);
+            barra.color(BossBar.Color.GREEN);
+        } else {
+            int vivos = mobs.size();
+            barra.name(LEGADO_BARRA.deserialize(cor() + "⚔ Sobrevivência §7· Onda §f" + onda + "/" + total + " §7· §f" + vivos
+                    + " §7invasor" + (vivos == 1 ? "" : "es") + (ondaComChefe() ? " §c(chefe)" : "")));
+            barra.progress((float) Math.max(0, Math.min(1, vivos / (double) Math.max(1, Math.max(invasoresDaOnda, vivos)))));
+            barra.color(BossBar.Color.YELLOW);
+        }
+        Set<UUID> agoraVendo = new HashSet<>();
+        World w = arena.mundo();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (!p.getWorld().equals(w)) continue;
+            Participante part = lutando(p.getUniqueId());
+            boolean vivo = part != null && part.isVivo();
+            if (!vivo && !(arena.naArena(p.getLocation()) || arena.naArquibancada(p.getLocation()))) continue;
+            agoraVendo.add(p.getUniqueId());
+            if (vendoBarra.add(p.getUniqueId())) p.showBossBar(barra);
+        }
+        for (UUID id : new ArrayList<>(vendoBarra)) {
+            if (agoraVendo.contains(id)) continue;
+            vendoBarra.remove(id);
+            Player p = Bukkit.getPlayer(id);
+            if (p != null) p.hideBossBar(barra);
+        }
+    }
+
+    private boolean ondaComChefe() {
+        return cfg().getConfigurationSection("ondas.chefes." + onda) != null;
+    }
+
+    private void esconderBarra() {
+        for (UUID id : vendoBarra) {
+            Player p = Bukkit.getPlayer(id);
+            if (p != null) p.hideBossBar(barra);
+        }
+        vendoBarra.clear();
+    }
+
+    private static final LegacyComponentSerializer LEGADO_BARRA = LegacyComponentSerializer.legacySection();
 
     private void anunciarNaArena(String msg) {
         var texto = LegacyComponentSerializer.legacySection().deserialize(msg);

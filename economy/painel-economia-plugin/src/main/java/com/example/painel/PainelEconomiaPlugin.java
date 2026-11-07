@@ -33,10 +33,11 @@ import java.util.UUID;
  */
 public class PainelEconomiaPlugin extends JavaPlugin {
 
-    public record Fortuna(String nome, double saldo) {
+    public record Fortuna(UUID id, String nome, double saldo) {
     }
 
-    public record Circulacao(double total, int contasComSaldo, List<Fortuna> ranking, long calculadoEm) {
+    /** {@code ranking}: as maiores (até top-maximo); {@code todas}: todas as contas com saldo, em ordem (o /ricos acha a posição de cada um nela). */
+    public record Circulacao(double total, int contasComSaldo, List<Fortuna> ranking, List<Fortuna> todas, long calculadoEm) {
     }
 
     private Economy real;
@@ -56,6 +57,9 @@ public class PainelEconomiaPlugin extends JavaPlugin {
             this.real = rsp.getProvider();
             interceptar(rsp);
         }
+
+        getCommand("ricos").setExecutor(new RicosCommand(this));
+        getCommand("tophoras").setExecutor(new TopHorasCommand(this));
 
         EconomiaCommand comando = new EconomiaCommand(this);
         getCommand("economia").setExecutor(comando);
@@ -148,14 +152,14 @@ public class PainelEconomiaPlugin extends JavaPlugin {
             if (saldo <= 0) continue;
             total += saldo;
             contas++;
-            fortunas.add(new Fortuna(jogador.getName() != null ? jogador.getName() : jogador.getUniqueId().toString(), saldo));
+            fortunas.add(new Fortuna(jogador.getUniqueId(), jogador.getName() != null ? jogador.getName() : jogador.getUniqueId().toString(), saldo));
         }
         fortunas.sort(Comparator.comparingDouble(Fortuna::saldo).reversed());
         fluxoManager.registrarDistribuicao(LocalDate.now(), distribuicao(fortunas, total));
         int topGuardado = Math.max(1, getConfig().getInt("circulacao.top-maximo", 20));
         List<Fortuna> ranking = new ArrayList<>(fortunas.subList(0, Math.min(topGuardado, fortunas.size())));
 
-        cacheCirculacao = new Circulacao(total, contas, ranking, System.currentTimeMillis());
+        cacheCirculacao = new Circulacao(total, contas, ranking, List.copyOf(fortunas), System.currentTimeMillis());
         fluxoManager.registrarCirculacao(LocalDate.now(), total);
         return cacheCirculacao;
     }

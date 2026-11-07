@@ -70,6 +70,9 @@ public class VipPlugin extends JavaPlugin {
         this.tagNaCabeca = new TagNaCabeca(this, chatTagListener);
         Bukkit.getPluginManager().registerEvents(tagNaCabeca, this);
         getCommand("tag").setExecutor(tagNaCabeca);
+        com.example.vip.command.EchestCommand echest = new com.example.vip.command.EchestCommand(this);
+        getCommand("echest").setExecutor(echest);
+        Bukkit.getPluginManager().registerEvents(echest, this);
         getCommand("tag").setTabCompleter(tagNaCabeca);
 
         int intervaloMin = getConfig().getInt("verificacao-expiracao-minutos", 5);

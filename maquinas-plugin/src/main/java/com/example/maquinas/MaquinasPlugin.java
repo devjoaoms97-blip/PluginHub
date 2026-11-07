@@ -42,7 +42,7 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
     private Economy economy;
     private final Map<String, Produto> produtos = new LinkedHashMap<>();
     private final Map<String, Tipo> tipos = new LinkedHashMap<>();
-    private NamespacedKey chaveProduto, chaveMaquina, chaveCombustivel, chaveNivelVel, chaveNivelEst;
+    private NamespacedKey chaveProduto, chaveMaquina, chaveCombustivel, chaveNivelVel, chaveNivelEst, chaveNivelTan;
     private MaquinaManager maquinas;
     private Mercado mercado;
     private LojaMaquinas loja;
@@ -60,6 +60,7 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
         chaveCombustivel = new NamespacedKey(this, "combustivel");
         chaveNivelVel = new NamespacedKey(this, "nivel_velocidade");
         chaveNivelEst = new NamespacedKey(this, "nivel_estoque");
+        chaveNivelTan = new NamespacedKey(this, "nivel_tanque");
         carregarConfig();
         pix = new PixIntegration(this);
         rankup = new RankupIntegration(this);
@@ -142,15 +143,22 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
 
     /** O item da máquina (bloco de barreira com o modelo dela): os níveis vão junto quando recolhe. */
     public ItemStack maquina(Tipo t, int nivelVel, int nivelEst) {
+        return maquina(t, nivelVel, nivelEst, 0);
+    }
+
+    public ItemStack maquina(Tipo t, int nivelVel, int nivelEst, int nivelTan) {
         List<String> lore = new ArrayList<>();
         lore.add("§7Fabrica: §f" + produtos.get(t.produto()).nome());
         lore.add("§7Coloque no seu terreno e abasteça com Células de Combustível.");
-        if (nivelVel > 0 || nivelEst > 0) lore.add("§7Velocidade nível §f" + nivelVel + " §7| Estoque nível §f" + nivelEst);
+        if (nivelVel > 0 || nivelEst > 0 || nivelTan > 0) {
+            lore.add("§7Velocidade §f" + nivelVel + " §7| Estoque §f" + nivelEst + " §7| Tanque §f" + nivelTan);
+        }
         ItemStack item = itemComModelo(Material.BARRIER, "maquina_" + t.id(), "§e⚙ " + t.nome(), lore, 1);
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(chaveMaquina, PersistentDataType.STRING, t.id());
         meta.getPersistentDataContainer().set(chaveNivelVel, PersistentDataType.INTEGER, nivelVel);
         meta.getPersistentDataContainer().set(chaveNivelEst, PersistentDataType.INTEGER, nivelEst);
+        meta.getPersistentDataContainer().set(chaveNivelTan, PersistentDataType.INTEGER, nivelTan);
         meta.setMaxStackSize(1);
         item.setItemMeta(meta);
         return item;
@@ -172,8 +180,10 @@ public class MaquinasPlugin extends JavaPlugin implements Listener {
         return id == null ? null : tipos.get(id);
     }
 
-    int nivel(ItemStack item, boolean velocidade) {
-        Integer n = item.getItemMeta().getPersistentDataContainer().get(velocidade ? chaveNivelVel : chaveNivelEst, PersistentDataType.INTEGER);
+    /** O nível que o item guarda: 0 velocidade, 1 estoque, 2 tanque. */
+    int nivel(ItemStack item, int qual) {
+        NamespacedKey chave = qual == 0 ? chaveNivelVel : qual == 1 ? chaveNivelEst : chaveNivelTan;
+        Integer n = item.getItemMeta().getPersistentDataContainer().get(chave, PersistentDataType.INTEGER);
         return n == null ? 0 : n;
     }
 

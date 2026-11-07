@@ -7,6 +7,11 @@
 
 missoes-por-dia: 3
 
+# As missões do dia numa barra no alto da tela (2026-11-07): a que o jogador mexeu por último (ou a
+# primeira que falta), o progresso dela e quantas do dia já foram. Some quando todas acabam.
+barra:
+  ativado: true
+
 # Missões diárias a mais por permissão (vale a maior). O VipPlugin dá vip.missao.extra pros
 # tiers Ouro e Diamante pelos grupos do LuckPerms. Quem vira VIP no meio do dia ganha a extra
 # na hora. É uma LISTA de propósito: chave com ponto viraria seção aninhada.

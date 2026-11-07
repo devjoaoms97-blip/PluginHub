@@ -160,7 +160,8 @@ public class ShopManager {
                 double precoAtualSalvo = secao.getDouble(chave + ".preco-venda-atual", -1);
 
                 ShopItem item = new ShopItem(material, categoria, precoBase, margem, min, max, passo);
-                if (precoAtualSalvo >= 0) {
+                // sem o preço dinâmico, o preço de venda é sempre a âncora (o que ficou salvo de antes não vale)
+                if (precoAtualSalvo >= 0 && plugin.getConfig().getBoolean("preco-dinamico", false)) {
                     item.setPrecoVendaAtual(precoAtualSalvo);
                 }
                 item.setCompravel(secao.getBoolean(chave + ".compra", true));

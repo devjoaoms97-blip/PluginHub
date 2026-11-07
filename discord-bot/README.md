@@ -32,6 +32,8 @@ npm start          # no Discord de teste (ou o do BOT_SERVIDOR)
 npm run oficial    # no oficial
 ```
 
+No PC, o oficial roda pelo **`bot-oficial.bat`** (dois cliques): numa janela própria, fora do Claude Code (que encerra as tarefas dele quando falta memória), e religa sozinho em 10 s se cair. Pra desligar, feche a janela.
+
 Os dois rodam juntos, com o mesmo token: cada processo só responde no seu servidor. Os avisos do jogo (webhooks do DiscordPlugin) vão pro Discord cujo `--plugin` foi aplicado por último no `tools/discord/estrutura.js` (hoje, o oficial).
 
 A configuração fica fora do repositório, em `C:\mc-teste\discord\` (ou na pasta de `DISCORD_PASTA`):

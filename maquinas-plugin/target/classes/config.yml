@@ -7,13 +7,19 @@ mundos: [terrenos]
 # teares...). Sem o TerrenosPlugin, o limite vale por jogador.
 limite-por-terreno: 10
 
-# Tanque de cada máquina, em Células de Combustível.
-tanque: 64
+# Tanque de cada máquina (2026-11-07): cabe combustível pra "produtos-base" produtos, mais
+# "produtos-por-nivel" por nível da melhoria de Tanque (como o estoque), no consumo de cada máquina: o
+# Reator (4 por produto) e o Tear (0,25) têm a mesma autonomia. Nunca menos que "minimo-celulas" (o
+# tanque de antes, fixo em 64, que ainda vale pro Tear e a Forja no nível 0).
+tanque:
+  produtos-base: 96
+  produtos-por-nivel: 64
+  minimo-celulas: 64
 # Estoque de produtos: base, e quanto cada nível de melhoria de estoque soma. Com 96, a máquina
 # mais rápida enche em ~1h36: ela recompensa quem passa pra coletar, não quem some por dias.
 estoque-base: 96
 estoque-por-nivel: 64
-# Cada nível de velocidade tira essa % do tempo por produto (nível 5 com 5%: 25% menos tempo, 1,33x
+# Melhorias: velocidade, estoque e tanque, até nivel-maximo cada. Cada nível de velocidade tira essa % do tempo por produto (nível 5 com 5%: 25% menos tempo, 1,33x
 # mais produtos). Com as 10 máquinas de um terreno no máximo, fica perto de ~134% da mina
 # (tools/economia/maquinas.py).
 velocidade-por-nivel: 5
@@ -25,7 +31,12 @@ combustivel:
   nome: "&6Célula de Combustível"
   preco: 25
 
-# Venda dos produtos: o preço é de cada jogador. Cada unidade que ele vende baixa o preço DELE em
+# Preço dinâmico dos produtos (cair a cada venda e voltar com o tempo): desligado desde 2026-11-07, como
+# o da Loja Oficial. Sem ele, cada produto vende sempre na âncora (mais o bônus do rank e do VIP, menos o
+# imposto), e "minimo", "passo" e "regeneracao" não valem.
+preco-dinamico: false
+
+# Venda dos produtos (com o dinâmico ligado): o preço é de cada jogador. Cada unidade que ele vende baixa o preço DELE em
 # "passo"% (até o mínimo), e ele volta pra âncora com o tempo; as vendas de um não mexem no preço dos
 # outros. A venda tem o bônus do rank e o do VIP abaixo, menos o imposto.
 imposto-venda: 2

@@ -55,6 +55,15 @@ public class ShopItem {
         return Math.max(precoMinimo, Math.min(precoMaximo, ancora));
     }
 
+    /**
+     * Vende 1 unidade: retorna o preço pago por ela. Com o preço dinâmico, já empurra o preço pra baixo
+     * pra próxima unidade; sem ele (o padrão desde 2026-11-07), paga sempre a âncora.
+     */
+    public double venderUnidade(boolean dinamico) {
+        if (!dinamico) return getAncora() * multiplicadorEvento;
+        return venderUnidade();
+    }
+
     /** Vende 1 unidade: retorna o preço pago por ela e já empurra o preço pra baixo pra próxima unidade. */
     public double venderUnidade() {
         double precoPago = precoVendaAtual * multiplicadorEvento;

@@ -7,6 +7,8 @@
 # Os preços foram calibrados pra um jogador ativo sem VIP, com Fortuna III, chegar ao Rei em
 # cerca de 150 h de jogo, com as minas de tools/economia/minas-planejadas.yml. Mudou preço,
 # mina ou loja? Rode a simulação de novo: python tools/economia/simular.py --meta-horas 150
+# Preços de 2026-11-07: com o preço de venda fixo (sem o dinâmico da loja), recalculados pelo
+# tools/economia/simular.py pra cada rank levar as mesmas horas de antes (~150 h até o Rei).
 ranks:
   - id: campones
     nome: "Camponês"
@@ -16,57 +18,57 @@ ranks:
   - id: fazendeiro
     nome: "Fazendeiro"
     cor: "&a"
-    preco: 3400
+    preco: 5400
     multiplicador-venda: 1.05
   - id: lenhador
     nome: "Lenhador"
     cor: "&2"
-    preco: 9100
+    preco: 13000
     multiplicador-venda: 1.10
   - id: ferreiro
     nome: "Ferreiro"
     cor: "&8"
-    preco: 22000
+    preco: 33000
     multiplicador-venda: 1.15
   - id: mercador
     nome: "Mercador"
     cor: "&e"
-    preco: 56000
+    preco: 91000
     multiplicador-venda: 1.20
   - id: escudeiro
     nome: "Escudeiro"
     cor: "&f"
-    preco: 140000
+    preco: 200000
     multiplicador-venda: 1.25
   - id: clerigo
     nome: "Clérigo"
     cor: "&b"
-    preco: 320000
+    preco: 770000
     multiplicador-venda: 1.30
   - id: cavaleiro
     nome: "Cavaleiro"
     cor: "&9"
-    preco: 710000
+    preco: 1500000
     multiplicador-venda: 1.40
   - id: barao
     nome: "Barão"
     cor: "&d"
-    preco: 2000000
+    preco: 3300000
     multiplicador-venda: 1.50
   - id: conde
     nome: "Conde"
     cor: "&5"
-    preco: 5400000
+    preco: 7300000
     multiplicador-venda: 1.60
   - id: duque
     nome: "Duque"
     cor: "&6"
-    preco: 12000000
+    preco: 14000000
     multiplicador-venda: 1.75
   - id: rei
     nome: "Rei"
     cor: "&c&l"
-    preco: 32000000
+    preco: 41000000
     multiplicador-venda: 2.0
 
 # Comandos rodados pelo console quando alguém sobe de rank (também no /ranks admin set).

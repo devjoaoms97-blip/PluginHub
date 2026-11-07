@@ -7,6 +7,8 @@ com\example\vip\manager\CodeManager.class
 com\example\vip\util\DiscordIntegration.class
 com\example\vip\model\VipTier.class
 com\example\vip\model\VipAtivo.class
+com\example\vip\command\EchestCommand.class
+com\example\vip\command\EchestCommand$Bau.class
 com\example\vip\model\VipCode.class
 com\example\vip\VipPlugin.class
 com\example\vip\manager\BonusAtivacao.class

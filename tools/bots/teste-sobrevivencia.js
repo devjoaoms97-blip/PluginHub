@@ -40,6 +40,11 @@ t.rodar(async () => {
   const c = await t.criarBot(t.nomeNovo('Svc'))
   const d = await t.criarBot(t.nomeNovo('Svd'))
   const todos = [a, b, c, d]
+  // a barra do alto (2026-11-07): a onda e os invasores, pra quem luta (a) e quem assiste (d)
+  const barras = { a: [], d: [] }
+  for (const [k, bot] of [['a', a], ['d', d]]) {
+    for (const ev of ['bossBarCreated', 'bossBarUpdated']) bot.on(ev, x => barras[k].push(t.semCor(x.title.toString())))
+  }
   try {
     for (const bot of todos) {
       await t.console(`minecraft:clear ${bot.username}`)
@@ -81,6 +86,8 @@ t.rodar(async () => {
     let agora = await estado(d)
     t.verificar(/onda 1 de 10, ([1-9]\d*) invasor/.test(agora), 'a onda 1 chega', agora)
     const invasores = Number((agora.match(/(\d+) invasor/) || [, 0])[1])
+    t.verificar(barras.a.some(x => /Onda 1\/10 · \d+ invasor/.test(x)), 'a barra do alto mostra a onda e os invasores (quem luta)', barras.a.slice(-1)[0])
+    t.verificar(barras.d.some(x => /Onda 1\/10/.test(x)), 'e quem assiste também vê', barras.d.slice(-1)[0])
     t.verificar(invasores === 8, 'com 3 jogadores, 50% a mais por jogador: 3 saqueadores e 1 vingador viram 6 e 2', `${invasores} invasores`)
     // os mobs machucam de verdade (os bots ficam parados)
     let machucou = false

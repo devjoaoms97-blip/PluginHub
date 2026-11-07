@@ -32,6 +32,16 @@ commands:
     permission: painel.economia
     permission-message: "§cVocê não tem permissão para ver o painel da economia."
 
+  ricos:
+    description: Os jogadores mais ricos do servidor.
+    usage: "Uso: /ricos"
+    aliases: [milionarios]
+
+  tophoras:
+    description: Os jogadores que mais jogaram no servidor.
+    usage: "Uso: /tophoras"
+    aliases: [horas, tempojogado]
+
 permissions:
   painel.economia:
     description: Permite ver o painel da economia.

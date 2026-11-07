@@ -1,6 +1,6 @@
 # EconomyShopPlugin
 
-Loja do servidor com preço de venda dinâmico (oferta e demanda), categorias, histórico de preços, imposto sobre vendas, e integração com o extrato do Pix.
+Loja do servidor com preço de venda fixo (o dinâmico, de oferta e demanda, fica desligado desde 2026-11-07: `preco-dinamico: false`), categorias, histórico de preços, imposto sobre vendas, e integração com o extrato do Pix.
 
 ## Loja Oficial (presencial)
 
@@ -35,7 +35,7 @@ python tools/economia/loja.py --gravar --servidor C:\mc-teste   # confere e grav
 ## Como o preço funciona
 
 - **Compra** (jogador compra do servidor): sempre o **preço base fixo** — nunca muda.
-- **Venda** (jogador vende pro servidor): **dinâmica**. Começa numa "âncora" (`preço base × (1 − margem%)`), e:
+- **Venda** (jogador vende pro servidor): desde 2026-11-07, **sempre a âncora** (`preco-dinamico: false`; os preços dos ranks foram recalculados pelo `simular.py` pra manter ~150 h até o Rei). Com `preco-dinamico: true`, volta a ser **dinâmica**. Começa numa "âncora" (`preço base × (1 − margem%)`), e:
   - Cada unidade **vendida** empurra o preço de venda **pra baixo**
   - Com o tempo, o preço de venda **se recupera** sozinho de volta em direção à âncora
   - Sempre limitado entre um **mínimo** e um **máximo** por item

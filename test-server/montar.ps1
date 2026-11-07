@@ -60,7 +60,12 @@ $downloads = @(
     # impossível; não expulsa ninguém. Os bots de tools/bots ficam isentos (grim.exempt).
     @{ arquivo = 'plugins\grimac-bukkit-2.3.75-1299a2a.jar'; remover = 'grimac-bukkit-*.jar'
        url = 'https://cdn.modrinth.com/data/LJNGWSvH/versions/QNc4r5Qj/grimac-bukkit-2.3.75-1299a2a.jar'
-       sha256 = '080e01c5545695b7e755f705d73da49c5eae9b86d67f1425f88f2c7b414f8da9' }
+       sha256 = '080e01c5545695b7e755f705d73da49c5eae9b86d67f1425f88f2c7b414f8da9' },
+    # skins num servidor pirata (online-mode=false): busca a skin de quem tem conta original pelo nick, e
+    # quem não tem escolhe uma com /skin <nick> (2026-11-07)
+    @{ arquivo = 'plugins\SkinsRestorer-15.12.6.jar'; remover = 'SkinsRestorer*.jar'
+       url = 'https://cdn.modrinth.com/data/TsLS8Py5/versions/ziIzW16f/SkinsRestorer.jar'
+       sha256 = 'a85b4a370f988741c9a38f4d0498262edacbf3220314790ac1c127461996359c' }
 )
 
 function Get-Sha256([string]$caminho) {

@@ -46,6 +46,7 @@ public class Mercado {
 
     /** O preço base de agora (sem bônus) de uma unidade, pra esse jogador. */
     public double atual(UUID jogador, MaquinasPlugin.Produto p) {
+        if (!dinamico()) return p.ancora();
         Map<String, Double> dele = precos.get(jogador);
         return dele == null ? p.ancora() : dele.getOrDefault(p.id(), p.ancora());
     }
@@ -55,15 +56,20 @@ public class Mercado {
         return plugin.getRankup().multiplicadorVenda(jogador.getUniqueId()) * (1 + plugin.bonusVendaVip(jogador) / 100.0);
     }
 
+    /** O preço de cada um cai a cada venda? Desligado desde 2026-11-07: sempre a âncora. */
+    private boolean dinamico() {
+        return plugin.getConfig().getBoolean("preco-dinamico", false);
+    }
+
     /** Vende {@code quantidade} unidades, deposita e devolve o líquido. */
     public double vender(Player jogador, MaquinasPlugin.Produto p, int quantidade) {
         double preco = atual(jogador.getUniqueId(), p);
         double bruto = 0;
         for (int i = 0; i < quantidade; i++) {
             bruto += preco;
-            preco = Math.max(p.minimo(), preco * (1 - p.passo() / 100.0));
+            if (dinamico()) preco = Math.max(p.minimo(), preco * (1 - p.passo() / 100.0));
         }
-        precos.computeIfAbsent(jogador.getUniqueId(), k -> new HashMap<>()).put(p.id(), preco);
+        if (dinamico()) precos.computeIfAbsent(jogador.getUniqueId(), k -> new HashMap<>()).put(p.id(), preco);
         double imposto = plugin.getConfig().getDouble("imposto-venda", 2) / 100.0;
         double liquido = bruto * multiplicador(jogador) * (1 - imposto);
         plugin.getEconomy().depositPlayer(jogador, liquido);

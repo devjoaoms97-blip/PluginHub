@@ -51,7 +51,7 @@ import java.util.logging.Level;
  *       {@code intervalo} sai um produto, gastando {@code combustivel-por-produto} Células, até acabar
  *       o combustível ou encher o estoque (que enche em uma a duas horas: a máquina recompensa quem
  *       passa pra coletar, não quem some por dias).</li>
- *   <li><b>Menu</b> (clique direito, só o dono): coletar, abastecer, melhorar velocidade e estoque
+ *   <li><b>Menu</b> (clique direito, só o dono): coletar, abastecer, melhorar velocidade, estoque e tanque
  *       (o dinheiro sai de circulação) e recolher (volta o item com os níveis).</li>
  *   <li><b>Limite</b>: até {@code limite-por-terreno} máquinas em cada terreno (TerrenosPlugin), somando
  *       todos os tipos e todos os donos.</li>
@@ -70,7 +70,7 @@ public class MaquinaManager implements Listener {
         final String tipo;
         final UUID dono;
         final float yaw;
-        int nivelVel, nivelEst;
+        int nivelVel, nivelEst, nivelTan;
         double combustivel;
         int estoque;
         long parcialMs;
@@ -109,7 +109,10 @@ public class MaquinaManager implements Listener {
         }
     }
 
-    private static final int SLOT_INFO = 4, SLOT_COLETAR = 10, SLOT_ABASTECER = 12, SLOT_VEL = 14, SLOT_EST = 16, SLOT_RECOLHER = 22;
+    private static final int SLOT_INFO = 4, SLOT_COLETAR = 10, SLOT_ABASTECER = 12, SLOT_VEL = 14, SLOT_EST = 15, SLOT_TAN = 16,
+            SLOT_RECOLHER = 22;
+    /** As três melhorias, na ordem dos botões. */
+    private static final int VEL = 0, EST = 1, TAN = 2;
 
     private final MaquinasPlugin plugin;
     private final File arquivo;
@@ -157,8 +160,21 @@ public class MaquinaManager implements Listener {
         return plugin.getConfig().getInt("estoque-base", 96) + plugin.getConfig().getInt("estoque-por-nivel", 64) * m.nivelEst;
     }
 
-    private int tanque() {
-        return plugin.getConfig().getInt("tanque", 64);
+    /**
+     * Quantas Células cabem no tanque: combustível pra {@code tanque.produtos-base} produtos, mais
+     * {@code tanque.produtos-por-nivel} por nível da melhoria de Tanque, no consumo de cada máquina (assim
+     * o Reator, que gasta 4 por produto, tem autonomia igual à do Tear), e no mínimo
+     * {@code tanque.minimo-celulas}. Um {@code tanque: 64} antigo (número) vale como tanque fixo.
+     */
+    int tanque(Maquina m) {
+        if (!plugin.getConfig().isConfigurationSection("tanque")) return plugin.getConfig().getInt("tanque", 64);
+        int produtos = plugin.getConfig().getInt("tanque.produtos-base", 96) + plugin.getConfig().getInt("tanque.produtos-por-nivel", 64) * m.nivelTan;
+        int celulas = (int) Math.ceil(produtos * tipo(m).combustivelPorProduto() - 1e-9);
+        return Math.max(plugin.getConfig().getInt("tanque.minimo-celulas", 64), celulas);
+    }
+
+    private int nivelDe(Maquina m, int qual) {
+        return qual == VEL ? m.nivelVel : qual == EST ? m.nivelEst : m.nivelTan;
     }
 
     private int nivelMaximo() {
@@ -257,8 +273,9 @@ public class MaquinaManager implements Listener {
         };
         Maquina m = new Maquina(UUID.randomUUID().toString(), bloco.getWorld().getName(), bloco.getX(), bloco.getY(), bloco.getZ(),
                 t.id(), jogador.getUniqueId(), yaw);
-        m.nivelVel = plugin.nivel(evento.getItemInHand(), true);
-        m.nivelEst = plugin.nivel(evento.getItemInHand(), false);
+        m.nivelVel = plugin.nivel(evento.getItemInHand(), VEL);
+        m.nivelEst = plugin.nivel(evento.getItemInHand(), EST);
+        m.nivelTan = plugin.nivel(evento.getItemInHand(), TAN);
         m.ultima = System.currentTimeMillis();
         porLugar.put(chave(bloco), m);
         criarDisplay(m);
@@ -361,29 +378,41 @@ public class MaquinaManager implements Listener {
         Menu menu = new Menu(m);
         menu.inventario = Bukkit.createInventory(menu, 27, "§8⚙ " + org.bukkit.ChatColor.stripColor(t.nome()));
         double porHora = 3_600_000.0 / intervaloMs(m);
-        menu.inventario.setItem(SLOT_INFO, icone(plugin.maquina(t, m.nivelVel, m.nivelEst), "§e⚙ " + t.nome(),
+        menu.inventario.setItem(SLOT_INFO, icone(plugin.maquina(t, m.nivelVel, m.nivelEst, m.nivelTan), "§e⚙ " + t.nome(),
                 "§7Fabrica: §f" + prod.nome() + " §7(" + fmt(porHora) + " por hora)",
                 "§7Estoque: §f" + m.estoque + "/" + capacidade(m),
-                "§7Combustível: §f" + fmt(m.combustivel) + "/" + tanque() + " §7(" + fmt(t.combustivelPorProduto()) + " por produto)",
-                "§7Velocidade nível §f" + m.nivelVel + " §7| Estoque nível §f" + m.nivelEst));
+                "§7Combustível: §f" + fmt(m.combustivel) + "/" + tanque(m) + " §7(" + fmt(t.combustivelPorProduto()) + " por produto)",
+                "§7Velocidade §f" + m.nivelVel + " §7| Estoque §f" + m.nivelEst + " §7| Tanque §f" + m.nivelTan));
         menu.inventario.setItem(SLOT_COLETAR, icone(plugin.produto(prod, 1), "§a§lColetar",
                 "§7Pega os §f" + m.estoque + " §7produtos do estoque.", "§7Venda no balcão §6Máquinas§7 da Loja Oficial."));
         menu.inventario.setItem(SLOT_ABASTECER, icone(plugin.combustivel(1), "§6§lAbastecer",
-                "§7Põe as Células de Combustível do seu", "§7inventário no tanque (cabe §f" + tanque() + "§7)."));
-        menu.inventario.setItem(SLOT_VEL, botaoMelhoria(m, true));
-        menu.inventario.setItem(SLOT_EST, botaoMelhoria(m, false));
+                "§7Põe as Células de Combustível do seu", "§7inventário no tanque (cabe §f" + tanque(m) + "§7)."));
+        menu.inventario.setItem(SLOT_VEL, botaoMelhoria(m, VEL));
+        menu.inventario.setItem(SLOT_EST, botaoMelhoria(m, EST));
+        menu.inventario.setItem(SLOT_TAN, botaoMelhoria(m, TAN));
         menu.inventario.setItem(SLOT_RECOLHER, icone(new ItemStack(Material.HOPPER), "§c§lRecolher",
                 "§7Coleta o estoque e devolve a máquina", "§7(com os níveis) e o combustível que sobrou."));
         p.openInventory(menu.inventario);
     }
 
-    private ItemStack botaoMelhoria(Maquina m, boolean velocidade) {
-        int nivel = velocidade ? m.nivelVel : m.nivelEst;
-        String titulo = velocidade ? "§b§lMelhorar velocidade" : "§d§lMelhorar estoque";
-        String efeito = velocidade ? "§7-" + (int) plugin.getConfig().getDouble("velocidade-por-nivel", 5) + "% de tempo por produto"
-                : "§7+" + plugin.getConfig().getInt("estoque-por-nivel", 64) + " de estoque";
+    private ItemStack botaoMelhoria(Maquina m, int qual) {
+        int nivel = nivelDe(m, qual);
+        String titulo = qual == VEL ? "§b§lMelhorar velocidade" : qual == EST ? "§d§lMelhorar estoque" : "§6§lMelhorar tanque";
+        String efeito;
+        if (qual == VEL) {
+            efeito = "§7-" + (int) plugin.getConfig().getDouble("velocidade-por-nivel", 5) + "% de tempo por produto";
+        } else if (qual == EST) {
+            efeito = "§7+" + plugin.getConfig().getInt("estoque-por-nivel", 64) + " de estoque";
+        } else {
+            int antes = tanque(m);
+            m.nivelTan++;
+            int depois = tanque(m);
+            m.nivelTan--;
+            efeito = "§7Tanque: §f" + antes + " §7→ §f" + depois + " §7Células";
+        }
         if (nivel >= nivelMaximo()) return icone(new ItemStack(Material.NETHER_STAR), titulo, "§aNível máximo (" + nivel + ").");
-        return icone(new ItemStack(velocidade ? Material.SUGAR : Material.CHEST), titulo, "§7Nível §f" + nivel + " §7→ §f" + (nivel + 1),
+        Material icone = qual == VEL ? Material.SUGAR : qual == EST ? Material.CHEST : Material.LAVA_BUCKET;
+        return icone(new ItemStack(icone), titulo, "§7Nível §f" + nivel + " §7→ §f" + (nivel + 1),
                 efeito, "§7Custa §a" + MaquinasPlugin.dinheiro(custoMelhoria(m, nivel)));
     }
 
@@ -406,9 +435,9 @@ public class MaquinaManager implements Listener {
         switch (evento.getRawSlot()) {
             case SLOT_COLETAR -> coletar(p, m);
             case SLOT_ABASTECER -> abastecer(p, m);
-            case SLOT_VEL, SLOT_EST -> {
-                boolean vel = evento.getRawSlot() == SLOT_VEL;
-                int nivel = vel ? m.nivelVel : m.nivelEst;
+            case SLOT_VEL, SLOT_EST, SLOT_TAN -> {
+                int qual = evento.getRawSlot() == SLOT_VEL ? VEL : evento.getRawSlot() == SLOT_EST ? EST : TAN;
+                int nivel = nivelDe(m, qual);
                 if (nivel >= nivelMaximo()) return;
                 double custo = custoMelhoria(m, nivel);
                 if (plugin.getEconomy() == null || !plugin.getEconomy().has(p, custo)) {
@@ -417,11 +446,12 @@ public class MaquinaManager implements Listener {
                 }
                 plugin.getEconomy().withdrawPlayer(p, custo);
                 plugin.getPix().registrarComServidor(p.getUniqueId(), custo, false, "Melhoria de máquina");
-                if (vel) m.nivelVel++;
-                else m.nivelEst++;
+                if (qual == VEL) m.nivelVel++;
+                else if (qual == EST) m.nivelEst++;
+                else m.nivelTan++;
                 sujo = true;
                 p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 0.7f, 1.3f);
-                p.sendMessage("§a" + (vel ? "Velocidade" : "Estoque") + " da " + t.nome() + " §ano nível §f" + (nivel + 1) + " §apor §f" + MaquinasPlugin.dinheiro(custo) + "§a.");
+                p.sendMessage("§a" + (qual == VEL ? "Velocidade" : qual == EST ? "Estoque" : "Tanque") + " da " + t.nome() + " §ano nível §f" + (nivel + 1) + " §apor §f" + MaquinasPlugin.dinheiro(custo) + "§a.");
             }
             case SLOT_RECOLHER -> {
                 recolher(p, m);
@@ -458,7 +488,7 @@ public class MaquinaManager implements Listener {
     }
 
     private void abastecer(Player p, Maquina m) {
-        int espaco = (int) Math.floor(tanque() - m.combustivel + 1e-9);
+        int espaco = (int) Math.floor(tanque(m) - m.combustivel + 1e-9);
         int colocadas = 0;
         for (ItemStack i : p.getInventory().getContents()) {
             if (espaco - colocadas <= 0) break;
@@ -476,14 +506,14 @@ public class MaquinaManager implements Listener {
         m.combustivel += colocadas;
         sujo = true;
         p.playSound(p.getLocation(), Sound.ITEM_BUCKET_FILL_LAVA, 0.7f, 1.2f);
-        p.sendMessage("§aAbasteceu com §f" + colocadas + " §aCélula(s). Tanque: §f" + fmt(m.combustivel) + "/" + tanque());
+        p.sendMessage("§aAbasteceu com §f" + colocadas + " §aCélula(s). Tanque: §f" + fmt(m.combustivel) + "/" + tanque(m));
     }
 
     private void recolher(Player p, Maquina m) {
         if (m.estoque > 0) coletar(p, m);
         int celulas = (int) Math.floor(m.combustivel + 1e-9);
         if (celulas > 0) entregar(p, plugin.combustivel(1), celulas);
-        entregar(p, plugin.maquina(tipo(m), m.nivelVel, m.nivelEst), 1);
+        entregar(p, plugin.maquina(tipo(m), m.nivelVel, m.nivelEst, m.nivelTan), 1);
         porLugar.values().remove(m);
         for (UUID u : new UUID[]{m.display, m.holograma}) {
             Entity e = u == null ? null : Bukkit.getEntity(u);
@@ -537,6 +567,7 @@ public class MaquinaManager implements Listener {
                         UUID.fromString(s.getString("dono")), (float) s.getDouble("yaw"));
                 m.nivelVel = s.getInt("nivel-velocidade");
                 m.nivelEst = s.getInt("nivel-estoque");
+                m.nivelTan = s.getInt("nivel-tanque");
                 m.combustivel = s.getDouble("combustivel");
                 m.estoque = s.getInt("estoque");
                 m.parcialMs = s.getLong("parcial-ms");
@@ -564,6 +595,7 @@ public class MaquinaManager implements Listener {
             yaml.set(b + ".yaw", (double) m.yaw);
             yaml.set(b + ".nivel-velocidade", m.nivelVel);
             yaml.set(b + ".nivel-estoque", m.nivelEst);
+            yaml.set(b + ".nivel-tanque", m.nivelTan);
             yaml.set(b + ".combustivel", m.combustivel);
             yaml.set(b + ".estoque", m.estoque);
             yaml.set(b + ".parcial-ms", m.parcialMs);

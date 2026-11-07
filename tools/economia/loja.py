@@ -121,11 +121,16 @@ def catalogo():
                                 ("glow_berries", 3, 256), ("apple", 4, 256), ("egg", 2, 256),
                                 ("honeycomb", 8, 128), ("honey_bottle", 8, 128), ("nether_wart", 3, 512),
                                 ("brown_mushroom", 2, 256), ("red_mushroom", 2, 256), ("bamboo", 1, 512),
-                                ("kelp", 1, 512), ("chorus_fruit", 5, 256)]:
+                                ("kelp", 1, 512), ("chorus_fruit", 5, 256),
+                                # 2026-11-07: toda plantação vende (as sementes, o bloco de melancia e o fardo
+                                # de feno também; os dois blocos valem as 9 unidades, sem lucro em craftar)
+                                ("wheat_seeds", 0.5, 512), ("beetroot_seeds", 0.5, 512), ("melon_seeds", 0.5, 256),
+                                ("pumpkin_seeds", 0.5, 256), ("melon", 9, 256), ("hay_block", 36, 64)]:
         add(F, nome, preco, venda="sim")
-    for nome, preco in [("wheat_seeds", 0.5), ("beetroot_seeds", 0.5), ("melon_seeds", 2), ("pumpkin_seeds", 2),
-                        ("bread", 13), ("baked_potato", 3.5), ("cookie", 2.5), ("pumpkin_pie", 9),
-                        ("golden_carrot", 30), ("hay_block", 38), ("melon", 9.5), ("sugar", 2.2),
+    # batata venenosa: vem da colheita da batata; a loja só compra (ninguém precisa comprar)
+    add(F, "poisonous_potato", 1, venda="sim", compra=False)
+    for nome, preco in [("bread", 13), ("baked_potato", 3.5), ("cookie", 2.5), ("pumpkin_pie", 9),
+                        ("golden_carrot", 30), ("sugar", 2.2),
                         ("dried_kelp", 1.2), ("cooked_cod", 3.5), ("cooked_salmon", 4.5), ("cake", 40),
                         ("bone_meal", 0.8)]:
         add(F, nome, preco)
@@ -150,7 +155,7 @@ def catalogo():
         # carne crua: a loja só compra (vendendo, comprar crua, assar e vender cozida dava lucro)
         cru = nome in ("beef", "porkchop", "chicken", "mutton", "rabbit")
         add(D, nome, preco, venda="sim", **({"compra": False} if cru else {}))
-    for nome, preco in [("shulker_shell", 300), ("turtle_scute", 60), ("nautilus_shell", 80), ("totem_of_undying", 2500)]:
+    for nome, preco in [("turtle_scute", 60), ("nautilus_shell", 80), ("totem_of_undying", 2500)]:
         add(D, nome, preco)
 
     # -- Natureza (jardineiro): só compra.
@@ -187,9 +192,10 @@ def catalogo():
         add(A, nome, preco)
     # ingredientes de poção que não estavam em lugar nenhum (o Alquimista mostra também os das outras
     # categorias: veja "extras" do alquimista no config do EconomyShopPlugin)
-    for nome, preco in [("glass_bottle", 2.7), ("pufferfish", 8), ("dragon_breath", 50), ("slime_block", 57),
+    for nome, preco in [("glass_bottle", 2.7), ("dragon_breath", 50), ("slime_block", 57),
                         ("cobweb", 11), ("turtle_helmet", 315)]:
         add(A, nome, preco)
+    add(A, "pufferfish", 8, venda="sim")
     return c
 
 

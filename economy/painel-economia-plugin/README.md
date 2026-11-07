@@ -104,3 +104,11 @@ O `.jar` sai em `target/PainelEconomiaPlugin.jar`.
 3. **A origem é o primeiro plugin no stack de execução.** Se um plugin chamar outro que mexe no dinheiro, a movimentação conta pro plugin que fez a chamada de fato.
 4. **O tipo depende do nome da classe e do método.** Se um plugin for reescrito e o método mudar de nome, o tipo passa a aparecer como `Classe#metodo` até o config ser atualizado. Os dias anteriores ao painel ter tipos só mostram o total por plugin.
 5. **O alerta usa o fluxo registrado**, não a circulação recalculada. Dinheiro que entra por fora do Vault (`/eco give`) não dispara o alerta.
+
+## /ricos
+
+Pra todo mundo (2026-11-07): os 10 mais ricos (`ricos.quantos`), com a tag do rank e do clã, e a posição de quem pediu. É a mesma conta do `/economia top`, em cache por `circulacao.cache-minutos` (5). Ops e os nicks de `ricos.esconder` (contas da staff) ficam de fora.
+
+## /tophoras
+
+Pra todo mundo (2026-11-07), com os aliases `/horas` e `/tempojogado`: os 10 que mais jogaram (`tophoras.quantos`), com a tag do rank e do clã, e a posição de quem pediu. O tempo vem da estatística do próprio Minecraft (a mesma do Rankup), que conta o tempo AFK também. Quem está online entra com o valor do momento; o de quem está offline fica em cache por `circulacao.cache-minutos`. Esconde os mesmos que o `/ricos`.

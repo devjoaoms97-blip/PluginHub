@@ -5,8 +5,9 @@ Lê os ranks do config do RankupPlugin, os preços da loja do servidor de teste 
 minas-planejadas.yml. Em cada rank o jogador minera na mina que mais rende entre as que ele
 tem acesso, vende tudo no /sell (com o bônus do rank e o imposto) e sobe quando junta o preço.
 
-O preço de venda da loja cai a cada unidade vendida e volta aos poucos pra âncora. A simulação
-usa o preço de equilíbrio entre as duas forças, com N jogadores vendendo o mesmo minério.
+Desde 2026-11-07 o preço de venda é fixo na âncora (preco-dinamico: false no config da loja). Com o
+dinâmico ligado, ele cai a cada unidade vendida e volta aos poucos pra âncora, e a simulação usa o
+preço de equilíbrio entre as duas forças, com N jogadores vendendo o mesmo minério.
 
 Uso:
   python simular.py                        (cenários padrão)
@@ -111,9 +112,11 @@ def carregar():
 
 
 def preco_equilibrio(item, unidades_por_min, loja):
-    """Preço em que a queda por venda empata com a regeneração."""
+    """Preço em que a queda por venda empata com a regeneração (com o preço fixo, a âncora)."""
     ancora = item["preco-base"] * (1 - item["margem"] / 100)
     ancora = max(item["minimo"], min(item["maximo"], ancora))
+    if not loja.get("preco-dinamico", True):
+        return ancora, ancora
     intervalo = loja["regeneracao"]["intervalo-segundos"]
     fator = loja["regeneracao"]["fator-por-tick"]
     vendidas = unidades_por_min * intervalo / 60

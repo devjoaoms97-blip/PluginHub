@@ -226,6 +226,18 @@ warp-vip:
 # A cada quantos minutos o plugin varre os VIPs ativos e remove quem já expirou.
 verificacao-expiracao-minutos: 5
 
+# /echest (2026-11-07): um baú pessoal que abre de qualquer lugar, separado do baú do fim do jogo.
+# Espaços por VIP (múltiplos de 9, até 54); quem não é VIP usa o "padrao". Se o VIP acaba, o que passa
+# do tamanho novo fica guardado e volta com o VIP.
+echest:
+  ativado: true
+  tamanhos:
+    padrao: 9
+    bronze: 18
+    prata: 27
+    ouro: 36
+    diamante: 54
+
 codigos:
   # Prazo padrão (em dias) pra um código gerado com /vip gerarcodigo ser resgatado. Passou
   # disso sem ninguém resgatar, o código some (mesmo se estiver à venda). 0 = não expira.
