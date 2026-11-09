@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * /missoes — abre o menu com as missões de hoje e da semana. /missoes lista mostra o mesmo no
- * chat. Staff: /missoes admin &lt;resortear &lt;jogador&gt; [semanal]|reload&gt;.
+ * chat. /missoes barra esconde e mostra de novo a barra do alto. Staff: /missoes admin &lt;resortear &lt;jogador&gt; [semanal]|reload&gt;.
  */
 public class MissoesCommand implements CommandExecutor, TabCompleter {
 
@@ -42,6 +42,12 @@ public class MissoesCommand implements CommandExecutor, TabCompleter {
         }
         if (!(sender instanceof Player jogador)) {
             sender.sendMessage("§cSó jogadores têm missões. Staff: §f/missoes admin <resortear|reload>");
+            return true;
+        }
+        if (args.length >= 1 && args[0].equalsIgnoreCase("barra")) {
+            boolean visivel = plugin.getBarraMissoes().alternar(jogador);
+            jogador.sendMessage(visivel ? "§aA barra das missões voltou ao alto da tela."
+                    : "§7Barra das missões escondida. §f/missoes barra §7mostra de novo.");
             return true;
         }
         boolean texto = args.length >= 1 && (args[0].equalsIgnoreCase("lista") || args[0].equalsIgnoreCase("chat"));
@@ -126,6 +132,7 @@ public class MissoesCommand implements CommandExecutor, TabCompleter {
         List<String> opcoes = new ArrayList<>();
         if (args.length == 1) {
             opcoes.add("lista");
+            opcoes.add("barra");
             if (sender.hasPermission("missoes.admin")) opcoes.add("admin");
         } else if (!sender.hasPermission("missoes.admin")) {
             return opcoes;

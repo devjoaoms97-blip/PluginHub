@@ -105,7 +105,8 @@ O `.jar` sai em `target/SkillsPlugin.jar`.
 
 Diferente das outras skills, o **Crítico não sobe lutando com uma arma normal**. Ele precisa de uma **Adaga**: uma espada marcada de forma especial (mesma técnica de segurança usada no plugin do Cheque — não dá pra falsificar renomeando no bigorna).
 
-- **Como criar:** `/skills admin criaradaga` — pegue qualquer espada na mão e rode o comando; ela vira uma Adaga
+- **Como os jogadores conseguem (2026-11-07):** no **Ferreiro** do OficinasPlugin, que transforma a espada da mão em Adaga e desfaz, pelo material (`ferreiro.adaga.preco`), pelos métodos `transformarEmAdaga(ItemStack)`, `desfazerAdaga(ItemStack)` e `ehAdaga(ItemStack)` do SkillsPlugin; e uma Adaga de netherite encantada no chão do boss (4%, `loot.yml` do BossPlugin) e no baú lendário (`loot.yml` do TesourosPlugin)
+- **Como criar (staff):** `/skills admin criaradaga` — pegue qualquer espada na mão e rode o comando; ela vira uma Adaga
 - **Enquanto empunhada:** os golpes treinam Crítico em vez de Espadas — é uma escolha estratégica do jogador
 - **O bônus da Adaga é passivo e universal:** a chance de proc-ar crítico funciona com **qualquer arma** (não só a Adaga), calculada por cima de todos os outros bônus já aplicados (dano base + bônus de arma + crítico vanilla do pulo, se tiver rolado)
 

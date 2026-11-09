@@ -60,6 +60,17 @@ ferreiro:
   acrescimo-por-nivel-encantamento: 12
   # Preço mínimo de um reparo.
   minimo: 1
+  # Transformar a espada da mão em Adaga (treina a skill Crítico do SkillsPlugin) e desfazer, pelo
+  # material da espada (2026-11-07). Os encantamentos ficam. O desconto do VIP vale.
+  adaga:
+    ativado: true
+    preco:
+      WOODEN: 500
+      STONE: 500
+      GOLDEN: 2000
+      IRON: 2000
+      DIAMOND: 8000
+      NETHERITE: 20000
 
 bruxa:
   # A bruxa põe o lápis (o espaço dele vem cheio e travado): o jogador só gasta o XP.

@@ -8,7 +8,7 @@ Cada rank libera a mina correspondente e aumenta o multiplicador de venda. `/ran
 **Como funcionam as minas**
 Há 12 minas na Avenida das Minas, uma por rank. `/mina` mostra quais você pode usar, quanto já foi minerado e o tempo até o próximo reset; clique numa opção para ir até lá. O holograma da entrada também informa o estado da mina.
 
-Na mina, o que a loja compra é **vendido automaticamente**: o dinheiro aparece na barra de ação. Blocos que a loja não compra vão para seu inventário, e a experiência vai direto para você. O preço de venda varia com a procura; o bônus do rank e do VIP também conta. As minas reiniciam por tempo ou quando atingem o percentual minerado configurado.
+Na mina, o que a loja compra é **vendido automaticamente**: o dinheiro aparece na barra de ação. Blocos que a loja não compra vão para seu inventário, e a experiência vai direto para você. O preço de venda é fixo (vender muito não baixa o preço); o bônus do rank e do VIP entra por cima. As minas reiniciam por tempo ou quando atingem o percentual minerado configurado.
 
 **Picaretas e oficinas**
 Fortuna aumenta os drops dos minérios que a mina entrega. A Bruxa encanta picaretas na entrada da avenida; o Ferreiro repara itens, o Picareteiro vende picaretas e machados, e o Sábio vende níveis de XP.

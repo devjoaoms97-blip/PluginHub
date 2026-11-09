@@ -73,6 +73,31 @@ public class Integracoes {
         }
     }
 
+    /** O item é a Adaga do SkillsPlugin? false sem ele. */
+    public boolean ehAdaga(org.bukkit.inventory.ItemStack item) {
+        return chamarAdaga("ehAdaga", item);
+    }
+
+    /** Transforma a espada em Adaga ou desfaz ({@code SkillsPlugin#transformarEmAdaga}/{@code desfazerAdaga}), no próprio item. */
+    public boolean mudarAdaga(org.bukkit.inventory.ItemStack item, boolean virar) {
+        return chamarAdaga(virar ? "transformarEmAdaga" : "desfazerAdaga", item);
+    }
+
+    public boolean temSkills() {
+        return habilitado("SkillsPlugin") != null;
+    }
+
+    private boolean chamarAdaga(String metodo, org.bukkit.inventory.ItemStack item) {
+        Plugin skills = habilitado("SkillsPlugin");
+        if (skills == null || item == null) return false;
+        try {
+            return Boolean.TRUE.equals(skills.getClass().getMethod(metodo, org.bukkit.inventory.ItemStack.class).invoke(skills, item));
+        } catch (ReflectiveOperationException e) {
+            avisar("SkillsPlugin#" + metodo, e);
+            return false;
+        }
+    }
+
     private static Plugin habilitado(String nome) {
         Plugin p = Bukkit.getPluginManager().getPlugin(nome);
         return p == null || !p.isEnabled() ? null : p;

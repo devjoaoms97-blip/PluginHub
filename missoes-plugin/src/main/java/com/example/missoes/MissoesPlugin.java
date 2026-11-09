@@ -24,6 +24,7 @@ public class MissoesPlugin extends JavaPlugin {
     private SkillsIntegration skillsIntegration;
     private RankupIntegration rankupIntegration;
     private MissoesGUI missoesGUI;
+    private com.example.missoes.manager.BarraMissoes barraMissoes;
 
     @Override
     public void onEnable() {
@@ -49,15 +50,19 @@ public class MissoesPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ProgressoListener(this), this);
         getServer().getPluginManager().registerEvents(missoesGUI, this);
         // as missões do dia numa barra no alto da tela
-        com.example.missoes.manager.BarraMissoes barra = new com.example.missoes.manager.BarraMissoes(this);
-        getServer().getPluginManager().registerEvents(barra, this);
-        getServer().getScheduler().runTaskTimer(this, barra::atualizarTodos, 40L, 20L);
+        this.barraMissoes = new com.example.missoes.manager.BarraMissoes(this);
+        getServer().getPluginManager().registerEvents(barraMissoes, this);
+        getServer().getScheduler().runTaskTimer(this, barraMissoes::atualizarTodos, 40L, 20L);
 
         long cincoMin = 20L * 60 * 5;
         getServer().getScheduler().runTaskTimer(this, missaoManager::salvarSeMudou, cincoMin, cincoMin);
 
         getLogger().info("MissoesPlugin ativado! " + missaoManager.getPool(Periodo.DIARIA).size() + " missão(ões) diária(s) e "
                 + missaoManager.getPool(Periodo.SEMANAL).size() + " semanal(is) no pool.");
+    }
+
+    public com.example.missoes.manager.BarraMissoes getBarraMissoes() {
+        return barraMissoes;
     }
 
     @Override

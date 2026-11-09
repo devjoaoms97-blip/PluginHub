@@ -31,7 +31,8 @@ import java.util.Map;
  * O que cada NPC faz ao ser clicado:
  * <ul>
  *   <li><b>Ferreiro</b>: menu com os itens gastos do jogador e o preço do reparo de cada um
- *       (proporcional ao desgaste, pelo material, mais um tanto por nível de encantamento).</li>
+ *       (proporcional ao desgaste, pelo material, mais um tanto por nível de encantamento). Também
+ *       transforma a espada da mão em Adaga (treina Crítico, do SkillsPlugin) e desfaz, pelo material.</li>
  *   <li><b>Bruxa</b>: abre a mesa de encantamento escondida embaixo da barraca dela, cercada por
  *       estantes: sempre o poder máximo (nível 30). O lápis é por conta dela (o espaço vem cheio e
  *       travado); o XP é do jogador, como no vanilla.</li>
@@ -64,6 +65,7 @@ public class Servicos implements Listener {
     private final java.util.Set<org.bukkit.inventory.Inventory> mesasDaBruxa = new java.util.HashSet<>();
 
     private static final int SLOT_TUDO = 49;
+    private static final int SLOT_ADAGA = 47;
     private static final int SLOT_FECHAR = 53;
 
     private final OficinasPlugin plugin;
@@ -124,8 +126,64 @@ public class Servicos implements Listener {
             menu.inventario.setItem(SLOT_TUDO, icone(Material.ANVIL, "§a§lReparar tudo",
                     "§7" + slot + " item(ns) por §a" + plugin.dinheiro(total), descontoLinha(jogador), "§eClique"));
         }
+        ItemStack adaga = iconeAdaga(jogador);
+        if (adaga != null) menu.inventario.setItem(SLOT_ADAGA, adaga);
         menu.inventario.setItem(SLOT_FECHAR, icone(Material.BARRIER, "§cFechar"));
         jogador.openInventory(menu.inventario);
+    }
+
+    /** O botão da Adaga (null sem o SkillsPlugin ou com {@code ferreiro.adaga.ativado} false). */
+    private ItemStack iconeAdaga(Player jogador) {
+        if (!plugin.getConfig().getBoolean("ferreiro.adaga.ativado", true) || !plugin.getIntegracoes().temSkills()) return null;
+        ItemStack mao = jogador.getInventory().getItemInMainHand();
+        double preco = precoAdaga(jogador, mao);
+        if (preco < 0) {
+            return icone(Material.IRON_SWORD, "§d§l🗡 Adaga", "§7Golpes com a Adaga treinam a skill §dCrítico§7.",
+                    "§7Segure uma §fespada §7na mão e clique aqui", "§7pra transformar ela em Adaga.");
+        }
+        if (plugin.getIntegracoes().ehAdaga(mao)) {
+            return icone(Material.IRON_SWORD, "§d§l🗡 Desfazer a Adaga", "§7A Adaga da sua mão volta a ser",
+                    "§7uma espada comum (os encantamentos ficam).", "§7Preço: §a" + plugin.dinheiro(preco), descontoLinha(jogador), "§eClique");
+        }
+        return icone(Material.IRON_SWORD, "§d§l🗡 Transformar em Adaga", "§7A espada da sua mão vira §dAdaga§7:",
+                "§7os golpes com ela treinam §dCrítico §7em vez", "§7de Espadas (sem o bônus de dano das Espadas).",
+                "§7Os encantamentos ficam.", "§7Preço: §a" + plugin.dinheiro(preco), descontoLinha(jogador), "§eClique");
+    }
+
+    /** Preço de transformar (ou desfazer) a espada da mão em Adaga, com o desconto do VIP; -1 se não é espada. */
+    private double precoAdaga(Player jogador, ItemStack item) {
+        if (item == null || !item.getType().name().endsWith("_SWORD")) return -1;
+        ConfigurationSection precos = plugin.getConfig().getConfigurationSection("ferreiro.adaga.preco");
+        double preco = 2000;
+        if (precos != null) {
+            for (String chave : precos.getKeys(false)) {
+                if (item.getType().name().startsWith(chave.toUpperCase(Locale.ROOT))) preco = precos.getDouble(chave);
+            }
+        }
+        return Math.round(preco * (1 - plugin.descontoVip(jogador) / 100.0) * 100) / 100.0;
+    }
+
+    private void cliqueAdaga(Player jogador) {
+        ItemStack mao = jogador.getInventory().getItemInMainHand();
+        double preco = precoAdaga(jogador, mao);
+        if (preco < 0) {
+            jogador.sendMessage("§cSegure uma espada na mão pra transformar em Adaga.");
+            return;
+        }
+        boolean virar = !plugin.getIntegracoes().ehAdaga(mao);
+        if (mao.getAmount() != 1 || !cobrar(jogador, preco, virar ? "Adaga no Ferreiro" : "Desfazer Adaga no Ferreiro")) return;
+        ItemStack copia = mao.clone();
+        if (!plugin.getIntegracoes().mudarAdaga(copia, virar)) {
+            plugin.getEconomy().depositPlayer(jogador, preco); // não deu (o SkillsPlugin saiu?): devolve
+            jogador.sendMessage("§cO ferreiro não conseguiu agora. O dinheiro voltou.");
+            return;
+        }
+        jogador.getInventory().setItemInMainHand(copia);
+        jogador.playSound(jogador.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 0.8f, 1f);
+        jogador.sendMessage(virar
+                ? "§d🗡 O ferreiro afiou sua espada: agora é uma §lAdaga§d! §7Golpes com ela treinam §dCrítico§7."
+                : "§7🗡 O ferreiro desfez a Adaga: sua espada voltou ao normal.");
+        abrirFerreiro(jogador);
     }
 
     /** Preço do reparo de {@code item} pra esse jogador (0 = não dá ou não precisa). */
@@ -162,6 +220,10 @@ public class Servicos implements Listener {
     }
 
     private void cliqueFerreiro(Player jogador, Menu menu, int slot) {
+        if (slot == SLOT_ADAGA) {
+            cliqueAdaga(jogador);
+            return;
+        }
         List<Integer> alvos = new ArrayList<>();
         if (slot == SLOT_TUDO) alvos.addAll(menu.slotParaInventario.values());
         else if (menu.slotParaInventario.containsKey(slot)) alvos.add(menu.slotParaInventario.get(slot));

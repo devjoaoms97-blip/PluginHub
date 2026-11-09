@@ -9,6 +9,7 @@ missoes-por-dia: 3
 
 # As missões do dia numa barra no alto da tela (2026-11-07): a que o jogador mexeu por último (ou a
 # primeira que falta), o progresso dela e quantas do dia já foram. Some quando todas acabam.
+# Cada jogador esconde e mostra de novo com /missoes barra.
 barra:
   ativado: true
 

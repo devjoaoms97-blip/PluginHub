@@ -79,3 +79,17 @@ lendario:
     blaze: {item: "spawner:blaze", qtd: [2, 4], peso: 5}
     lapidadora: {item: "maquina:lapidadora", peso: 3}
     reator: {item: "maquina:reator", peso: 2}
+    # a Adaga de netherite encantada (treina Crítico; também sai no Ferreiro, transformando a espada)
+    adaga:
+      peso: 3
+      itemstack:
+        ==: org.bukkit.inventory.ItemStack
+        DataVersion: 4903
+        id: minecraft:netherite_sword
+        count: 1
+        components:
+          minecraft:custom_data: '{PublicBukkitValues:{"skillsplugin:adaga_critico":1b}}'
+          minecraft:custom_name: '{"text":"Adaga","color":"light_purple","italic":false}'
+          minecraft:enchantments: '{"minecraft:mending":1,"minecraft:sharpness":5,"minecraft:unbreaking":3}'
+          minecraft:lore: '[{"text":"Uma arma especial de treino.","color":"gray","italic":false},{"text":"Golpes com ela treinam a skill","color":"gray","italic":false},{"text":"","italic":false,"extra":[{"text":"Crítico","color":"light_purple","bold":true},{"text":" em vez de Espadas.","color":"gray"}]}]'
+        schema_version: 1

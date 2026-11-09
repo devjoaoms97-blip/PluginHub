@@ -4,7 +4,7 @@ NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma
 
 | NPC | Barraca | O que faz |
 |---|---|---|
-| ⚒ **Ferreiro** | Deepslate, bigorna, alto-forno, lava e chaminé fumegando (leste, x 10..18) | Menu com os itens gastos do seu inventário e o preço do reparo de cada um. Clique pra reparar um, ou "Reparar tudo" |
+| ⚒ **Ferreiro** | Deepslate, bigorna, alto-forno, lava e chaminé fumegando (leste, x 10..18) | Menu com os itens gastos do seu inventário e o preço do reparo de cada um. Clique pra reparar um, ou "Reparar tudo". O botão 🗡 transforma a espada da mão em **Adaga** (treina a skill Crítico do SkillsPlugin, mantendo os encantamentos) ou desfaz, pelo material: `ferreiro.adaga.preco` (R$ 500 madeira/pedra, 2.000 ferro/ouro, 8.000 diamante, 20.000 netherite), com o desconto do VIP |
 | ⛏ **Picareteiro** | Pinho, mostruário de minérios, barris e picaretas nos quadros (leste, x 21..29) | Vende picaretas e machados (pra mina do bosque) da lista do config, encantados ou não |
 | ✦ **Bruxa** | Carvalho escuro, estantes, vitral roxo, caldeirão, velas e ametista (oeste, x -18..-10) | Abre uma mesa de encantamento com o poder máximo (nível 30). O lápis é por conta dela: o espaço vem cheio e travado, e o jogador só gasta o XP |
 | 📖 **Sábio** | Estantes, quartzo e lápis (oeste, x -29..-21) | Vende níveis de XP |

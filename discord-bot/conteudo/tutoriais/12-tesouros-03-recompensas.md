@@ -31,11 +31,12 @@ As chances abaixo são a probabilidade de cada item aparecer **ao menos uma vez 
 
 ### Baú lendário · 5 itens
 
-- Barra de netherita ×1–2: **56,8%** · bloco de diamante ×3–6: **67,3%**
-- Maçã dourada encantada ×1–2: **50,1%** · Fragmento Arcano ×5–8: **65,0%**
-- Totem da imortalidade ×1–2: **42,4%** · livro Remendo I: **38,2%**
-- Estrela do Nether ×1: **23,6%** · élitro ×1: **23,6%**
-- Células de combustível ×128–256: **50,1%** · spawner de golem de ferro: **23,6%**
-- Spawner de blaze ×2–4: **28,7%** · Máquina Lapidadora: **18,1%** · Reator Arcano: **12,4%**
+- Barra de netherita ×1–2: **55,0%** · bloco de diamante ×3–6: **65,5%**
+- Maçã dourada encantada ×1–2: **48,4%** · Fragmento Arcano ×5–8: **63,1%**
+- Totem da imortalidade ×1–2: **40,8%** · livro Remendo I: **36,6%**
+- Estrela do Nether ×1: **22,6%** · élitro ×1: **22,6%**
+- Células de combustível ×128–256: **48,5%** · spawner de golem de ferro: **22,6%**
+- Spawner de blaze ×2–4: **27,6%** · Máquina Lapidadora: **17,4%** · Reator Arcano: **11,8%**
+- **Adaga** de netherita (Afiação V, Inquebrável III, Remendo): **17,4%**
 
 Spawners, máquinas, fragmentos e combustível dependem dos plugins que fornecem esses itens. Máquinas acima do seu rank podem ser guardadas ou negociadas, mas exigem o rank correspondente para colocar e usar.

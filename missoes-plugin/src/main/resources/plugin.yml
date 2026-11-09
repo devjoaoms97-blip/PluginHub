@@ -9,7 +9,7 @@ softdepend: [Vault, SkillsPlugin, PixPlugin]
 commands:
   missoes:
     description: Mostra suas missões de hoje.
-    usage: "Uso: /missoes [lista]"
+    usage: "Uso: /missoes [lista|barra]"
     aliases: [missao, quests]
     permission: missoes.usar
     permission-message: "§cVocê não tem permissão para fazer missões."

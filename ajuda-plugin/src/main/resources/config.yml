@@ -157,6 +157,7 @@ comandos:
         - "/rankup | Sobe de rank"
         - "/diaria | Recompensa diária"
         - "/missoes | Missões de hoje"
+        - "/missoes barra | Esconde ou mostra a barra das missões"
         - "/g <mensagem> | Chat global (sem o /g, só quem está no seu mundo vê)"
         - "/msg <jogador> <mensagem> | Mensagem privada (/r responde)"
     rankup:

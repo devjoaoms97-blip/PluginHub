@@ -52,6 +52,16 @@ public class AdagaUtil {
         return espada;
     }
 
+    /** Volta a Adaga a uma espada comum (tira a marca, o nome e a descrição; os encantamentos ficam). */
+    public ItemStack desfazer(ItemStack adaga) {
+        ItemMeta meta = adaga.getItemMeta();
+        meta.getPersistentDataContainer().remove(chaveAdaga);
+        meta.setDisplayName(null);
+        meta.setLore(null);
+        adaga.setItemMeta(meta);
+        return adaga;
+    }
+
     public boolean ehAdaga(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return false;
         return item.getItemMeta().getPersistentDataContainer().has(chaveAdaga, PersistentDataType.BYTE);

@@ -7,12 +7,10 @@ Um boss aparece todo dia às **20h**: de segunda a sábado, um dos normais, sort
 
 Venha de **netherite com Proteção** e maçãs douradas. Quando ele cai, chove equipamento de PvP no chão (netherite com **Proteção V**, armas, maçãs) e um **Mapa do Tesouro**: corra, que a arena tem PvP. O golpe final leva um prêmio sorteado e a tag de campeão; os três maiores danos ganham coins, e quem ajudou ganha XP de skill. O **Wither** paga **tudo em dobro**. Se o boss escapar após uma hora, o XP de skill cai 10% por até 24 h (ou até o próximo boss cair).
 
-O **Dragão do End** é outra luta: acontece no mundo de recursos, com PvP fora da plataforma verde. Renasce às 21h; veja o tutorial **Dragão do End**.
+O **Dragão do End** renasce às 21h, com PvP fora da plataforma verde: tutorial **Dragão do End**.
 
 **Gladiador**
-O modo **por clã** abre sábado às **19h** e o **individual**, domingo às **19h**. Entre com `/gladiador entrar` e consulte a fase com `/gladiador`.
-
-Pote e borda: tutorial **Gladiador**.
+O modo **por clã** abre sábado às **19h** e o **individual**, domingo às **19h**. Entre com `/gladiador entrar` e consulte a fase com `/gladiador`. Pote e borda: tutorial **Gladiador**.
 
 **Eventos de arena**
 Grátis, e **ninguém perde itens**: entre com o inventário **totalmente vazio** (até armadura e a outra mão), uma inscrição por conexão. A espera é no **`/warp eventos`**, com um portal pra cada evento: sair de lá cancela a inscrição. Todos recebem o mesmo kit, e quem sai do jogo vai pra galeria, em cima da arena (sai dela com `/spawn`). O prêmio é um **cheque de R$ 10.000**. Na arena só vale o comando do evento.
@@ -25,7 +23,7 @@ Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o últ
 
 ✦ **Corre ou Cai**, todo dia às **11h** e **17h** (`/correoucai entrar`): três pisos coloridos e nenhum kit. O bloco onde você pisa fica **vermelho** e some meio segundo depois: não pare de correr! Quem cai vai pro piso de baixo, e do último cai na água.
 
-⚔ **Sobrevivência**, todo dia às **22h** (`/sobrevivencia entrar`): todos **juntos**, com kit de ferro, contra 10 ondas de invasores no pátio de um castelo, com chefe na 5 e na 10. A cada onda vencida, escolha **1 de 3 cartas de melhoria** (velocidade, dano, vida, regeneração ou defesa) em 3 s. Aqui os mobs machucam de verdade: morreu, está fora (sem perder nada). Quem estiver vivo no fim da última onda divide o prêmio.
+⚔ **Sobrevivência**, todo dia às **22h** (`/sobrevivencia entrar`): todos **juntos**, com kit de ferro, contra 10 ondas de invasores no pátio de um castelo, com chefe na 5 e na 10. A cada onda vencida, escolha **1 de 3 cartas de melhoria** (velocidade, dano, vida, regeneração ou defesa) em 3 s. A barra do alto mostra a onda e os invasores. Os mobs machucam de verdade: morreu, está fora (sem perder nada). Os vivos no fim da última onda dividem o prêmio.
 
 ⚑ **Corrida Maluca**, todo dia às **9h** e **14h** (`/corrida entrar`): pista de obstáculos em 3 fases, num dos 5 mapas, sem kit. Caiu na água, volta pro último checkpoint. Os 3 primeiros na chegada levam **R$ 5.000**, **R$ 3.000** e **R$ 2.000**.
 

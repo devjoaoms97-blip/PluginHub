@@ -285,6 +285,27 @@ public class SkillsPlugin extends JavaPlugin {
         return passiveSkillsTask;
     }
 
+    /**
+     * A Adaga pros outros plugins (por reflexão): o OficinasPlugin transforma e desfaz no Ferreiro.
+     * {@code transformarEmAdaga} e {@code desfazerAdaga} mudam o próprio item e devolvem false se não dá
+     * (não é espada, já é Adaga / não é Adaga).
+     */
+    public boolean ehAdaga(ItemStack item) {
+        return adagaUtil.ehAdaga(item);
+    }
+
+    public boolean transformarEmAdaga(ItemStack espada) {
+        if (espada == null || !adagaUtil.ehEspadaValida(espada.getType()) || adagaUtil.ehAdaga(espada)) return false;
+        adagaUtil.transformarEmAdaga(espada);
+        return true;
+    }
+
+    public boolean desfazerAdaga(ItemStack adaga) {
+        if (!adagaUtil.ehAdaga(adaga)) return false;
+        adagaUtil.desfazer(adaga);
+        return true;
+    }
+
     public AdagaUtil getAdagaUtil() {
         return adagaUtil;
     }

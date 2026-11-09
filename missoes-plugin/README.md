@@ -10,6 +10,7 @@ Missões diárias e semanais: todo dia cada jogador recebe **3 missões sorteada
 |---|---|---|
 | `/missoes` | todos | Abre o menu com as missões de hoje e da semana: progresso, recompensa e tempo até as próximas. Missão concluída brilha |
 | `/missoes lista` | todos | O mesmo, no chat |
+| `/missoes barra` | todos | Esconde a barra das missões do alto da tela, ou mostra de novo (fica gravado no jogador) |
 | `/missoes admin resortear <jogador> [semanal]` | staff | Sorteia de novo as missões de hoje (ou da semana) do jogador, zerando o progresso |
 | `/missoes admin reload` | staff | Recarrega o `config.yml` e o pool |
 

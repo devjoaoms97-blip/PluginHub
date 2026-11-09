@@ -290,6 +290,8 @@ bosses:
   witch:
     mob: WITCH
     nome: "&d&l☠ Feiticeira Maldita ☠"
+    # 2026-11-07: 20.000 de vida (os outros têm os 25.000 do global)
+    vida-maxima: 20000
     fases:
       # Wither II por 10 s: 10 de vida, pra quem não se curar
       - tipo: percentual_vida
@@ -299,10 +301,11 @@ bosses:
         duracao-segundos: 10
         amplificador: 1
         raio: 40
+      # uma vez só, nos 30%: 10% da vida (era 20%)
       - tipo: percentual_vida
         valor: 30
         acao: curar
-        percentual: 20
+        percentual: 10
     ataques-aleatorios:
       - acao: efeito_area
         efeito: POISON
@@ -314,8 +317,13 @@ bosses:
         duracao-segundos: 10
         amplificador: 0
         raio: 50
-      - acao: curar
-        percentual: 8
+      # 2026-11-07: sem "curar" aqui. Com 4 ataques e um sorteio a cada 5 s, ela curava 8% umas 4 vezes por
+      # minuto (~150 de vida/s nos 25.000): mais que dois jogadores de netherite tiram. Ficou a Lentidão.
+      - acao: efeito_area
+        efeito: SLOWNESS
+        duracao-segundos: 6
+        amplificador: 1
+        raio: 50
       - acao: mensagem
         texto: "&dA Feiticeira Maldita prepara uma nova poção..."
 

@@ -8,7 +8,7 @@ Os preços de compra e de venda são fixos: vender muito do mesmo item não baix
 **Pix entre jogadores**
 `/pix pagar <jogador> <valor> [motivo]` transfere na hora. Para cobrar, use `/pix receber <jogador> <valor> [motivo]`; a outra pessoa paga com `/pix aceitar <jogador>`. A cobrança expira em 5 minutos. `/pix qrcode <jogador> <valor>` faz a mesma cobrança com um botão **[PAGAR]**: só aquele jogador paga, e clicar duas vezes não cobra duas vezes.
 
-`/pix agendar <jogador> <valor> <dias>` paga a primeira parcela na hora e repete a cada tantos dias; consulte ou cancele com `/pix agendamentos`. No servidor de teste, a taxa é **1%** e sai do valor recebido; o pagador perde o valor cheio. O limite diário está desativado atualmente; `/pix limite` mostra o teto caso ele seja ligado. `/pix historico` orienta a procurar o **Extrato no Bancário**.
+`/pix agendar <jogador> <valor> <dias>` paga a primeira parcela na hora e repete a cada tantos dias; consulte ou cancele com `/pix agendamentos`. A taxa é **1%** e sai do valor recebido; o pagador perde o valor cheio. O limite diário está desativado atualmente; `/pix limite` mostra o teto caso ele seja ligado. `/pix historico` orienta a procurar o **Extrato no Bancário**.
 
 **Bancário e Mine-sena** · `/warp banco`
 O Banco fica no fim da Avenida das Minas. No Bancário, veja o **Extrato** e deposite cheques. Para emitir um, compre uma folha e use `/cheque <valor> [jogador]`; um cheque nominal só pode ser depositado pela pessoa indicada.
