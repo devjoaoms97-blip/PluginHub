@@ -46,7 +46,8 @@ import java.util.concurrent.ThreadLocalRandom;
  *   <li><b>Agricultor</b>: XP por planta madura colhida com a mão, colheita dupla e bônus de venda no
  *       Fazendeiro (a loja pergunta {@code SkillsPlugin#bonusVenda}). Farm automática não dispara a
  *       quebra por jogador, então não conta.</li>
- *   <li><b>Pescador</b>: XP por pesca, mapa do tesouro e Fragmento Arcano raros. Pesca parada vale.</li>
+ *   <li><b>Pescador</b>: XP por pesca, mapa do tesouro e Fragmento Arcano raros. Pesca parada vale. E o
+ *       loot próprio da pesca ({@link PescaLoot}), em que a pesca parada vale menos.</li>
  *   <li><b>Lenhador</b>: XP por tronco, tora a mais e, nos mundos de recursos, chance de derrubar a
  *       árvore natural inteira.</li>
  * </ul>
@@ -295,6 +296,7 @@ public class ProfissoesListener implements Listener {
                 jogador.playSound(jogador.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1f, 0.8f);
             }
         }
+        plugin.getPescaLoot().aoPescar(jogador, evento.getCaught() instanceof Item item ? item : null);
     }
 
     private static void entregar(Player jogador, ItemStack item) {

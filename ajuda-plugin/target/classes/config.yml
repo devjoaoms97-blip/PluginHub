@@ -89,6 +89,8 @@ comandos-permitidos:
     - tophoras
     - horas
     - tempojogado
+    - peixes
+    - peixaria
     - cheque
     - minesena
     - achados
@@ -181,6 +183,7 @@ comandos:
         - "/warp banco | O Banco, no fim da Avenida das Minas"
         - "/ricos | Os mais ricos do servidor"
         - "/tophoras | Quem mais jogou no servidor"
+        - "/peixes | Peixes raros da pesca: preços, sua chance e /peixes vender"
         - "/pix pagar <jogador> <valor> | Paga alguém"
         - "/pix receber <jogador> <valor> | Cobra alguém (ele aceita)"
         - "/pix pendentes | Cobranças em aberto"

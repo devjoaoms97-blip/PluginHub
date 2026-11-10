@@ -20,7 +20,9 @@ import com.example.skills.manager.RewardManager;
 import com.example.skills.manager.SangramentoManager;
 import com.example.skills.manager.SkillDataManager;
 import com.example.skills.manager.XpManager;
+import com.example.skills.command.PeixesCommand;
 import com.example.skills.profissao.Integracoes;
+import com.example.skills.profissao.PescaLoot;
 import com.example.skills.profissao.ProfissoesListener;
 import com.example.skills.skill.PlayerSkillData;
 import com.example.skills.skill.Skill;
@@ -53,6 +55,7 @@ public class SkillsPlugin extends JavaPlugin {
     private EventoXp eventoXp;
     private RankingSkills rankingSkills;
     private PvpXpLimitador pvpXpLimitador;
+    private PescaLoot pescaLoot;
 
     @Override
     public void onEnable() {
@@ -89,7 +92,13 @@ public class SkillsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SkillsGUIListener(), this);
         getServer().getPluginManager().registerEvents(new StunListener(this), this);
         getServer().getPluginManager().registerEvents(new MorteListener(this), this);
-        getServer().getPluginManager().registerEvents(new ProfissoesListener(this, new Integracoes(this)), this);
+        Integracoes integracoes = new Integracoes(this);
+        this.pescaLoot = new PescaLoot(this, integracoes);
+        getServer().getPluginManager().registerEvents(pescaLoot, this);
+        getServer().getPluginManager().registerEvents(new ProfissoesListener(this, integracoes), this);
+        PeixesCommand peixes = new PeixesCommand(this);
+        getCommand("peixes").setExecutor(peixes);
+        getCommand("peixes").setTabCompleter(peixes);
 
         this.passiveSkillsTask = new PassiveSkillsTask(this);
         int intervaloSegundos = getConfig().getInt("passivas.intervalo-segundos", 10);
@@ -239,6 +248,10 @@ public class SkillsPlugin extends JavaPlugin {
         } catch (ReflectiveOperationException | ClassCastException e) {
             return 1;
         }
+    }
+
+    public PescaLoot getPescaLoot() {
+        return pescaLoot;
     }
 
     public EventoXp getEventoXp() {

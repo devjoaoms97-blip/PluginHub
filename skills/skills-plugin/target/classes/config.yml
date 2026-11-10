@@ -149,6 +149,135 @@ pescador:
     - {nivel: 30, comum: 55, raro: 28, arcano: 13, lendario: 4}
     - {nivel: 40, comum: 50, raro: 29, arcano: 16, lendario: 5}
     - {nivel: 50, comum: 45, raro: 30, arcano: 18, lendario: 7}
+  # Loot próprio da pesca (2026-11-10). A cada pesca, chance de vir uma pesca especial no lugar do
+  # que o anzol puxou: chance-base + chance-por-nivel × nível do Pescador (com o prestígio). Nível 1:
+  # 2,1%, nível 50: 7% (~1 em 14). A Vara do Pescador multiplica por 1 + vara.bonus-chance.
+  # Pesca parada: do mesmo bloco e sem mexer a câmera há mais de afk.minutos, a chance vezes afk.fator.
+  # A raridade sai pela faixa de nível (pesos-raridade) e o item, pelo peso, da lista da raridade. Cada
+  # item é: peixe:<id>, bau:<comum|raro|lendario>, vara, adaga, fragmento, combustivel,
+  # spawner:<tipo>, maquina:<tipo>, livro:<encantamento>:<nível> ou um MATERIAL; qtd: [mín, máx].
+  # Pra mudar, copie o bloco "loot" inteiro pro config do servidor (as listas não se misturam com as do jar).
+  # Renda pescando ativo (~300 pescas/h), entre peixes e baús: nível 1 ~R$ 5 mil/h, 25 ~R$ 21 mil/h,
+  # 50 ~R$ 58 mil/h e 1,3 fragmento/h. Parado no 50 (400 pescas/h, fator 0.25): ~R$ 19 mil/h.
+  loot:
+    ativado: true
+    chance-base: 0.02
+    chance-por-nivel: 0.001
+    afk:
+      minutos: 10
+      fator: 0.25
+    pesos-raridade:
+      - {nivel: 1, comum: 80, raro: 18, epico: 2, lendario: 0}
+      - {nivel: 10, comum: 70, raro: 24, epico: 5, lendario: 1}
+      - {nivel: 20, comum: 62, raro: 27, epico: 9, lendario: 2}
+      - {nivel: 30, comum: 55, raro: 29, epico: 12, lendario: 4}
+      - {nivel: 40, comum: 50, raro: 30, epico: 15, lendario: 5}
+      - {nivel: 50, comum: 45, raro: 30, epico: 18, lendario: 7}
+    raridades:
+      comum:
+        itens:
+          lambari: {item: "peixe:lambari", peso: 45}
+          bau: {item: "bau:comum", peso: 20}
+          combustivel: {item: combustivel, qtd: [8, 16], peso: 15}
+          xp: {item: EXPERIENCE_BOTTLE, qtd: [4, 8], peso: 10}
+          inquebravel: {item: "livro:unbreaking:3", peso: 5}
+          isca: {item: "livro:lure:3", peso: 5}
+      raro:
+        itens:
+          tucunare: {item: "peixe:tucunare", peso: 40}
+          bau: {item: "bau:raro", peso: 20}
+          combustivel: {item: combustivel, qtd: [32, 64], peso: 12}
+          remendo: {item: "livro:mending:1", peso: 6}
+          afiacao: {item: "livro:sharpness:5", peso: 6}
+          vara: {item: vara, peso: 6}
+          fragmento: {item: fragmento, peso: 5}
+          maca: {item: GOLDEN_APPLE, qtd: [2, 4], peso: 5}
+      epico:
+        itens:
+          pirarucu: {item: "peixe:pirarucu", peso: 35}
+          bau: {item: "bau:raro", peso: 15}
+          bau-lendario: {item: "bau:lendario", peso: 5}
+          vara: {item: vara, peso: 10}
+          sucata: {item: NETHERITE_SCRAP, qtd: [1, 2], peso: 10}
+          totem: {item: TOTEM_OF_UNDYING, peso: 6}
+          fragmento: {item: fragmento, peso: 6}
+          slime: {item: "spawner:slime", peso: 5}
+          tridente: {item: TRIDENT, peso: 8}
+      lendario:
+        itens:
+          brasa: {item: "peixe:brasa", peso: 30}
+          bau: {item: "bau:lendario", peso: 25}
+          adaga: {item: adaga, peso: 10}
+          maca: {item: ENCHANTED_GOLDEN_APPLE, peso: 8}
+          fragmento: {item: fragmento, qtd: [2, 3], peso: 8}
+          blaze: {item: "spawner:blaze", peso: 8}
+          netherite: {item: NETHERITE_INGOT, peso: 7}
+          lapidadora: {item: "maquina:lapidadora", peso: 4}
+    # Peixes raros: vendidos com /peixes vender pelo preço daqui (a loja não compra).
+    peixes:
+      lambari:
+        material: COD
+        nome: "&eLambari Dourado"
+        descricao: ["&7Brilha como moeda nova."]
+        preco: 300
+      tucunare:
+        material: SALMON
+        nome: "&6Tucunaré Brasa"
+        descricao: ["&7Briga até o último segundo."]
+        preco: 1500
+      pirarucu:
+        material: SALMON
+        nome: "&5Pirarucu Arcano"
+        descricao: ["&7Gigante dos rios, cheio de magia."]
+        preco: 6000
+      brasa:
+        material: TROPICAL_FISH
+        nome: "&c&lPeixe-Brasa"
+        descricao: ["&7Dizem que nada no fogo.", "&7Poucos já viram um."]
+        preco: 25000
+    # Baú do Mar: clique direito abre. Coins entre o mínimo e o máximo e "rolagens" itens, sem repetir.
+    bau:
+      comum:
+        nome: "&bBaú do Mar"
+        coins: [800, 2000]
+        rolagens: 1
+        itens:
+          ferro: {item: IRON_INGOT, qtd: [8, 16], peso: 30}
+          combustivel: {item: combustivel, qtd: [8, 16], peso: 25}
+          maca: {item: GOLDEN_APPLE, qtd: [1, 2], peso: 20}
+          lambari: {item: "peixe:lambari", peso: 20}
+          isca: {item: "livro:lure:3", peso: 5}
+      raro:
+        nome: "&9Baú do Mar Raro"
+        coins: [4000, 8000]
+        rolagens: 2
+        itens:
+          diamante: {item: DIAMOND, qtd: [3, 6], peso: 25}
+          combustivel: {item: combustivel, qtd: [32, 64], peso: 20}
+          tucunare: {item: "peixe:tucunare", peso: 15}
+          remendo: {item: "livro:mending:1", peso: 10}
+          vara: {item: vara, peso: 10}
+          xp: {item: EXPERIENCE_BOTTLE, qtd: [16, 32], peso: 15}
+          fragmento: {item: fragmento, peso: 5}
+      lendario:
+        nome: "&6&lBaú do Mar Lendário"
+        coins: [25000, 40000]
+        rolagens: 3
+        itens:
+          diamante: {item: DIAMOND_BLOCK, qtd: [2, 4], peso: 20}
+          pirarucu: {item: "peixe:pirarucu", peso: 15}
+          netherite: {item: NETHERITE_INGOT, peso: 10}
+          maca: {item: ENCHANTED_GOLDEN_APPLE, peso: 10}
+          fragmento: {item: fragmento, qtd: [1, 2], peso: 10}
+          adaga: {item: adaga, peso: 8}
+          blaze: {item: "spawner:blaze", peso: 8}
+          golem: {item: "spawner:golem", peso: 4}
+          lapidadora: {item: "maquina:lapidadora", peso: 5}
+    # Vara do Pescador: sai no loot (raro e épico) e no Baú do Mar Raro.
+    vara:
+      nome: "&b&lVara do Pescador"
+      bonus-chance: 0.25
+      encantamentos: {luck_of_the_sea: 3, lure: 3, unbreaking: 3, mending: 1}
 
 # Lenhador: XP por tronco cortado com a mão (tronco colocado por jogador não conta). Chance de uma
 # tora a mais (na mina do bosque também), 0.004 por nível = 20% no 50. Com machado, chance de derrubar

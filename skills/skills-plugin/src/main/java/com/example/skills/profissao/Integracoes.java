@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 /**
- * As skills de profissão conversam com o RankupPlugin (minas, quebra do 3x3 e Fragmento Arcano) e com
- * o TesourosPlugin (mapas), por reflexão, como as outras integrações: sem o plugin, aquela parte só
+ * As skills de profissão conversam com o RankupPlugin (minas, quebra do 3x3 e Fragmento Arcano), com
+ * o TesourosPlugin (mapas) e, no loot da pesca, com o MaquinasPlugin, o SpawnersPlugin e o PixPlugin (extrato), por reflexão, como as outras integrações: sem o plugin, aquela parte só
  * não acontece.
  */
 public class Integracoes {
@@ -63,6 +63,58 @@ public class Integracoes {
         } catch (ReflectiveOperationException e) {
             plugin.getLogger().warning("TesourosPlugin sem Mapas#criar (versão antiga?): " + e.getMessage());
             return null;
+        }
+    }
+
+    /** Células de Combustível do MaquinasPlugin, ou null. */
+    public ItemStack combustivel(int quantidade) {
+        return chamar("MaquinasPlugin", "combustivel", new Class<?>[]{int.class}, quantidade) instanceof ItemStack item ? item : null;
+    }
+
+    /** Spawner do SpawnersPlugin daquele tipo (zumbi, blaze, golem...), ou null. */
+    public ItemStack spawner(String tipo, int quantidade) {
+        return itemDeTipo("SpawnersPlugin", "item", tipo, quantidade);
+    }
+
+    /** Máquina nova do MaquinasPlugin daquele tipo (tear, forja, lapidadora...), ou null. */
+    public ItemStack maquina(String tipo) {
+        return itemDeTipo("MaquinasPlugin", "maquina", tipo, 0);
+    }
+
+    /** {@code getTipos().get(tipo)} do plugin, passado pro método que cria o item (como no TesourosPlugin). */
+    private ItemStack itemDeTipo(String nomePlugin, String metodo, String tipo, int quantidade) {
+        Plugin p = ativo(nomePlugin);
+        if (p == null) return null;
+        try {
+            Object tipos = p.getClass().getMethod("getTipos").invoke(p);
+            Object t = tipos instanceof java.util.Map<?, ?> mapa ? mapa.get(tipo) : null;
+            if (t == null) {
+                plugin.getLogger().warning("pescador.loot: " + nomePlugin + " não tem o tipo \"" + tipo + "\"");
+                return null;
+            }
+            Object item = metodo.equals("maquina")
+                    ? p.getClass().getMethod(metodo, t.getClass(), int.class, int.class).invoke(p, t, 0, 0)
+                    : p.getClass().getMethod(metodo, t.getClass(), int.class).invoke(p, t, quantidade);
+            return item instanceof ItemStack i ? i : null;
+        } catch (ReflectiveOperationException e) {
+            plugin.getLogger().warning(nomePlugin + "#" + metodo + " falhou: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /** Registra no extrato do PixPlugin (/extrato) uma entrada de dinheiro, se ele estiver ligado. */
+    public void extrato(Player jogador, double valor, String motivo) {
+        Plugin pix = ativo("PixPlugin");
+        if (pix == null) return;
+        try {
+            Object charges = pix.getClass().getMethod("getChargeManager").invoke(pix);
+            charges.getClass().getMethod("registrarTransacaoComEntidade", java.util.UUID.class, String.class, double.class, boolean.class, String.class)
+                    .invoke(charges, jogador.getUniqueId(), "Pescaria", valor, true, motivo);
+        } catch (ReflectiveOperationException e) {
+            if (!avisou) {
+                plugin.getLogger().warning("PixPlugin sem registrarTransacaoComEntidade (versão antiga?): " + e.getMessage());
+                avisou = true;
+            }
         }
     }
 

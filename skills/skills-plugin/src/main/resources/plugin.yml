@@ -12,6 +12,11 @@ commands:
     usage: "Uso: /skills [ver|admin setlevel <jogador> <skill> <nível>]"
     permission: skills.usar
     permission-message: "§cVocê não tem permissão para usar skills."
+  peixes:
+    description: Mostra e vende os peixes raros da pescaria.
+    usage: "Uso: /peixes [vender]"
+    aliases: [peixaria]
+    permission: skills.usar
 
 permissions:
   skills.usar:

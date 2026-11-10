@@ -4,7 +4,7 @@
 Cada skill vai do nível 1 ao **50** e melhora um pouco **a cada nível**: o bônus não espera o 50, ele cresce aos poucos. `/skills` abre o menu, `/skills ver` resume no chat e `/skills top [skill]` mostra o ranking. Com uma arma ou ferramenta na mão, a skill dela aparece no placar da direita.
 ⚔ **Armas (8):** Espadas, Machado, Arqueiro, Porradeiro, Tridente, Lanceiro, Marreteiro e Crítico. Guia: **Skills de armas**.
 🛡 **Defesa (5):** Esquiva, Defesa, Bloqueio, Regeneração e Agilidade. Guia: **Skills de defesa**.
-⛏ **Profissão (4):** Minerador, Lenhador, Agricultor e Pescador, pra quem minera, corta, planta e pesca. Guia: **Skills de profissão**.
+⛏ **Profissão (4):** Minerador, Lenhador, Agricultor e Pescador, pra quem minera, corta, planta e pesca (a pesca tem loot próprio: peixes raros, Baú do Mar e mais). Guia: **Skills de profissão**.
 
 **XP e dinheiro por nível**
 Nas armas, cada ponto de dano dá **2 XP contra jogador**, **1 contra mob** e um quarto disso contra mob de spawner. Em PvP, o XP contra a mesma pessoa cai depois de um tempo (teto diário por vítima). Cada nível novo paga **R$ 25 × o nível** (o nível 10 paga R$ 250).
