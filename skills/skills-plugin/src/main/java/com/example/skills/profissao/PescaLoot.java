@@ -26,10 +26,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -90,7 +92,10 @@ public class PescaLoot implements Listener {
     public void aoPescar(Player jogador, Item fisgado) {
         if (!cfg().getBoolean("ativado", true)) return;
         double chance = chance(jogador);
-        if (ThreadLocalRandom.current().nextDouble() >= chance) return;
+        if (ThreadLocalRandom.current().nextDouble() >= chance) {
+            trocarLixo(jogador, fisgado);
+            return;
+        }
         String raridade = sortearRaridade(plugin.getSkillDataManager().get(jogador.getUniqueId()).getNivel(Skill.PESCADOR));
         ItemStack premio = sortear(cfg().getConfigurationSection("raridades." + raridade));
         if (premio == null) return;
@@ -109,6 +114,29 @@ public class PescaLoot implements Listener {
         }
     }
 
+    /** O lixo do vanilla (o que não é peixe nem tesouro). A vara e a bota do lixo vêm sem encantamento. */
+    private static final Set<Material> LIXO = EnumSet.of(Material.LILY_PAD, Material.BOWL, Material.LEATHER, Material.LEATHER_BOOTS,
+            Material.ROTTEN_FLESH, Material.STICK, Material.STRING, Material.POTION, Material.BONE, Material.INK_SAC,
+            Material.TRIPWIRE_HOOK, Material.BAMBOO, Material.FISHING_ROD);
+
+    /**
+     * Pesca normal que veio lixo: com {@code lixo-por-nivel} × nível de Pescador de chance (nível 25 com
+     * 0,02: metade), vira peixe, na proporção do vanilla (bacalhau 60, salmão 25, baiacu 13, palhaço 2).
+     */
+    private void trocarLixo(Player jogador, Item fisgado) {
+        if (fisgado == null) return;
+        ItemStack item = fisgado.getItemStack();
+        if (!LIXO.contains(item.getType()) || !item.getEnchantments().isEmpty()) return;
+        int nivel = plugin.getSkillDataManager().get(jogador.getUniqueId()).getNivel(Skill.PESCADOR);
+        if (ThreadLocalRandom.current().nextDouble() >= nivel * cfg().getDouble("lixo-por-nivel", 0.02)) return;
+        int r = ThreadLocalRandom.current().nextInt(100);
+        Material peixe = r < 60 ? Material.COD : r < 85 ? Material.SALMON : r < 98 ? Material.PUFFERFISH : Material.TROPICAL_FISH;
+        // no tick seguinte, como o loot especial (as missões contam o que o jogo deu)
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            if (fisgado.isValid()) fisgado.setItemStack(new ItemStack(peixe));
+        });
+    }
+
     /** A chance de a pesca vir especial, com a Vara do Pescador e o desconto da pesca parada. */
     private double chance(Player jogador) {
         double chance = chanceAtiva(jogador);
@@ -118,7 +146,7 @@ public class PescaLoot implements Listener {
 
     /** A chance de quem pesca ativo (sem o desconto da pesca parada), com a Vara do Pescador na mão. */
     public double chanceAtiva(Player jogador) {
-        double chance = cfg().getDouble("chance-base", 0.02)
+        double chance = cfg().getDouble("chance-base", 0.03)
                 + plugin.getBonusCalculator().porNivel(jogador.getUniqueId(), Skill.PESCADOR, "pescador.loot.chance-por-nivel");
         if (ehVara(jogador.getInventory().getItemInMainHand()) || ehVara(jogador.getInventory().getItemInOffHand())) {
             chance *= 1 + cfg().getDouble("vara.bonus-chance", 0.25);

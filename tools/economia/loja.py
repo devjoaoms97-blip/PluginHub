@@ -151,7 +151,7 @@ def catalogo():
                                 ("prismarine_shard", 4, 256), ("prismarine_crystals", 5, 256),
                                 ("rabbit_hide", 2, 128), ("rabbit_foot", 15, 16), ("beef", 3, 256),
                                 ("porkchop", 3, 256), ("chicken", 2, 256), ("mutton", 2, 256), ("rabbit", 2, 128),
-                                ("cod", 2, 256), ("salmon", 3, 256), ("arrow", 1, 256), ("breeze_rod", 25, 32)]:
+                                ("cod", 2, 256), ("salmon", 3, 256), ("tropical_fish", 8, 64), ("arrow", 1, 256), ("breeze_rod", 25, 32)]:
         # carne crua: a loja só compra (vendendo, comprar crua, assar e vender cozida dava lucro)
         cru = nome in ("beef", "porkchop", "chicken", "mutton", "rabbit")
         add(D, nome, preco, venda="sim", **({"compra": False} if cru else {}))

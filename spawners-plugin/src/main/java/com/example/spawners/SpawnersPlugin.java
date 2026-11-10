@@ -157,13 +157,24 @@ public class SpawnersPlugin extends JavaPlugin {
                 sender.sendMessage("§e§l--- Spawners colocados: " + spawners.quantos() + " ---");
                 spawners.resumo().forEach(sender::sendMessage);
             }
+            case "juntar" -> {
+                boolean confirmar = args.length > 1 && args[1].equalsIgnoreCase("confirmar");
+                List<String> linhas = spawners.juntar(confirmar);
+                if (linhas.isEmpty()) {
+                    sender.sendMessage("§aNenhum terreno tem spawners do mesmo tipo separados.");
+                    return true;
+                }
+                sender.sendMessage(confirmar ? "§e§lJuntei:" : "§e§lJuntaria (as pilhas dos outros blocos somem):");
+                linhas.forEach(sender::sendMessage);
+                if (!confirmar) sender.sendMessage("§7Pra juntar: §f/spawners juntar confirmar");
+            }
             case "mobs" -> warpMobs.comando(sender, args);
             case "reload" -> {
                 reloadConfig();
                 carregarTipos();
                 sender.sendMessage("§aConfig recarregado (" + tipos.size() + " tipos).");
             }
-            default -> sender.sendMessage("§f/spawners loja §7| §f/spawners dar <jogador> <tipo> [qtd] §7| §f/spawners lista §7| §f/spawners mobs §7| §f/spawners reload");
+            default -> sender.sendMessage("§f/spawners loja §7| §f/spawners dar <jogador> <tipo> [qtd] §7| §f/spawners lista §7| §f/spawners juntar §7| §f/spawners mobs §7| §f/spawners reload");
         }
         return true;
     }
@@ -173,7 +184,7 @@ public class SpawnersPlugin extends JavaPlugin {
         List<String> opcoes = new ArrayList<>();
         if (args.length == 1) {
             opcoes.add("loja");
-            if (sender.hasPermission("spawners.admin")) opcoes.addAll(List.of("dar", "lista", "mobs", "reload"));
+            if (sender.hasPermission("spawners.admin")) opcoes.addAll(List.of("dar", "lista", "juntar", "mobs", "reload"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("dar")) {
             Bukkit.getOnlinePlayers().forEach(p -> opcoes.add(p.getName()));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("mobs") && sender.hasPermission("spawners.admin")) {

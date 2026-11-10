@@ -22,6 +22,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -47,7 +49,8 @@ import java.util.logging.Level;
  *   <li><b>No mundo</b>: um bloco de barreira (colisão e clique, invisível) e um item display com o
  *       modelo da máquina (resource pack), virado pra quem colocou; em cima, um holograma com o
  *       estoque e o combustível.</li>
- *   <li><b>Produção</b>: pelo relógio, mesmo com o dono offline ou o terreno descarregado. A cada
+ *   <li><b>Produção</b>: pelo relógio, mesmo com o dono offline ou o terreno descarregado (com o dono
+ *       offline, na velocidade {@code producao-offline}: o relógio anda mais devagar). A cada
  *       {@code intervalo} sai um produto, gastando {@code combustivel-por-produto} Células, até acabar
  *       o combustível ou encher o estoque (que enche em uma a duas horas: a máquina recompensa quem
  *       passa pra coletar, não quem some por dias).</li>
@@ -187,9 +190,23 @@ public class MaquinaManager implements Listener {
 
     /** Põe a produção em dia pelo relógio. */
     void atualizar(Maquina m) {
+        atualizar(m, Bukkit.getPlayer(m.dono) != null);
+    }
+
+    /** Fração da velocidade com o dono offline (producao-offline: 0.5 = metade). */
+    double fatorOffline() {
+        return Math.max(0, Math.min(1, plugin.getConfig().getDouble("producao-offline", 1)));
+    }
+
+    /**
+     * Põe a produção em dia, com o dono online ou não desde a última atualização (quem entra e quem sai
+     * atualiza as máquinas dele antes, pra cada trecho de tempo contar na velocidade certa).
+     */
+    private void atualizar(Maquina m, boolean donoOnline) {
         MaquinasPlugin.Tipo t = tipo(m);
         long agora = System.currentTimeMillis();
         long passou = Math.max(0, agora - m.ultima);
+        if (!donoOnline) passou = (long) (passou * fatorOffline());
         m.ultima = agora;
         if (t == null) return;
         int cabe = capacidade(m) - m.estoque;
@@ -216,6 +233,23 @@ public class MaquinaManager implements Listener {
             atualizarHolograma(m);
         }
         sujo = true;
+    }
+
+    // o dono entrou: o tempo até agora foi offline; saiu: foi online (no PlayerQuitEvent ele ainda conta como online)
+    @EventHandler
+    public void aoEntrar(PlayerJoinEvent evento) {
+        atualizarDoDono(evento.getPlayer().getUniqueId(), false);
+    }
+
+    @EventHandler
+    public void aoSair(PlayerQuitEvent evento) {
+        atualizarDoDono(evento.getPlayer().getUniqueId(), true);
+    }
+
+    private void atualizarDoDono(UUID dono, boolean estavaOnline) {
+        for (Maquina m : porLugar.values()) {
+            if (m.dono.equals(dono)) atualizar(m, estavaOnline);
+        }
     }
 
     /** A cada 20 s: em dia a produção das máquinas carregadas e o holograma delas. */
@@ -379,7 +413,8 @@ public class MaquinaManager implements Listener {
         menu.inventario = Bukkit.createInventory(menu, 27, "§8⚙ " + org.bukkit.ChatColor.stripColor(t.nome()));
         double porHora = 3_600_000.0 / intervaloMs(m);
         menu.inventario.setItem(SLOT_INFO, icone(plugin.maquina(t, m.nivelVel, m.nivelEst, m.nivelTan), "§e⚙ " + t.nome(),
-                "§7Fabrica: §f" + prod.nome() + " §7(" + fmt(porHora) + " por hora)",
+                "§7Fabrica: §f" + prod.nome() + " §7(" + fmt(porHora) + " por hora"
+                        + (fatorOffline() < 1 ? "; com você offline, " + fmt(porHora * fatorOffline()) : "") + ")",
                 "§7Estoque: §f" + m.estoque + "/" + capacidade(m),
                 "§7Combustível: §f" + fmt(m.combustivel) + "/" + tanque(m) + " §7(" + fmt(t.combustivelPorProduto()) + " por produto)",
                 "§7Velocidade §f" + m.nivelVel + " §7| Estoque §f" + m.nivelEst + " §7| Tanque §f" + m.nivelTan));

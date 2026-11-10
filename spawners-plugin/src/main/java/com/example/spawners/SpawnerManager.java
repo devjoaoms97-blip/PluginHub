@@ -4,6 +4,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -162,6 +163,50 @@ public class SpawnerManager implements Listener {
         return total;
     }
 
+    /** O spawner desse tipo que já tem no terreno (sem o TerrenosPlugin, o do mesmo dono), ou null. */
+    private Colocado mesmoTipoNoTerreno(String terreno, UUID dono, String tipo) {
+        for (Colocado c : porLugar.values()) {
+            if (!c.tipo.equals(tipo)) continue;
+            if (terreno == null ? c.dono.equals(dono) : terreno.equals(plugin.getTerrenos().terrenoEm(c.bloco()))) return c;
+        }
+        return null;
+    }
+
+    /**
+     * Staff: junta os spawners do mesmo tipo em cada terreno (colocados antes da regra de um bloco por
+     * tipo) no bloco com mais spawners. Os outros blocos somem, com a pilha de mobs deles. Sem
+     * {@code confirmar}, só lista o que faria.
+     */
+    List<String> juntar(boolean confirmar) {
+        Map<String, List<Colocado>> grupos = new LinkedHashMap<>();
+        for (Colocado c : porLugar.values()) {
+            String terreno = plugin.getTerrenos().terrenoEm(c.bloco());
+            grupos.computeIfAbsent((terreno != null ? terreno : c.dono.toString()) + "|" + c.tipo, k -> new ArrayList<>()).add(c);
+        }
+        List<String> linhas = new ArrayList<>();
+        for (List<Colocado> grupo : grupos.values()) {
+            if (grupo.size() < 2) continue;
+            Colocado fica = grupo.get(0);
+            for (Colocado c : grupo) if (c.quantidade > fica.quantidade) fica = c;
+            int total = grupo.stream().mapToInt(c -> c.quantidade).sum();
+            SpawnersPlugin.Tipo t = plugin.tipo(fica.tipo);
+            linhas.add("§f" + (t != null ? t.nome() : fica.tipo) + " §7de §f" + Bukkit.getOfflinePlayer(fica.dono).getName() + "§7: "
+                    + grupo.size() + " blocos → §fx" + total + " §7em " + fica.x + " " + fica.y + " " + fica.z);
+            if (!confirmar) continue;
+            for (Colocado c : grupo) {
+                if (c == fica) continue;
+                remover(c);
+                Location b = c.bloco();
+                if (b != null) b.getBlock().setType(Material.AIR);
+            }
+            fica.quantidade = total;
+            atualizarHolograma(fica);
+            sujo = true;
+        }
+        if (confirmar && !linhas.isEmpty()) salvar();
+        return linhas;
+    }
+
     private int limitePorBloco() {
         return Math.max(1, plugin.getConfig().getInt("limite-por-bloco", 64));
     }
@@ -190,6 +235,14 @@ public class SpawnerManager implements Listener {
         if (noTerreno(terreno, jogador.getUniqueId()) >= limitePorTerreno()) {
             evento.setCancelled(true);
             jogador.sendMessage("§cEsse terreno já tem o máximo de spawners (§f" + limitePorTerreno() + "§c, somando todos os tipos).");
+            return;
+        }
+        // um bloco por tipo em cada terreno: separados, cada bloco guardava uma pilha cheia (20 blocos, 20 pilhas)
+        Colocado igual = mesmoTipoNoTerreno(terreno, jogador.getUniqueId(), tipo.id());
+        if (igual != null) {
+            evento.setCancelled(true);
+            jogador.sendMessage("§cEsse terreno já tem um Spawner de " + tipo.nome() + " §c(em §f" + igual.x + " " + igual.y + " " + igual.z
+                    + "§c). Empilhe nele: clique nele com o spawner na mão.");
             return;
         }
         // o bloco: mostra o mob girando, mas o spawn do vanilla fica desligado (quem gera é o ciclo)
@@ -238,7 +291,7 @@ public class SpawnerManager implements Listener {
         }
         int cabe = limitePorBloco() - c.quantidade;
         if (cabe <= 0) {
-            jogador.sendMessage("§cEsse bloco já tem o máximo (§f" + limitePorBloco() + "§c). Coloque outro ao lado.");
+            jogador.sendMessage("§cEsse bloco já tem o máximo (§f" + limitePorBloco() + "§c).");
             return;
         }
         String terreno = plugin.getTerrenos().terrenoEm(c.bloco());

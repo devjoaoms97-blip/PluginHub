@@ -45,10 +45,10 @@ Nível     Comum  Raro  Arcano  Lendário
 ```
 Mapa Lendário pescado é anunciado pro servidor. A ~400 pescas por hora, são umas 160 h até o 50.
 
-**Pesca especial:** cada pesca tem chance de vir especial no lugar do peixe: **2,1%** no nível 1 até **7%** no 50 (+25% com a **Vara do Pescador**). Pode vir:
+**Pesca especial:** cada pesca tem chance de vir especial no lugar do peixe: **3,1%** no nível 1 até **8%** no 50 (+25% com a **Vara do Pescador**). Pode vir:
 - **Peixes raros** pra vender com `/peixes vender`: Lambari Dourado R$ 300, Tucunaré Brasa R$ 1.500, Pirarucu Arcano R$ 6.000 e Peixe-Brasa R$ 25.000
 - **Baú do Mar** (clique direito abre): Comum R$ 800–2.000, Raro R$ 4–8 mil, Lendário R$ 25–40 mil, mais itens
 - Fragmento, combustível, livros (Remendo, Afiação V), totem, spawner, Lapidadora, a Vara do Pescador e a **Adaga**
-O nível melhora a raridade (Lendária: 0% no 1, 7% no 50). `/peixes` mostra os preços e a sua chance. **Pescando parado** (mesmo lugar e câmera) por mais de 10 min, a chance cai pra um quarto.
+O nível melhora a raridade (Lendária: 0% no 1, 7% no 50). `/peixes` mostra os preços e a sua chance. O **lixo** (bota, vitória-régia, graveto...) vira peixe com 2% de chance por nível: metade no 25, todo no 50. **Pescando parado** (mesmo lugar e câmera) por mais de 10 min, a chance cai pra um quarto.
 
 **Placar:** com picareta, enxada ou vara na mão (ou logo depois de cortar um tronco), a profissão aparece no placar da direita com o progresso do nível.

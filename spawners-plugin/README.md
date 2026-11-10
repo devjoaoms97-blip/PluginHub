@@ -6,7 +6,8 @@ Spawners empilhados nos terrenos: outra fonte de renda além da mina.
 
 - **Compra:** no balcão **Spawners** da Loja Oficial (o vendedor "Domador" abre o `/spawners loja`). Cada tipo libera num rank e tem preço fixo; o dinheiro sai de circulação.
 - **Onde:** só no mundo dos terrenos (`mundos` no config). A proteção dos terrenos cuida de quem pode colocar e quebrar; fora dele, o spawner não entra.
-- **Empilhar:** com outro spawner igual na mão, clique direito no spawner (shift empilha a mão inteira), até `limite-por-bloco` (64). Só o dono empilha.
+- **Empilhar:** com outro spawner igual na mão, clique direito no spawner (shift empilha a mão inteira), até `limite-por-bloco` (100). Só o dono empilha.
+- **Um bloco por tipo** (2026-11-10): cada terreno tem um bloco só de cada tipo, de qualquer dono; o segundo spawner de blaze não entra em outro lugar, só empilha no primeiro. Separados, cada bloco guardava uma pilha cheia: 20 spawners espalhados juntavam 20 pilhas de 300 com o jogador parado perto, contra uma de 300 empilhados. Sem o TerrenosPlugin, vale por dono. Os separados de antes da regra se juntam com `/spawners juntar`.
 - **Limite por terreno:** até `limite-por-terreno` (100) spawners em cada terreno, somando todos os tipos e todos os donos. Os empilhados contam um por um: um bloco com x64 vale 64. Com o terreno cheio, não entra bloco novo nem se empilha mais (o empilhamento para no que couber). Fora de um terreno, o spawner não entra. Sem o TerrenosPlugin, o limite vale por jogador.
 - **A pilha de mobs:** a cada `ciclo-segundos` (20), cada spawner com algum jogador a até `raio-ativacao` (16) blocos soma tantos mobs quanto spawners empilhados, numa entidade só ("x37 Zumbi"), até `limite-pilha` (300). Ela nasce num lugar livre em cima ou em volta do spawner (nunca dentro de bloco) e é um mob normal: anda, a água arrasta, ataca, queima no sol e toma dano de tudo, então dá pra montar farm. Só não some de longe, não pega item, não deixa cair o equipamento e o creeper não explode (levaria a pilha toda sem drop): ele nem mira no jogador, então não chega perto nem chia.
 - **Abate:** a morte, por jogador ou não, vale pela pilha inteira: derruba os drops (com Pilhagem) e o XP de cada mob da pilha de uma vez, e o spawner começa uma pilha nova no ciclo seguinte. Os drops vendem no **Caçador**, e o preço dinâmico regula: o que muita gente farma vale menos.
@@ -73,6 +74,7 @@ Os de 2026-10-31 (Zumbi do Deserto, Afogado, Errante, Esqueleto Pantanoso, Aranh
 | `/spawners dar <jogador> <tipo> [qtd]` | (staff) Dá spawners |
 | `/spawners lista` | (staff) Os spawners colocados, com tipo, quantidade e dono |
 | `/spawners mobs` | (staff) A warp mobs (veja acima) |
+| `/spawners juntar [confirmar]` | (staff) Junta os spawners do mesmo tipo de cada terreno no bloco com mais spawners (os outros blocos somem, com a pilha). Sem `confirmar`, só lista |
 | `/spawners reload` | (staff) Recarrega o config |
 
 Permissão da staff: `spawners.admin`.

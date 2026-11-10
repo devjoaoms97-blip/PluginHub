@@ -15,6 +15,10 @@ tanque:
   produtos-base: 96
   produtos-por-nivel: 64
   minimo-celulas: 64
+# Velocidade da produção com o dono offline (2026-11-10): 0.5 = metade. A máquina recompensa quem
+# joga; offline ela segue, mais devagar (com o dono online, a velocidade cheia).
+producao-offline: 0.5
+
 # Estoque de produtos: base, e quanto cada nível de melhoria de estoque soma. Com 96, a máquina
 # mais rápida enche em ~1h36: ela recompensa quem passa pra coletar, não quem some por dias.
 estoque-base: 96
@@ -88,7 +92,9 @@ produtos:
 
 # As máquinas (o id é o modelo no resource pack: servidor:maquina_<id>), na ordem da loja.
 # Calibradas pelo tools/economia/maquinas.py: cada máquina rende ~10% da mina no rank em que libera
-# (no preço de âncora, já tirando o combustível) e se paga em umas 20 h de produção.
+# (no preço de âncora, já tirando o combustível). A Lapidadora e o Reator custam 25% a mais desde 2026-11-10
+# (8 Lapidadoras rendiam R$ 230 mil por tanque cheio): se pagam em umas 25 h de produção online, e a
+# melhoria deles (preço × custo-melhoria) subiu junto. As outras se pagam em umas 20 h.
 maquinas:
   tear:
     nome: "&cTear"
@@ -116,14 +122,14 @@ maquinas:
     produto: gema_lapidada
     intervalo-segundos: 120
     combustivel-por-produto: 2
-    preco: 140000
+    preco: 175000
     rank: clerigo
   reator:
     nome: "&bReator Arcano"
     produto: cristal_de_energia
     intervalo-segundos: 180
     combustivel-por-produto: 4
-    preco: 700000
+    preco: 875000
     rank: conde
 
 integracao:

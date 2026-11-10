@@ -1914,6 +1914,13 @@ itens:
     minimo: 0.3
     maximo: 1.2
     passo: 0.5
+  TROPICAL_FISH:
+    categoria: Drops
+    preco-base: 8.0
+    margem: 60.0
+    minimo: 0.8
+    maximo: 3.2
+    passo: 0.5
   ARROW:
     categoria: Drops
     preco-base: 1.0
