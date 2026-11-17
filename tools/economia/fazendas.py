@@ -11,6 +11,9 @@ com o limite de fazendas do terreno todo usado nesse nível.
 
 A mina do Rei é a do Duque × 1,25 (a simulação acaba na subida pro Rei).
 
+O achado raro (desde 2026-11-17) vale raro.horas-de-renda da renda a cada raro.horas-online de produção:
+a coluna "raro" é o valor de um, e a linha de cima diz quanto ele soma na renda.
+
 Com --sugerir, mostra a renda por safra e o preço que acertam a meta pro intervalo e o insumo do config.
 """
 import argparse
@@ -47,9 +50,11 @@ def main():
     mina["rei"] = mina["duque"] * 1.25
     fator_max = 1 / (1 - cfg["produtividade-por-nivel"] / 100 * cfg["nivel-maximo"])
     lim = cfg["limite-por-terreno"]
-    print(f"produtividade no máximo: x{fator_max:.2f} | limite: {lim} por terreno")
+    raro = cfg.get("raro", {})
+    print(f"produtividade no máximo: x{fator_max:.2f} | limite: {lim} por terreno | achado raro: "
+          f"{raro.get('horas-de-renda', 1.5)} h de renda a cada {raro.get('horas-online', 48)} h (+{raro.get('horas-de-renda', 1.5) / raro.get('horas-online', 48):.1%})")
     print(f"{'fazenda':<11}{'rank':<11}{'safra/h':>8}{'insumo':>8}{'lucro/h':>10}{'se paga':>9}{'mina/h':>10}{'% mina':>8}"
-          f"{'nível máx':>10}{'terreno':>9}" + (f"{'renda sug.':>12}{'preço sug.':>12}" if args.sugerir else ""))
+          f"{'nível máx':>10}{'terreno':>9}{'raro':>10}" + (f"{'renda sug.':>12}{'preço sug.':>12}" if args.sugerir else ""))
     for fid, f in cfg["fazendas"].items():
         preco_ins = cfg["insumos"][f["insumo"]]["preco"]
         safras = 3600 / f["intervalo-segundos"]
@@ -58,7 +63,8 @@ def main():
         m = mina.get(f["rank"], float("nan"))
         p = lucro / m
         linha = (f"{fid:<11}{f['rank']:<11}{safras:>8.0f}{custo / f['renda-por-safra']:>8.0%}{lucro:>10,.0f}"
-                 f"{f['preco'] / lucro:>8.1f}h{m:>10,.0f}{p:>8.1%}{p * fator_max:>10.1%}{p * fator_max * lim:>9.0%}")
+                 f"{f['preco'] / lucro:>8.1f}h{m:>10,.0f}{p:>8.1%}{p * fator_max:>10.1%}{p * fator_max * lim:>9.0%}"
+                 f"{round(raro.get('horas-de-renda', 1.5) * safras * f['renda-por-safra']):>10,}")
         if args.sugerir:
             renda = bonito(args.meta * m / safras + custo)
             preco = bonito(args.horas * safras * (renda - custo))

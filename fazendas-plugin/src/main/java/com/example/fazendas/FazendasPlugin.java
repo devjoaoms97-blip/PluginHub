@@ -36,9 +36,9 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
     /** Ração ou Adubo. */
     public record Insumo(String id, String nome, double preco) {}
 
-    /** Um tipo de fazenda. */
+    /** Um tipo de fazenda (raroNome e raroModelo: o achado raro dela e o item do Minecraft que o desenha). */
     public record Tipo(String id, String nome, String npc, Material icone, String insumo, double intervaloSegundos,
-                       double insumoPorSafra, double rendaPorSafra, double preco, String rank) {}
+                       double insumoPorSafra, double rendaPorSafra, double preco, String rank, String raroNome, String raroModelo) {}
 
     /** As três melhorias, na ordem dos botões. */
     static final int PROD = 0, COFRE = 1, DESPENSA = 2;
@@ -46,7 +46,7 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
     private Economy economy;
     private final Map<String, Insumo> insumos = new LinkedHashMap<>();
     private final Map<String, Tipo> tipos = new LinkedHashMap<>();
-    private NamespacedKey chaveEscritura, chaveInsumo, chaveNivelProd, chaveNivelCofre, chaveNivelDespensa, chaveEntidade;
+    private NamespacedKey chaveEscritura, chaveInsumo, chaveNivelProd, chaveNivelCofre, chaveNivelDespensa, chaveEntidade, chaveRaro;
     private FazendaManager fazendas;
     private LojaFazendas loja;
     private PixIntegration pix;
@@ -64,6 +64,7 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
         chaveNivelCofre = new NamespacedKey(this, "nivel_cofre");
         chaveNivelDespensa = new NamespacedKey(this, "nivel_despensa");
         chaveEntidade = new NamespacedKey(this, "fazenda");
+        chaveRaro = new NamespacedKey(this, "raro");
         carregarConfig();
         pix = new PixIntegration(this);
         rankup = new RankupIntegration(this);
@@ -105,7 +106,8 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
                 Material icone = Material.matchMaterial(s.getString("icone", "WHEAT"));
                 tipos.put(id, new Tipo(id, cores(s.getString("nome", id)), s.getString("npc", "Fazendeiro"),
                         icone == null ? Material.WHEAT : icone, s.getString("insumo"), s.getDouble("intervalo-segundos", 60),
-                        s.getDouble("insumo-por-safra", 1), s.getDouble("renda-por-safra"), s.getDouble("preco"), s.getString("rank")));
+                        s.getDouble("insumo-por-safra", 1), s.getDouble("renda-por-safra"), s.getDouble("preco"), s.getString("rank"),
+                        cores(s.getString("raro.nome", "&6Achado Raro")), s.getString("raro.modelo", "gold_nugget")));
             }
         }
     }
@@ -161,6 +163,40 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
         return item;
     }
 
+    /**
+     * O achado raro da fazenda (Ovo Dourado, Lã de Ouro...): papel com o visual de um item do Minecraft e
+     * brilho. Não serve pra nada além de vender no Corretor Rural.
+     */
+    public ItemStack raro(Tipo t, int quantidade) {
+        ItemStack item = new ItemStack(Material.PAPER, Math.max(1, quantidade));
+        ItemMeta meta = item.getItemMeta();
+        meta.setItemModel(NamespacedKey.minecraft(t.raroModelo()));
+        meta.setDisplayName("§l" + t.raroNome());
+        meta.setLore(List.of("§7Achado raro da fazenda " + t.nome() + "§7.", "§7Vende no §aCorretor Rural §7da Loja Oficial",
+                "§7por §a" + dinheiro(valorRaro(t)) + " §8(+ bônus do rank e do VIP)"));
+        meta.setEnchantmentGlintOverride(true);
+        meta.getPersistentDataContainer().set(chaveRaro, PersistentDataType.STRING, t.id());
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public Tipo tipoDoRaro(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return null;
+        String id = item.getItemMeta().getPersistentDataContainer().get(chaveRaro, PersistentDataType.STRING);
+        return id == null ? null : tipos.get(id);
+    }
+
+    /** Quanto o achado vale (sem bônus): {@code raro.horas-de-renda} da renda da fazenda no nível 0. */
+    double valorRaro(Tipo t) {
+        return Math.round(getConfig().getDouble("raro.horas-de-renda", 1.5) * 3600 / t.intervaloSegundos() * t.rendaPorSafra());
+    }
+
+    /** A chance de achar em cada safra: ~1 a cada {@code raro.horas-online} de produção no ritmo do nível 0. */
+    double chanceRaro(Tipo t) {
+        double horas = getConfig().getDouble("raro.horas-online", 48);
+        return horas <= 0 ? 0 : Math.min(1, t.intervaloSegundos() / (horas * 3600));
+    }
+
     public Tipo tipoDaEscritura(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return null;
         String id = item.getItemMeta().getPersistentDataContainer().get(chaveEscritura, PersistentDataType.STRING);
@@ -184,7 +220,7 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void aoPrepararCraft(PrepareItemCraftEvent evento) {
         for (ItemStack i : evento.getInventory().getMatrix()) {
-            if (i != null && i.hasItemMeta() && (tipoDaEscritura(i) != null || insumoDoItem(i) != null)) {
+            if (i != null && i.hasItemMeta() && (tipoDaEscritura(i) != null || insumoDoItem(i) != null || tipoDoRaro(i) != null)) {
                 evento.getInventory().setResult(null);
                 return;
             }
@@ -229,10 +265,22 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
             case "dar" -> {
                 Player alvo = args.length > 2 ? Bukkit.getPlayerExact(args[1]) : null;
                 if (alvo == null) {
-                    sender.sendMessage("§cUso: §f/fazendas dar <jogador> <tipo|racao|adubo> [qtd]");
+                    sender.sendMessage("§cUso: §f/fazendas dar <jogador> <tipo|racao|adubo|raro> [qtd]");
                     return true;
                 }
                 String id = args[2].toLowerCase(Locale.ROOT);
+                if (id.equals("raro")) {
+                    // /fazendas dar <jogador> raro <tipo> [qtd]
+                    Tipo t = args.length > 3 ? tipos.get(args[3].toLowerCase(Locale.ROOT)) : null;
+                    if (t == null) {
+                        sender.sendMessage("§cUso: §f/fazendas dar <jogador> raro <tipo> [qtd]");
+                        return true;
+                    }
+                    alvo.getInventory().addItem(raro(t, args.length > 4 ? numero(args[4], 1) : 1))
+                            .values().forEach(r -> alvo.getWorld().dropItemNaturally(alvo.getLocation(), r));
+                    sender.sendMessage("§aEntregue pra §f" + alvo.getName() + "§a.");
+                    return true;
+                }
                 ItemStack item = insumos.containsKey(id) ? insumo(insumos.get(id), args.length > 3 ? numero(args[3], 16) : 16)
                         : tipos.containsKey(id) ? escritura(tipos.get(id), 0, 0, 0) : null;
                 if (item == null) {
@@ -261,7 +309,7 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
                 carregarConfig();
                 sender.sendMessage("§aConfig recarregado.");
             }
-            default -> sender.sendMessage("§f/fazendas loja §7| §fdar <jogador> <tipo|racao|adubo> [qtd] §7| §flista §7| §facelerar <min> §7| §fremover §7| §freload");
+            default -> sender.sendMessage("§f/fazendas loja §7| §fdar <jogador> <tipo|racao|adubo|raro> [qtd] §7| §flista §7| §facelerar <min> §7| §fremover §7| §freload");
         }
         return true;
     }
@@ -277,6 +325,9 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
         } else if (args.length == 3 && args[0].equalsIgnoreCase("dar")) {
             opcoes.addAll(tipos.keySet());
             opcoes.addAll(insumos.keySet());
+            opcoes.add("raro");
+        } else if (args.length == 4 && args[0].equalsIgnoreCase("dar") && args[2].equalsIgnoreCase("raro")) {
+            opcoes.addAll(tipos.keySet());
         }
         String digitado = args[args.length - 1].toLowerCase(Locale.ROOT);
         opcoes.removeIf(o -> !o.toLowerCase(Locale.ROOT).startsWith(digitado));

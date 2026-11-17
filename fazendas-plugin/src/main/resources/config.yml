@@ -43,6 +43,15 @@ insumos:
     nome: "&2Adubo"
     preco: 25
 
+# Achado raro (2026-11-17): a cada safra, uma chance de a fazenda achar o item raro dela (Ovo Dourado,
+# Lã de Ouro...), que fica guardado na fazenda até o dono pegar no menu, e vende no Corretor Rural.
+# A chance sai pra dar ~1 achado a cada "horas-online" de produção (no ritmo do nível 0; a
+# Produtividade faz mais safras, e acha um pouco mais), e cada um vale "horas-de-renda" da renda dela
+# (antes do bônus do rank e do VIP, que entram na venda, como na coleta). 1,5 h a cada 48 h: ~3% a mais.
+raro:
+  horas-online: 48
+  horas-de-renda: 1.5
+
 # Na coleta, o cofre recebe o bônus do rank e o do VIP abaixo, menos o imposto (como a venda das máquinas).
 imposto-coleta: 2
 vip-bonus-coleta:
@@ -58,7 +67,8 @@ vip-bonus-coleta:
 # As fazendas, na ordem da loja. Calibradas pelo tools/economia/fazendas.py (2026-11-17): cada uma
 # lucra ~7% da mina do rank em que libera (renda menos o insumo, sem bônus) e se paga em ~20 h de
 # produção online, como as máquinas. "icone" é o item que representa a fazenda nos menus; "mao", o que o
-# fazendeiro segura; "skin" (opcional), o nome de um jogador ou "textura:<hash>" pra skin do fazendeiro.
+# fazendeiro segura; "skin" (opcional), o nome de um jogador ou "textura:<hash>" pra skin do fazendeiro;
+# "raro", o achado raro dela (o nome e o item do Minecraft que desenha ele, com brilho).
 # A construção de cada uma (blocos e bichos) está no código (Planos.java).
 fazendas:
   horta:
@@ -67,6 +77,9 @@ fazendas:
     icone: CARROT
     mao: IRON_HOE
     skin: ""
+    raro:
+      nome: "&6Cenoura Premiada"
+      modelo: golden_carrot
     insumo: adubo
     intervalo-segundos: 60
     insumo-por-safra: 0.15
@@ -79,6 +92,9 @@ fazendas:
     icone: EGG
     mao: EGG
     skin: ""
+    raro:
+      nome: "&eOvo Dourado"
+      modelo: egg
     insumo: racao
     intervalo-segundos: 60
     insumo-por-safra: 0.2
@@ -91,6 +107,9 @@ fazendas:
     icone: APPLE
     mao: APPLE
     skin: ""
+    raro:
+      nome: "&cMaçã Reluzente"
+      modelo: golden_apple
     insumo: adubo
     intervalo-segundos: 60
     insumo-por-safra: 0.3
@@ -103,6 +122,9 @@ fazendas:
     icone: PORKCHOP
     mao: CARROT_ON_A_STICK
     skin: ""
+    raro:
+      nome: "&8Trufa Negra"
+      modelo: brown_mushroom
     insumo: racao
     intervalo-segundos: 75
     insumo-por-safra: 0.5
@@ -115,6 +137,9 @@ fazendas:
     icone: WHEAT
     mao: WHEAT
     skin: ""
+    raro:
+      nome: "&eEspiga de Ouro"
+      modelo: wheat
     insumo: adubo
     intervalo-segundos: 90
     insumo-por-safra: 1
@@ -127,6 +152,9 @@ fazendas:
     icone: MILK_BUCKET
     mao: MILK_BUCKET
     skin: ""
+    raro:
+      nome: "&fLeite Premiado"
+      modelo: milk_bucket
     insumo: racao
     intervalo-segundos: 90
     insumo-por-safra: 1
@@ -139,6 +167,9 @@ fazendas:
     icone: WHITE_WOOL
     mao: SHEARS
     skin: ""
+    raro:
+      nome: "&6Lã de Ouro"
+      modelo: yellow_wool
     insumo: racao
     intervalo-segundos: 120
     insumo-por-safra: 2
@@ -151,6 +182,9 @@ fazendas:
     icone: HONEYCOMB
     mao: HONEY_BOTTLE
     skin: ""
+    raro:
+      nome: "&6Favo Real"
+      modelo: honeycomb
     insumo: adubo
     intervalo-segundos: 120
     insumo-por-safra: 2
@@ -163,6 +197,9 @@ fazendas:
     icone: PUMPKIN
     mao: GOLDEN_HOE
     skin: ""
+    raro:
+      nome: "&6Abóbora Premiada"
+      modelo: pumpkin
     insumo: adubo
     intervalo-segundos: 150
     insumo-por-safra: 3
@@ -175,6 +212,9 @@ fazendas:
     icone: RED_MUSHROOM
     mao: RED_MUSHROOM
     skin: ""
+    raro:
+      nome: "&dCogumelo Luminoso"
+      modelo: shroomlight
     insumo: adubo
     intervalo-segundos: 180
     insumo-por-safra: 4
@@ -187,6 +227,9 @@ fazendas:
     icone: NETHER_WART
     mao: NETHER_WART
     skin: ""
+    raro:
+      nome: "&4Verruga Ancestral"
+      modelo: nether_wart
     insumo: adubo
     intervalo-segundos: 180
     insumo-por-safra: 4
@@ -199,6 +242,9 @@ fazendas:
     icone: CHORUS_FRUIT
     mao: CHORUS_FRUIT
     skin: ""
+    raro:
+      nome: "&5Fruta do Vazio"
+      modelo: popped_chorus_fruit
     insumo: adubo
     intervalo-segundos: 180
     insumo-por-safra: 5

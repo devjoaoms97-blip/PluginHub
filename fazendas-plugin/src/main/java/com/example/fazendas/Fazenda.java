@@ -29,6 +29,8 @@ final class Fazenda {
     double insumo;
     /** Safras guardadas no cofre (o dinheiro é safras × renda do tipo). */
     int safras;
+    /** Achados raros guardados, esperando o dono pegar no menu. */
+    int raros;
     long parcialMs;
     long ultima;
     UUID npc, holograma;

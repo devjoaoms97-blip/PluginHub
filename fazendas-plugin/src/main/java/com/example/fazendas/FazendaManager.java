@@ -90,7 +90,7 @@ public class FazendaManager implements Listener {
         }
     }
 
-    private static final int SLOT_INFO = 4, SLOT_COLETAR = 10, SLOT_ABASTECER = 12, SLOT_PROD = 14, SLOT_COFRE = 15,
+    private static final int SLOT_INFO = 4, SLOT_COLETAR = 10, SLOT_ABASTECER = 12, SLOT_RAROS = 13, SLOT_PROD = 14, SLOT_COFRE = 15,
             SLOT_DESPENSA = 16, SLOT_RECOLHER = 22;
 
     private final FazendasPlugin plugin;
@@ -245,10 +245,32 @@ public class FazendaManager implements Listener {
         long intervalo = intervaloMs(f);
         int feitas = (int) Math.min(total / intervalo, Math.min(cabe, daInsumo));
         f.safras += feitas;
+        sortearRaros(f, t, feitas);
         f.insumo -= feitas * t.insumoPorSafra();
         boolean parou = f.safras >= cofre(f) || f.insumo + 1e-9 < t.insumoPorSafra();
         f.parcialMs = parou ? 0 : total - (long) feitas * intervalo;
         if (feitas > 0) sujo = true;
+    }
+
+    /**
+     * Cada safra tem a chance de achar o item raro da fazenda ({@link FazendasPlugin#chanceRaro}); o achado
+     * fica guardado até o dono pegar no menu. O dono online é avisado.
+     */
+    private void sortearRaros(Fazenda f, FazendasPlugin.Tipo t, int safras) {
+        double chance = plugin.chanceRaro(t);
+        if (chance <= 0 || safras <= 0) return;
+        java.util.concurrent.ThreadLocalRandom r = java.util.concurrent.ThreadLocalRandom.current();
+        int achou = 0;
+        for (int i = 0; i < safras; i++) if (r.nextDouble() < chance) achou++;
+        if (achou == 0) return;
+        f.raros += achou;
+        sujo = true;
+        Player dono = Bukkit.getPlayer(f.dono);
+        if (dono != null) {
+            dono.sendMessage("§6§l✦ §eSua fazenda " + t.nome() + " §eachou " + (achou == 1 ? "um " : achou + "x ") + t.raroNome()
+                    + "§e! Pegue no fazendeiro e venda no §aCorretor Rural§e.");
+            dono.playSound(dono.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.6f, 1.6f);
+        }
     }
 
     /** Teste da staff: o relógio de todas as fazendas anda {@code minutos}. */
@@ -411,6 +433,7 @@ public class FazendaManager implements Listener {
         if (f == null) return false;
         atualizar(f);
         String dono = Bukkit.getOfflinePlayer(f.dono).getName();
+        if (f.raros > 0) entregar(p, plugin.raro(tipo(f), 1), f.raros); // os achados vão junto com a escritura
         entregar(p, plugin.escritura(tipo(f), f.nivelProd, f.nivelCofre, f.nivelDespensa), 1);
         desfazer(f);
         p.sendMessage("§eFazenda de §f" + dono + " §eremovida (cofre de §f" + FazendasPlugin.dinheiro(valorCofre(f))
@@ -534,6 +557,7 @@ public class FazendaManager implements Listener {
         String texto = t.nome() + " §7de §f" + Bukkit.getOfflinePlayer(f.dono).getName()
                 + "\n§a" + FazendasPlugin.dinheiro(valorCofre(f)) + " §7/ " + FazendasPlugin.dinheiro(cofre(f) * t.rendaPorSafra())
                 + "\n§7" + ChatColor.stripColor(ins.nome()) + ": §f" + FazendasPlugin.fmt(f.insumo) + "§7/" + despensa(f)
+                + (f.raros > 0 ? "\n§6✦ " + f.raros + " achado" + (f.raros == 1 ? "" : "s") + " raro" + (f.raros == 1 ? "" : "s") : "")
                 + "\n" + estado;
         Entity atual = f.holograma == null ? null : Bukkit.getEntity(f.holograma);
         if (atual instanceof TextDisplay td && td.isValid()) {
@@ -627,6 +651,13 @@ public class FazendaManager implements Listener {
         menu.inventario.setItem(SLOT_ABASTECER, icone(plugin.insumo(ins, 1), "§6§lAbastecer",
                 "§7Põe " + ChatColor.stripColor(ins.nome()) + " do seu inventário", "§7na despensa (cabe §f" + despensa(f) + "§7).",
                 "§8Atalho: clique no fazendeiro com ela na mão."));
+        menu.inventario.setItem(SLOT_RAROS, f.raros > 0
+                ? icone(plugin.raro(t, 1), "§6§lAchados raros: " + f.raros,
+                        "§7" + org.bukkit.ChatColor.stripColor(t.raroNome()) + " §7vale §a" + FazendasPlugin.dinheiro(plugin.valorRaro(t)) + " §7cada",
+                        "§7no §aCorretor Rural§7.", "", "§eClique pra pegar")
+                : icone(new ItemStack(Material.GRAY_STAINED_GLASS_PANE), "§7Achados raros: 0",
+                        "§7De vez em quando a fazenda acha um", "§7" + org.bukkit.ChatColor.stripColor(t.raroNome()) + " §7(uns " + (int) plugin.getConfig().getDouble("raro.horas-online", 48) + " h de produção).",
+                        "§7Fica guardado aqui até você pegar."));
         menu.inventario.setItem(SLOT_PROD, botaoMelhoria(f, FazendasPlugin.PROD));
         menu.inventario.setItem(SLOT_COFRE, botaoMelhoria(f, FazendasPlugin.COFRE));
         menu.inventario.setItem(SLOT_DESPENSA, botaoMelhoria(f, FazendasPlugin.DESPENSA));
@@ -676,6 +707,7 @@ public class FazendaManager implements Listener {
         switch (evento.getRawSlot()) {
             case SLOT_COLETAR -> coletar(p, f);
             case SLOT_ABASTECER -> abastecer(p, f);
+            case SLOT_RAROS -> pegarRaros(p, f);
             case SLOT_PROD, SLOT_COFRE, SLOT_DESPENSA -> {
                 int qual = evento.getRawSlot() == SLOT_PROD ? FazendasPlugin.PROD : evento.getRawSlot() == SLOT_COFRE ? FazendasPlugin.COFRE : FazendasPlugin.DESPENSA;
                 int nivel = nivelDe(f, qual);
@@ -773,10 +805,21 @@ public class FazendaManager implements Listener {
         if (f.safras > 0) coletar(p, f);
         int sobra = (int) Math.floor(f.insumo + 1e-9);
         if (sobra > 0) entregar(p, plugin.insumo(insumo(f), 1), sobra);
+        if (f.raros > 0) pegarRaros(p, f);
         entregar(p, plugin.escritura(tipo(f), f.nivelProd, f.nivelCofre, f.nivelDespensa), 1);
         desfazer(f);
         p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
         p.sendMessage("§eFazenda recolhida: a Escritura voltou pro seu inventário.");
+    }
+
+    private void pegarRaros(Player p, Fazenda f) {
+        if (f.raros <= 0) return;
+        int n = f.raros;
+        entregar(p, plugin.raro(tipo(f), 1), n);
+        f.raros = 0;
+        sujo = true;
+        p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.8f, 1.3f);
+        p.sendMessage("§6Você pegou §f" + n + "x " + tipo(f).raroNome() + "§6. Venda no §aCorretor Rural§6.");
     }
 
     static void entregar(Player p, ItemStack modelo, int quantidade) {
@@ -817,6 +860,7 @@ public class FazendaManager implements Listener {
                 f.nivelDespensa = s.getInt("nivel-despensa");
                 f.insumo = s.getDouble("insumo");
                 f.safras = s.getInt("safras");
+                f.raros = s.getInt("raros");
                 f.parcialMs = s.getLong("parcial-ms");
                 f.ultima = s.getLong("ultima", System.currentTimeMillis());
                 f.originais = new ArrayList<>(s.getStringList("originais"));
@@ -845,6 +889,7 @@ public class FazendaManager implements Listener {
             yaml.set(b + ".nivel-despensa", f.nivelDespensa);
             yaml.set(b + ".insumo", f.insumo);
             yaml.set(b + ".safras", f.safras);
+            yaml.set(b + ".raros", f.raros);
             yaml.set(b + ".parcial-ms", f.parcialMs);
             yaml.set(b + ".ultima", f.ultima);
             yaml.set(b + ".originais", f.originais);

@@ -54,8 +54,9 @@ t.rodar(async () => {
   await t.console(`fazendas dar ${nome} horta`)
   await t.console(`fazendas dar ${nome} racao 1`)
   await t.console(`fazendas dar ${nome} adubo 1`)
-  const modelo = async i => (await t.console(`data get entity ${nome} Inventory[${i}].components."minecraft:item_model"`)).match(/"([^"]+)"$/)?.[1]
-  const modelos = [await modelo(0), await modelo(1), await modelo(2)]
+  // pelo dado de cada item (a posição no inventário muda se o jogador ganhou outra coisa ao entrar)
+  const modelo = async (chave, valor) => (await t.console(`data get entity ${nome} Inventory[{components:{"minecraft:custom_data":{PublicBukkitValues:{"fazendasplugin:${chave}":"${valor}"}}}}].components."minecraft:item_model"`)).match(/"([^"]+)"$/)?.[1]
+  const modelos = [await modelo('escritura', 'horta'), await modelo('insumo', 'racao'), await modelo('insumo', 'adubo')]
   t.verificar(modelos.join() === 'servidor:escritura,servidor:racao,servidor:adubo', 'a Escritura, a Ração e o Adubo usam a textura do pacote', modelos.join())
   await t.console(`minecraft:clear ${nome}`)
 
@@ -129,8 +130,8 @@ t.rodar(async () => {
     for (const [x, z] of vagas.slice(0, tipos.length)) {
       if (!await bloco(x, 64, z, 'grass_block') || !await bloco(x, 67, z + 1, 'air')) sobrou.push(`${x},${z}`)
     }
-    // sobra algum bicho, enfeite ou fazendeiro no terreno? (o holograma do terreno é text_display, e o clique dele, interaction)
-    const bichos = await t.console(`execute in minecraft:terrenos positioned ${mx + 16} 65 ${mz + 16} if entity @e[type=!player,type=!text_display,type=!interaction,type=!item,distance=..24]`)
+    // sobra algum bicho, enfeite ou fazendeiro dentro do terreno? (só a caixa dele: o vizinho pode ter a pilha de um spawner)
+    const bichos = await t.console(`execute in minecraft:terrenos if entity @e[type=!player,type=!item,x=${mx},y=60,z=${mz},dx=31,dy=12,dz=31]`)
     t.verificar(sobrou.length === 0 && !bichos.includes('passed'), 'recolhidas: o chão volta e os bichos somem', `${sobrou.join(' ')} ${bichos}`)
   }
   await t.terminar(bot)

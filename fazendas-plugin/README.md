@@ -2,7 +2,7 @@
 
 Fazendas nos terrenos que rendem **dinheiro** (não dão itens). Uma **Escritura** vira uma construção 7x7 com um fazendeiro parado na abertura da cerca. Cada safra põe dinheiro no cofre, gastando **Ração** (fazendas de animais) ou **Adubo** (plantações). O dono passa no fazendeiro e coleta.
 
-Estado: **fase 3** (o funcionamento, o visual de cada fazenda e o balcão na Loja Oficial). O prêmio raro vem na próxima fase (veja o `ROADMAP.md`).
+Estado: **fase 4** (o funcionamento, o visual de cada fazenda, o balcão na Loja Oficial e o achado raro). Veja o `ROADMAP.md`.
 
 ## Como funciona
 
@@ -49,7 +49,21 @@ Estado: **fase 3** (o funcionamento, o visual de cada fazenda e o balcão na Loj
     - **Produtividade:** -5% de tempo por nível;
     - **Cofre:** +64 safras;
     - **Despensa:** +64 safras de insumo.
-  - **Recolher a Escritura:** pede confirmação. Coleta o cofre, devolve o insumo que sobrou e a Escritura com os níveis, e a construção some.
+  - **Achados raros:** pega os itens raros que a fazenda guardou.
+  - **Recolher a Escritura:** pede confirmação. Coleta o cofre, devolve o insumo que sobrou, os achados e a Escritura com os níveis, e a construção some.
+- **Achado raro:** a cada safra, a fazenda tem uma chance de achar o item raro dela, que fica guardado até o dono pegar no menu (o holograma mostra quantos; o dono online é avisado no chat).
+  - **Frequência:** a chance sai pra dar ~1 achado a cada 48 h de produção (`raro.horas-online`), no ritmo do nível 0; com a Produtividade, um pouco mais.
+  - **Valor:** 1,5 h da renda da fazenda (`raro.horas-de-renda`). Vende no Corretor Rural (o botão "Vender achados raros" vende todos de uma vez), com o bônus do rank e do VIP, menos o imposto, como a coleta. Soma ~3% na renda.
+  - **O item:** papel com o visual de um item do Minecraft e brilho (`raro.modelo` de cada tipo): não se come, não se planta e não entra em receita. A staff dá com `/fazendas dar <jogador> raro <tipo> [qtd]`.
+
+  | Fazenda | Achado | Fazenda | Achado |
+  |---|---|---|---|
+  | Horta | Cenoura Premiada | Curral | Leite Premiado |
+  | Galinheiro | Ovo Dourado | Criação de Ovelhas | Lã de Ouro |
+  | Pomar | Maçã Reluzente | Apiário | Favo Real |
+  | Pocilga | Trufa Negra | Abóboras e Melancias | Abóbora Premiada |
+  | Trigal | Espiga de Ouro | Cogumelos Gigantes | Cogumelo Luminoso |
+  | Verrugas do Nether | Verruga Ancestral | Estufa de Chorus | Fruta do Vazio |
 - **Rank:** só coloca e mexe na fazenda quem tem o rank dela, ou quem já fez prestígio. Uma Escritura acima do rank pode ser guardada e negociada.
 - **A fazenda é do terreno** (conferido a cada 20 s, em todas, e a cada clique):
   - **Leilão:** com o terreno em leilão (imposto atrasado), ninguém mexe na fazenda, nem o antigo dono; ela continua produzindo. O Leiloeiro conta as fazendas do terreno junto com as máquinas e os spawners ("E tem mais: 1 fazenda, pronta pra trabalhar!").
@@ -82,6 +96,7 @@ Calibradas pelo `tools/economia/fazendas.py` (2026-11-17): cada uma lucra ~7% da
 |---|---|---|
 | `/fazendas` ou `/fazendas loja` | todos | Abre a loja |
 | `/fazendas dar <jogador> <tipo\|racao\|adubo> [qtd]` | staff | Dá uma Escritura ou insumo |
+| `/fazendas dar <jogador> raro <tipo> [qtd]` | staff | Dá achados raros |
 | `/fazendas lista` | staff | Lista as fazendas colocadas |
 | `/fazendas acelerar <min>` | staff | Teste: o relógio de todas anda N minutos |
 | `/fazendas remover` | staff | Remove a fazenda que está olhando (a Escritura vai para quem removeu) |

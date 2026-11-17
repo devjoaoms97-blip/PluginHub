@@ -2,6 +2,7 @@ package com.example.fazendas;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +22,7 @@ import java.util.Map;
 
 /**
  * A loja das fazendas: o balcão do Corretor Rural na Loja Oficial abre o {@code /fazendas loja} em nome do
- * jogador. As Escrituras (por rank) e, embaixo, a Ração e o Adubo.
+ * jogador. As Escrituras (por rank), embaixo a Ração e o Adubo, e a venda dos achados raros.
  */
 public class LojaFazendas implements Listener {
 
@@ -39,6 +40,8 @@ public class LojaFazendas implements Listener {
     /** 12 escrituras: duas fileiras de 6 no meio. */
     private static final int[] SLOTS = {10, 11, 12, 13, 14, 15, 19, 20, 21, 22, 23, 24};
     private static final int[] SLOTS_INSUMO = {39, 41};
+    /** Vende de uma vez todos os achados raros do inventário. */
+    private static final int SLOT_VENDER_RAROS = 49;
 
     private final FazendasPlugin plugin;
 
@@ -76,6 +79,21 @@ public class LojaFazendas implements Listener {
             menu.insumos.put(SLOTS_INSUMO[j], ins.id());
             j++;
         }
+        int raros = 0;
+        double total = 0;
+        for (ItemStack it : p.getInventory().getContents()) {
+            FazendasPlugin.Tipo t = plugin.tipoDoRaro(it);
+            if (t == null) continue;
+            raros += it.getAmount();
+            total += it.getAmount() * plugin.valorRaro(t);
+        }
+        double liquido = total * plugin.multiplicadorColeta(p) * (1 - plugin.getConfig().getDouble("imposto-coleta", 2) / 100.0);
+        menu.inventario.setItem(SLOT_VENDER_RAROS, icone(new ItemStack(raros > 0 ? Material.GOLD_BLOCK : Material.GRAY_STAINED_GLASS_PANE),
+                "§6§l✦ Vender achados raros",
+                "§7Ovo Dourado, Lã de Ouro, Favo Real... cada", "§7fazenda acha o dela, de vez em quando.",
+                "", raros > 0 ? "§7Você tem §f" + raros + "§7: §a" + FazendasPlugin.dinheiro(liquido) : "§8Você não tem nenhum",
+                raros > 0 ? "§8(com o bônus do rank e do VIP, menos o imposto)" : "",
+                raros > 0 ? "§eClique: vender todos" : ""));
         p.openInventory(menu.inventario);
     }
 
@@ -101,6 +119,22 @@ public class LojaFazendas implements Listener {
             p.getInventory().addItem(escritura);
             p.sendMessage("§aVocê comprou a Escritura: " + t.nome() + " §apor §f" + FazendasPlugin.dinheiro(t.preco())
                     + "§a! Clique direito no chão do seu terreno (§f/terreno home§a) pra ver a área.");
+        } else if (slot == SLOT_VENDER_RAROS) {
+            double total = 0;
+            int n = 0;
+            for (ItemStack i : p.getInventory().getContents()) {
+                FazendasPlugin.Tipo t = plugin.tipoDoRaro(i);
+                if (t == null) continue;
+                total += i.getAmount() * plugin.valorRaro(t);
+                n += i.getAmount();
+                i.setAmount(0);
+            }
+            if (n == 0) return;
+            double liquido = Math.floor(total * plugin.multiplicadorColeta(p) * (1 - plugin.getConfig().getDouble("imposto-coleta", 2) / 100.0) * 100) / 100;
+            plugin.getEconomy().depositPlayer(p, liquido);
+            plugin.getPix().registrarComServidor(p.getUniqueId(), liquido, true, "Achados raros de fazenda");
+            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 1.3f);
+            p.sendMessage("§aVendeu §f" + n + " §aachado" + (n == 1 ? "" : "s") + " raro" + (n == 1 ? "" : "s") + " por §f" + FazendasPlugin.dinheiro(liquido) + "§a.");
         } else if (menu.insumos.containsKey(slot)) {
             FazendasPlugin.Insumo ins = plugin.getInsumos().get(menu.insumos.get(slot));
             int q = evento.getClick() == ClickType.SHIFT_LEFT || evento.getClick() == ClickType.SHIFT_RIGHT ? 64 : 16;
