@@ -29,7 +29,7 @@ tutorial:
     - tipo: comando
       comandos: ["terreno auto", "terrenos auto", "plot auto"]
       titulo: "Ache um terreno"
-      texto: "&f/terreno auto &7leva ao terreno à venda mais perto. Lá, &f/terreno comprar &7compra (é a sua base, pras máquinas e spawners)."
+      texto: "&f/terreno auto &7leva ao terreno à venda mais perto. Lá, &f/terreno comprar &7compra (é a sua base, pras máquinas, spawners e fazendas)."
       dica: "/terreno auto"
     - tipo: comando
       comandos: [diaria, daily, recompensa]
@@ -81,6 +81,7 @@ comandos-permitidos:
     - terreno
     - maquinas
     - spawners
+    - fazendas
     - loja
     - barraca
     - pix
@@ -195,7 +196,7 @@ comandos:
       titulo: "Terreno"
       resumo: "Sua base: comprar, imposto e mais"
       texto:
-        - "Cada terreno tem 32x32 e cabe até 10 máquinas e 100 spawners."
+        - "Cada terreno tem 32x32 e cabe até 10 máquinas, 100 spawners e 4 fazendas."
       comandos:
         - "/terreno auto | Leva ao terreno à venda mais perto"
         - "/terreno comprar | Compra o terreno em que você está"
@@ -275,12 +276,14 @@ comandos:
         - "/cla sair | Sai do clã"
         - "/cc <mensagem> | Chat do clã"
     producao:
-      titulo: "Máquinas"
-      resumo: "Máquinas, spawners e mercado"
+      titulo: "Produção"
+      resumo: "Máquinas, fazendas, spawners e mercado"
       texto:
-        - "Máquinas e spawners vão no seu terreno e liberam pelo rank."
+        - "Máquinas, fazendas e spawners vão no seu terreno e liberam pelo rank."
+        - "A fazenda põe dinheiro num cofre: compre a Escritura no &aCorretor Rural&7 (&f/warp loja&7) e colete no fazendeiro."
       comandos:
         - "/maquinas loja | Loja das máquinas e do combustível"
+        - "/fazendas loja | Escrituras de fazenda, Ração, Adubo e venda dos achados raros"
         - "/spawners loja | Loja dos spawners"
         - "/barraca lista | Barracas do mercado de jogadores"
         - "/barraca alugar <id> | Aluga uma barraca"

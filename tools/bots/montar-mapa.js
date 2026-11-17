@@ -511,6 +511,8 @@ const DICAS = [
     '&fQuer um lugar só seu? &e/terreno auto&f compra o primeiro terreno livre.',
     '&fTerreno paga imposto! Ligue o &e/terreno autopagar&f e esqueça. Se atrasar muito, o terreno vai a leilão.',
     '&fChame os amigos pra construir junto com &e/terreno amigo&f.',
+    '&fNo seu terreno cabem até 4 &afazendas&f: compre a Escritura com o &aCorretor Rural&f, no fundo da &e/warp loja&f, e o dinheiro cai no cofre até você coletar no fazendeiro.',
+    '&fA fazenda é do terreno: se ele for a leilão, quem arrematar leva a fazenda junto, com o cofre e tudo!',
     '&fMadeira, bicho e peixe, tem tudo no &e/warp recursos&f. Ele é refeito todo mês, então não construa casa lá!',
     '&fQuartzo e netherita? &e/warp nether&f. Élitro e dragão? &e/warp end&f. Os dois também são refeitos todo mês: o End no dia 10, o Nether no dia 20 e o de recursos no dia 30 (&e/recursos&f mostra as datas).',
     '&fCaverna escura? &e/luz&f liga a visão noturna. De novo, desliga.',

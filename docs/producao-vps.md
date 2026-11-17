@@ -58,6 +58,8 @@ Vale também pro `D:\BrasaMC`, que é anterior às fazendas.
       descricao: "&7Escrituras de fazenda, Ração e Adubo"
       skin: "textura:2d60f9159fb24fbdcc2229bb8ddc01aab31cc8ccb7c8984d0e5e7dccfdbc0a51"
   ```
+- [ ] No `plugins/AjudaPlugin/config.yml` (o que já existe no servidor não pega o padrão novo do jar): **`- fazendas` em `comandos-permitidos.lista`** (sem ele, o Corretor Rural não abre pra jogador nenhum, só pra staff), e as páginas `terreno` ("cabe até 10 máquinas, 100 spawners e 4 fazendas") e `producao` (título "Produção", com as fazendas e o `/fazendas loja`) e o texto da etapa do terreno no `tutorial`, como no config do repositório. Depois, `comandos reload`.
+- [ ] As duas falas novas do Seu Juca do Terreno: `node tools/bots/montar-mapa.js construir dicas` (refaz os NPCs de dicas do spawn) ou, na mão, `dica fala juca <texto>` com as duas falas das fazendas do `montar-mapa.js`.
 - [ ] Reconstruir a Loja Oficial, que cresceu 13 blocos pro fundo (o x 136 virou 149, com a fonte no fundo novo): no console, `execute in minecraft:spawn run forceload add 60 10 152 76`, `estrutura construir loja spawn 0 65 43` (espere o `estrutura status` dizer "Nenhuma") e `execute in minecraft:spawn run forceload remove 60 10 152 76`. Os outros balcões não mudam de lugar.
 
 ## Antihack (GrimAC)

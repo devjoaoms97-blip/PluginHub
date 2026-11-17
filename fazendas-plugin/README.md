@@ -2,7 +2,9 @@
 
 Fazendas nos terrenos que rendem **dinheiro** (não dão itens). Uma **Escritura** vira uma construção 7x7 com um fazendeiro parado na abertura da cerca. Cada safra põe dinheiro no cofre, gastando **Ração** (fazendas de animais) ou **Adubo** (plantações). O dono passa no fazendeiro e coleta.
 
-Estado: **fase 4** (o funcionamento, o visual de cada fazenda, o balcão na Loja Oficial e o achado raro). Veja o `ROADMAP.md`.
+Estado: **v1 completa** (2026-11-17): o funcionamento, o visual de cada fazenda, o balcão na Loja Oficial, o achado raro e a divulgação (`/comandos`, o Seu Juca do Terreno e o `/tutorial`). Veja o `ROADMAP.md`.
+
+Testes com bots: `teste-fazendas.js`, `teste-fazendas-visual.js`, `teste-fazendas-loja.js`, `teste-fazendas-raro.js` e `teste-fazendas-jogador.js` (`tools/bots`).
 
 ## Como funciona
 
