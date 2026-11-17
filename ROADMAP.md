@@ -278,6 +278,14 @@ Cinco máquinas nos terrenos (Tear, Forja, Destilaria, Lapidadora e Reator Arcan
 - [ ] `url-publica` do pacote no servidor de verdade (endereço e porta liberada). 🟢
 - [x] Balcão **PvP** da loja: o Armeiro (OficinasPlugin) vende todas as armaduras e armas sem encantamento (couro a netherita), escudo, flechas e poções. Só compra.
 
+### Fazendas 🚧 fase 1 (`fazendas-plugin`, escopo combinado em 2026-11-17)
+Uma **Escritura** (item negociável) vira uma construção 7x7 no terreno, com um fazendeiro (NPC parado) na abertura da cerca. A fazenda **não dá itens**: cada safra põe dinheiro num cofre, gastando **Ração** (animais) ou **Adubo** (plantações), e o dono coleta no NPC. Doze fazendas, uma por rank: Horta, Galinheiro, Pomar, Pocilga, Trigal, Curral, Ovelhas, Apiário, Abóboras e Melancias, Cogumelos Gigantes, Verrugas do Nether e Estufa de Chorus. Até 4 por terreno (separado das máquinas). Melhorias, renda (~7% da mina do rank, se paga em ~20 h) e produção offline pela metade, como as máquinas (`tools/economia/fazendas.py`). Inspirada num vídeo de outro servidor, mas autoral.
+- [x] **Fase 1, o funcionamento:** a Escritura guarda o tipo e os níveis; o 1º clique mostra o contorno da área (verde ou vermelho, com o motivo) e o 2º constrói; a área precisa estar no terreno, plana e livre, e o chão original volta ao recolher. Produção pelo relógio, cofre, despensa, as três melhorias (Produtividade, Cofre, Despensa), coleta com o bônus do rank e do VIP, recolher com confirmação. **Ninguém quebra nada da construção** (nem a staff, fora o `/fazendas remover`): explosão, pistão, água, fogo e pisoteio também não. Construção simples, igual pra todas. Loja provisória em `/fazendas loja`.
+- [ ] **Fase 2, o visual:** uma construção 7x7 própria por tipo (plantações e animais parados), o NPC com roupa por tipo, e as texturas da Escritura, da Ração e do Adubo no pacote. 🟡
+- [ ] **Fase 3, a loja:** balcão **Corretor Rural** na Loja Oficial e o Leiloeiro contando as fazendas do terreno. 🟡
+- [ ] **Fase 4, o prêmio raro:** um item temático por fazenda (Ovo Dourado, Lã de Ouro, Favo Real...), guardado na fazenda e vendido no Fazendeiro; ~1 a cada 2 dias de produção online, valendo ~1,5 h de renda dela. 🟢
+- [ ] **Fase 5:** testes com bots, dicas, `/ajuda` e tutoriais. 🟢
+
 ### Montaria no spawn ✅ v1 (`montaria-plugin`)
 `/montaria` (ou `/cavalo`) chama um cavalo pra andar mais rápido pelo mundo spawn e pelo mundo dos tesouros (decisões de 2026-10-27; tesouros em 2026-10-30):
 - **Só VIP** (permissão `vip.perk.montaria`, em todos os tiers).
