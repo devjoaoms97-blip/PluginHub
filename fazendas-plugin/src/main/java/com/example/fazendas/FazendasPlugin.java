@@ -111,13 +111,13 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
     }
 
     // ---------------------------------------------------------------------
-    // Itens (papel com o visual de um item vanilla: não planta, não alimenta, não entra em receita)
+    // Itens (papel com a textura do pacote, "servidor:<id>": não planta, não alimenta, não entra em receita)
     // ---------------------------------------------------------------------
 
     private static ItemStack item(String modelo, String nome, List<String> lore, int quantidade) {
         ItemStack item = new ItemStack(Material.PAPER, Math.max(1, quantidade));
         ItemMeta meta = item.getItemMeta();
-        meta.setItemModel(NamespacedKey.minecraft(modelo));
+        meta.setItemModel(new NamespacedKey("servidor", modelo));
         meta.setDisplayName(nome);
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -126,7 +126,7 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
 
     public ItemStack insumo(Insumo i, int quantidade) {
         boolean racao = i.id().equals("racao");
-        ItemStack item = item(racao ? "wheat" : "bone_meal", i.nome(),
+        ItemStack item = item(i.id(), i.nome(),
                 List.of(racao ? "§7Alimenta as fazendas de animais." : "§7Aduba as fazendas de plantação.",
                         "§7Clique no fazendeiro com ele na mão", "§7(ou use §fAbastecer§7 no menu)."), quantidade);
         ItemMeta meta = item.getItemMeta();
@@ -148,7 +148,7 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
         lore.add("");
         lore.add("§eClique direito no chão do seu terreno:");
         lore.add("§e1º mostra a área (7x7), 2º constrói.");
-        ItemStack item = item("filled_map", "§6📜 Escritura: " + t.nome(), lore, 1);
+        ItemStack item = item("escritura", "§6📜 Escritura: " + t.nome(), lore, 1);
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(chaveEscritura, PersistentDataType.STRING, t.id());

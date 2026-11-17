@@ -11,8 +11,9 @@ mundos: [terrenos]
 limite-por-terreno: 4
 
 # A área da construção: 7x7, com o chão uma camada abaixo do bloco clicado. Acima do chão, tantos
-# blocos precisam estar livres (ar, grama, flor).
-altura-livre: 3
+# blocos precisam estar livres (ar, grama, flor): 5 cabe o moinho do Trigal, as macieiras do Pomar e o
+# cogumelo gigante. Mudar não mexe nas fazendas já colocadas (cada uma guarda a altura dela).
+altura-livre: 5
 # Quanto tempo a prévia (o contorno) fica valendo: o segundo clique no mesmo bloco constrói.
 previa-segundos: 30
 
@@ -56,12 +57,16 @@ vip-bonus-coleta:
 
 # As fazendas, na ordem da loja. Calibradas pelo tools/economia/fazendas.py (2026-11-17): cada uma
 # lucra ~7% da mina do rank em que libera (renda menos o insumo, sem bônus) e se paga em ~20 h de
-# produção online, como as máquinas. "icone" é o item que representa a fazenda nos menus.
+# produção online, como as máquinas. "icone" é o item que representa a fazenda nos menus; "mao", o que o
+# fazendeiro segura; "skin" (opcional), o nome de um jogador ou "textura:<hash>" pra skin do fazendeiro.
+# A construção de cada uma (blocos e bichos) está no código (Planos.java).
 fazendas:
   horta:
     nome: "&aHorta"
     npc: "Seu Zé da Horta"
     icone: CARROT
+    mao: IRON_HOE
+    skin: ""
     insumo: adubo
     intervalo-segundos: 60
     insumo-por-safra: 0.15
@@ -72,6 +77,8 @@ fazendas:
     nome: "&fGalinheiro"
     npc: "Dona Cocó"
     icone: EGG
+    mao: EGG
+    skin: ""
     insumo: racao
     intervalo-segundos: 60
     insumo-por-safra: 0.2
@@ -82,6 +89,8 @@ fazendas:
     nome: "&cPomar"
     npc: "Tio Maçã"
     icone: APPLE
+    mao: APPLE
+    skin: ""
     insumo: adubo
     intervalo-segundos: 60
     insumo-por-safra: 0.3
@@ -92,6 +101,8 @@ fazendas:
     nome: "&dPocilga"
     npc: "Seu Torresmo"
     icone: PORKCHOP
+    mao: CARROT_ON_A_STICK
+    skin: ""
     insumo: racao
     intervalo-segundos: 75
     insumo-por-safra: 0.5
@@ -102,6 +113,8 @@ fazendas:
     nome: "&eTrigal"
     npc: "Moleiro Bento"
     icone: WHEAT
+    mao: WHEAT
+    skin: ""
     insumo: adubo
     intervalo-segundos: 90
     insumo-por-safra: 1
@@ -112,6 +125,8 @@ fazendas:
     nome: "&6Curral"
     npc: "Vaqueira Rosa"
     icone: MILK_BUCKET
+    mao: MILK_BUCKET
+    skin: ""
     insumo: racao
     intervalo-segundos: 90
     insumo-por-safra: 1
@@ -122,6 +137,8 @@ fazendas:
     nome: "&fCriação de Ovelhas"
     npc: "Pastor Tião"
     icone: WHITE_WOOL
+    mao: SHEARS
+    skin: ""
     insumo: racao
     intervalo-segundos: 120
     insumo-por-safra: 2
@@ -132,6 +149,8 @@ fazendas:
     nome: "&6Apiário"
     npc: "Dona Melinda"
     icone: HONEYCOMB
+    mao: HONEY_BOTTLE
+    skin: ""
     insumo: adubo
     intervalo-segundos: 120
     insumo-por-safra: 2
@@ -142,6 +161,8 @@ fazendas:
     nome: "&6Abóboras e Melancias"
     npc: "Seu Moranga"
     icone: PUMPKIN
+    mao: GOLDEN_HOE
+    skin: ""
     insumo: adubo
     intervalo-segundos: 150
     insumo-por-safra: 3
@@ -152,6 +173,8 @@ fazendas:
     nome: "&cCogumelos Gigantes"
     npc: "Micélio"
     icone: RED_MUSHROOM
+    mao: RED_MUSHROOM
+    skin: ""
     insumo: adubo
     intervalo-segundos: 180
     insumo-por-safra: 4
@@ -162,6 +185,8 @@ fazendas:
     nome: "&4Verrugas do Nether"
     npc: "Bruxo Verrugão"
     icone: NETHER_WART
+    mao: NETHER_WART
+    skin: ""
     insumo: adubo
     intervalo-segundos: 180
     insumo-por-safra: 4
@@ -172,6 +197,8 @@ fazendas:
     nome: "&5Estufa de Chorus"
     npc: "Lady Chorus"
     icone: CHORUS_FRUIT
+    mao: CHORUS_FRUIT
+    skin: ""
     insumo: adubo
     intervalo-segundos: 180
     insumo-por-safra: 5

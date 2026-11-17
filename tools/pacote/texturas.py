@@ -169,6 +169,75 @@ def celula_combustivel():
     return contornar(img)
 
 
+# ---------------------------------------------------------------- fazendas
+
+PERGAMINHO = [(176, 140, 92, 255), (212, 180, 128, 255), (236, 212, 166, 255), (250, 236, 200, 255)]
+SACO = [(96, 66, 38, 255), (128, 92, 54, 255), (160, 120, 74, 255), (190, 152, 102, 255)]
+VERDE = [(40, 92, 30, 255), (70, 140, 44, 255), (120, 190, 70, 255)]
+
+
+def escritura():
+    """Escritura da fazenda: pergaminho enrolado nas pontas, um campo verde desenhado e o selo vinho de cera."""
+    img = nova()
+    retangulo(img, 3, 3, 12, 12, PERGAMINHO[2])
+    retangulo(img, 3, 3, 3, 12, PERGAMINHO[1])
+    retangulo(img, 2, 2, 13, 3, PERGAMINHO[1])  # rolo de cima
+    retangulo(img, 2, 12, 13, 13, PERGAMINHO[1])  # rolo de baixo
+    px(img, [(x, 2) for x in range(3, 13)], PERGAMINHO[3])
+    px(img, [(x, 13) for x in range(3, 13)], PERGAMINHO[0])
+    # o terreno desenhado: um quadrado de cerca com plantação
+    retangulo(img, 5, 5, 10, 9, VERDE[1])
+    px(img, [(x, 5) for x in range(5, 11)] + [(x, 9) for x in range(5, 11)] + [(5, y) for y in range(5, 10)]
+       + [(10, y) for y in range(5, 10)], SACO[1])
+    px(img, [(7, 6), (7, 7), (8, 7), (8, 8)], VERDE[2])
+    # selo de cera com fita dourada
+    retangulo(img, 9, 10, 11, 12, VINHO[2])
+    px(img, [(10, 11)], VINHO[3])
+    px(img, [(8, 12), (8, 13), (12, 13)], OURO[2])
+    return contornar(img)
+
+
+def _saco(img):
+    """O saco de estopa (base da Ração e do Adubo), boca amarrada em cima."""
+    linhas = {4: (6, 9), 5: (5, 10), 6: (4, 11), 7: (3, 12), 8: (3, 12), 9: (3, 12), 10: (3, 12), 11: (3, 12),
+              12: (4, 11), 13: (4, 11), 14: (5, 10)}
+    for y, (a, b) in linhas.items():
+        for x in range(a, b + 1):
+            img.putpixel((x, y), SACO[2] if x > a + 1 else SACO[1])
+        img.putpixel((b, y), SACO[1])
+    retangulo(img, 6, 2, 9, 3, SACO[3])  # boca
+    px(img, [(5, 4), (10, 4), (7, 4), (8, 4)], OURO[1])  # cordão
+    px(img, [(5, 9), (7, 11), (9, 8), (10, 12), (6, 13)], SACO[3])  # trama
+
+
+def racao():
+    """Ração: saco de estopa com grãos dourados transbordando e uma faixa vinho."""
+    img = nova()
+    _saco(img)
+    retangulo(img, 3, 9, 12, 9, VINHO[2])
+    px(img, [(6, 1), (8, 1), (7, 0), (9, 2), (5, 2)], OURO[2])
+    px(img, [(7, 1), (6, 2)], OURO[3])
+    px(img, [(6, 11), (8, 12), (9, 11)], OURO[1])
+    return contornar(img)
+
+
+def adubo():
+    """Adubo: saco de estopa escuro com um broto verde saindo da boca."""
+    img = nova()
+    _saco(img)
+    for x in range(3, 13):
+        for y in range(5, 15):
+            c = img.getpixel((x, y))
+            if c[3]:
+                img.putpixel((x, y), tuple(max(0, v - 30) for v in c[:3]) + (255,))
+    px(img, [(8, 3), (8, 2), (8, 1)], VERDE[1])  # caule
+    px(img, [(6, 0), (7, 1), (9, 1), (10, 0)], VERDE[2])  # folhas
+    px(img, [(7, 0), (9, 0)], VERDE[2])
+    retangulo(img, 5, 9, 10, 10, VERDE[0])  # etiqueta
+    px(img, [(7, 9), (8, 10)], VERDE[2])
+    return contornar(img)
+
+
 # ---------------------------------------------------------------- máquinas (faces de bloco, sem transparência)
 
 def _moldura(img, cor_borda=None):
@@ -264,6 +333,8 @@ PRODUTOS = {
     "tecido_fino": tecido_fino, "barra_de_aco": barra_de_aco, "essencia_destilada": essencia_destilada,
     "gema_lapidada": gema_lapidada, "cristal_de_energia": cristal_de_energia, "celula_combustivel": celula_combustivel,
     "fragmento_arcano": fragmento_arcano,
+    # FazendasPlugin: a Escritura, a Ração e o Adubo
+    "escritura": escritura, "racao": racao, "adubo": adubo,
 }
 FRENTES = {
     "tear": frente_tear, "forja": frente_forja, "destilaria": frente_destilaria,

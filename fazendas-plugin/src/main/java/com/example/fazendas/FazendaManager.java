@@ -1,6 +1,21 @@
 package com.example.fazendas;
 
+import com.destroystokyo.paper.profile.ProfileProperty;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Sheep;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDropItemEvent;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -357,19 +372,90 @@ public class FazendaManager implements Listener {
                 e.setCustomNameVisible(true);
                 e.customName(LEGADO.deserialize("§e" + t.npc()));
                 e.setDescription(LEGADO.deserialize("§7Clique pra abrir a fazenda"));
+                // o que ele segura e a skin vêm do config de cada tipo ("mao" e "skin")
+                Material mao = Material.matchMaterial(plugin.getConfig().getString("fazendas." + t.id() + ".mao", ""));
+                if (mao != null) e.getEquipment().setItemInMainHand(new ItemStack(mao));
+                String skin = plugin.getConfig().getString("fazendas." + t.id() + ".skin");
+                if (skin != null && !skin.isBlank()) e.setProfile(perfil(skin));
                 e.getPersistentDataContainer().set(plugin.chaveEntidade(), PersistentDataType.STRING, f.id);
             });
             f.npc = m.getUniqueId();
         }
+        garantirEnfeites(f);
+    }
+
+    /** Os bichos e enfeites parados de cada tipo (Planos.enfeites), girados pra frente da fazenda. */
+    private void garantirEnfeites(Fazenda f) {
+        List<Planos.Enfeite> lista = Planos.enfeites(f.tipo);
+        while (f.enfeites.size() < lista.size()) f.enfeites.add(null);
+        World w = f.world();
+        int[] frente = f.frente();
+        for (int i = 0; i < lista.size(); i++) {
+            UUID u = f.enfeites.get(i);
+            Entity atual = u == null ? null : Bukkit.getEntity(u);
+            if (atual != null && atual.isValid()) continue;
+            Planos.Enfeite en = lista.get(i);
+            double[] d = Construcao.paraMundo(frente, en.lx(), en.lz());
+            Location l = new Location(w, f.x + 0.5 + d[0], f.y + en.ly(), f.z + 0.5 + d[1], en.yawLocal() + Construcao.giroYaw(frente), 0);
+            if (!w.isChunkLoaded(l.getBlockX() >> 4, l.getBlockZ() >> 4)) continue;
+            Entity novo;
+            if (en.tipo() == EntityType.ITEM_DISPLAY) {
+                novo = w.spawn(l, ItemDisplay.class, e -> {
+                    e.setItemStack(new ItemStack(en.item()));
+                    e.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(0.45f, 0.45f, 0.45f), new AxisAngle4f()));
+                    e.setPersistent(false);
+                    e.getPersistentDataContainer().set(plugin.chaveEntidade(), PersistentDataType.STRING, f.id);
+                });
+            } else {
+                novo = w.spawnEntity(l, en.tipo(), CreatureSpawnEvent.SpawnReason.CUSTOM, e -> {
+                    if (e instanceof LivingEntity v) {
+                        v.setAI(false);
+                        v.setInvulnerable(true);
+                        v.setSilent(true);
+                        v.setCollidable(false);
+                        v.setRemoveWhenFarAway(false);
+                        v.setCanPickupItems(false);
+                    }
+                    if (e instanceof Ageable a) a.setAdult();
+                    if (e instanceof Sheep s && en.cor() != null) s.setColor(en.cor());
+                    e.setPersistent(false);
+                    e.getPersistentDataContainer().set(plugin.chaveEntidade(), PersistentDataType.STRING, f.id);
+                });
+            }
+            f.enfeites.set(i, novo.getUniqueId());
+        }
+    }
+
+    private static ResolvableProfile perfil(String skin) {
+        if (skin.startsWith("textura:")) {
+            String hash = skin.substring("textura:".length()).trim();
+            String json = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + hash + "\"}}}";
+            String valor = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+            return ResolvableProfile.resolvableProfile()
+                    .uuid(UUID.nameUUIDFromBytes(hash.getBytes(StandardCharsets.UTF_8)))
+                    .name("npc" + hash.substring(0, Math.min(10, hash.length())))
+                    .addProperty(new ProfileProperty("textures", valor)).build();
+        }
+        return ResolvableProfile.resolvableProfile().name(skin).build();
     }
 
     private void removerEntidades(Fazenda f) {
-        for (UUID u : new UUID[]{f.npc, f.holograma}) {
+        List<UUID> todas = new ArrayList<>(f.enfeites);
+        todas.add(f.npc);
+        todas.add(f.holograma);
+        for (UUID u : todas) {
             Entity e = u == null ? null : Bukkit.getEntity(u);
             if (e != null) e.remove();
         }
         f.npc = null;
         f.holograma = null;
+        f.enfeites.clear();
+    }
+
+    /** A galinha da fazenda não bota ovo (nem bicho nenhum dela solta item). */
+    @EventHandler
+    public void aoSoltarItem(EntityDropItemEvent evento) {
+        if (evento.getEntity().getPersistentDataContainer().has(plugin.chaveEntidade())) evento.setCancelled(true);
     }
 
     private void atualizarHolograma(Fazenda f) {

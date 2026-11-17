@@ -7,11 +7,15 @@ com\example\fazendas\FazendasPlugin.class
 com\example\fazendas\Construcao$Visitante.class
 com\example\fazendas\FazendaManager$Menu.class
 com\example\fazendas\LojaFazendas$Menu.class
+com\example\fazendas\Planos$Enfeite.class
+com\example\fazendas\Construcao$1.class
 com\example\fazendas\PixIntegration.class
+com\example\fazendas\Planos.class
 com\example\fazendas\RankupIntegration.class
 com\example\fazendas\Construcao.class
 com\example\fazendas\FazendaManager.class
 com\example\fazendas\Fazenda.class
+com\example\fazendas\Planos$Estilo.class
 com\example\fazendas\Colocacao.class
 com\example\fazendas\Protecao.class
 com\example\fazendas\FazendasPlugin$Insumo.class

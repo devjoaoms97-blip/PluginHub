@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -136,9 +137,19 @@ final class Protecao implements Listener {
         return false;
     }
 
+    /** Nem entra água de fora, nem sai a do rego da horta. */
     @EventHandler(priority = EventPriority.LOWEST)
     public void aoEscorrer(BlockFromToEvent evento) {
-        if (em(evento.getToBlock()) != null) evento.setCancelled(true);
+        if (em(evento.getToBlock()) != null || em(evento.getBlock()) != null) evento.setCancelled(true);
+    }
+
+    /**
+     * Sem física dentro da área: planta, chorus, cogumelo e lanterna não se quebram por atualização de
+     * vizinho (a construção é colocada sem física, e fica assim).
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void aoFisica(BlockPhysicsEvent evento) {
+        if (em(evento.getBlock()) != null) evento.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

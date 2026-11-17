@@ -2,7 +2,7 @@
 
 Fazendas nos terrenos que rendem **dinheiro** (não dão itens). Uma **Escritura** vira uma construção 7x7 com um fazendeiro parado na abertura da cerca. Cada safra põe dinheiro no cofre, gastando **Ração** (fazendas de animais) ou **Adubo** (plantações). O dono passa no fazendeiro e coleta.
 
-Estado: **fase 1** (o funcionamento). Todas as fazendas usam a mesma construção simples; o visual próprio de cada uma, o balcão na Loja Oficial e o prêmio raro vêm nas próximas fases (veja o `ROADMAP.md`).
+Estado: **fase 2** (o funcionamento e o visual de cada fazenda). O balcão na Loja Oficial e o prêmio raro vêm nas próximas fases (veja o `ROADMAP.md`).
 
 ## Como funciona
 
@@ -11,7 +11,7 @@ Estado: **fase 1** (o funcionamento). Todas as fazendas usam a mesma construçã
 - **Colocar:** com a Escritura na mão, clique direito no chão do terreno. O bloco clicado é o centro.
   - O 1º clique mostra o contorno da área 7x7: **verde** se pode construir; **vermelho** com o motivo se não pode.
   - O 2º clique no mesmo bloco, em até 30 s, constrói.
-  - **Condições da área:** ficar dentro de um terreno onde o jogador constrói (dono ou amigo com "construir"), no mundo dos terrenos (`mundos`); chão plano e firme (sem buraco, baú ou bloco especial); 3 blocos livres por cima (ar, grama, flor); não encostar em outra fazenda.
+  - **Condições da área:** ficar dentro de um terreno onde o jogador constrói (dono ou amigo com "construir"), no mundo dos terrenos (`mundos`); chão plano e firme (sem buraco, baú ou bloco especial); 5 blocos livres por cima (ar, grama, flor; `altura-livre`); não encostar em outra fazenda.
   - **Limite:** até 4 fazendas por terreno (`limite-por-terreno`), somando todos os tipos e donos, separado do limite das máquinas.
   - Quem estiver dentro da área na hora vai para fora da cerca.
 - **Construção:** antes de construir, cada bloco da área é guardado; ao recolher, tudo volta como era. **Ninguém mexe na construção**, nem o dono nem a staff. Fica protegida contra:
@@ -21,7 +21,26 @@ Estado: **fase 1** (o funcionamento). Todas as fazendas usam a mesma construçã
   - enderman, árvore crescendo, grama espalhando, plantação crescendo ou secando.
 
   A única forma de tirar é **recolher a Escritura** no fazendeiro. A staff pode usar o `/fazendas remover` olhando para a fazenda: a Escritura vai para quem removeu, e o cofre é descartado.
-- **Fazendeiro e holograma:** o NPC (um Mannequin) e o holograma (dinheiro no cofre, insumo e estado) não ficam salvos no mundo. Aparecem quando o chunk carrega e somem quando ele descarrega, por isso nunca duplicam.
+- **Visual de cada fazenda** (`Planos.java`): todas têm a moldura com o material de cada uma (chão da borda, cerca ou muro, postes nos cantos com lanterna). A frente, com a abertura onde fica o fazendeiro, é o lado de quem colocou: o desenho gira junto, com os blocos que têm direção.
+
+  | Fazenda | Construção | Bichos |
+  |---|---|---|
+  | Horta | Canteiros de cenoura, batata e beterraba, rego d'água, composteira e espantalho | |
+  | Galinheiro | Casinha de bétula com telhado de feno, ninhos de feno e flores | 4 galinhas |
+  | Pomar | Duas macieiras (uma florida) e cestos de colheita | maçãs penduradas |
+  | Pocilga | Chão de lama, cocho e feno | 2 porcos |
+  | Trigal | Trigo maduro, rego d'água, feno e o mastro do moinho com as pás | |
+  | Curral | Pasto, feno empilhado e bebedouro | 2 vacas |
+  | Criação de Ovelhas | Pasto e fardos de lã colorida | 3 ovelhas (branca, cinza e rosa) |
+  | Apiário | Colmeias cheias de mel e jardim de flores | 3 abelhas |
+  | Abóboras e Melancias | Abóboras de um lado, melancias do outro, caules ligados e rego | |
+  | Cogumelos Gigantes | Cogumelo vermelho gigante sobre micélio e cogumelos pequenos | |
+  | Verrugas do Nether | Verrugas maduras na areia das almas, fogueira das almas, cerca do Nether | |
+  | Estufa de Chorus | Hastes de chorus florindo sobre pedra do End, muro de pedra do End e bastões do End | |
+
+  Dentro da área não há física: a plantação não cresce nem seca, nada cai, e a água do rego não escorre.
+- **Fazendeiro, bichos e holograma:** o NPC (um Mannequin, com o item do tipo na mão: `mao`, e a skin opcional: `skin`), os bichos (sem IA: não andam, não botam ovo, não tomam dano; clicar num deles abre o menu, como no fazendeiro) e o holograma (dinheiro no cofre, insumo e estado) não ficam salvos no mundo. Aparecem quando o chunk carrega e somem quando ele descarrega, por isso nunca duplicam.
+- **Itens:** a Escritura, a Ração e o Adubo têm textura própria no pacote do servidor (`tools/pacote/texturas.py`).
 - **Produção:** segue o relógio, mesmo com o dono offline ou o terreno descarregado. Com o dono offline, anda na metade da velocidade (`producao-offline`). Cada safra põe a renda do tipo no cofre e gasta `insumo-por-safra`. Para quando o insumo acaba ou o cofre enche (96 safras, mais 64 por nível).
 - **Menu (clique no fazendeiro, só o dono):**
   - **Coletar:** o cofre vai para o saldo, com o bônus do rank e do VIP, menos 2% de imposto.

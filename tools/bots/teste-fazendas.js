@@ -77,8 +77,8 @@ t.rodar(async () => {
   t.verificar(msgs.some(m => m.includes('Área livre')), '1º clique: mostra a área e pede o segundo', msgs[0])
   msgs = await clicar(cx, 64, cz)
   t.verificar(msgs.some(m => m.includes('construída')), '2º clique: constrói', msgs.find(m => m.includes('constru')))
-  t.verificar(await bloco(cx - 3, 65, cz - 3, 'spruce_log') && await bloco(cx + 3, 65, cz, 'spruce_fence')
-    && await bloco(cx, 64, cz + 2, 'grass_block') && await bloco(cx - 3, 66, cz + 3, 'lantern'), 'a construção 7x7 está lá (troncos, cerca, chão, lanternas)')
+  t.verificar(await bloco(cx - 3, 65, cz - 3, 'birch_log') && await bloco(cx + 3, 65, cz, 'birch_fence')
+    && await bloco(cx, 64, cz + 2, 'birch_planks') && await bloco(cx - 3, 66, cz + 3, 'lantern'), 'a construção 7x7 do Galinheiro está lá (postes, cerca, casinha, lanternas)')
   t.verificar(await bloco(cx, 65, cz - 3, 'air'), 'a abertura da cerca fica do lado de quem colocou (norte)')
   t.verificar(await contar(nome, 'paper') === 0, 'a Escritura saiu da mão')
   const p = bot.entity.position
@@ -93,7 +93,7 @@ t.rodar(async () => {
   await tp(cx + 0.5, 65, cz - 5.5, 0)
   await bot.dig(bot.blockAt(new Vec3(cx + 1, 65, cz - 3)), true).catch(() => {})
   await t.espera(800)
-  t.verificar(await bloco(cx + 1, 65, cz - 3, 'spruce_fence'), 'o dono não quebra a cerca')
+  t.verificar(await bloco(cx + 1, 65, cz - 3, 'birch_fence'), 'o dono não quebra a cerca')
   await t.console(`give ${nome} minecraft:dirt 4`)
   await t.espera(500)
   await bot.equip(bot.inventory.items().find(i => i.name === 'dirt'), 'hand')
@@ -103,7 +103,7 @@ t.rodar(async () => {
   await tp(cx + 0.5, 65, cz - 14.5, 0)
   await t.console(`execute in minecraft:terrenos run minecraft:summon tnt ${cx + 1} 65 ${cz + 1} {fuse:1}`)
   await t.espera(2000)
-  t.verificar(await bloco(cx, 64, cz + 1, 'coarse_dirt') && await bloco(cx + 3, 65, cz + 1, 'spruce_fence') && await bloco(cx + 3, 65, cz + 3, 'spruce_log'),
+  t.verificar(await bloco(cx, 64, cz + 1, 'birch_planks') && await bloco(cx + 3, 65, cz + 1, 'birch_fence') && await bloco(cx + 3, 65, cz + 3, 'birch_log'),
     'TNT dentro da área não estraga nada')
 
   console.log('\n== Menu do fazendeiro ==')
@@ -150,7 +150,7 @@ t.rodar(async () => {
   j = await janela(bot, () => bot.activateEntity(npc2))
   await bot.clickWindow(22, 0, 0)
   await t.espera(1000)
-  t.verificar(await bloco(cx - 3, 65, cz - 3, 'spruce_log'), 'o primeiro clique em Recolher só pede confirmação')
+  t.verificar(await bloco(cx - 3, 65, cz - 3, 'birch_log'), 'o primeiro clique em Recolher só pede confirmação')
   await bot.clickWindow(22, 0, 0)
   await t.espera(1500)
   t.verificar(await bloco(cx - 3, 65, cz - 3, 'air') && await bloco(cx, 64, cz, 'grass_block') && await bloco(cx - 3, 64, cz - 3, 'grass_block')

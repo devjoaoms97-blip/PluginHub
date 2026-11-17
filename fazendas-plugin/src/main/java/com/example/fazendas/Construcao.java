@@ -4,18 +4,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Fence;
+import org.bukkit.block.structure.StructureRotation;
 
 /**
  * A construção 7x7 de cada fazenda. Antes de construir, guarda todos os blocos originais da área
  * (chão e camadas acima); ao recolher, devolve cada um como estava. Os blocos vão sem física
  * (applyPhysics false): nada cai nem dropa, e as cercas vêm com as conexões já calculadas.
  *
- * <p>Por enquanto (fase 1), todos os tipos usam o mesmo plano: chão de grama com borda de tábuas,
- * cerca com troncos nos cantos e lanternas em cima, e uma abertura na frente, onde fica o NPC. Os planos temáticos de cada tipo entram no
- * {@link #plano} depois.
+ * <p>O desenho de cada tipo está nos {@link Planos}, com a frente ao norte; aqui ele é girado pra
+ * frente da fazenda (o lado de quem colocou), junto com os blocos que têm direção.
  */
 final class Construcao {
 
@@ -35,44 +33,49 @@ final class Construcao {
         }
     }
 
-    /**
-     * O bloco do plano na posição relativa ao centro (null = ar). {@code frente} ({x, z}): o lado da
-     * abertura da cerca, onde fica o NPC.
-     */
-    static BlockData plano(FazendasPlugin.Tipo tipo, int[] frente, int dx, int dy, int dz) {
-        int r = Fazenda.RAIO;
-        int ax = frente[0] * r, az = frente[1] * r; // a abertura
-        boolean bordaX = Math.abs(dx) == r, bordaZ = Math.abs(dz) == r;
-        boolean borda = bordaX || bordaZ, canto = bordaX && bordaZ;
-        if (dy == -1) {
-            if (borda) return Bukkit.createBlockData(Material.SPRUCE_PLANKS);
-            if (Math.abs(dx) <= 1 && Math.abs(dz) <= 1) return Bukkit.createBlockData(Material.COARSE_DIRT);
-            return Bukkit.createBlockData(Material.GRASS_BLOCK);
-        }
-        if (dy == 0 && canto) return Bukkit.createBlockData(Material.SPRUCE_LOG);
-        if (dy == 0 && dx == ax && dz == az) return null;
-        if (dy == 0 && borda) {
-            Fence cerca = (Fence) Bukkit.createBlockData(Material.SPRUCE_FENCE);
-            // a cerca liga com as vizinhas da borda (e com os troncos dos cantos), menos pro lado da abertura
-            BlockFace[] lados = bordaZ ? new BlockFace[]{BlockFace.EAST, BlockFace.WEST} : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH};
-            for (BlockFace lado : lados) {
-                if (dx + lado.getModX() == ax && dz + lado.getModZ() == az) continue;
-                cerca.setFace(lado, true);
-            }
-            return cerca;
-        }
-        if (dy == 1 && canto) return Bukkit.createBlockData(Material.LANTERN);
-        return null;
+    /** A rotação que leva o norte (a frente do desenho) pra frente da fazenda. */
+    static StructureRotation rotacao(int[] frente) {
+        if (frente[0] == 1) return StructureRotation.CLOCKWISE_90;
+        if (frente[0] == -1) return StructureRotation.COUNTERCLOCKWISE_90;
+        return frente[1] == 1 ? StructureRotation.CLOCKWISE_180 : StructureRotation.NONE;
     }
 
-    /** Guarda os originais da área e constrói o plano do tipo. */
+    /** Coordenada local (lx, lz) → deslocamento no mundo {dx, dz}, com a frente {@code frente}. */
+    static double[] paraMundo(int[] frente, double lx, double lz) {
+        // direita = (-fz, fx); fundo = (-fx, -fz)
+        return new double[]{lx * -frente[1] + lz * -frente[0], lx * frente[0] + lz * -frente[1]};
+    }
+
+    /** Quanto o yaw gira junto com o desenho (o yaw do Minecraft cresce no sentido horário). */
+    static float giroYaw(int[] frente) {
+        return switch (rotacao(frente)) {
+            case CLOCKWISE_90 -> 90;
+            case CLOCKWISE_180 -> 180;
+            case COUNTERCLOCKWISE_90 -> -90;
+            default -> 0;
+        };
+    }
+
+    /** O bloco do desenho na posição (dx, dy, dz) do mundo, relativa ao centro (null = ar). */
+    static BlockData plano(FazendasPlugin.Tipo tipo, int[] frente, StructureRotation rot, int dx, int dy, int dz) {
+        // mundo → local: lx = d·direita, lz = d·fundo
+        int lx = dx * -frente[1] + dz * frente[0];
+        int lz = dx * -frente[0] + dz * -frente[1];
+        BlockData d = Planos.bloco(tipo.id(), lx, dy, lz);
+        if (d != null && rot != StructureRotation.NONE) d.rotate(rot);
+        return d;
+    }
+
+    /** Guarda os originais da área e constrói o desenho do tipo. */
     static void construir(Fazenda f, FazendasPlugin.Tipo tipo) {
         World w = f.world();
         f.originais.clear();
         BlockData ar = Bukkit.createBlockData(Material.AIR);
+        int[] frente = f.frente();
+        StructureRotation rot = rotacao(frente);
         percorrer(f.altura, (dx, dy, dz) -> f.originais.add(w.getBlockAt(f.x + dx, f.y + dy, f.z + dz).getBlockData().getAsString()));
         percorrer(f.altura, (dx, dy, dz) -> {
-            BlockData d = plano(tipo, f.frente(), dx, dy, dz);
+            BlockData d = plano(tipo, frente, rot, dx, dy, dz);
             w.getBlockAt(f.x + dx, f.y + dy, f.z + dz).setBlockData(d == null ? ar : d, false);
         });
     }

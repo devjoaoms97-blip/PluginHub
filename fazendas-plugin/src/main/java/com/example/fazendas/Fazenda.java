@@ -31,6 +31,8 @@ final class Fazenda {
     long parcialMs;
     long ultima;
     UUID npc, holograma;
+    /** Os bichos e enfeites parados (na ordem de {@link Planos#enfeites}); não são salvos, como o NPC. */
+    final List<UUID> enfeites = new ArrayList<>();
     /** Os blocos originais da área (pra devolver ao recolher), na ordem de {@link Construcao#percorrer}. */
     List<String> originais = new ArrayList<>();
 
