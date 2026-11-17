@@ -68,6 +68,34 @@ public class TerrenosIntegration {
         }
     }
 
+    /**
+     * O terreno no lugar: o dono (null sem dono), se {@code jogador} constrói nele, se está em leilão e se
+     * está à venda (livre: abandonado, ou leilão sem lance; o TerrenosPlugin limpa tudo o que tinha dentro).
+     */
+    public record Situacao(UUID dono, String nomeDono, boolean podeConstruir, boolean emLeilao, boolean livre) {}
+
+    /** A situação do terreno no lugar, ou null fora de terreno (na rua) ou sem o TerrenosPlugin. */
+    public Situacao situacao(Location local, UUID jogador) {
+        Plugin terrenos = terrenos();
+        if (terrenos == null || local == null) return null;
+        try {
+            Object manager = terrenos.getClass().getMethod("getTerrenoManager").invoke(terrenos);
+            if (manager.getClass().getMethod("idEm", Location.class).invoke(manager, local) == null) return null;
+            Object t = manager.getClass().getMethod("getEm", Location.class).invoke(manager, local);
+            if (t == null) return new Situacao(null, null, false, false, true);
+            UUID dono = (UUID) t.getClass().getMethod("getDono").invoke(t);
+            String nome = (String) t.getClass().getMethod("getNomeDono").invoke(t);
+            boolean leilao = Boolean.TRUE.equals(t.getClass().getMethod("emLeilao").invoke(t));
+            Class<?> classe = t.getClass().getClassLoader().loadClass("com.example.terrenos.model.Permissao");
+            Object construir = classe.getMethod("valueOf", String.class).invoke(null, "CONSTRUIR");
+            boolean pode = dono != null && Boolean.TRUE.equals(t.getClass().getMethod("pode", UUID.class, classe).invoke(t, jogador, construir));
+            return new Situacao(dono, nome, pode, leilao, dono == null && !leilao);
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            avisar(e);
+            return null;
+        }
+    }
+
     private void avisar(Exception e) {
         if (!avisouFalha) {
             plugin.getLogger().warning("Não foi possível consultar o TerrenosPlugin (versão antiga?): " + e.getMessage());

@@ -284,15 +284,15 @@ async function construirBanco() {
 }
 
 /**
- * A Loja Oficial (EstruturasPlugin "loja"), do lado de fora do portão leste do spawn: o prédio, os 7
- * vendedores do EconomyShopPlugin, as placas dos balcões e os quadros.
+ * A Loja Oficial (EstruturasPlugin "loja"), do lado de fora do portão leste do spawn: o prédio (até o x 150), os
+ * vendedores do EconomyShopPlugin (com o Corretor Rural das fazendas), os balcões e os quadros.
  */
 async function construirLoja() {
   console.log('\n== Loja Oficial (EstruturasPlugin: loja) ==')
-  await t.console('execute in minecraft:spawn run forceload add 60 10 128 76')
+  await t.console('execute in minecraft:spawn run forceload add 60 10 152 76')
   await t.espera(2000)
   await estrutura('loja', 'spawn', [SPAWN.x, SPAWN.z])
-  await t.console('execute in minecraft:spawn run forceload remove 60 10 128 76')
+  await t.console('execute in minecraft:spawn run forceload remove 60 10 152 76')
 }
 
 /**

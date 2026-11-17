@@ -20,7 +20,8 @@ final class Fazenda {
     final String mundo;
     final int x, y, z;
     final String tipo;
-    final UUID dono;
+    /** Quem coleta e mexe. Muda sozinho se o terreno trocar de dono (ver FazendaManager.sincronizarDono). */
+    UUID dono;
     final float yaw;
     /** Quantas camadas acima do chão a construção ocupa (a altura livre no momento em que foi colocada). */
     final int altura;

@@ -17,5 +17,6 @@ com\example\fazendas\FazendaManager.class
 com\example\fazendas\Fazenda.class
 com\example\fazendas\Planos$Estilo.class
 com\example\fazendas\Colocacao.class
+com\example\fazendas\TerrenosIntegration$Situacao.class
 com\example\fazendas\Protecao.class
 com\example\fazendas\FazendasPlugin$Insumo.class

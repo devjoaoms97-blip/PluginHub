@@ -136,6 +136,11 @@ vendedores:
     nome: "&7&l⚙ Maquinista"
     descricao: "&7Máquinas, combustível e produtos"
     skin: "textura:915055afd5d3aa0bcb7f06ff76c4350b92dbf1e81ebcd26caacb04462e51859c"
+  fazendas:
+    comando: "fazendas loja"
+    nome: "&a&l🌾 Corretor Rural"
+    descricao: "&7Escrituras de fazenda, Ração e Adubo"
+    skin: "textura:2d60f9159fb24fbdcc2229bb8ddc01aab31cc8ccb7c8984d0e5e7dccfdbc0a51"
   alquimista:
     categoria: "Alquimia"
     nome: "&d&l⚗ Alquimista"

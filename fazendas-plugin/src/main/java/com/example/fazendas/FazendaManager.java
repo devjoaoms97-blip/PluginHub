@@ -276,17 +276,82 @@ public class FazendaManager implements Listener {
         for (Fazenda f : porId.values()) if (f.dono.equals(dono)) atualizar(f, estavaOnline);
     }
 
+    /**
+     * A construção continua lá? Confere os quatro postes dos cantos (os do desenho de cada tipo): ninguém
+     * tira um bloco dela pelo jogo, então se os quatro sumiram, foi apagada por fora (a limpeza do terreno).
+     */
+    private boolean intacta(Fazenda f) {
+        World w = f.world();
+        FazendasPlugin.Tipo t = tipo(f);
+        if (w == null || t == null) return true;
+        int[] frente = f.frente();
+        org.bukkit.block.structure.StructureRotation rot = Construcao.rotacao(frente);
+        int r = Fazenda.RAIO;
+        for (int[] c : new int[][]{{-r, -r}, {-r, r}, {r, -r}, {r, r}}) {
+            if (!w.isChunkLoaded((f.x + c[0]) >> 4, (f.z + c[1]) >> 4)) return true;
+            org.bukkit.block.data.BlockData esperado = Construcao.plano(t, frente, rot, c[0], 0, c[1]);
+            if (esperado == null || w.getBlockAt(f.x + c[0], f.y, f.z + c[1]).getType() == esperado.getMaterial()) return true;
+        }
+        return false;
+    }
+
     /** O chunk do NPC está carregado? */
     private static boolean carregado(Fazenda f) {
         Location npc = f.lugarDoNpc();
         return npc != null && npc.getWorld().isChunkLoaded(npc.getBlockX() >> 4, npc.getBlockZ() >> 4);
     }
 
+    /**
+     * A fazenda é do terreno: se quem tem a fazenda não constrói mais no terreno (perdeu no leilão, deixou
+     * de ser amigo) e o terreno tem dono, ela passa pro dono do terreno, com o cofre e o insumo ("quem
+     * arrematar leva tudo"). Devolve false se o terreno está sem dono: em leilão, ninguém mexe nela; à
+     * venda (abandonado, ou leilão sem lance: o TerrenosPlugin apaga tudo o que tinha dentro), a fazenda é
+     * desfeita junto, sem devolver a Escritura. Sem o TerrenosPlugin, nada muda.
+     */
+    boolean sincronizarDono(Fazenda f) {
+        TerrenosIntegration.Situacao s = plugin.getTerrenos().situacao(f.centro(), f.dono);
+        if (s == null || s.podeConstruir()) return true;
+        if (s.livre()) {
+            // o Limpador do TerrenosPlugin já apaga os blocos: aqui só sai o registro, o NPC e os bichos
+            porId.remove(f.id);
+            desindexar(f);
+            removerEntidades(f);
+            sujo = true;
+            plugin.getLogger().info("Fazenda " + f.id + " (" + f.tipo + ") de " + f.dono + " desfeita: o terreno voltou à venda.");
+            return false;
+        }
+        if (s.dono() == null) return false;
+        atualizar(f); // o tempo até aqui conta na velocidade do dono antigo
+        UUID antigo = f.dono;
+        f.dono = s.dono();
+        f.ultima = System.currentTimeMillis();
+        sujo = true;
+        atualizarHolograma(f);
+        Player novo = Bukkit.getPlayer(s.dono());
+        if (novo != null) {
+            novo.sendMessage("§aA fazenda " + tipo(f).nome() + " §ado seu terreno agora é sua (era de §f"
+                    + Bukkit.getOfflinePlayer(antigo).getName() + "§a), com o cofre e o insumo que tinha.");
+        }
+        plugin.getLogger().info("Fazenda " + f.id + " (" + f.tipo + ") passou de " + antigo + " pra " + s.dono() + ", dono do terreno.");
+        return true;
+    }
+
     /** A cada 20 s: produção em dia e NPC e holograma no lugar, nas fazendas com o chunk carregado. */
     void tick() {
-        for (Fazenda f : porId.values()) {
+        // o dono é conferido em todas (o leilão e a limpeza acontecem com o terreno descarregado)
+        for (Fazenda f : List.copyOf(porId.values())) sincronizarDono(f);
+        for (Fazenda f : List.copyOf(porId.values())) {
             World w = f.world();
             if (w == null || !carregado(f)) continue;
+            if (!intacta(f)) {
+                // alguém apagou a construção por fora (o Limpador do terreno, a staff com WorldEdit): sai o registro
+                porId.remove(f.id);
+                desindexar(f);
+                removerEntidades(f);
+                sujo = true;
+                plugin.getLogger().info("Fazenda " + f.id + " (" + f.tipo + ") de " + f.dono + " desfeita: a construção não está mais lá.");
+                continue;
+            }
             atualizar(f);
             garantirEntidades(f);
             atualizarHolograma(f);
@@ -505,6 +570,16 @@ public class FazendaManager implements Listener {
         long agora = System.currentTimeMillis();
         Long anterior = ultimoClique.put(p.getUniqueId(), agora);
         if (anterior != null && agora - anterior < 200) return;
+        if (!sincronizarDono(f)) {
+            if (!porId.containsValue(f)) {
+                p.sendMessage("§cEsse terreno voltou à venda: a fazenda foi desfeita junto com o que tinha nele.");
+                return;
+            }
+            if (!p.hasPermission("fazendas.admin")) {
+                p.sendMessage("§cEsse terreno está em leilão: a fazenda fica parada pra todo mundo até alguém arrematar.");
+                return;
+            }
+        }
         if (!p.getUniqueId().equals(f.dono) && !p.hasPermission("fazendas.admin")) {
             p.sendMessage("§cEssa fazenda é de §f" + Bukkit.getOfflinePlayer(f.dono).getName() + "§c.");
             return;
@@ -683,7 +758,7 @@ public class FazendaManager implements Listener {
         }
         if (colocados == 0) {
             p.sendMessage(espaco <= 0 ? "§7A despensa já está cheia."
-                    : "§cEssa fazenda usa " + ins.nome() + "§c" + (temOutro ? " (não a que você tem)" : "") + ". Compre em §f/fazendas loja§c.");
+                    : "§cEssa fazenda usa " + ins.nome() + "§c" + (temOutro ? " (não a que você tem)" : "") + ". Compre no §aCorretor Rural§c da Loja Oficial (§f/warp loja§c).");
             return;
         }
         // se estava parada sem insumo, a produção recomeça agora

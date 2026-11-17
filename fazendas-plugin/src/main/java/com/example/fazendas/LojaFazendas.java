@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A loja das fazendas ({@code /fazendas loja}): as Escrituras (por rank) e, embaixo, a Ração e o Adubo.
+ * A loja das fazendas: o balcão do Corretor Rural na Loja Oficial abre o {@code /fazendas loja} em nome do
+ * jogador. As Escrituras (por rank) e, embaixo, a Ração e o Adubo.
  */
 public class LojaFazendas implements Listener {
 

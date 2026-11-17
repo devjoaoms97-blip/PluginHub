@@ -60,12 +60,13 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * O Leiloeiro: um NPC na rua, na frente da entrada de cada terreno em leilão (no lugar do holograma), atrás de um atril, que, a cada clique,
  * fala a próxima frase num balão, como os NPCs de dicas do spawn: o lance, de quem era o terreno,
- * quantos itens estão guardados (nunca quais), quantas máquinas e quantos spawners tem, o lance
+ * quantos itens estão guardados (nunca quais), quantas máquinas, spawners e fazendas tem, o lance
  * mínimo e o tempo que falta. As falas são montadas na hora do clique, com os números do momento.
  * <p>
  * Como o holograma, o NPC não fica salvo no mundo: nasce com o chunk e some com ele, ou quando o leilão
  * acaba. O atril é um bloco de verdade (com um livro que ninguém tira): sai quando o leilão acaba, e
- * clicar nele faz o Leiloeiro falar. As máquinas e os spawners vêm do MaquinasPlugin e do SpawnersPlugin (por reflexão).
+ * clicar nele faz o Leiloeiro falar. As máquinas, os spawners e as fazendas vêm do MaquinasPlugin, do SpawnersPlugin e do
+ * FazendasPlugin (por reflexão).
  */
 public class Leiloeiro implements Listener {
 
@@ -76,7 +77,7 @@ public class Leiloeiro implements Listener {
     /** Recipientes que o Leiloeiro chama de "baús" (com outros, diz "recipientes"). */
     private static final Set<Material> BAUS = Set.of(Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL);
 
-    private record Contagem(long itens, int recipientes, boolean soBaus, int maquinas, int spawners, long em) {
+    private record Contagem(long itens, int recipientes, boolean soBaus, int maquinas, int spawners, int fazendas, long em) {
     }
 
     private final TerrenosPlugin plugin;
@@ -229,9 +230,12 @@ public class Leiloeiro implements Listener {
         List<String> extras = new ArrayList<>();
         if (c.maquinas() > 0) extras.add("§e" + c.maquinas() + " máquina" + (c.maquinas() == 1 ? "" : "s"));
         if (c.spawners() > 0) extras.add("§e" + c.spawners() + " spawner" + (c.spawners() == 1 ? "" : "s"));
+        if (c.fazendas() > 0) extras.add("§e" + c.fazendas() + " fazenda" + (c.fazendas() == 1 ? "" : "s"));
         if (!extras.isEmpty()) {
-            boolean uma = c.maquinas() + c.spawners() == 1;
-            falas.add("§fE tem mais: " + String.join(" §fe ", extras) + "§f, pronto" + (uma ? "" : "s") + " pra trabalhar!");
+            boolean uma = c.maquinas() + c.spawners() + c.fazendas() == 1;
+            // máquina e fazenda são femininas; com algum spawner no meio, vai no masculino
+            String pronto = c.spawners() > 0 ? "pronto" : "pronta";
+            falas.add("§fE tem mais: " + String.join(" §fe ", extras) + "§f, " + pronto + (uma ? "" : "s") + " pra trabalhar!");
         }
         falas.add("§f" + (l.temLance() ? "Pra passar na frente, o lance precisa ser de pelo menos " : "Lance mínimo de ")
                 + "§a" + Formato.valor(terrenos.proximoLanceMinimo(l)) + "§f! Dê o seu com §e/terreno lance " + id + " <valor>§f.");
@@ -239,7 +243,7 @@ public class Leiloeiro implements Listener {
         return falas;
     }
 
-    /** Itens guardados, recipientes, máquinas e spawners do terreno (refeito a cada minuto, no máximo). */
+    /** Itens guardados, recipientes, máquinas, spawners e fazendas do terreno (refeito a cada minuto, no máximo). */
     private Contagem contar(TerrenoId id) {
         Contagem antiga = contagens.get(id);
         if (antiga != null && System.currentTimeMillis() - antiga.em() < RECONTAR_MS) return antiga;
@@ -277,7 +281,8 @@ public class Leiloeiro implements Listener {
         }
         int recipientes = (int) porRecipiente.values().stream().filter(n -> n > 0).count();
         Contagem nova = new Contagem(itens, recipientes, soBaus, deOutro("MaquinasPlugin", "maquinasNoTerreno", id),
-                deOutro("SpawnersPlugin", "spawnersNoTerreno", id), System.currentTimeMillis());
+                deOutro("SpawnersPlugin", "spawnersNoTerreno", id), deOutro("FazendasPlugin", "fazendasNoTerreno", id),
+                System.currentTimeMillis());
         contagens.put(id, nova);
         return nova;
     }

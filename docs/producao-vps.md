@@ -45,6 +45,21 @@ O `D:\BrasaMC` é uma cópia do de desenvolvimento com o mapa e os configs, sem 
 - [ ] O mundo `arenas` numa dificuldade que não seja Pacífico (a Sobrevivência solta mobs hostis lá; o `spawn_mobs false` não atrapalha).
 - [ ] As permissões `eventos.ip.ignorar` só nos bots de teste, nunca num grupo.
 
+## Fazendas (FazendasPlugin, 2026-11-17)
+
+Vale também pro `D:\BrasaMC`, que é anterior às fazendas.
+
+- [ ] Os jars novos: `FazendasPlugin`, e os que mudaram junto: `PacotePlugin` (texturas da Escritura, da Ração e do Adubo; troque também o arquivo da release `pacote`), `TerrenosPlugin` (o Leiloeiro conta as fazendas), `EconomyShopPlugin` e `EstruturasPlugin` (o balcão do Corretor Rural).
+- [ ] O vendedor `fazendas` (Corretor Rural) em `vendedores:` no `plugins/EconomyShopPlugin/config.yml`, antes do `alquimista` (a lista que já existe no servidor não pega o padrão novo do jar):
+  ```yaml
+    fazendas:
+      comando: "fazendas loja"
+      nome: "&a&l🌾 Corretor Rural"
+      descricao: "&7Escrituras de fazenda, Ração e Adubo"
+      skin: "textura:2d60f9159fb24fbdcc2229bb8ddc01aab31cc8ccb7c8984d0e5e7dccfdbc0a51"
+  ```
+- [ ] Reconstruir a Loja Oficial, que cresceu 13 blocos pro fundo (o x 136 virou 149, com a fonte no fundo novo): no console, `execute in minecraft:spawn run forceload add 60 10 152 76`, `estrutura construir loja spawn 0 65 43` (espere o `estrutura status` dizer "Nenhuma") e `execute in minecraft:spawn run forceload remove 60 10 152 76`. Os outros balcões não mudam de lugar.
+
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).

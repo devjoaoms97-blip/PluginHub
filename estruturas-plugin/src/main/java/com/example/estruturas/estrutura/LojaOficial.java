@@ -25,10 +25,11 @@ import static com.example.estruturas.estrutura.Planta.lanterna;
  * tijolo de pedra misturado, faixas lisas, detalhes vinho, caule carmesim e cerejeira. O mundo "spawn"
  * é vazio fora das construções: embaixo do salão só vai a fundação.
  *
- * <p>Dentro, uma nave comprida e dez balcões, cinco de cada lado, cada um com toldo da cor do tema,
+ * <p>Dentro, uma nave comprida e doze balcões, seis de cada lado, cada um com toldo da cor do tema,
  * decoração e quadros com o que vende. Sete têm o vendedor (NPC) de uma categoria do EconomyShopPlugin:
- * no norte construtor, lenhador, jardineiro e minerador; no sul fazendeiro, caçador e alquimista.
- * Os outros três ficam reservados ("em breve"): spawners (norte), máquinas e produtos (sul) e PvP (sul).
+ * no norte construtor, lenhador, jardineiro e minerador; no sul fazendeiro, caçador e alquimista. Os
+ * outros abrem a loja de outro plugin: spawners e fazendas (o Corretor Rural, desde 2026-11-17) no norte,
+ * máquinas e PvP no sul. O último do sul fica reservado ("em breve"), sem vendedor.
  *
  * <p>Construir com {@code /estrutura construir loja spawn 0 65 43} (a mesma origem do spawn): x é
  * ABSOLUTO, z é relativo ao centro do spawn (z 43) e y é relativo ao chão (y 0 = piso em 64). O portão
@@ -39,7 +40,8 @@ public class LojaOficial implements Estrutura {
     // Área limpa antes de construir (inclui o que sobrou da versão com jardim em volta).
     private static final int X_LIMPAR_INI = 64, X_LIMPAR_FIM = 151, DZ_LIMPAR = 28;
     // Salão.
-    private static final int X_FRENTE = 64, X_FUNDO = 136, DZ_PAREDE = 20;
+    // o fundo era o x 136; em 2026-11-17 o salão cresceu 13 blocos pro par de balcões das fazendas
+    private static final int X_FRENTE = 64, X_FUNDO = 149, DZ_PAREDE = 20;
     private static final int ALTURA = 12;                 // teto do salão
     private static final int Y_CLERESTORIO = 17;          // telhado de vidro sobre a nave
     private static final int MEIA_NAVE = 4;
@@ -72,7 +74,9 @@ public class LojaOficial implements Estrutura {
             new Balcao("minerador", -1, 108, 117, Material.CYAN_WOOL, Material.LIGHT_BLUE_WOOL),
             new Balcao("spawners", -1, 121, 130, Material.BLACK_WOOL, Material.GRAY_WOOL),
             new Balcao("maquinas", 1, 108, 117, Material.LIGHT_GRAY_WOOL, Material.ORANGE_WOOL),
-            new Balcao("pvp", 1, 121, 130, Material.RED_WOOL, Material.BLACK_WOOL));
+            new Balcao("pvp", 1, 121, 130, Material.RED_WOOL, Material.BLACK_WOOL),
+            new Balcao("fazendas", -1, 134, 143, Material.LIME_WOOL, Material.YELLOW_WOOL),
+            new Balcao("reservado", 1, 134, 143, Material.WHITE_WOOL, Material.LIGHT_GRAY_WOOL, true));
 
     private Planta p;
 
@@ -188,7 +192,7 @@ public class LojaOficial implements Estrutura {
             }
         }
         // bancos de cerejeira entre um par de balcões e o outro, virados pra nave
-        for (int x0 : new int[]{79, 92, 105, 118}) {
+        for (int x0 : new int[]{79, 92, 105, 118, 131}) {
             for (int s : new int[]{-1, 1}) {
                 set(x0, 1, s * 8, escada(Material.CHERRY_STAIRS, s < 0 ? BlockFace.NORTH : BlockFace.SOUTH, false));
                 set(x0 + 1, 1, s * 8, escada(Material.CHERRY_STAIRS, s < 0 ? BlockFace.NORTH : BlockFace.SOUTH, false));
@@ -300,6 +304,7 @@ public class LojaOficial implements Estrutura {
             case "lenhador" -> Material.SPRUCE_PLANKS;
             case "jardineiro" -> Material.MOSS_BLOCK;
             case "fazendeiro" -> Material.PACKED_MUD;
+            case "fazendas" -> Material.MOSS_BLOCK;
             case "cacador" -> Material.COARSE_DIRT;
             case "alquimista" -> Material.PURPUR_BLOCK;
             default -> Material.POLISHED_DEEPSLATE;
@@ -451,6 +456,30 @@ public class LojaOficial implements Estrutura {
                 bset(b, z, 1, 5, Material.BREWING_STAND);
                 bset(b, z, 1, 4, Material.BARREL);
             }
+            case "fazendas" -> {
+                // corretor rural: fardos de feno, composteiras e colmeia, e uma mesa com a escritura
+                for (int ao = a; ao <= z; ao++) {
+                    bset(b, ao, 1, 7, Math.floorMod(ao, 2) == 0 ? Material.HAY_BLOCK : Material.COMPOSTER);
+                    bset(b, ao, 2, 7, Math.floorMod(ao, 3) == 0 ? Material.BEE_NEST : Material.OAK_PLANKS);
+                    bset(b, ao, 3, 7, Material.STRIPPED_OAK_LOG);
+                }
+                bset(b, a, 1, 5, Material.CARTOGRAPHY_TABLE);
+                bset(b, a, 1, 4, Material.HAY_BLOCK);
+                bset(b, a, 2, 4, Material.CARVED_PUMPKIN);
+                bset(b, z, 1, 5, Material.BARREL);
+                bset(b, z, 1, 4, Material.MELON);
+                bset(b, z, 2, 5, Material.FLOWER_POT);
+            }
+            case "reservado" -> {
+                // em breve: tábuas e caixotes vazios
+                for (int ao = a; ao <= z; ao++) {
+                    bset(b, ao, 1, 7, Material.SPRUCE_PLANKS);
+                    bset(b, ao, 2, 7, Math.floorMod(ao, 2) == 0 ? Material.BARREL : Material.SPRUCE_PLANKS);
+                    bset(b, ao, 3, 7, Material.STRIPPED_SPRUCE_LOG);
+                }
+                bset(b, a, 1, 5, Material.BARREL);
+                bset(b, z, 1, 4, Material.SCAFFOLDING);
+            }
             default -> { // minerador
                 Material[] minerios = {Material.COAL_ORE, Material.IRON_ORE, Material.COPPER_ORE, Material.GOLD_ORE, Material.REDSTONE_ORE,
                         Material.LAPIS_ORE, Material.DIAMOND_ORE, Material.EMERALD_ORE, Material.DEEPSLATE_DIAMOND_ORE};
@@ -571,12 +600,13 @@ public class LojaOficial implements Estrutura {
         int yPe = oy + 1;
         c.add(em + "minecraft:kill @e[type=text_display,tag=loja,x=100,y=" + yPe + ",z=" + oz + ",distance=..60]");
         c.add(em + "minecraft:kill @e[type=item_frame,tag=loja,x=100,y=" + yPe + ",z=" + oz + ",distance=..60]");
-        Map<String, String[]> quadros = Map.of(
+        Map<String, String[]> quadros = new java.util.HashMap<>(Map.of(
                 "construtor", new String[]{"bricks", "white_concrete"}, "lenhador", new String[]{"oak_log", "iron_axe"},
                 "jardineiro", new String[]{"poppy", "oak_sapling"}, "fazendeiro", new String[]{"wheat", "carrot"},
                 "cacador", new String[]{"bone", "bow"}, "alquimista", new String[]{"brewing_stand", "redstone"},
                 "minerador", new String[]{"diamond", "iron_pickaxe"}, "spawners", new String[]{"spawner", "pig_spawn_egg"},
-                "maquinas", new String[]{"piston", "observer"}, "pvp", new String[]{"diamond_sword", "shield"});
+                "maquinas", new String[]{"piston", "observer"}, "pvp", new String[]{"diamond_sword", "shield"}));
+        quadros.put("fazendas", new String[]{"hay_block", "egg"}); // o Map.of vai só até 10 pares
         for (Balcao b : BALCOES) {
             double nx, nz;
             int yaw;
@@ -598,6 +628,7 @@ public class LojaOficial implements Estrutura {
             }
             // quadros na vitrine (f = 7, em cima da decoração), presos na parede do salão, olhando pra nave
             String[] itens = quadros.get(b.id());
+            if (itens == null) continue; // o reservado fica sem quadros
             int facing = b.lado() == 0 ? 4 : (b.lado() < 0 ? 3 : 2); // 4 oeste, 3 sul, 2 norte
             for (int i = 0; i < 2; i++) {
                 int ao = i == 0 ? b.ini() + 2 : b.fim() - 2;

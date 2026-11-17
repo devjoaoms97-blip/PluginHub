@@ -2,11 +2,11 @@
 
 Fazendas nos terrenos que rendem **dinheiro** (não dão itens). Uma **Escritura** vira uma construção 7x7 com um fazendeiro parado na abertura da cerca. Cada safra põe dinheiro no cofre, gastando **Ração** (fazendas de animais) ou **Adubo** (plantações). O dono passa no fazendeiro e coleta.
 
-Estado: **fase 2** (o funcionamento e o visual de cada fazenda). O balcão na Loja Oficial e o prêmio raro vêm nas próximas fases (veja o `ROADMAP.md`).
+Estado: **fase 3** (o funcionamento, o visual de cada fazenda e o balcão na Loja Oficial). O prêmio raro vem na próxima fase (veja o `ROADMAP.md`).
 
 ## Como funciona
 
-- **Compra:** `/fazendas loja` (provisório; depois, o balcão Corretor Rural). Cada fazenda libera num rank. Lá também se compram a Ração e o Adubo (R$ 25 cada).
+- **Compra:** no balcão do **Corretor Rural**, na Loja Oficial (`/warp loja`, o último do lado norte), que abre o `/fazendas loja`. Cada fazenda libera num rank. Lá também se compram a Ração e o Adubo (R$ 25 cada).
 - **Escritura:** é um item comum, que dá para guardar, vender na barraca ou trocar. Ela guarda o tipo e os níveis das melhorias.
 - **Colocar:** com a Escritura na mão, clique direito no chão do terreno. O bloco clicado é o centro.
   - O 1º clique mostra o contorno da área 7x7: **verde** se pode construir; **vermelho** com o motivo se não pode.
@@ -51,6 +51,11 @@ Estado: **fase 2** (o funcionamento e o visual de cada fazenda). O balcão na Lo
     - **Despensa:** +64 safras de insumo.
   - **Recolher a Escritura:** pede confirmação. Coleta o cofre, devolve o insumo que sobrou e a Escritura com os níveis, e a construção some.
 - **Rank:** só coloca e mexe na fazenda quem tem o rank dela, ou quem já fez prestígio. Uma Escritura acima do rank pode ser guardada e negociada.
+- **A fazenda é do terreno** (conferido a cada 20 s, em todas, e a cada clique):
+  - **Leilão:** com o terreno em leilão (imposto atrasado), ninguém mexe na fazenda, nem o antigo dono; ela continua produzindo. O Leiloeiro conta as fazendas do terreno junto com as máquinas e os spawners ("E tem mais: 1 fazenda, pronta pra trabalhar!").
+  - **Novo dono:** se quem tem a fazenda não constrói mais no terreno (perdeu no leilão, deixou de ser amigo) e o terreno tem dono, a fazenda passa pro dono do terreno, com o cofre e o insumo. Quem arremata leva tudo, e é avisado.
+  - **À venda:** terreno abandonado ou leilão sem lance volta à venda e o TerrenosPlugin apaga tudo o que tinha dentro; a fazenda é desfeita junto, sem devolver a Escritura.
+  - **Construção apagada por fora** (a limpeza do terreno, WorldEdit): se os quatro postes dos cantos sumiram, a fazenda sai do registro.
 
 ## Fazendas
 
