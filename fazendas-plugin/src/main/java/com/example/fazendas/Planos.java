@@ -349,8 +349,8 @@ final class Planos {
             case "pocilga" -> List.of(Enfeite.bicho(EntityType.PIG, -1, 0, 120), Enfeite.bicho(EntityType.PIG, 1, -0.6, 220));
             case "curral" -> List.of(Enfeite.bicho(EntityType.COW, -0.6, -0.4, 90), Enfeite.bicho(EntityType.COW, 1.2, 0.6, 250));
             case "ovelhas" -> List.of(new Enfeite(EntityType.SHEEP, -1, 0, 0, 100, DyeColor.WHITE, null),
-                    new Enfeite(EntityType.SHEEP, 1, -0.8, 0, 200, DyeColor.LIGHT_GRAY, null),
-                    new Enfeite(EntityType.SHEEP, 0.8, 1, 0, 300, DyeColor.PINK, null));
+                    new Enfeite(EntityType.SHEEP, 1, 0, -0.8, 200, DyeColor.LIGHT_GRAY, null),
+                    new Enfeite(EntityType.SHEEP, 0.8, 0, 1, 300, DyeColor.PINK, null));
             case "apiario" -> List.of(new Enfeite(EntityType.BEE, -1, 1.3, 0, 45, null, null), new Enfeite(EntityType.BEE, 1, 1.6, -1, 210, null, null),
                     new Enfeite(EntityType.BEE, 0.2, 1.1, 1.2, 120, null, null));
             // maçãs penduradas nas copas

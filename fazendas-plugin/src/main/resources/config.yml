@@ -67,7 +67,7 @@ vip-bonus-coleta:
 # As fazendas, na ordem da loja. Calibradas pelo tools/economia/fazendas.py (2026-11-17): cada uma
 # lucra ~7% da mina do rank em que libera (renda menos o insumo, sem bônus) e se paga em ~20 h de
 # produção online, como as máquinas. "icone" é o item que representa a fazenda nos menus; "mao", o que o
-# fazendeiro segura; "skin" (opcional), o nome de um jogador ou "textura:<hash>" pra skin do fazendeiro;
+# fazendeiro segura; "skin" (opcional), o nome de um jogador ou "textura:<hash>" pra skin do fazendeiro ("textura:<hash>:fino" se a skin for de braço fino);
 # "raro", o achado raro dela (o nome e o item do Minecraft que desenha ele, com brilho).
 # A construção de cada uma (blocos e bichos) está no código (Planos.java).
 fazendas:
@@ -76,7 +76,7 @@ fazendas:
     npc: "Seu Zé da Horta"
     icone: CARROT
     mao: IRON_HOE
-    skin: ""
+    skin: "textura:ac72ce1d8d6f220d63c987067ce70c6ccd3408c1fd83050cb54b294657d3a5e1"   # lavrador de chapéu de palha e jardineira
     raro:
       nome: "&6Cenoura Premiada"
       modelo: golden_carrot
@@ -91,7 +91,7 @@ fazendas:
     npc: "Dona Cocó"
     icone: EGG
     mao: EGG
-    skin: ""
+    skin: "textura:5269f6b85db73f2b59f3cd744d10a29d1c17425d12b693faa30ec5f9e4796141:fino"   # galinha de jardineira
     raro:
       nome: "&eOvo Dourado"
       modelo: egg
@@ -106,7 +106,7 @@ fazendas:
     npc: "Tio Maçã"
     icone: APPLE
     mao: APPLE
-    skin: ""
+    skin: "textura:b7d95e978ef96f1f97d26980e18c2661d31c81c3bdcc965be193d4615999a9b1"   # barbudo de camisa xadrez vermelha
     raro:
       nome: "&cMaçã Reluzente"
       modelo: golden_apple
@@ -121,7 +121,7 @@ fazendas:
     npc: "Seu Torresmo"
     icone: PORKCHOP
     mao: CARROT_ON_A_STICK
-    skin: ""
+    skin: "textura:1b5d52dfa076236d5261f2063e254be6533eeeccd8e1d3e2945104a2037ce76a:fino"   # porco de camisa de flanela
     raro:
       nome: "&8Trufa Negra"
       modelo: brown_mushroom
@@ -136,7 +136,7 @@ fazendas:
     npc: "Moleiro Bento"
     icone: WHEAT
     mao: WHEAT
-    skin: ""
+    skin: "textura:b4d67dad8b1f93bbfb382ad2cc18e193273498a9f2ffaad2efca13022285126e"   # moleiro velho sujo de farinha
     raro:
       nome: "&eEspiga de Ouro"
       modelo: wheat
@@ -151,7 +151,7 @@ fazendas:
     npc: "Vaqueira Rosa"
     icone: MILK_BUCKET
     mao: MILK_BUCKET
-    skin: ""
+    skin: "textura:2ca7a9117d2df8b798357990fd1be42081d85689868ea4c4e84294d108e04d8f:fino"   # vaqueira de lenço e botas
     raro:
       nome: "&fLeite Premiado"
       modelo: milk_bucket
@@ -166,7 +166,7 @@ fazendas:
     npc: "Pastor Tião"
     icone: WHITE_WOOL
     mao: SHEARS
-    skin: ""
+    skin: "textura:ddbf0e91d4de0130d145220de92f4395335eb7541f6d66a5aec24b80b99801c4"   # pastor de chapéu e camisa verde
     raro:
       nome: "&6Lã de Ouro"
       modelo: yellow_wool
@@ -181,7 +181,7 @@ fazendas:
     npc: "Dona Melinda"
     icone: HONEYCOMB
     mao: HONEY_BOTTLE
-    skin: ""
+    skin: "textura:859eaad3cb5e55eb8729ed9c2fd3226b916cdbe7a0b6ff46615e3eb14db0fc2b"   # apicultora de roupa branca com flores
     raro:
       nome: "&6Favo Real"
       modelo: honeycomb
@@ -196,7 +196,7 @@ fazendas:
     npc: "Seu Moranga"
     icone: PUMPKIN
     mao: GOLDEN_HOE
-    skin: ""
+    skin: "textura:137d06efa3dcdae7fc59eb6795cb294d0e64d630031d7966ff6bb2210e05a990:fino"   # espantalho de cabeça de abóbora
     raro:
       nome: "&6Abóbora Premiada"
       modelo: pumpkin
@@ -211,7 +211,7 @@ fazendas:
     npc: "Micélio"
     icone: RED_MUSHROOM
     mao: RED_MUSHROOM
-    skin: ""
+    skin: "textura:30e9a747cb644333ddf3e86d76cc7b771725f07d6084378ac7eecaea0dd455ae"   # aldeão de chapéu de cogumelo
     raro:
       nome: "&dCogumelo Luminoso"
       modelo: shroomlight
@@ -226,7 +226,7 @@ fazendas:
     npc: "Bruxo Verrugão"
     icone: NETHER_WART
     mao: NETHER_WART
-    skin: ""
+    skin: "textura:7555af33259720ce01e6cdc2308c973767f946bbdbeba65bda30816483677059"   # bruxo barbudo de manto roxo
     raro:
       nome: "&4Verruga Ancestral"
       modelo: nether_wart
@@ -241,7 +241,7 @@ fazendas:
     npc: "Lady Chorus"
     icone: CHORUS_FRUIT
     mao: CHORUS_FRUIT
-    skin: ""
+    skin: "textura:690dcdfaf6d1b410e6437cc7be7924d9dd3587d7ca0c8cdef7c174f026dc3b7f"   # dama de vestido lilás
     raro:
       nome: "&5Fruta do Vazio"
       modelo: popped_chorus_fruit

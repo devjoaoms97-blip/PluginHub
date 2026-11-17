@@ -516,8 +516,11 @@ public class FazendaManager implements Listener {
 
     private static ResolvableProfile perfil(String skin) {
         if (skin.startsWith("textura:")) {
-            String hash = skin.substring("textura:".length()).trim();
-            String json = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + hash + "\"}}}";
+            // "textura:<hash>" ou "textura:<hash>:fino" (skin de braço fino, o modelo da Alex)
+            String[] partes = skin.substring("textura:".length()).trim().split(":");
+            String hash = partes[0];
+            String modelo = partes.length > 1 && partes[1].equalsIgnoreCase("fino") ? ",\"metadata\":{\"model\":\"slim\"}" : "";
+            String json = "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/" + hash + "\"" + modelo + "}}}";
             String valor = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
             return ResolvableProfile.resolvableProfile()
                     .uuid(UUID.nameUUIDFromBytes(hash.getBytes(StandardCharsets.UTF_8)))
