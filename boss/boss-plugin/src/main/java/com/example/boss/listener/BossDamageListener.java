@@ -62,7 +62,6 @@ public class BossDamageListener implements Listener {
         if (causador instanceof Trident) return "TRIDENTE";
         if (causador instanceof AbstractArrow) return "ARQUEIRO";
         if (causador instanceof Projectile) return null;
-        // o golpe da segunda mão (CombatePlugin) troca as mãos durante o golpe: a arma certa está na principal
         ItemStack arma = atacante.getInventory().getItemInMainHand();
         String nome = arma.getType().name();
         if (arma.getType().isAir()) return "PORRADEIRO";

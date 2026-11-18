@@ -21,10 +21,9 @@ Nível   XP do nível   XP total   R$ ganho até ali
 **Prestígio de skill**
 No 50, `/skills prestigio <skill>` volta aquela skill ao nível 1 e dá um **✦**. Cada ✦ deixa **tudo** o que ela dá 10% mais forte, até ✦5 (+50%). Logo depois do reset ela fica fraca; quando volta ao 50, passa do que era. Ex.: Espadas 50 = +25% de dano; Espadas 50 ✦5 = +37,5%. Não tem relação com o prestígio de rank.
 
-**Combate com duas mãos**
-A barra de recarga do ataque fica escondida, mas cada mão tem **0,5 s** entre golpes no mesmo alvo. Alternando as mãos, dá até 4 golpes por segundo.
-- Clique direito mirando num alvo golpeia com a mão secundária (e treina a skill daquela arma).
-- Espada na mão principal e nada de escudo na outra: clique direito sem alvo **bloqueia** e corta o dano pela metade.
+**Combate à moda antiga**
+A barra de recarga do ataque fica escondida: todo golpe sai com o dano inteiro, com **0,25 s** entre golpes no mesmo alvo (até 4 por segundo).
+- Espada na mão principal e nada de escudo na outra: segurar o clique direito **bloqueia** e corta o dano pela metade.
 - Puxar o arco ou carregar a besta pausa o corpo a corpo enquanto prepara e meio segundo depois do tiro.
 - Com escudo, levantar bem na hora do golpe faz o **Escudo Perfeito** (veja **Skills de defesa**).
 

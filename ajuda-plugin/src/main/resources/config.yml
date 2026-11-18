@@ -173,6 +173,8 @@ comandos:
         - "/ranks <jogador> | Rank de outro jogador"
         - "/mina | Menu das minas (clicar teleporta)"
         - "/mina <id> | Vai direto pra uma mina"
+        - "/warp minapvp | Mina PvP: qualquer rank, mas com PvP (quem morre deixa tudo no chão)"
+        - "/mina bonus | A hora de venda em dobro da Mina PvP hoje (entre 17h e 21h)"
         - "/prestigio | No último rank, recomeça com bônus de venda"
         - "/kit iniciante | Kit de quem começa, a cada 2 h (só Camponês)"
     dinheiro:
@@ -181,7 +183,7 @@ comandos:
       texto:
         - "Venda nos NPCs da &f/warp loja&7. O Bancário (&f/warp banco&7) vende folhas de cheque e mostra o extrato."
       comandos:
-        - "/warp banco | O Banco, no fim da Avenida das Minas"
+        - "/warp banco | O Banco, no fundo da Loja Oficial"
         - "/ricos | Os mais ricos do servidor"
         - "/tophoras | Quem mais jogou no servidor"
         - "/peixes | Peixes raros da pesca: preços, sua chance e /peixes vender"
@@ -196,7 +198,7 @@ comandos:
       titulo: "Terreno"
       resumo: "Sua base: comprar, imposto e mais"
       texto:
-        - "Cada terreno tem 32x32 e cabe até 10 máquinas, 100 spawners e 4 fazendas."
+        - "Cada terreno tem 32x32 e cabe até 10 máquinas, 100 spawners e 8 fazendas."
       comandos:
         - "/terreno auto | Leva ao terreno à venda mais perto"
         - "/terreno comprar | Compra o terreno em que você está"
@@ -223,7 +225,7 @@ comandos:
       titulo: "Teleporte"
       resumo: "Warps, tpa e casas"
       texto:
-        - "Warps: loja, banco, minas, mobs, terrenos, eventos, boss, recursos, nether, end e tesouros."
+        - "Warps: loja, banco, minas, minapvp, mobs, terrenos, eventos, boss, recursos, nether, end e tesouros."
       comandos:
         - "/spawn | Volta pro spawn"
         - "/warp | Lista as warps"

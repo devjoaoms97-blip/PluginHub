@@ -23,7 +23,9 @@ import static com.example.estruturas.estrutura.Planta.laje;
 /**
  * Avenida das Minas: recinto retangular murado em volta das 12 minas do mundo "spawn", no mesmo
  * estilo do spawn (tijolo de pedra misturado, faixas lisas, detalhes vinho, cerejeiras e azaleias).
- * A única entrada é o portão sul, encaixado no caminho que sai do portão norte do spawn.
+ * Entra-se pelo portão sul, encaixado no caminho que sai do portão norte do spawn. No fundo, o portão
+ * norte (desde 2026-11-17, no lugar do Banco, que foi pra Loja Oficial) dá no saguão da mina PvP
+ * (estrutura "minapvp", {@link MinaPvp}).
  *
  * <p>Feita pra ser construída com {@code /estrutura construir minas spawn 0 65 -21}: a origem da
  * planta é o bloco de chão ABSOLUTO (0, 64, -21). Por isso tudo aqui é escrito com x e z
@@ -143,6 +145,7 @@ public class AvenidaDasMinas implements Estrutura {
         gerarMuralha();
         gerarTorres();
         gerarPortao();
+        gerarPortaoNorte();
         gerarLuzes();
         gerarLiquens();
         liberarTeleportes();
@@ -442,12 +445,13 @@ public class AvenidaDasMinas implements Estrutura {
     // ------------------------------------------------------------------ fundo (norte)
 
     /**
-     * Depois da última praça: canteiro e postes. O meio da praça do fundo (x -9..9), onde ficava a
-     * cerejeira grande, é do Banco (estrutura "banco", construída depois da avenida).
+     * Depois da última praça: canteiro e postes. O meio da praça do fundo (x -9..9) é o caminho até o
+     * portão norte, o da mina PvP (até 2026-11-17 era o Banco, e antes a cerejeira grande).
      */
     private void gerarPontaNorte() {
         canteiro(-173, -169, 399);
         for (int s : new int[]{-1, 1}) poste(s * 3, -174);
+        for (int s : new int[]{-1, 1}) poste(s * 7, -179);
         canteiroDeParede(Z_NORTE_INT, 9, 35);
     }
 
@@ -683,6 +687,70 @@ public class AvenidaDasMinas implements Estrutura {
         escrever("SPAWN", 11, -1, 16, -23);
     }
 
+    // ------------------------------------------------------------------ portão norte (mina PvP)
+
+    /**
+     * O portão do fundo, que dá no saguão da mina PvP: a mesma passagem de 7 do portão sul, com o arco,
+     * as molduras de caule carmesim e cerejeira dos dois lados e o letreiro "PVP" por dentro. O trecho
+     * mais alto da muralha só vai até o x ±9, porque as barracas do Compactador e do Cambista começam no ±10.
+     */
+    private void gerarPortaoNorte() {
+        int zFora = Z_NORTE, zFace = Z_NORTE_INT - 1;
+        for (int x = -9; x <= 9; x++) {
+            for (int z = zFora; z <= zFace; z++) {
+                for (int y = -1; y <= 18; y++) set(x, y, z, (y == 1 || y == 18) ? FAIXA : pedra(x, y, z));
+                boolean beirada = z == zFora || z == zFace || Math.abs(x) == 9;
+                if (beirada && Math.floorMod(x + z, 2) == 0) set(x, 19, z, pedra(x, 19, z));
+            }
+        }
+        for (int z = zFora; z <= zFace; z++) {
+            for (int x = -MEIO_PORTAO; x <= MEIO_PORTAO; x++) {
+                set(x, -1, z, Material.DIRT);
+                set(x, 0, z, calcadaCentral(x, z));
+                int topo = Math.abs(x) <= 1 ? 9 : (Math.abs(x) == 2 ? 8 : 7);
+                for (int y = 1; y <= topo; y++) set(x, y, z, Material.AIR);
+            }
+            set(-3, 8, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.WEST, true));
+            set(3, 8, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.EAST, true));
+            set(-2, 9, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.WEST, true));
+            set(2, 9, z, escada(Material.STONE_BRICK_STAIRS, BlockFace.EAST, true));
+            for (int y = 1; y <= 7; y++) {
+                Material parede = Math.floorMod(z, 2) == 0 ? VERMELHO : PEDRA;
+                set(-4, y, z, parede);
+                set(4, y, z, parede);
+            }
+        }
+        set(0, 9, zFora + 1, lanterna(Material.LANTERN, true));
+        for (int x = -MEIO_PORTAO; x <= MEIO_PORTAO; x++) set(x, 0, Z_NORTE_INT, calcadaCentral(x, Z_NORTE_INT));
+        // molduras: por dentro (na frente da face da muralha) e por fora (embutida na face de fora)
+        for (int z : new int[]{Z_NORTE_INT, zFora}) {
+            for (int y = 1; y <= 9; y++) {
+                for (int s : new int[]{-1, 1}) {
+                    set(s * 4, y, z, eixo(Material.CRIMSON_STEM, Axis.Y));
+                    set(s * 5, y, z, eixo(Material.CHERRY_LOG, Axis.Y));
+                }
+            }
+            for (int x = -5; x <= 5; x++) set(x, 10, z, VERMELHO);
+            set(0, 10, z, LUZ);
+        }
+        for (int x = -3; x <= 3; x++) {
+            if (x != 0) set(x, 11, Z_NORTE_INT, laje(Material.RED_NETHER_BRICK_SLAB, false));
+        }
+        for (int s : new int[]{-1, 1}) {
+            set(s * 6, 1, Z_NORTE_INT, folha(Material.FLOWERING_AZALEA_LEAVES));
+            set(s * 7, 1, Z_NORTE_INT, folha(Material.AZALEA_LEAVES));
+            set(s * 6, 2, Z_NORTE_INT, lanterna(Material.LANTERN, false));
+        }
+        // letreiro "PVP" (vermelho) lido de dentro da avenida
+        for (int x = -8; x <= 8; x++) {
+            for (int y = 11; y <= 17; y++) {
+                boolean borda = Math.abs(x) == 8 || y == 11 || y == 17;
+                set(x, y, zFace, borda ? Material.CHISELED_STONE_BRICKS : Material.POLISHED_BLACKSTONE);
+            }
+        }
+        escrever("PVP", -6, 1, 16, zFace, Material.REDSTONE_BLOCK);
+    }
+
     /** Placa preta com moldura em cima do arco (y 11..17, |x| <= 12). */
     private void painel(int z) {
         for (int x = -12; x <= 12; x++) {
@@ -693,25 +761,30 @@ public class AvenidaDasMinas implements Estrutura {
         }
     }
 
-    private static final Map<Character, String[]> FONTE = Map.of(
+    static final Map<Character, String[]> FONTE = Map.of(
             'M', new String[]{"X...X", "XX.XX", "X.X.X", "X...X", "X...X"},
             'I', new String[]{"XXX", ".X.", ".X.", ".X.", "XXX"},
             'N', new String[]{"X..X", "XX.X", "X.XX", "X..X", "X..X"},
             'A', new String[]{".X.", "X.X", "XXX", "X.X", "X.X"},
             'S', new String[]{"XXX", "X..", "XXX", "..X", "XXX"},
             'P', new String[]{"XXX", "X.X", "XXX", "X..", "X.."},
-            'W', new String[]{"X...X", "X...X", "X.X.X", "XX.XX", "X...X"}
+            'W', new String[]{"X...X", "X...X", "X.X.X", "XX.XX", "X...X"},
+            'V', new String[]{"X...X", "X...X", "X...X", ".X.X.", "..X.."}
     );
 
     /** Escreve em pedra luminosa; {@code passo} = +1/-1 conforme a direita de quem lê. */
     private void escrever(String texto, int xInicio, int passo, int yTopo, int z) {
+        escrever(texto, xInicio, passo, yTopo, z, Material.GLOWSTONE);
+    }
+
+    private void escrever(String texto, int xInicio, int passo, int yTopo, int z, Material material) {
         int coluna = 0;
         for (char c : texto.toCharArray()) {
             String[] letra = FONTE.get(c);
             for (int linha = 0; linha < letra.length; linha++) {
                 for (int i = 0; i < letra[linha].length(); i++) {
                     if (letra[linha].charAt(i) == 'X') {
-                        set(xInicio + passo * (coluna + i), yTopo - linha, z, Material.GLOWSTONE);
+                        set(xInicio + passo * (coluna + i), yTopo - linha, z, material);
                     }
                 }
             }

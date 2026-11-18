@@ -49,7 +49,9 @@ O `D:\BrasaMC` é uma cópia do de desenvolvimento com o mapa e os configs, sem 
 
 Vale também pro `D:\BrasaMC`, que é anterior às fazendas.
 
-- [ ] Os jars novos: `FazendasPlugin`, e os que mudaram junto: `PacotePlugin` (texturas da Escritura, da Ração e do Adubo; troque também o arquivo da release `pacote`), `TerrenosPlugin` (o Leiloeiro conta as fazendas), `EconomyShopPlugin` e `EstruturasPlugin` (o balcão do Corretor Rural).
+- [ ] Os jars novos: `FazendasPlugin`, e os que mudaram junto: `PacotePlugin` (texturas da Escritura, da Ração e do Adubo), `TerrenosPlugin` (o Leiloeiro conta as fazendas), `EconomyShopPlugin` e `EstruturasPlugin` (o balcão do Corretor Rural).
+- [ ] **Pacote de texturas (não esquecer!):** junto com o jar do PacotePlugin, troque o arquivo `BrasaMC-texturas.zip` da release `pacote` do GitHub pelo pacote novo, com o sha1 que o log do PacotePlugin do `D:\BrasaMC` mostrar. Sem isso, a Escritura, a Ração e o Adubo aparecem com o xadrez roxo e preto. Não troque antes do jar, porque o sha1 não bateria e os jogadores cairiam, já que o pacote é obrigatório.
+- [ ] Depois de trocar a release, no `C:\mc-teste\plugins\PacotePlugin\config.yml`, volte o `url-publica` para `"https://github.com/devjoaoms97-blip/PluginHub/releases/download/pacote/BrasaMC-texturas.zip"`. Em 2026-11-17 ele ficou vazio (`localhost:8766`) para testar as fazendas com o pacote novo.
 - [ ] O vendedor `fazendas` (Corretor Rural) em `vendedores:` no `plugins/EconomyShopPlugin/config.yml`, antes do `alquimista` (a lista que já existe no servidor não pega o padrão novo do jar):
   ```yaml
     fazendas:
@@ -58,14 +60,34 @@ Vale também pro `D:\BrasaMC`, que é anterior às fazendas.
       descricao: "&7Escrituras de fazenda, Ração e Adubo"
       skin: "textura:2d60f9159fb24fbdcc2229bb8ddc01aab31cc8ccb7c8984d0e5e7dccfdbc0a51"
   ```
-- [ ] No `plugins/AjudaPlugin/config.yml` (o que já existe no servidor não pega o padrão novo do jar): **`- fazendas` em `comandos-permitidos.lista`** (sem ele, o Corretor Rural não abre pra jogador nenhum, só pra staff), e as páginas `terreno` ("cabe até 10 máquinas, 100 spawners e 4 fazendas") e `producao` (título "Produção", com as fazendas e o `/fazendas loja`) e o texto da etapa do terreno no `tutorial`, como no config do repositório. Depois, `comandos reload`.
+- [ ] No `plugins/AjudaPlugin/config.yml` (o que já existe no servidor não pega o padrão novo do jar): **`- fazendas` em `comandos-permitidos.lista`** (sem ele, o Corretor Rural não abre pra jogador nenhum, só pra staff), e as páginas `terreno` ("cabe até 10 máquinas, 100 spawners e 8 fazendas") e `producao` (título "Produção", com as fazendas e o `/fazendas loja`) e o texto da etapa do terreno no `tutorial`, como no config do repositório. Depois, `comandos reload`.
 - [ ] As duas falas novas do Seu Juca do Terreno: `node tools/bots/montar-mapa.js construir dicas` (refaz os NPCs de dicas do spawn) ou, na mão, `dica fala juca <texto>` com as duas falas das fazendas do `montar-mapa.js`.
 - [ ] Reconstruir a Loja Oficial, que cresceu 13 blocos pro fundo (o x 136 virou 149, com a fonte no fundo novo): no console, `execute in minecraft:spawn run forceload add 60 10 152 76`, `estrutura construir loja spawn 0 65 43` (espere o `estrutura status` dizer "Nenhuma") e `execute in minecraft:spawn run forceload remove 60 10 152 76`. Os outros balcões não mudam de lugar.
+
+## Combate sem a segunda mão (CombatePlugin, 2026-11-17)
+
+Vale também pro `D:\BrasaMC`.
+
+- [ ] Os jars novos: `CombatePlugin` (sem o golpe da segunda mão) e `BossPlugin` (só um comentário a menos).
+- [ ] No `plugins/CombatePlugin/config.yml`: `ticks-entre-golpes: 5` em `invulnerabilidade:` (ou `/combate intervalo 5`), e apagar o `separar-maos` e o bloco `duas-maos:`, que não valem mais. O config que já existe no servidor não pega o padrão novo do jar.
+- [ ] As falas novas do Mestre de Armas Duda: `node tools/bots/montar-mapa.js construir dicas` ou, na mão, `dica fala mestre-armas <texto>` com as duas falas trocadas do `montar-mapa.js`.
+- [ ] O tutorial `05-skills-e-combate` do Discord republicado (sem o "Combate com duas mãos").
+
+## Mina PvP e Banco na Loja Oficial (2026-11-17)
+
+Vale também pro `D:\BrasaMC`.
+
+- [ ] Os jars novos: `EstruturasPlugin` (portão do fundo da avenida, `minapvp` e o Banco no fundo da loja), `RankupPlugin` (hora de bônus), `AreasPlugin`, `MontariaPlugin` e `AjudaPlugin` (padrões novos nos configs).
+- [ ] Com o servidor **desligado**: `node tools/bots/montar-mapa.js cadastrar --mina-pvp` põe a mina `pvp` no `minas.yml` sem mexer nas outras. (Ele também regrava as arenas do Duelo e do Gladiador e os configs que o `cadastrar` sempre mexe, iguais aos de antes.)
+- [ ] No `plugins/AreasPlugin/config.yml`, a caixa `mina pvp` em `pvp-so-nas-caixas.spawn` (min `[-28, 40, -249]`, max `[28, 100, -199]`, `paineis: [[0.5, 66.8, -196.5]]`) e `"mina pvp"` em `sethome.caixas-pvp`. No `plugins/MontariaPlugin/config.yml`, a caixa `mina pvp` em `proibido:` (mundo `spawn`, `[-31, 40, -252]` a `[31, 100, -186]`). Os configs que já existem no servidor não pegam os padrões novos dos jars.
+- [ ] No `plugins/AjudaPlugin/config.yml`, as linhas novas da página `rankup` (`/warp minapvp` e `/mina bonus`), o `/warp banco` da página `dinheiro` ("no fundo da Loja Oficial") e o `minapvp` na lista de warps; depois, `comandos reload`.
+- [ ] Ligado: `node tools/bots/montar-mapa.js construir minas loja dicas` (a avenida com o portão, as oficinas, a mina PvP, a loja com o Banco e as falas novas do Guarda do Portão e da Banqueira) e o `marcar` (as warps `banco` e `minapvp`, com o bot da staff; **não rode bot no `D:\BrasaMC`**: lá, `/setwarp minapvp` em 0.5 65 -188.5 olhando pro norte e `/setwarp banco` em 150.5 65 43.5 olhando pro leste, na mão). O `construir minas` enche os 12 poços de pedra de novo: depois, `/mina admin resetar` em cada mina.
+- [ ] O tutorial `18-ranks-minas-e-novidades` (a Mina PvP) e o `03-dinheiro-e-loja` (o Banco na loja) do Discord, republicados.
 
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).
 - [ ] **`grim.exempt` só nos bots de teste, nunca num grupo**: quem tem fica fora de todas as checagens.
 - [ ] `grim.alerts` e `grim.alerts.enable-on-join` no grupo da staff (sem isso, só os ops veem os alertas).
-- [ ] O `punishments.yml` padrão **não expulsa ninguém**: só avisa a staff, grava no banco do Grim e puxa de volta quem se move de um jeito impossível. Proposta (2026-11-05): começar assim e olhar os alertas com jogadores de verdade (o bloqueio com a espada e a segunda mão do CombatePlugin, a montaria e o pula-pula da Corrida) antes de colocar `[kick]` ou banimento.
+- [ ] O `punishments.yml` padrão **não expulsa ninguém**: só avisa a staff, grava no banco do Grim e puxa de volta quem se move de um jeito impossível. Proposta (2026-11-05): começar assim e olhar os alertas com jogadores de verdade (o bloqueio com a espada do CombatePlugin, a montaria e o pula-pula da Corrida) antes de colocar `[kick]` ou banimento.
 - [ ] Na rede Velocity (ROADMAP), `alerts.proxy.send` e `receive` em `true` pra staff ver os alertas de todos os servidores.

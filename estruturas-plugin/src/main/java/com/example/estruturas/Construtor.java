@@ -8,6 +8,7 @@ import com.example.estruturas.estrutura.ArenaToxica;
 import com.example.estruturas.estrutura.LojaOficial;
 import com.example.estruturas.estrutura.OficinasDaMina;
 import com.example.estruturas.estrutura.AvenidaDasMinas;
+import com.example.estruturas.estrutura.MinaPvp;
 import com.example.estruturas.estrutura.BancoDaMina;
 import com.example.estruturas.estrutura.SpawnSemBanco;
 import com.example.estruturas.estrutura.BarracasDoSpawn;
@@ -53,6 +54,7 @@ public class Construtor {
         registrar(new ArenaSpringColiseu());
         registrar(new BarracasDoSpawn());
         registrar(new AvenidaDasMinas());
+        registrar(new MinaPvp());
         registrar(new OficinasDaMina());
         registrar(new LojaOficial());
         registrar(new PortaoOesteDoSpawn());

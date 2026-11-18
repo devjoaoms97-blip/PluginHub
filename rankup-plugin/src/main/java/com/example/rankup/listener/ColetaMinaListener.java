@@ -49,12 +49,14 @@ public class ColetaMinaListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void aoDropar(BlockDropItemEvent evento) {
         Player jogador = evento.getPlayer();
-        if (plugin.getMinaManager().getMinaEm(evento.getBlock().getLocation()) == null) return;
+        var mina = plugin.getMinaManager().getMinaEm(evento.getBlock().getLocation());
+        if (mina == null) return;
+        String id = mina.getId();
         // tirar o Item da lista impede que ele apareça no mundo
         boolean sobrou = false;
         if (semToqueSuave(evento)) {
             for (ItemStack drop : evento.getBlockState().getDrops(ferramentaSemToque(jogador), jogador)) {
-                if (drop.getType().isAir() || plugin.getLojaIntegration().vender(jogador, drop)) continue;
+                if (drop.getType().isAir() || plugin.venderDaMina(jogador, drop, id)) continue;
                 for (ItemStack resto : jogador.getInventory().addItem(drop).values()) {
                     evento.getBlock().getWorld().dropItemNaturally(evento.getBlock().getLocation().add(0.5, 0.5, 0.5), resto);
                     sobrou = true;
@@ -64,7 +66,7 @@ public class ColetaMinaListener implements Listener {
         Iterator<Item> itens = evento.getItems().iterator();
         while (itens.hasNext()) {
             Item item = itens.next();
-            if (plugin.getLojaIntegration().vender(jogador, item.getItemStack())) {
+            if (plugin.venderDaMina(jogador, item.getItemStack(), id)) {
                 itens.remove();
                 continue;
             }
@@ -87,8 +89,10 @@ public class ColetaMinaListener implements Listener {
      * não compra no inventário. É o que o bloco extra do 3x3 do Minerador rende ({@code RankupPlugin#quebrarExtra}).
      */
     public void venderDrops(Player jogador, org.bukkit.block.Block bloco) {
+        var mina = plugin.getMinaManager().getMinaEm(bloco.getLocation());
+        String id = mina != null ? mina.getId() : null;
         for (ItemStack drop : bloco.getDrops(ferramentaSemToque(jogador), jogador)) {
-            if (drop.getType().isAir() || plugin.getLojaIntegration().vender(jogador, drop)) continue;
+            if (drop.getType().isAir() || plugin.venderDaMina(jogador, drop, id)) continue;
             for (ItemStack resto : jogador.getInventory().addItem(drop).values()) {
                 bloco.getWorld().dropItemNaturally(bloco.getLocation().add(0.5, 0.5, 0.5), resto);
             }

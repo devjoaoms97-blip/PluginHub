@@ -9,8 +9,13 @@ const vida = async nome => parseFloat((await t.console(`data get entity ${nome} 
 
 /** Põe os dois bots lado a lado em (x, y, z), cura, e o A bate no B. Devolve quanto o B perdeu. */
 async function golpe(a, b, [x, y, z]) {
+  // o "em combate" (CombatePlugin) barra teleporte por comando por 5 s depois de um golpe, até o /tp do
+  // console: sem esperar, os bots ficariam onde lutaram da última vez
+  await t.espera(5500)
   for (const [bot, dz] of [[a, 0], [b, 1.5]]) {
     await t.console(`execute in minecraft:spawn run minecraft:tp ${bot.username} ${x} ${y} ${z + dz} 0 0`)
+    // sem os efeitos de antes (o veneno das poças da arena do boss, os mobs do salão): só o golpe conta
+    await t.console(`minecraft:effect clear ${bot.username}`)
     await t.console(`minecraft:effect give ${bot.username} minecraft:instant_health 1 5 true`)
   }
   await t.espera(5000) // o Essentials deixa invulnerável 4 s depois do teleporte

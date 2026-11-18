@@ -17,8 +17,12 @@ O custo abaixo é para **subir do rank anterior até aquele rank**, não o total
 
 `/ranks` mostra seu próximo preço e bônus; `/mina` lista as minas liberadas, composição, porcentagem minerada e tempo de reset. Clique numa mina para entrar. O padrão é resetar por tempo (15 minutos) ou quando 80% for minerado; cada mina pode ter ajuste próprio, então confira o menu e o holograma.
 
+**Mina PvP** · `/warp minapvp`
+No fundo da Avenida das Minas, depois do portão **PVP**, fica a Mina PvP: **qualquer rank entra**, e a mistura dela (pedra, carvão, ferro, ouro, redstone, lápis-lazúli e ametista) rende como a mina da Redstone. A venda é automática, como nas outras. O saguão da entrada é seguro; do arco pra dentro o PvP fica ligado, e quem morre deixa tudo no chão.
+Todo dia, numa hora sorteada entre as **17h e as 21h**, a venda da Mina PvP vale **em dobro**. O chat avisa 10 minutos antes, e `/mina bonus` mostra o horário de hoje.
+
 **Novidades da mineração**
-Qualquer bloco quebrado em uma mina tem chance de **1 em 4.000** de dar um Fragmento Arcano, em média cerca de um por hora de mineração. Ele vai ao inventário e pode ser trocado com o **Cambista**, no fundo da avenida, por encantamentos acima do nível normal; cada nível também custa coins e o menu mostra o preço. Ele sobe um nível por vez: se o item ainda não tem o encantamento, começa no I, e os níveis normais (até o máximo da mesa) custam só coins. Há ainda o **Compactador**: troca 9 unidades de um item aceito pelo bloco correspondente e desfaz o bloco de volta, sem custo. Só aceita itens comuns, sem nome, encantamentos ou marca especial.
+Qualquer bloco quebrado em uma mina tem chance de **1 em 4.000** de dar um Fragmento Arcano, em média cerca de um por hora de mineração. Ele vai ao inventário e pode ser trocado com o **Cambista**, no fundo da avenida (do lado do portão da Mina PvP), por encantamentos acima do nível normal; cada nível também custa coins e o menu mostra o preço. Ele sobe um nível por vez: se o item ainda não tem o encantamento, começa no I, e os níveis normais (até o máximo da mesa) custam só coins. Há ainda o **Compactador**: troca 9 unidades de um item aceito pelo bloco correspondente e desfaz o bloco de volta, sem custo. Só aceita itens comuns, sem nome, encantamentos ou marca especial.
 
 Na mina, a loja vende automaticamente o que ela compra; o restante vai ao inventário e a experiência direto ao jogador. Fortuna aumenta os drops. As minas foram planejadas para render cerca de 1,6 vez a anterior com Fortuna III, mas o ganho real varia com a Fortuna, o rank e o VIP. O NPC no portão das minas dá dicas de `/mina` e venda automática; consulte também o menu e o holograma para ver os dados atuais de cada mina.
 

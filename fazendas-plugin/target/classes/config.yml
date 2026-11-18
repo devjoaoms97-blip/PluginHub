@@ -8,7 +8,7 @@
 mundos: [terrenos]
 
 # Fazendas em cada terreno, somando todos os tipos e todos os donos (separado do limite das máquinas).
-limite-por-terreno: 4
+limite-por-terreno: 8
 
 # A área da construção: 7x7, com o chão uma camada abaixo do bloco clicado. Acima do chão, tantos
 # blocos precisam estar livres (ar, grama, flor): 5 cabe o moinho do Trigal, as macieiras do Pomar e o

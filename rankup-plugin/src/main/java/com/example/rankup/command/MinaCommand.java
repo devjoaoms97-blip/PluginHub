@@ -30,7 +30,7 @@ import java.util.UUID;
 public class MinaCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> SUBS_ADMIN = List.of("pos1", "pos2", "criar", "deletar", "bloco", "spawn",
-            "rank", "intervalo", "percentual", "resetar", "info");
+            "rank", "intervalo", "percentual", "resetar", "info", "bonus");
 
     private final RankupPlugin plugin;
     // Seleção de área da staff
@@ -54,6 +54,10 @@ public class MinaCommand implements CommandExecutor, TabCompleter {
             listar(sender);
         } else if (args[0].equalsIgnoreCase("admin")) {
             admin(sender, args);
+        } else if (args[0].equalsIgnoreCase("bonus")) {
+            var bonus = plugin.getHoraBonus();
+            sender.sendMessage("§6⚔ Hora de bônus §7(venda §6x" + formatar(plugin.getConfig().getDouble("hora-bonus.multiplicador", 2))
+                    + " §7na mina " + String.join(", ", bonus.minas()) + "): §f" + bonus.descricao() + "§7.");
         } else {
             teleportar(sender, args[0]);
         }
@@ -129,6 +133,16 @@ public class MinaCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (sub.equals("bonus")) {
+            Integer minutos = args.length > 2 ? inteiro(args[2]) : null;
+            if (minutos == null || minutos < 0) {
+                sender.sendMessage("§cUso: §f/mina admin bonus <minutos> §c(liga a hora de bônus agora; 0 desliga)");
+                return;
+            }
+            plugin.getHoraBonus().forcar(minutos);
+            sender.sendMessage(minutos > 0 ? "§aHora de bônus ligada por §f" + minutos + " min§a." : "§aHora de bônus forçada desligada.");
+            return;
+        }
         if (args.length < 3) {
             sender.sendMessage("§cUso: §f/mina admin " + sub + " <id>" + parametros(sub));
             return;
@@ -345,6 +359,7 @@ public class MinaCommand implements CommandExecutor, TabCompleter {
         List<String> opcoes = new ArrayList<>();
         if (args.length == 1) {
             minas().getMinas().forEach(m -> opcoes.add(m.getId()));
+            opcoes.add("bonus");
             if (admin) opcoes.add("admin");
         } else if (admin && args[0].equalsIgnoreCase("admin")) {
             String sub = args[1].toLowerCase(Locale.ROOT);
@@ -364,5 +379,9 @@ public class MinaCommand implements CommandExecutor, TabCompleter {
         }
         String prefixo = args[args.length - 1].toLowerCase(Locale.ROOT);
         return opcoes.stream().filter(o -> o.toLowerCase(Locale.ROOT).startsWith(prefixo)).limit(80).toList();
+    }
+
+    private static String formatar(double v) {
+        return v == Math.rint(v) ? String.valueOf((int) v) : String.valueOf(v);
     }
 }

@@ -14,6 +14,7 @@ Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro �
 | `/ranks <jogador>` | todos | Rank de outro jogador |
 | `/mina` | todos | Abre o menu das minas: rank, blocos, tempo até o reset e quanto já foi minerado (clicar teleporta). `/mina lista` mostra no chat |
 | `/mina <id>` | todos | Teleporta pra mina, se você tiver o rank |
+| `/mina bonus` | todos | Quando é a hora de venda em dobro da mina PvP hoje |
 | `/prestigio [confirmar]` | todos | No último rank, volta pro primeiro com um nível de prestígio |
 | `/kit iniciante` | todos | Kit de quem está começando (ferramentas de madeira, pão, tochas e bancada), a cada 2 h (`kit-iniciante.cooldown-horas`), só no primeiro rank e sem prestígio. O `/kit` sozinho lista os kits e aponta o `/vip kit` |
 | `/ranks admin set <jogador> <rank>` | staff | Muda o rank de alguém (roda os `comandos-ao-subir`) |
@@ -27,6 +28,7 @@ Os ranks são medievais: **Camponês → Fazendeiro → Lenhador → Ferreiro �
 | `/mina admin percentual <id> <0-100>` | staff | Reset quando essa % for minerada (0 = só por tempo) |
 | `/mina admin resetar <id>` | staff | Reseta agora |
 | `/mina admin info <id>` | staff | Área, composição, próximo reset e quanto já foi minerado |
+| `/mina admin bonus <minutos>` | staff | Liga a hora de bônus agora, por esse tempo (0 desliga). Pra testar |
 | `/mina admin deletar <id>` | staff | Apaga a mina (os blocos ficam) |
 
 ## Como funciona
@@ -58,6 +60,8 @@ No reset, quem está dentro (ou em cima) vai pro ponto de teleporte da mina, e n
 **Prestígio.** No último rank (Rei), o `/prestigio confirmar` volta o jogador pro primeiro rank e dá um nível de prestígio, até 10. Cada nível soma **+10% de venda na loja** pra sempre, multiplicando o bônus do rank, e aparece como **✦N** antes do rank no chat e na tab. O dinheiro fica com o jogador. Os níveis ficam em `prestigio.yml`.
 
 **Rank na tab.** O rank aparece antes do nome na tab. Com o VipPlugin, a ordem é rank, clã e VIP, como no chat. O VIP monta o nome, e o rankup pede pra refazer quando o rank muda.
+
+**Mina PvP e hora de bônus (2026-11-17).** A mina `pvp` fica depois do portão norte da Avenida das Minas: qualquer rank minera (`rank: campones`), com uma mistura própria que rende no nível da Redstone, e o ponto dela (teleporte e holograma) fica no saguão seguro; o PvP do campo é do AreasPlugin. Todo dia, uma hora sorteada dentro de `hora-bonus.janela-inicio`..`janela-fim` (17h às 21h) faz a venda automática das minas de `hora-bonus.minas` (só a `pvp`) pagar `multiplicador` (2) vezes. O sorteio sai da data, então reiniciar não muda o horário. O chat avisa `aviso-minutos` (10) antes, no começo (com o botão [IR] pra `/warp minapvp`) e no fim, e o holograma da mina mostra o horário ou o "VENDA x2 AGORA!". O dobro entra no multiplicador de venda que a loja pergunta ao rankup, só durante a venda de um drop daquela mina (`RankupPlugin#venderDaMina`): a venda do inventário na Loja Oficial não muda. `/mina bonus` mostra o horário de hoje; a staff liga na hora com `/mina admin bonus <minutos>` (0 desliga). Teste: `node tools/bots/teste-mina-pvp.js`.
 
 **Fragmento Arcano.** Cada bloco quebrado numa mina tem `fragmentos.chance-por-bloco` (1 em 4.000) de dar um Fragmento Arcano, que vai direto pro inventário, com mensagem e som. Dá cerca de 1 por hora de mina. É a moeda do **Cambista** (OficinasPlugin), que troca fragmentos por Eficiência e Fortuna acima do máximo. O item é papel com o modelo `servidor:fragmento_arcano` do resource pack e a marca `rankupplugin:fragmento`: renomear outro papel não falsifica, e a loja não compra.
 

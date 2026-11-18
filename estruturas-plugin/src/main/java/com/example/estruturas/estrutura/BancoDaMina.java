@@ -7,6 +7,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.Candle;
 import org.bukkit.block.data.type.Door;
+import org.bukkit.block.structure.StructureRotation;
 
 import java.util.List;
 
@@ -17,30 +18,26 @@ import static com.example.estruturas.estrutura.Planta.laje;
 import static com.example.estruturas.estrutura.Planta.lanterna;
 
 /**
- * O Banco do fim da Avenida das Minas, entre o Compactador (x -18..-10) e o Cambista (x 10..18), no
- * lugar da cerejeira grande da praça do fundo. Fachada de banco clássico: plataforma e escadaria de
- * quartzo, tapete vermelho, colunas com capitel de ouro, frontão com medalhão de esmeralda, balcão de
- * pedra-negra com tampo de quartzo e, no fundo, o cofre (porta de ferro e o bloco de cofre) com ouro em
- * volta. O NPC é o Bancário do OficinasPlugin (folha de cheque, depósito, extrato e Mine-sena; o balcão
- * é do ChequePlugin).
+ * O Banco, no fundo da Loja Oficial (até 2026-11-17 ficava no fim da Avenida das Minas, que virou o
+ * portão da mina PvP). Fachada de banco clássico: plataforma e escadaria de quartzo, tapete vermelho,
+ * colunas com capitel de ouro, frontão com medalhão de esmeralda, balcão de pedra-negra com tampo de
+ * quartzo e, no fundo, o cofre (porta de ferro e o bloco de cofre) com ouro em volta. O NPC é o Bancário
+ * do OficinasPlugin (folha de cheque, depósito, extrato e Mine-sena; o balcão é do ChequePlugin).
  *
- * <p>Mesma origem da Avenida das Minas: {@code /estrutura construir banco spawn 0 65 -21}. x e z são
- * ABSOLUTOS e y é relativo ao chão (y = 0 é o piso em 64). O fundo entra na muralha norte (z -183..-185),
- * pra a frente ficar alinhada com a do Compactador e a do Cambista e sobrar a passagem até o canteiro.
- * Ocupa x -8..8, z -185..-179, limpa x -9..9 até o z -172 (a versão de antes vinha até o -176) e refaz o
- * piso da praça na frente. Construir depois da avenida.
+ * <p>O desenho continua escrito como era na avenida (x de -8 a 8 de um lado ao outro, z do fundo -185 à
+ * escadaria -179, frente pro +z) e o {@link #set} gira 90° pra o fundo ficar colado na parede do fundo
+ * da loja ({@link LojaOficial#X_FUNDO}) e a frente olhar pra porta (oeste). Mesma origem da loja:
+ * {@code /estrutura construir banco spawn 0 65 43}; a loja já constrói o banco junto, e esta estrutura
+ * serve pra refazer só ele. Ocupa x {@code X_FUNDO - 6} a {@code X_FUNDO}, dz -8 a 8.
  */
 public class BancoDaMina implements Estrutura {
 
-    private static final int ORIGEM_Z = -21;
-
     private static final int X = 8;            // largura: x -8..8
-    private static final int Z_FUNDO = -185;   // parede do fundo: a face de fora da muralha norte
-    private static final int Z_MURALHA = -183; // a face de dentro da muralha (o miolo da avenida acaba no -182)
+    private static final int Z_FUNDO = -185;   // parede do fundo (a da loja)
     private static final int Z_NPC = -183;
     private static final int Z_BALCAO = -182;
     private static final int Z_FRENTE = -180;  // linha das colunas, beira da plataforma
-    private static final int Z_DEGRAU = -179;  // na linha da frente das barracas vizinhas
+    private static final int Z_DEGRAU = -179;
     private static final int Y_TETO = 8;
 
     private Planta p;
@@ -52,11 +49,19 @@ public class BancoDaMina implements Estrutura {
 
     @Override
     public String getNome() {
-        return "Banco da Avenida das Minas";
+        return "Banco (fundo da Loja Oficial)";
     }
 
+    /** x da loja (absoluto) de um ponto do desenho: a parede do fundo e, a cada bloco pra frente, um pro oeste. */
+    static int xNaLoja(int z) {
+        return LojaOficial.X_FUNDO - (z - Z_FUNDO);
+    }
+
+    /** (x, y, z) do desenho → (x absoluto, y, dz) da loja, com a direção dos blocos girada junto. */
     private void set(int x, int y, int z, BlockData dados) {
-        p.set(x, y, z - ORIGEM_Z, dados);
+        BlockData girado = dados.clone();
+        girado.rotate(StructureRotation.CLOCKWISE_90);
+        p.set(xNaLoja(z), y, x, girado);
     }
 
     private void set(int x, int y, int z, Material m) {
@@ -65,6 +70,11 @@ public class BancoDaMina implements Estrutura {
 
     @Override
     public void gerar(Planta planta) {
+        gerarEm(planta);
+    }
+
+    /** Desenha o banco numa planta com a origem da loja (a LojaOficial chama no fim da dela). */
+    void gerarEm(Planta planta) {
         this.p = planta;
         limpar();
         plataforma();
@@ -76,35 +86,11 @@ public class BancoDaMina implements Estrutura {
         frontao();
     }
 
-    /**
-     * Tira o que estava no lugar (a versão de antes do banco, mais pra frente, ou a cerejeira antiga) e
-     * refaz o piso da praça na frente, como a avenida faz. Dentro da muralha só sai o miolo: as paredes,
-     * o teto e o frontão do banco tomam o lugar do resto, e a muralha em volta fica inteira.
-     */
+    /** Ar no lugar do banco (dentro do salão), até o alto do frontão. */
     private void limpar() {
-        for (int x = -X - 1; x <= X + 1; x++) {
-            for (int z = Z_FUNDO; z <= -172; z++) {
-                if (z <= Z_MURALHA) {
-                    if (Math.abs(x) > X) continue;
-                    // o miolo e, por cima do teto, o alto da muralha e as ameias (o frontão vai até o fundo)
-                    if (Math.abs(x) < X) for (int y = 2; y < Y_TETO; y++) set(x, y, z, Material.AIR);
-                    for (int y = Y_TETO + 2; y <= 13; y++) set(x, y, z, Material.AIR);
-                    continue;
-                }
-                // perto do canteiro (z -173 em diante) só a copa sai: o canteiro e os postes ficam
-                int yMin = z >= -174 ? 5 : 1;
-                for (int y = yMin; y <= 16; y++) set(x, y, z, Material.AIR);
-                if (z <= -175) set(x, 0, z, AvenidaDasMinas.pisoBase(x, z));
-            }
-        }
-        // a luz do chão da avenida que a escadaria de antes cobria
-        for (int s : new int[]{-1, 1}) set(s * 5, 0, -176, Material.SHROOMLIGHT);
-        // o arco cego da muralha que o banco corta no meio: fecha a metade que sobra dos dois lados
-        for (int s : new int[]{-1, 1}) {
-            for (int ax = X + 1; ax <= X + 2; ax++) {
-                for (int y = 2; y <= 11; y++) {
-                    if (y != 7) set(s * ax, y, Z_MURALHA, Material.STONE_BRICKS);
-                }
+        for (int x = -X; x <= X; x++) {
+            for (int z = Z_FUNDO + 1; z <= Z_DEGRAU; z++) {
+                for (int y = 1; y <= Y_TETO + 8; y++) set(x, y, z, Material.AIR);
             }
         }
     }
@@ -269,9 +255,14 @@ public class BancoDaMina implements Estrutura {
         return vela;
     }
 
-    /** O Bancário (OficinasPlugin) atrás do balcão, em cima da plataforma, olhando pro sul (pra avenida). */
+    /** O Bancário (OficinasPlugin) atrás do balcão, em cima da plataforma, olhando pro oeste (pra porta da loja). */
     @Override
     public List<String> getComandos(String mundo, int ox, int oy, int oz) {
-        return List.of("oficina criar bancario bancario " + mundo + " 0.5 " + (oy + 2) + " " + (Z_NPC + 0.5) + " 0");
+        return List.of(comandoNpc(mundo, oy, oz));
+    }
+
+    /** {@code oz} é o z do centro do spawn (a origem da loja). */
+    static String comandoNpc(String mundo, int oy, int oz) {
+        return "oficina criar bancario bancario " + mundo + " " + (xNaLoja(Z_NPC) + 0.5) + " " + (oy + 2) + " " + (oz + 0.5) + " 90";
     }
 }

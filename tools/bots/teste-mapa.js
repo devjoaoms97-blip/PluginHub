@@ -35,7 +35,7 @@ t.rodar(async () => {
   msgs = await t.capturar(bot, () => bot.chat('/spawn'), 4500)
   t.verificar(bot.entity.position.distanceTo(SPAWN) < 3, '/spawn volta pra fonte', `${bot.entity.position} ${msgs.join(' ')}`)
   msgs = await t.capturar(bot, () => bot.chat('/warp'))
-  t.verificar(msgs.some(m => ['minas', 'mercado', 'boss', 'plateia-x1', 'plateia-gladiador'].every(w => m.includes(w))),
+  t.verificar(msgs.some(m => ['minas', 'minapvp', 'banco', 'boss', 'plateia-x1', 'plateia-gladiador'].every(w => m.includes(w))),
     'lista de warps', msgs.join(' ').slice(0, 160))
 
   // o painel "Como começar" saiu (2026-10-31): nenhum holograma do mapa em volta da fonte nem no fim da avenida oeste

@@ -11,7 +11,7 @@ Os preços de compra e de venda são fixos: vender muito do mesmo item não baix
 `/pix agendar <jogador> <valor> <dias>` paga a primeira parcela na hora e repete a cada tantos dias; consulte ou cancele com `/pix agendamentos`. A taxa é **1%** e sai do valor recebido; o pagador perde o valor cheio. O limite diário está desativado atualmente; `/pix limite` mostra o teto caso ele seja ligado. `/pix historico` orienta a procurar o **Extrato no Bancário**.
 
 **Bancário e Mine-sena** · `/warp banco`
-O Banco fica no fim da Avenida das Minas. No Bancário, veja o **Extrato** e deposite cheques. Para emitir um, compre uma folha e use `/cheque <valor> [jogador]`; um cheque nominal só pode ser depositado pela pessoa indicada.
+O Banco fica no fundo da Loja Oficial. No Bancário, veja o **Extrato** e deposite cheques. Para emitir um, compre uma folha e use `/cheque <valor> [jogador]`; um cheque nominal só pode ser depositado pela pessoa indicada.
 
 No botão **Mine-sena**, escolha um número de 1 a 100. Cada bilhete custa R$ 500, vale para o próximo sorteio e fica registrado no seu nome; o limite é 20 bilhetes por sorteio. O resultado sai diariamente às 18h. O pote é dividido entre os bilhetes vencedores; sem ganhador, acumula. `/minesena` mostra o pote e seus números.
 

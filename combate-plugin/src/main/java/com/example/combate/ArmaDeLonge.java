@@ -18,7 +18,7 @@ import java.util.UUID;
 /**
  * Carregar a besta ou puxar o arco ({@code arma-de-longe.armas}) trava a espada: enquanto o jogador
  * carrega, e por um tempo depois de disparar, nenhum golpe corpo a corpo dele conta (espada,
- * machado ou soco, de qualquer mão, inclusive o golpe da segunda mão). Bater e depois carregar
+ * machado ou soco). Bater e depois carregar
  * continua livre. Sem isso, com a besta numa mão e a espada na outra, dava pra carregar, bater e
  * disparar no mesmo combo.
  */

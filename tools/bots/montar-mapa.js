@@ -6,13 +6,14 @@
 //
 //   node montar-mapa.js construir [partes...]   (servidor LIGADO) sem partes = minas spawn boss dicas arenas marcar
 //     minas      os 12 poços (cheios de pedra) e a Avenida das Minas (EstruturasPlugin) em volta, com as oficinas
-//     loja       só a Loja Oficial (portão leste do spawn): prédio, 7 vendedores, placas e quadros
+//                e a mina PvP depois do portão do fundo
+//     minapvp    só a mina PvP (saguão, campo e o poço de 41x41), depois do portão norte da avenida
+//     loja       só a Loja Oficial (portão leste do spawn): prédio, vendedores, quadros e o Banco no fundo
 //     mobs       a /warp mobs (portão oeste do spawn): abre o portão "MOBS" num spawn que já existe e
 //                constrói o salão de estátuas, que cadastra os spawners no SpawnersPlugin
-//     banco      só o Banco no fim da avenida (folha de cheque, depósito, extrato e Mine-sena), com o NPC,
-//                e o pedaço do spawn onde ficava a barraquinha antiga dele, como era
-//     oficinas   só as barraquinhas de serviço da avenida (OficinasPlugin: Ferreiro, Bruxa... e Cambista,
-//                Banco e Compactador no fundo)
+//     banco      só o Banco, no fundo da Loja Oficial (folha de cheque, depósito, extrato e Mine-sena), com o NPC
+//     oficinas   só as barraquinhas de serviço da avenida (OficinasPlugin: Ferreiro, Bruxa... e Cambista e
+//                Compactador no fundo, dos dois lados do portão da mina PvP)
 //     boss       a arena do boss ("toxica"), ao sul do spawn, colada no portão "BOSS"
 //     dicas      os 12 NPCs de dicas pelo spawn (DicasPlugin), com as falas
 //     tutorial   apaga o painel "Como começar", que saiu (já roda junto com o spawn)
@@ -32,11 +33,14 @@
 //                     Só uma vez, ao trocar o mapa antigo por este, e ANTES do spawn: fora isso, apagaria
 //                     as barracas e1 e e2 novas.
 //   node montar-mapa.js cadastrar   (servidor DESLIGADO) arenas e configs nos arquivos
-//   node montar-mapa.js cadastrar --minas                também as 12 minas, com os blocos planejados
+//   node montar-mapa.js cadastrar --minas                também as 12 minas e a PvP, com os blocos planejados
+//   node montar-mapa.js cadastrar --mina-pvp             só põe (ou refaz) a mina PvP no minas.yml, sem mexer nas outras
 //
 // Os poços das minas ficam cheios de pedra, sem mina cadastrada: a staff marca com /mina admin pos1,
 // pos2 e criar. Com "cadastrar --minas", elas já entram prontas e se enchem ao ligar (resetar-ao-ligar).
 //
+//          MINA PVP (saguão seguro z -186 a -196, campo e poço de 41x41 até o z -252)
+//                             ║  portão "PVP" (no fundo da avenida)
 //          AVENIDA DAS MINAS (12 poços, norte, z -21 a -185)
 //                             ║
 //            portão "MINAS" (z -20, colado na avenida)
@@ -56,6 +60,15 @@ const CHAO = 64 // os pés ficam em y = 65
 // Medidas
 // ---------------------------------------------------------------------------
 const MINA = { lado: 21, fundo: 15 } // poço de 21 x 21, 15 de profundidade (y 50..64)
+// A mina PvP (2026-11-17): qualquer rank, depois do portão norte da avenida. A mistura rende no nível da
+// Redstone (mina 6, Escudeiro): ~R$ 88,7 mil/h no simulador (tools/economia/simular.py, 3 por mina e
+// Fortuna III), sem ser a melhor do servidor. O ponto da mina (teleporte e holograma) fica no saguão,
+// que é seguro: o PvP começa no arco do muro (AreasPlugin, caixa "mina pvp").
+const MINA_PVP = {
+  id: 'pvp', rank: 'campones', min: [-20, CHAO - MINA.fundo + 1, -244], max: [20, CHAO, -204],
+  spawn: [0.5, CHAO + 1, -192.5, 180, 0],
+  blocos: { STONE: 12, COAL_ORE: 6, IRON_ORE: 14, GOLD_ORE: 12, DEEPSLATE_REDSTONE_ORE: 18, DEEPSLATE_LAPIS_ORE: 28, AMETHYST_BLOCK: 10 },
+}
 // as minas, em ordem de rank, alternando oeste/leste ao longo da avenida norte
 function posicaoDaMina(i) {
   const linha = Math.floor(i / 2), oeste = i % 2 === 0
@@ -199,6 +212,23 @@ async function construirMinas() {
   console.log('\n== Avenida das Minas (EstruturasPlugin: minas) ==')
   await estrutura('minas', W, [0, -21])
   await construirOficinas()
+  await construirMinaPvp()
+}
+
+/**
+ * A mina PvP (EstruturasPlugin "minapvp"), colada no portão norte da avenida: o poço de 41x41 cheio de
+ * pedra com a borda de tijolo (a mina enche com a composição quando é cadastrada) e o recinto em volta.
+ */
+async function construirMinaPvp() {
+  const W = 'spawn'
+  console.log('\n== Mina PvP (EstruturasPlugin: minapvp) ==')
+  await t.console(`${em(W)} forceload add -31 -252 31 -186`)
+  await t.espera(1500)
+  const [x1, y1, z1] = MINA_PVP.min, [x2, y2, z2] = MINA_PVP.max
+  await encher(W, [x1 - 1, y1 - 1, z1 - 1], [x2 + 1, CHAO, z2 + 1], 'stone_bricks')
+  await encher(W, MINA_PVP.min, MINA_PVP.max, 'stone')
+  await estrutura('minapvp', W, [0, -21])
+  await t.console(`${em(W)} forceload remove -31 -252 31 -186`)
 }
 
 /**
@@ -212,7 +242,6 @@ async function construirOficinas() {
   await t.console('execute in minecraft:spawn run forceload add -30 -185 30 -20')
   await t.espera(1500)
   await estrutura('oficinas', 'spawn', [0, -21])
-  await construirBanco()
   for (const mina of minasPlanejadas()) await t.console(`oficina remover mina-${mina.id}`) // os guias antigos
   await t.console('execute in minecraft:spawn run forceload remove -30 -185 30 -20')
 }
@@ -267,20 +296,16 @@ async function construirSpawn() {
 }
 
 /**
- * O Banco (EstruturasPlugin "banco") no fim da Avenida das Minas, entre o Compactador e o Cambista,
- * com o Bancário do OficinasPlugin. Antes ele era uma barraquinha no quadrante nordeste do spawn: o
- * "spring-banco" devolve aquele pedaço do spawn como era (só mexe em x 26..34, z -18..-10 a partir do
- * centro). Chamado pelas oficinas (precisa da área do fundo carregada).
+ * O Banco (EstruturasPlugin "banco"), no fundo da Loja Oficial, com o Bancário do OficinasPlugin. A loja já
+ * constrói o banco junto; esta parte refaz só ele. Até 2026-11-17 ficava no fim da Avenida das Minas
+ * (o "minas" apaga o que sobrou dele lá).
  */
 async function construirBanco() {
-  console.log('\n== Banco (EstruturasPlugin: banco) e o spawn sem a barraquinha antiga ==')
-  await t.console(`execute in minecraft:spawn run forceload add ${SPAWN.x + 26} ${SPAWN.z - 18} ${SPAWN.x + 34} ${SPAWN.z - 10}`)
-  await t.console('execute in minecraft:spawn run forceload add -10 -186 10 -171')
+  console.log('\n== Banco (EstruturasPlugin: banco, no fundo da Loja Oficial) ==')
+  await t.console('execute in minecraft:spawn run forceload add 145 33 162 53')
   await t.espera(1500)
-  await estrutura('spring-banco', 'spawn', [SPAWN.x, SPAWN.z])
-  await estrutura('banco', 'spawn', [0, -21])
-  await t.console(`execute in minecraft:spawn run forceload remove ${SPAWN.x + 26} ${SPAWN.z - 18} ${SPAWN.x + 34} ${SPAWN.z - 10}`)
-  await t.console('execute in minecraft:spawn run forceload remove -10 -186 10 -171')
+  await estrutura('banco', 'spawn', [SPAWN.x, SPAWN.z])
+  await t.console('execute in minecraft:spawn run forceload remove 145 33 162 53')
 }
 
 /**
@@ -289,10 +314,10 @@ async function construirBanco() {
  */
 async function construirLoja() {
   console.log('\n== Loja Oficial (EstruturasPlugin: loja) ==')
-  await t.console('execute in minecraft:spawn run forceload add 60 10 152 76')
+  await t.console('execute in minecraft:spawn run forceload add 60 10 162 76')
   await t.espera(2000)
   await estrutura('loja', 'spawn', [SPAWN.x, SPAWN.z])
-  await t.console('execute in minecraft:spawn run forceload remove 60 10 152 76')
+  await t.console('execute in minecraft:spawn run forceload remove 60 10 162 76')
 }
 
 /**
@@ -457,6 +482,8 @@ const DICAS = [
     '&fNo meu tempo não tinha &e/rankup max&f. A gente subia um rank por vez e ainda agradecia!',
     '&fChegou no &6Rei&f? Tem o &e/prestigio&f: você volta pro começo, mas com uma estrelinha. Eu acho uma bobagem. Tenho três.',
     '&fNão empurra! As minas se enchem sozinhas. Quem estiver dentro na hora vai pro ponto de teleporte, inteirinho.',
+    '&fNo fundo da avenida fica a &cMina PvP&f (&e/warp minapvp&f): qualquer rank entra e rende como a da Redstone, mas lá dentro tem PvP e quem morre deixa tudo no chão.',
+    '&fTodo dia, entre as 17h e as 21h, a &cMina PvP&f tem uma &6hora de venda em dobro&f. Veja quando em &e/mina bonus&f.',
     '&fEsse povo de hoje quer tudo de graça. Faz as &e/missoes&f, menino, que paga bem.',
     '&fPicareta gasta? No meu tempo a gente jogava fora. Hoje tem o &7Ferreiro&f, na avenida, que conserta. Moleza.',
   ] },
@@ -486,9 +513,9 @@ const DICAS = [
     '&fBarraca normal pode renovar sozinha: &e/barraca autorenovar&f, enquanto tiver saldo na conta.',
   ] },
   { id: 'mestre-armas', skin: '3f230b7b1b09b471491a61675a3efa3ba65522cc4d004090d28ee6f3d133b822', nome: '&4Mestre de Armas Duda', pos: [-36, -6], falas: [
-    '&fAqui o combate é à moda antiga: sem barra de recarga, todo golpe sai com o dano inteiro. E quem alterna as duas mãos bate o dobro.',
+    '&fAqui o combate é à moda antiga: sem barra de recarga, todo golpe sai com o dano inteiro, até 4 por segundo.',
     '&fBloquear com a espada tira metade do dano. Mas com escudo na outra mão, a espada não bloqueia: escolha.',
-    '&fDá pra lutar com uma arma em cada mão, e cada mão treina a skill da própria arma. Veja em &e/skills&f.',
+    '&fCada arma treina a própria skill: espada, machado, lança, maça e até o soco. Veja em &e/skills&f.',
     '&fTem recompensa pela sua cabeça? Confira em &e/bounty lista&f. Se não tiver, é porque você é bonzinho demais.',
     '&fLevante o escudo bem na hora do golpe: o &6Escudo Perfeito&f anula o dano e deixa o outro tonto por um segundo.',
     '&fSkill no 50? &e/skills prestigio <skill>&f volta pro 1, mas cada prestígio deixa ela mais forte. E no sábado e no domingo o XP de skill vale o dobro!',
@@ -496,7 +523,7 @@ const DICAS = [
   { id: 'banqueira', skin: '2dcabf4751f4ad60c6e92d0fc9724fe252474de90c5d4ed8f62b15633455f42d', nome: '&2Banqueira Rosa', pos: [25, -9], falas: [
     '&fPra pagar alguém: &e/pix pagar <jogador> <valor>&f. Rápido, seguro e sem fila.',
     '&fConta que se repete? &e/pix agendar <jogador> <valor> <dias>&f paga agora e de novo a cada tantos dias.',
-    '&fQuer dar dinheiro de presente? Compre uma folha de cheque com o &6Bancário&f, no Banco do fim da Avenida das Minas (&e/warp banco&f), e use &e/cheque <valor>&f. Quem ganhar deposita com ele.',
+    '&fQuer dar dinheiro de presente? Compre uma folha de cheque com o &6Bancário&f, no Banco do fundo da Loja Oficial (&e/warp banco&f), e use &e/cheque <valor>&f. Quem ganhar deposita com ele.',
     '&fNa &6Loja Oficial&f o preço de venda é fixo: pode vender tudo de uma vez, que cada item vale o mesmo. Fica de olho nos eventos de &aALTA&f, que pagam mais!',
     '&fQuer saber pra onde foi seu dinheiro? O &6Bancário&f te dá o extrato num livro, com tudo o que entrou e saiu.',
     '&fJá jogou na &6Mine-sena&f? Bilhete de R$ 500 no Bancário, sorteio todo dia às 18h, e o pote inteiro vai pra quem acertar.',
@@ -511,7 +538,7 @@ const DICAS = [
     '&fQuer um lugar só seu? &e/terreno auto&f compra o primeiro terreno livre.',
     '&fTerreno paga imposto! Ligue o &e/terreno autopagar&f e esqueça. Se atrasar muito, o terreno vai a leilão.',
     '&fChame os amigos pra construir junto com &e/terreno amigo&f.',
-    '&fNo seu terreno cabem até 4 &afazendas&f: compre a Escritura com o &aCorretor Rural&f, no fundo da &e/warp loja&f, e o dinheiro cai no cofre até você coletar no fazendeiro.',
+    '&fNo seu terreno cabem até 8 &afazendas&f: compre a Escritura com o &aCorretor Rural&f, no fundo da &e/warp loja&f, e o dinheiro cai no cofre até você coletar no fazendeiro.',
     '&fA fazenda é do terreno: se ele for a leilão, quem arrematar leva a fazenda junto, com o cofre e tudo!',
     '&fMadeira, bicho e peixe, tem tudo no &e/warp recursos&f. Ele é refeito todo mês, então não construa casa lá!',
     '&fQuartzo e netherita? &e/warp nether&f. Élitro e dragão? &e/warp end&f. Os dois também são refeitos todo mês: o End no dia 10, o Nether no dia 20 e o de recursos no dia 30 (&e/recursos&f mostra as datas).',
@@ -572,7 +599,8 @@ async function marcarComBot() {
   await comando('/setspawn newbies')
   for (const [nome, mundo, x, z, yaw, y = CHAO + 1] of [
     ['minas', 'spawn', 0.5, -24.5, 180],
-    ['banco', 'spawn', 0.5, -175.5, 180], // na praça do fim da Avenida das Minas, de frente pra escadaria do Banco
+    ['banco', 'spawn', 150.5, SPAWN.z + 0.5, -90], // no fundo da Loja Oficial, de frente pra escadaria do Banco
+    ['minapvp', 'spawn', 0.5, -188.5, 180], // no saguão (seguro) da mina PvP, olhando pro arco do campo
     ['terrenos', 'terrenos', 34.5, 34.5, 0],
     ['eventos', 'arenas', 0.5, 306.5, 180], // no saguão dos eventos, olhando pros portais
     ['loja', 'spawn', 67.5, SPAWN.z + 0.5, -90], // logo depois da porta da Loja Oficial, olhando pro salão
@@ -628,7 +656,16 @@ function trocarNoYaml(arquivo, secao, chave, valor) {
   fs.writeFileSync(arquivo, crlf ? s.replace(/\n/g, '\r\n') : s)
 }
 
-function cadastrar(comMinas) {
+/** O bloco da mina PvP no minas.yml do RankupPlugin. */
+function yamlMinaPvp() {
+  const m = MINA_PVP
+  let y = `  ${m.id}:\n    mundo: spawn\n    min: ${m.min.join(',')}\n    max: ${m.max.join(',')}\n    rank: ${m.rank}\n`
+  y += `    intervalo-minutos: 15\n    reset-percentual: 80.0\n    spawn: ${m.spawn.map(n => n.toFixed(2)).join(',')}\n    composicao:\n`
+  for (const [bloco, peso] of Object.entries(m.blocos)) y += `      ${bloco}: ${peso.toFixed(1)}\n`
+  return y
+}
+
+function cadastrar(comMinas, soMinaPvp = false) {
   const P = path.join(PASTA, 'plugins')
   let y
   if (comMinas) {
@@ -640,7 +677,19 @@ function cadastrar(comMinas) {
       y += `    intervalo-minutos: 15\n    reset-percentual: 80.0\n    spawn: ${p.spawn.map(n => n.toFixed(2)).join(',')}\n    composicao:\n`
       for (const [bloco, peso] of Object.entries(m.blocos)) y += `      ${bloco}: ${peso.toFixed(1)}\n`
     })
-    fs.writeFileSync(path.join(P, 'RankupPlugin', 'minas.yml'), y)
+    fs.writeFileSync(path.join(P, 'RankupPlugin', 'minas.yml'), y + yamlMinaPvp())
+  } else if (soMinaPvp) {
+    // só a PvP: tira a que existir e põe no fim, sem mexer nas outras
+    console.log('== minas.yml (só a mina PvP) ==')
+    const arquivo = path.join(P, 'RankupPlugin', 'minas.yml')
+    const linhas = fs.readFileSync(arquivo, 'utf8').replace(/\r\n/g, '\n').split('\n')
+    const fora = []
+    let pulando = false
+    for (const l of linhas) {
+      if (/^  \S/.test(l)) pulando = l.trim() === `${MINA_PVP.id}:`
+      if (!pulando) fora.push(l)
+    }
+    fs.writeFileSync(arquivo, fora.join('\n').replace(/\n*$/, '\n') + yamlMinaPvp())
   }
 
   // as barracas não entram aqui: quem cadastra é o próprio spawn, no "construir"
@@ -666,17 +715,17 @@ function cadastrar(comMinas) {
   const vip = path.join(P, 'VipPlugin', 'config.yml')
   // a área VIP fica na avenida sul do spawn
   for (const [k, v] of [['mundo', 'spawn'], ['x', SPAWN.x], ['y', CHAO + 1], ['z', SPAWN.z + 20]]) trocarNoYaml(vip, 'warp-vip', k, v)
-  console.log(comMinas ? 'Pronto. Ligue o servidor: as minas se enchem sozinhas.' : 'Pronto. As minas ficam pra staff criar (/mina admin).')
+  console.log(comMinas || soMinaPvp ? 'Pronto. Ligue o servidor: as minas se enchem sozinhas.' : 'Pronto. As minas ficam pra staff criar (/mina admin).')
 }
 
 // ---------------------------------------------------------------------------
 const fase = process.argv[2]
 if (fase === 'cadastrar') {
-  cadastrar(process.argv.includes('--minas'))
+  cadastrar(process.argv.includes('--minas'), process.argv.includes('--mina-pvp'))
 } else if (fase === 'construir' || fase === 'marcar') {
   const partes = {
     'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
-    boss: construirBoss, oficinas: construirOficinas, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, corrida: construirCorrida, labirinto: construirLabirinto, saguao: construirSaguaoEventos, marcar: marcarComBot,
+    boss: construirBoss, oficinas: construirOficinas, minapvp: construirMinaPvp, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, corrida: construirCorrida, labirinto: construirLabirinto, saguao: construirSaguaoEventos, marcar: marcarComBot,
   }
   // "marcar" sozinho era o atalho antigo pra só a parte do bot
   const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)
@@ -691,6 +740,6 @@ if (fase === 'cadastrar') {
     await t.terminar()
   })
 } else {
-  console.log('Uso: node montar-mapa.js construir [minas|oficinas|loja|banco|mobs|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
+  console.log('Uso: node montar-mapa.js construir [minas|minapvp|oficinas|loja|banco|mobs|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
     + '\n     node montar-mapa.js cadastrar [--minas]   (servidor desligado)')
 }

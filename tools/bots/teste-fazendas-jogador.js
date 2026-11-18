@@ -44,7 +44,7 @@ t.rodar(async () => {
   msgs = await t.capturar(bot, () => bot.chat('/comandos producao'), 1200)
   t.verificar(msgs.some(m => m.includes('/fazendas loja')) && msgs.some(m => m.includes('Corretor Rural')), 'o /comandos producao explica as fazendas', msgs.find(m => m.includes('fazenda')))
   msgs = await t.capturar(bot, () => bot.chat('/comandos terreno'), 1200)
-  t.verificar(msgs.some(m => m.includes('4 fazendas')), 'o /comandos terreno diz quantas fazendas cabem', msgs.find(m => m.includes('fazendas')))
+  t.verificar(msgs.some(m => m.includes('8 fazendas')), 'o /comandos terreno diz quantas fazendas cabem', msgs.find(m => m.includes('fazendas')))
 
   console.log('\n== Dicas ==')
   const npcs = fs.readFileSync(path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'DicasPlugin', 'npcs.yml'), 'utf8')

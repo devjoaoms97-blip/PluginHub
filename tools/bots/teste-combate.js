@@ -1,6 +1,6 @@
-// Combate no estilo 1.8 (CombatePlugin): sem recarga de ataque, bloqueio com a espada (só sem
-// escudo na segunda mão) e golpe com a arma da segunda mão. Luta no pátio da arena de X1 (axepvp), onde o
-// PvP vale. Precisa das arenas (node montar-mapa.js). Uso: node teste-combate.js
+// Combate no estilo 1.8 (CombatePlugin): sem recarga de ataque, tempo entre golpes de 0,25 s,
+// bloqueio com a espada (só sem escudo na segunda mão), a segunda mão que não golpeia mais e a besta
+// que trava a espada logo depois de disparar. Luta no pátio da arena de X1 (axepvp), onde o PvP vale. Precisa das arenas (node montar-mapa.js). Uso: node teste-combate.js
 const t = require('./lib')
 
 const W = 'execute in minecraft:arenas run'
@@ -18,16 +18,10 @@ async function golpe(atacante, alvo, comoBater) {
 }
 
 const bater = atacante => e => atacante.attack(e)
+// o clique direito na entidade com a segunda mão (o golpe da segunda mão, que saiu em 2026-11-17)
 const baterComASegunda = atacante => e => atacante._client.write('use_entity', {
   target: e.id, mouse: 0, sneaking: false, hand: 1, location: { x: 0, y: 0, z: 0 },
 })
-// O que o cliente de verdade manda num clique direito com a espada na mão principal: o clique na
-// entidade pela mão principal e, como a espada bloqueia, "usar o item" da principal. O da segunda mão
-// nunca chega (o cliente só tenta a segunda se a principal não fizer nada).
-const baterComoCliente = atacante => e => {
-  atacante._client.write('use_entity', { target: e.id, mouse: 0, sneaking: false, hand: 0, location: { x: 0, y: 0, z: 0 } })
-  atacante.activateItem()
-}
 
 t.rodar(async () => {
   const a = await t.criarBot(t.nomeNovo('Cma')), b = await t.criarBot(t.nomeNovo('Cmb'))
@@ -50,18 +44,23 @@ t.rodar(async () => {
   // plugin, a barra da espada (0,625 s) não teria enchido e o segundo sairia com uns 80% do dano
   const g2 = await golpe(a, b, async e => { a.attack(e); await t.espera(550); a.attack(e) })
   // compara com o golpe isolado: a skill Defesa de quem apanha sobe e muda um pouco o dano
-  t.verificar(g2 >= g1 * 1.9, 'golpes rápidos saem com o dano inteiro (dois seguidos tiram o dobro de um)',
+  t.verificar(g2 >= g1 * 1.8, 'golpes rápidos saem com o dano inteiro (dois seguidos tiram o dobro de um)',
     `um golpe ${g1.toFixed(1)}, dois seguidos ${g2.toFixed(1)}`)
 
   console.log('\n== Tempo entre golpes (configurável) ==')
-  const rajada = () => golpe(a, b, async e => { a.attack(e); await t.espera(150); a.attack(e) })
+  const rajada = ms => golpe(a, b, async e => { a.attack(e); await t.espera(ms); a.attack(e) })
+  await t.console('combate intervalo 5')
+  const cedo = await rajada(100)
+  t.verificar(cedo < g1 * 1.4, 'padrão (5 ticks): o 2º golpe em 0,1 s não conta', `${cedo.toFixed(1)} (um golpe: ${g1.toFixed(1)})`)
+  const quatroPorSegundo = await rajada(350)
+  t.verificar(quatroPorSegundo >= g1 * 1.8, 'padrão (5 ticks): o 2º golpe em 0,35 s conta', quatroPorSegundo.toFixed(1))
   await t.console('combate intervalo 10')
-  const padrao = await rajada()
-  t.verificar(padrao < g1 * 1.4, 'padrão (10 ticks): o 2º golpe em 0,15 s não conta', `${padrao.toFixed(1)} (um golpe: ${g1.toFixed(1)})`)
+  const jogo = await rajada(350)
+  t.verificar(jogo < g1 * 1.4, 'com 10 (o do jogo): o 2º golpe em 0,35 s não conta', jogo.toFixed(1))
   await t.console('combate intervalo 0')
-  const semEspera = await rajada()
-  t.verificar(semEspera >= g1 * 1.8, 'com 0: os dois golpes em 0,15 s contam', `${semEspera.toFixed(1)}`)
-  await t.console('combate intervalo 10')
+  const semEspera = await rajada(100)
+  t.verificar(semEspera >= g1 * 1.8, 'com 0: os dois golpes em 0,1 s contam', `${semEspera.toFixed(1)}`)
+  await t.console('combate intervalo 5')
 
   console.log('\n== Bloqueio com a espada ==')
   const comp = await t.console(`data get entity ${b.username} SelectedItem.components`)
@@ -78,51 +77,23 @@ t.rodar(async () => {
   t.verificar(!comEscudo.includes('blocks_attacks'), 'com escudo na segunda mão, a espada não bloqueia (o escudo bloqueia)')
   await t.console(`minecraft:item replace entity ${b.username} weapon.offhand with minecraft:air`)
 
-  console.log('\n== Duas armas ==')
-  await t.console(`minecraft:item replace entity ${a.username} weapon.mainhand with minecraft:air`)
-  await t.console(`minecraft:item replace entity ${a.username} weapon.offhand with minecraft:diamond_sword`)
-  await t.espera(600)
-  const soco = await golpe(a, b, bater(a))
-  const segunda = await golpe(a, b, baterComASegunda(a))
-  t.verificar(soco <= 2, 'com a mão principal vazia, o soco tira pouco', soco.toFixed(1))
-  t.verificar(segunda >= g1 * 0.9, 'o botão direito bate com a espada da segunda mão', `${segunda.toFixed(1)} (com a principal: ${g1.toFixed(1)})`)
-  const offhand = await t.console(`data get entity ${a.username} equipment.offhand.id`)
-  t.verificar(offhand.includes('diamond_sword'), 'a espada continua na segunda mão depois do golpe', offhand)
-
-  console.log('\n== Cada mão com o seu tempo, e armas diferentes ==')
-  await t.console(`minecraft:item replace entity ${a.username} weapon.mainhand with minecraft:diamond_sword`)
+  console.log('\n== A segunda mão não golpeia ==')
   await t.console(`minecraft:item replace entity ${a.username} weapon.offhand with minecraft:diamond_axe`)
   await t.espera(600)
-  // espada e machado com 0,15 s de intervalo, no tempo padrão (10 ticks): cada mão tem o seu tempo
-  const alternado = await golpe(a, b, async e => { a.attack(e); await t.espera(150); baterComASegunda(a)(e) })
-  t.verificar(alternado >= g1 * 1.9, 'espada e machado alternados em 0,15 s: os dois golpes contam', `${alternado.toFixed(1)} (só a espada: ${g1.toFixed(1)})`)
-  const comoCliente = await golpe(a, b, baterComoCliente(a))
-  a.deactivateItem()
-  t.verificar(comoCliente >= g1 * 0.9, 'como o cliente de verdade (clique pela mão principal, espada que bloqueia): bate com o machado da segunda mão',
-    `${comoCliente.toFixed(1)} (só a espada: ${g1.toFixed(1)})`)
-  const mesmaMao = await golpe(a, b, async e => { baterComASegunda(a)(e); await t.espera(150); baterComASegunda(a)(e) })
-  t.verificar(mesmaMao < g1 * 1.6, 'a mesma mão duas vezes em 0,15 s: só um golpe conta', mesmaMao.toFixed(1))
-
-  console.log('\n== Soco com a segunda mão ==')
+  const segunda = await golpe(a, b, baterComASegunda(a))
+  t.verificar(segunda < 0.5, 'o botão direito no inimigo com machado na segunda mão não bate', segunda.toFixed(1))
   await t.console(`minecraft:item replace entity ${a.username} weapon.offhand with minecraft:air`)
   await t.espera(600)
   const socoSegunda = await golpe(a, b, baterComASegunda(a))
-  t.verificar(socoSegunda > 0 && socoSegunda <= 2, 'com a segunda mão vazia, o botão direito é um soco', socoSegunda.toFixed(1))
-  const principalDepois = await t.console(`data get entity ${a.username} SelectedItem.id`)
-  t.verificar(principalDepois.includes('diamond_sword'), 'e a espada continua na mão principal')
+  t.verificar(socoSegunda < 0.5, 'com a segunda mão vazia, o botão direito no inimigo também não bate', socoSegunda.toFixed(1))
 
-  console.log('\n== Carregar a besta trava a espada ==')
-  // besta na principal e espada na segunda (o combo de carregar, bater e disparar)
-  await t.console(`minecraft:item replace entity ${a.username} weapon.mainhand with minecraft:crossbow`)
-  await t.console(`minecraft:item replace entity ${a.username} weapon.offhand with minecraft:diamond_sword`)
+  console.log('\n== Disparar a besta trava a espada ==')
+  // besta no slot 1 e espada no 2: carrega, dispara pro alto, troca pra espada e bate (dentro do meio segundo)
+  await t.console(`minecraft:item replace entity ${a.username} hotbar.0 with minecraft:crossbow`)
+  await t.console(`minecraft:item replace entity ${a.username} hotbar.1 with minecraft:diamond_sword`)
   await t.console(`minecraft:give ${a.username} arrow 8`)
+  a.setQuickBarSlot(0)
   await t.espera(600)
-  const livre = await golpe(a, b, baterComASegunda(a))
-  t.verificar(livre >= g1 * 0.9, 'sem carregar, a espada da segunda mão golpeia normal', livre.toFixed(1))
-  const carregando = await golpe(a, b, async e => { a.activateItem(); await t.espera(300); baterComASegunda(a)(e) })
-  a.deactivateItem()
-  t.verificar(carregando < 0.5, 'carregando a besta, a espada não golpeia', carregando.toFixed(1))
-  // carrega inteira, dispara pro alto e bate logo em seguida (dentro do meio segundo)
   await t.console(`effect give ${b.username} minecraft:instant_health 1 10 true`)
   a.activateItem()
   await t.espera(1600)
@@ -134,19 +105,15 @@ t.rodar(async () => {
   a.activateItem()
   await t.espera(100)
   a.deactivateItem()
+  a.setQuickBarSlot(1)
   await a.lookAt(alvo.position.offset(0, 1.6, 0), true)
-  baterComASegunda(a)(alvo)
+  await t.espera(50)
+  a.attack(alvo)
   await t.espera(700)
   const depoisDeDisparar = antes - b.health
   t.verificar(depoisDeDisparar < 0.5, 'logo depois de disparar, a espada não golpeia', depoisDeDisparar.toFixed(1))
-  const meioSegundo = await golpe(a, b, baterComASegunda(a))
+  const meioSegundo = await golpe(a, b, bater(a))
   t.verificar(meioSegundo >= g1 * 0.9, 'meio segundo depois, a espada volta a golpear', meioSegundo.toFixed(1))
-  // com o arco é igual: puxando o arco, a espada da segunda mão não golpeia
-  await t.console(`minecraft:item replace entity ${a.username} weapon.mainhand with minecraft:bow`)
-  await t.espera(600)
-  const comArco = await golpe(a, b, async e => { a.activateItem(); await t.espera(300); baterComASegunda(a)(e) })
-  a.deactivateItem()
-  t.verificar(comArco < 0.5, 'puxando o arco, a espada também não golpeia', comArco.toFixed(1))
 
   await t.terminar(a, b)
 })

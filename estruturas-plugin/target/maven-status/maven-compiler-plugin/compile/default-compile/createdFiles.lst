@@ -14,6 +14,7 @@ com\example\estruturas\estrutura\LojaOficial.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$RotacaoOeste.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$Barraca.class
 com\example\estruturas\command\EstruturaCommand.class
+com\example\estruturas\estrutura\MinaPvp.class
 com\example\estruturas\estrutura\BarracasDoSpawn.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$Quadrante.class
 com\example\estruturas\estrutura\SpawnSemBanco.class

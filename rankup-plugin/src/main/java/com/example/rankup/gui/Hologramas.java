@@ -74,7 +74,15 @@ public class Hologramas {
                 : "§7Reset em §f" + Formato.tempo(mina.getProximoReset() - System.currentTimeMillis());
         return "§6§lMina " + mina.getId() + (minimo != null ? "\n§7Rank: " + minimo.nomeColorido() : "")
                 + "\n" + reset + "\n§7Minerado: §f" + Menus.porcentagemMinerada(mina) + "%"
-                + (mina.getResetPercentual() > 0 && mina.getResetPercentual() < 100 ? " §8(reseta com " + Math.round(mina.getResetPercentual()) + "%)" : "");
+                + (mina.getResetPercentual() > 0 && mina.getResetPercentual() < 100 ? " §8(reseta com " + Math.round(mina.getResetPercentual()) + "%)" : "")
+                + bonus(mina);
+    }
+
+    /** A linha da hora de bônus, nas minas em que ela vale. */
+    private String bonus(Mina mina) {
+        var bonus = plugin.getHoraBonus();
+        if (!bonus.minas().contains(mina.getId())) return "";
+        return bonus.ativo() ? "\n§6§l⚔ VENDA x2 AGORA! §7(" + bonus.descricao() + ")" : "\n§6⚔ Venda x2 " + bonus.descricao();
     }
 
     public void removerTodos() {

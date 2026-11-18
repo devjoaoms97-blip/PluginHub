@@ -243,7 +243,7 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
     }
 
     int limitePorTerreno() {
-        return Math.max(1, getConfig().getInt("limite-por-terreno", 4));
+        return Math.max(1, getConfig().getInt("limite-por-terreno", 8));
     }
 
     // ---------------------------------------------------------------------

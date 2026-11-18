@@ -51,6 +51,9 @@ public class RankupPlugin extends JavaPlugin {
     private Hologramas hologramas;
     private FragmentosListener fragmentos;
     private ColetaMinaListener coleta;
+    private com.example.rankup.manager.HoraBonus horaBonus;
+    /** A mina da venda automática em andamento (a hora de bônus vale só nela), ou null. */
+    private String minaDaVenda;
     private boolean avisouFalhaTab;
 
     @Override
@@ -72,6 +75,7 @@ public class RankupPlugin extends JavaPlugin {
         this.prestigioManager = new PrestigioManager(this);
         this.menus = new Menus(this);
         this.hologramas = new Hologramas(this);
+        this.horaBonus = new com.example.rankup.manager.HoraBonus(this);
 
         RankupCommand rankup = new RankupCommand(this);
         getCommand("rankup").setExecutor(rankup);
@@ -101,6 +105,7 @@ public class RankupPlugin extends JavaPlugin {
         getServer().getScheduler().runTaskTimer(this, () -> {
             minaManager.tick();
             hologramas.tick();
+            horaBonus.tick();
         }, 20L, 20L);
         if (getConfig().getBoolean("minas.resetar-ao-ligar", true)) {
             // 1 tick depois: os mundos já estão carregados
@@ -184,7 +189,26 @@ public class RankupPlugin extends JavaPlugin {
 
     /** Bônus de venda do rank do jogador: 1.25 = vende 25% mais caro. Usado pelo EconomyShopPlugin no /sell. */
     public double multiplicadorVenda(UUID jogador) {
-        return rankManager.getRankDe(jogador).multiplicadorVenda() * prestigioManager.multiplicador(jogador);
+        return rankManager.getRankDe(jogador).multiplicadorVenda() * prestigioManager.multiplicador(jogador)
+                * horaBonus.multiplicador(minaDaVenda);
+    }
+
+    public com.example.rankup.manager.HoraBonus getHoraBonus() {
+        return horaBonus;
+    }
+
+    /**
+     * Vende pela loja um drop da mina {@code mina}: durante a venda, o {@link #multiplicadorVenda} (que a loja
+     * pergunta) sabe de que mina é, pra hora de bônus valer só na mina dela.
+     */
+    public boolean venderDaMina(org.bukkit.entity.Player jogador, org.bukkit.inventory.ItemStack item, String mina) {
+        String antes = minaDaVenda;
+        minaDaVenda = mina;
+        try {
+            return lojaIntegration.vender(jogador, item);
+        } finally {
+            minaDaVenda = antes;
+        }
     }
 
     /** API pública (VipPlugin, por reflexão): o rank pra tab, com espaço no fim, ou "" se desligado. */

@@ -10,13 +10,11 @@ sem-recarga:
 
 invulnerabilidade:
   # Tempo mínimo entre dois golpes cheios de jogador no mesmo alvo, em ticks (20 = 1 s). Ajusta o
-  # dano por segundo: 10 é o padrão do jogo (e da 1.8), 5 dobra o ritmo e 0 faz todo clique contar.
+  # dano por segundo: 10 é o padrão do jogo (e da 1.8), 5 (o daqui, 4 golpes por segundo) dobra o
+  # ritmo e 0 faz todo clique contar.
   # Só vale pra golpe corpo a corpo de jogador; lava, fogo, cacto e explosão seguem o jogo.
   # Dá pra mudar com o servidor ligado: /combate intervalo <ticks>
-  ticks-entre-golpes: 10
-  # Cada mão com o próprio tempo: quem alterna as duas mãos bate duas vezes mais. Desligado,
-  # as duas mãos dividem o mesmo tempo.
-  separar-maos: true
+  ticks-entre-golpes: 5
 
 bloqueio-espada:
   # Segurar o botão direito com a espada levanta a espada e reduz o dano, como na 1.8. Só
@@ -28,20 +26,11 @@ bloqueio-espada:
   # na 1.8. O escudo usa 90 (só pela frente).
   angulo: 180
 
-duas-maos:
-  # O botão direito num inimigo bate com o que está na segunda mão (cada mão pode ter uma arma
-  # diferente). Mirando em outro lugar, a espada da mão principal bloqueia.
-  ativado: true
-  # Fim do nome dos itens que contam como arma curta.
-  armas: [_SWORD, _AXE]
-  # Com a segunda mão vazia, o botão direito no inimigo é um soco.
-  soco: true
-
 arma-de-longe:
   # Carregar a besta (ou puxar o arco) trava a espada: enquanto carrega, e por um tempo depois de
-  # disparar, nenhum golpe corpo a corpo conta (espada, machado ou soco, de qualquer mão). Bater e
-  # depois carregar continua livre. Sem isso, com a besta numa mão e a espada na outra, dava pra
-  # carregar, bater e disparar no mesmo combo.
+  # disparar, nenhum golpe corpo a corpo conta (espada, machado ou soco). Bater e depois carregar
+  # continua livre. Sem isso, com a besta numa mão e a espada na outra, dava pra carregar, bater e
+  # disparar no mesmo combo.
   ativado: true
   armas: [BOW, CROSSBOW]
   trava-depois-de-disparar-ms: 500

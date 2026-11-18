@@ -4,7 +4,6 @@ import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.type.Candle;
 import org.bukkit.block.data.type.Leaves;
 
@@ -29,7 +28,8 @@ import static com.example.estruturas.estrutura.Planta.lanterna;
  * decoração e quadros com o que vende. Sete têm o vendedor (NPC) de uma categoria do EconomyShopPlugin:
  * no norte construtor, lenhador, jardineiro e minerador; no sul fazendeiro, caçador e alquimista. Os
  * outros abrem a loja de outro plugin: spawners e fazendas (o Corretor Rural, desde 2026-11-17) no norte,
- * máquinas e PvP no sul. O último do sul fica reservado ("em breve"), sem vendedor.
+ * máquinas e PvP no sul. O último do sul fica reservado ("em breve"), sem vendedor. No fundo, no lugar da
+ * fonte, fica o Banco ({@link BancoDaMina}, desde 2026-11-17), com o Bancário.
  *
  * <p>Construir com {@code /estrutura construir loja spawn 0 65 43} (a mesma origem do spawn): x é
  * ABSOLUTO, z é relativo ao centro do spawn (z 43) e y é relativo ao chão (y 0 = piso em 64). O portão
@@ -38,10 +38,12 @@ import static com.example.estruturas.estrutura.Planta.lanterna;
 public class LojaOficial implements Estrutura {
 
     // Área limpa antes de construir (inclui o que sobrou da versão com jardim em volta).
-    private static final int X_LIMPAR_INI = 64, X_LIMPAR_FIM = 151, DZ_LIMPAR = 28;
+    private static final int X_LIMPAR_INI = 64, X_LIMPAR_FIM = 161, DZ_LIMPAR = 28;
     // Salão.
-    // o fundo era o x 136; em 2026-11-17 o salão cresceu 13 blocos pro par de balcões das fazendas
-    private static final int X_FRENTE = 64, X_FUNDO = 149, DZ_PAREDE = 20;
+    // o fundo era o x 136; em 2026-11-17 o salão cresceu 13 blocos pro par de balcões das fazendas (149)
+    // e mais 10 pro Banco, que saiu do fim da Avenida das Minas e ficou no lugar da fonte
+    private static final int X_FRENTE = 64, DZ_PAREDE = 20;
+    static final int X_FUNDO = 159;
     private static final int ALTURA = 12;                 // teto do salão
     private static final int Y_CLERESTORIO = 17;          // telhado de vidro sobre a nave
     private static final int MEIA_NAVE = 4;
@@ -97,7 +99,7 @@ public class LojaOficial implements Estrutura {
         salao();
         nave();
         for (Balcao b : BALCOES) balcao(b);
-        fonte();
+        new BancoDaMina().gerarEm(p);
         telhado();
         fachada();
     }
@@ -199,82 +201,10 @@ public class LojaOficial implements Estrutura {
             }
         }
         // lustres: corrente do clerestório e lanterna
-        for (int x = X_FRENTE + 6; x < X_FUNDO; x += 8) {
+        for (int x = X_FRENTE + 6; x < X_FUNDO - 8; x += 8) { // o último ficaria em cima do banco
             for (int y = 11; y < Y_CLERESTORIO; y++) set(x, y, 0, eixo(Material.IRON_CHAIN, Axis.Y));
             set(x, 10, 0, lanterna(Material.LANTERN, true));
         }
-    }
-
-    // ------------------------------------------------------------------ fonte do fundo
-
-    /**
-     * Fim da nave: em vez de a passadeira bater na parede, uma fonte encostada no fundo. Na parede, a
-     * moldura de caule carmesim e cerejeira dos portões em volta de uma bica que despeja num tanque
-     * rebaixado; dos dois lados, canteiros de azaleia com lanterna.
-     */
-    private void fonte() {
-        int x1 = X_FUNDO - 5, x2 = X_FUNDO - 1;   // tanque: borda em x1 e nos lados, água até a parede
-        for (int x = x1; x <= x2; x++) {
-            for (int dz = -MEIA_NAVE; dz <= MEIA_NAVE; dz++) {
-                boolean borda = x == x1 || Math.abs(dz) == MEIA_NAVE;
-                if (borda) {
-                    boolean canto = x == x1 && Math.abs(dz) == MEIA_NAVE;
-                    set(x, 0, dz, canto ? Material.CHISELED_STONE_BRICKS : PEDRA);
-                    set(x, 1, dz, canto ? Material.CHISELED_STONE_BRICKS.createBlockData() : laje(Material.SMOOTH_STONE_SLAB, false));
-                } else {
-                    set(x, -1, dz, Material.DARK_PRISMARINE);
-                    set(x, 0, dz, Material.WATER);
-                }
-            }
-        }
-        // lanternas nos cantos da frente do tanque
-        for (int s : new int[]{-1, 1}) set(x1, 2, s * MEIA_NAVE, lanterna(Material.LANTERN, false));
-        // a bica: um nicho na parede com a água caindo no tanque (parada no lugar: o bloco é posto sem física)
-        int bica = 5;
-        set(X_FUNDO + 1, bica, 0, PEDRA);                                   // tampa o nicho por fora
-        set(X_FUNDO, bica, 0, Material.WATER);
-        set(X_FUNDO, bica - 1, 0, FAIXA);
-        set(X_FUNDO, bica + 1, 0, Material.CHISELED_STONE_BRICKS);
-        set(x2, bica, 0, agua(1));
-        for (int y = 1; y < bica; y++) set(x2, y, 0, agua(8));
-        // moldura dos portões na parede do fundo, com a luz na pedra-chave
-        for (int s : new int[]{-1, 1}) {
-            for (int y = 1; y <= 9; y++) {
-                set(X_FUNDO, y, s * MEIA_NAVE, eixo(Material.CRIMSON_STEM, Axis.Y));
-                set(X_FUNDO, y, s * (MEIA_NAVE + 1), eixo(Material.CHERRY_LOG, Axis.Y));
-            }
-        }
-        for (int dz = -MEIA_NAVE - 1; dz <= MEIA_NAVE + 1; dz++) set(X_FUNDO, 10, dz, dz == 0 ? Material.SHROOMLIGHT : VERMELHO);
-        for (int dz = -MEIA_NAVE + 1; dz <= MEIA_NAVE - 1; dz++) {
-            for (int y = 1; y <= 9; y++) {
-                if (dz == 0 && y >= bica - 1 && y <= bica + 1) continue;
-                set(X_FUNDO, y, dz, y == 1 ? FAIXA : (y == 9 ? VERMELHO : Material.MOSSY_STONE_BRICKS));
-            }
-        }
-        // canteiros de azaleia dos dois lados do tanque, com lanterna na quina
-        for (int s : new int[]{-1, 1}) {
-            for (int x = X_FUNDO - 4; x <= X_FUNDO - 1; x++) {
-                for (int a = 6; a <= 10; a++) {
-                    int dz = s * a;
-                    boolean borda = x == X_FUNDO - 4 || a == 6 || a == 10;
-                    if (borda) {
-                        set(x, 1, dz, PEDRA);
-                        continue;
-                    }
-                    set(x, 1, dz, Material.MOSS_BLOCK);
-                    set(x, 2, dz, Math.floorMod(x + a, 2) == 0 ? Material.FLOWERING_AZALEA : Material.AZALEA);
-                }
-            }
-            set(X_FUNDO - 4, 2, s * 6, lanterna(Material.LANTERN, false));
-            set(X_FUNDO - 4, 2, s * 10, lanterna(Material.LANTERN, false));
-        }
-    }
-
-    /** Água corrente: 1..7 escorrendo pro lado, 8 caindo. */
-    private static BlockData agua(int nivel) {
-        Levelled agua = (Levelled) Material.WATER.createBlockData();
-        agua.setLevel(nivel);
-        return agua;
     }
 
     // ------------------------------------------------------------------ balcões
@@ -644,6 +574,7 @@ public class LojaOficial implements Estrutura {
                         + "b,Fixed:1b,Invulnerable:1b,Tags:[\"loja\"],Item:{id:\"minecraft:" + itens[i] + "\",count:1}}");
             }
         }
+        c.add(BancoDaMina.comandoNpc(mundo, oy, oz)); // o Bancário, no banco do fundo
         return c;
     }
 }

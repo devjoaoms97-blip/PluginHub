@@ -14,7 +14,7 @@ Testes com bots: `teste-fazendas.js`, `teste-fazendas-visual.js`, `teste-fazenda
   - O 1º clique mostra o contorno da área 7x7: **verde** se pode construir; **vermelho** com o motivo se não pode.
   - O 2º clique no mesmo bloco, em até 30 s, constrói.
   - **Condições da área:** ficar dentro de um terreno onde o jogador constrói (dono ou amigo com "construir"), no mundo dos terrenos (`mundos`); chão plano e firme (sem buraco, baú ou bloco especial); 5 blocos livres por cima (ar, grama, flor; `altura-livre`); não encostar em outra fazenda.
-  - **Limite:** até 4 fazendas por terreno (`limite-por-terreno`), somando todos os tipos e donos, separado do limite das máquinas.
+  - **Limite:** até 8 fazendas por terreno (`limite-por-terreno`; eram 4 até a decisão de 2026-11-17), somando todos os tipos e donos, separado do limite das máquinas.
   - Quem estiver dentro da área na hora vai para fora da cerca.
 - **Construção:** antes de construir, cada bloco da área é guardado; ao recolher, tudo volta como era. **Ninguém mexe na construção**, nem o dono nem a staff. Fica protegida contra:
   - quebrar e colocar blocos, balde, e usar item ou clicar nos blocos;
@@ -75,7 +75,7 @@ Testes com bots: `teste-fazendas.js`, `teste-fazendas-visual.js`, `teste-fazenda
 
 ## Fazendas
 
-Calibradas pelo `tools/economia/fazendas.py` (2026-11-17): cada uma lucra ~7% da mina do rank em que libera (renda menos insumo, sem bônus) e se paga em ~20 h de produção online. Com 4 fazendas no máximo num terreno, dá ~37% da mina.
+Calibradas pelo `tools/economia/fazendas.py` (2026-11-17): cada uma lucra ~7% da mina do rank em que libera (renda menos insumo, sem bônus) e se paga em ~20 h de produção online. Com 8 fazendas no máximo num terreno, dá ~74% da mina.
 
 | Fazenda | Insumo | Rank | Preço | Lucro/h |
 |---|---|---|---|---|

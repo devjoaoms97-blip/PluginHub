@@ -69,7 +69,8 @@ t.rodar(async () => {
   t.verificar(bot.entity.position.y < superficie - 10, 'o mapa abriu uma câmara para testar a região dinâmica', `${bot.entity.position}`)
 
   const dentro = await tentarSetHome(bot, t.nomeNovo('camara'))
-  t.verificar(dentro.some(m => m.includes(MSG_BLOQUEIO)), '/sethome bloqueado dentro da câmara ativa', dentro.join(' | '))
+  // desde 2026-11-07 o mundo dos tesouros inteiro barra a home: a mensagem é a do mundo, que vem antes da câmara
+  t.verificar(dentro.some(m => m.includes(MSG_BLOQUEIO) || m.includes('marcar uma home no mundo tesouros')), '/sethome bloqueado dentro da câmara ativa', dentro.join(' | '))
 
   await tp(fora, mundo, x + 10.5, superficie + 1, z + 0.5)
   const homeFora = t.nomeNovo('fora')

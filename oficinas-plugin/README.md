@@ -1,6 +1,6 @@
 # OficinasPlugin
 
-NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma barraca temática na Avenida das Minas (estrutura `oficinas` do EstruturasPlugin): quatro na praça de entrada e duas no fundo, com o Banco no meio do fundo. Clique direito no NPC:
+NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma barraca temática na Avenida das Minas (estrutura `oficinas` do EstruturasPlugin): quatro na praça de entrada e duas no fundo, dos dois lados do portão da mina PvP. O Bancário fica no Banco, no fundo da Loja Oficial. Clique direito no NPC:
 
 | NPC | Barraca | O que faz |
 |---|---|---|
@@ -10,7 +10,7 @@ NPCs de serviço nas barraquinhas da mina. Cada um fica atrás do balcão de uma
 | 📖 **Sábio** | Estantes, quartzo e lápis (oeste, x -29..-21) | Vende níveis de XP |
 | ✦ **Cambista** | Purpur, ametista e vitral magenta, no **fundo** da avenida (leste, x 10..18) | Troca **Fragmentos Arcanos** e coins por encantamentos acima do máximo no item da mão (veja abaixo) |
 | ▣ **Compactador** | Tufo, cobre e blocos de minério, no **fundo** da avenida (oeste, x -18..-10) | Transforma minérios e lingotes em blocos (9 → 1) e desfaz os blocos, de graça. Só mexe em item comum (sem nome, encantamento ou marca) |
-| **Bancário** | O **Banco** no fim da avenida, entre o Compactador e o Cambista (estrutura `banco`: quartzo, ouro, colunas, frontão e o cofre) | Vende a folha de cheque em branco, deposita os cheques do inventário, dá o extrato e vende a Mine-sena (o balcão é do ChequePlugin) |
+| **Bancário** | O **Banco** no fundo da Loja Oficial (estrutura `banco`, construída junto com a `loja`: quartzo, ouro, colunas, frontão e o cofre; até 2026-11-17 ficava no fim da avenida) | Vende a folha de cheque em branco, deposita os cheques do inventário, dá o extrato e vende a Mine-sena (o balcão é do ChequePlugin) |
 | **Guia de mina** | Fora do mapa desde 2026-10-27 (o `/mina` e o holograma de cada mina já mostram tudo). O tipo continua no plugin: `/oficina criar <id> mina:<id da mina>` | Mostra o rank exigido, os blocos com a %, o tempo até o reset, quanto já foi minerado e a chance de fragmento, e o botão de entrar pra quem tem o rank |
 | ⚔ **Armeiro** | Balcão PvP da **Loja Oficial** (não fica na mina) | Vende todas as armaduras (couro, cota de malha, ouro, ferro, diamante e netherita) e armas (espadas e machados de madeira a netherita, arco, besta e tridente), **sem encantamento** (encanta-se na Bruxa), mais escudo, flechas e poções (`armeiro.itens`, com `pocao:` pro tipo da poção). Só compra: nada disso volta pra loja |
 

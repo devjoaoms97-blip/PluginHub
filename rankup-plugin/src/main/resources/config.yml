@@ -133,6 +133,21 @@ minas:
     # Altura acima do ponto de teleporte, em blocos.
     altura: 2.5
 
+# Hora de bônus (2026-11-17): todo dia, uma hora sorteada dentro da janela (o pico do servidor) em que
+# a venda automática das minas listadas paga "multiplicador" vezes. Só a mina PvP, pra puxar gente pro
+# PvP. O sorteio sai da data (o mesmo depois de reiniciar). Avisa no chat "aviso-minutos" antes, no
+# começo e no fim; o holograma da mina mostra a hora. /mina bonus mostra a de hoje; a staff liga na hora
+# com /mina admin bonus <minutos>.
+hora-bonus:
+  ativado: true
+  minas: [pvp]
+  multiplicador: 2.0
+  janela-inicio: 17
+  janela-fim: 21
+  duracao-minutos: 60
+  aviso-minutos: 10
+  fuso: "America/Sao_Paulo"
+
 # Fragmento Arcano: cai de qualquer bloco quebrado numa mina, com essa chance, e vai pro
 # inventário. O Cambista (OficinasPlugin) troca por Eficiência e Fortuna acima do máximo, então é
 # raro de propósito: um jogador quebra uns 3.000 a 5.000 blocos por hora, e 0.00025 (1 em 4.000) dá

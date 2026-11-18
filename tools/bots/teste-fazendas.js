@@ -1,7 +1,7 @@
 // Fazendas (FazendasPlugin, fase 1): loja e trava de rank, prévia e construção com a Escritura, onde
 // não pode colocar, proteção da construção (quebrar, colocar, TNT), menu do fazendeiro (abastecer,
 // produzir, coletar, melhorar, atalho do insumo na mão, quem não é dono), recolher (o chão volta e a
-// Escritura guarda o nível) e o limite de 4 por terreno.
+// Escritura guarda o nível) e o limite de 8 por terreno.
 // Uso: node teste-fazendas.js
 const t = require('./lib')
 const { Vec3 } = require('vec3')
@@ -161,10 +161,12 @@ t.rodar(async () => {
   const tipoEsc = await pdc('escritura'), nivel = await pdc('nivel_produtividade')
   t.verificar(/data: "galinheiro"/.test(tipoEsc) && /data: 1$/.test(nivel), 'a Escritura voltou com a Produtividade no nível 1', `${tipoEsc} | ${nivel}`)
 
-  console.log('\n== Limite de 4 por terreno ==')
+  console.log('\n== Limite de 8 por terreno ==')
   await t.console(`minecraft:clear ${nome}`)
-  for (let i = 0; i < 5; i++) await t.console(`fazendas dar ${nome} horta`)
-  const centros = [[mx + 4, mz + 5], [mx + 12, mz + 5], [mx + 20, mz + 5], [mx + 28, mz + 5], [mx + 4, mz + 20]]
+  for (let i = 0; i < 9; i++) await t.console(`fazendas dar ${nome} horta`)
+  // duas fileiras de 4 (cada 7x7 com 1 bloco de folga) e a nona numa terceira fileira
+  const centros = [[mx + 4, mz + 5], [mx + 12, mz + 5], [mx + 20, mz + 5], [mx + 28, mz + 5],
+    [mx + 4, mz + 13], [mx + 12, mz + 13], [mx + 20, mz + 13], [mx + 28, mz + 13], [mx + 4, mz + 21]]
   let colocadas = 0
   for (const [x, z] of centros) {
     await tp(x + 0.5, 65, z + 1.5, 0)
@@ -173,13 +175,13 @@ t.rodar(async () => {
     msgs = await clicar(x, 64, z)
     if (msgs.some(m => m.includes('construída'))) colocadas++
   }
-  t.verificar(colocadas === 4 && msgs.some(m => m.includes('máximo de fazendas')), 'coloca 4 e a quinta é recusada', `${colocadas}; ${msgs.find(m => m.includes('máximo')) || msgs[0]}`)
+  t.verificar(colocadas === 8 && msgs.some(m => m.includes('máximo de fazendas')), 'coloca 8 e a nona é recusada', `${colocadas}; ${msgs.find(m => m.includes('máximo')) || msgs[0]}`)
   const lista = await t.console('fazendas lista')
-  t.verificar((lista.match(/horta/g) || []).length >= 4, 'o /fazendas lista mostra as 4 Hortas')
+  t.verificar((lista.match(/horta/g) || []).length >= 8, 'o /fazendas lista mostra as 8 Hortas')
 
-  console.log('\n== Limpeza (staff remove as 4) ==')
+  console.log('\n== Limpeza (staff remove as 8) ==')
   await t.console(`op ${nome}`)
-  for (const [x, z] of centros.slice(0, 4)) {
+  for (const [x, z] of centros.slice(0, 8)) {
     await tp(x + 0.5, 65, z - 6.5, 0)
     await bot.lookAt(new Vec3(x + 0.5, 64.5, z + 0.5))
     await t.espera(300)

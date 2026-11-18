@@ -5,8 +5,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Combate no estilo da 1.8, só no que foi escolhido: sem recarga de ataque, tempo entre golpes
- * configurável, bloqueio com a espada (sem escudo na outra mão) e golpe com a arma da segunda
- * mão. O resto (ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado)
+ * configurável e bloqueio com a espada (sem escudo na outra mão). O resto (ataque em área,
+ * repulsão, regeneração, maçãs, ender pearl, escudo e machado)
  * continua como no jogo atual. E o "em combate" ({@link EmCombate}): sem teleporte por 5 s depois
  * de bater ou apanhar de jogador, e quem desloga nesse tempo morre.
  */
@@ -15,7 +15,6 @@ public class CombatePlugin extends JavaPlugin {
     private SemRecarga semRecarga;
     private BloqueioEspada bloqueioEspada;
     private Invulnerabilidade invulnerabilidade;
-    private DuasMaos duasMaos;
 
     @Override
     public void onEnable() {
@@ -37,10 +36,6 @@ public class CombatePlugin extends JavaPlugin {
                 for (Player p : getServer().getOnlinePlayers()) bloqueioEspada.atualizar(p);
             }, 2L, 2L);
         }
-        if (getConfig().getBoolean("duas-maos.ativado", true)) {
-            duasMaos = new DuasMaos(this);
-            getServer().getPluginManager().registerEvents(duasMaos, this);
-        }
         if (getConfig().getBoolean("arma-de-longe.ativado", true)) {
             getServer().getPluginManager().registerEvents(new ArmaDeLonge(this), this);
         }
@@ -51,11 +46,6 @@ public class CombatePlugin extends JavaPlugin {
                 && !new ContagemTeleporte(this).registrar()) {
             getLogger().warning("Não achei o TeleportWarmupEvent do Essentials: o teleporte fica sem a contagem a cada segundo.");
         }
-    }
-
-    /** O golpe em andamento é o da segunda mão (DuasMaos). */
-    public boolean golpeandoComASegundaMao(Player jogador) {
-        return duasMaos != null && duasMaos.golpeandoComASegunda(jogador);
     }
 
     public Invulnerabilidade getInvulnerabilidade() {
