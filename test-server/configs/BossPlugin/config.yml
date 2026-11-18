@@ -147,9 +147,13 @@ dificuldade:
 # dano-por-projetil × velocidade (18 → 29 → 4,5). Veneno não mata (para em meio coração); Wither
 # mata e passa por cima da armadura (nível II: 1 de vida/s; III: 2/s).
 # ---------------------------------------------------------------------------------
+# Modelo 3D de cada boss (FreeMinecraftModels): fmm-modelo em cada um. false = mob comum.
+modelos-3d: true
+
 bosses:
 
   zombie:
+    fmm-modelo: boss_tita
     mob: ZOMBIE
     nome: "&4&l☠ Titã Sombrio ☠"
     fases:
@@ -178,6 +182,7 @@ bosses:
         texto: "&4O Titã Sombrio ruge de fúria!"
 
   skeleton:
+    fmm-modelo: boss_carrasco
     mob: SKELETON
     nome: "&7&l☠ Carrasco Ósseo ☠"
     fases:
@@ -206,6 +211,7 @@ bosses:
         texto: "&7O Carrasco Ósseo prepara suas flechas..."
 
   spider:
+    fmm-modelo: boss_rainha
     mob: SPIDER
     nome: "&5&l☠ Rainha Aracnídea ☠"
     fases:
@@ -234,6 +240,7 @@ bosses:
         texto: "&5A Rainha Aracnídea se aproxima em silêncio..."
 
   zombified_piglin:
+    fmm-modelo: boss_acougueiro
     mob: ZOMBIFIED_PIGLIN
     nome: "&6&l☠ Açougueiro Infernal ☠"
     fases:
@@ -262,6 +269,7 @@ bosses:
         texto: "&6O Açougueiro Infernal avança sedento por sangue!"
 
   creeper:
+    fmm-modelo: boss_estilhaco
     mob: CREEPER
     nome: "&2&l☠ Estilhaço Verde ☠"
     fases:
@@ -288,6 +296,7 @@ bosses:
         texto: "&2Um silvo perigoso ecoa pela arena..."
 
   witch:
+    fmm-modelo: boss_feiticeira
     mob: WITCH
     nome: "&d&l☠ Feiticeira Maldita ☠"
     # 2026-11-07: 20.000 de vida (os outros têm os 25.000 do global)

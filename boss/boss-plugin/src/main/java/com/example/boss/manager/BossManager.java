@@ -45,6 +45,9 @@ public class BossManager {
     private final BossPlugin plugin;
 
     private LivingEntity bossAtivo;
+    /** O modelo 3D do FreeMinecraftModels em cima do boss (ModeloFmm), ou null. */
+    private Object modeloBoss;
+    private final com.example.boss.util.ModeloFmm modelos;
     private BossProfile perfilAtivo;
     private BossBar bossBar;
     private double vidaMaxima;
@@ -71,6 +74,7 @@ public class BossManager {
 
     public BossManager(BossPlugin plugin) {
         this.plugin = plugin;
+        this.modelos = new com.example.boss.util.ModeloFmm(plugin);
         carregarPerfis();
     }
 
@@ -259,6 +263,13 @@ public class BossManager {
             bossAtivo.setCustomName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("elite.prefixo-nome", "&6&l✦ ELITE ✦ "))
                     + perfil.getNome());
             bossAtivo.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 0, false, false));
+        }
+
+        // o modelo 3D (FreeMinecraftModels), no tamanho do boss: o mob fica invisível por baixo
+        String modelo = plugin.getConfig().getString("bosses." + perfil.getId() + ".fmm-modelo", "");
+        if (!modelo.isBlank() && plugin.getConfig().getBoolean("modelos-3d", true)) {
+            double escala = perfil.getEscalaOverride() != null ? perfil.getEscalaOverride() : plugin.getConfig().getDouble("escala", 3.0);
+            modeloBoss = modelos.vestir(bossAtivo, modelo, escala);
         }
 
         AttributeInstance vidaMaximaAttr = bossAtivo.getAttribute(Attribute.MAX_HEALTH);
@@ -686,7 +697,14 @@ public class BossManager {
         return maisProximo;
     }
 
+    /** O boss ativo está com o modelo 3D? */
+    public boolean temModelo() {
+        return modeloBoss != null && modelos.temModelo(bossAtivo);
+    }
+
     public void finalizar(boolean morreu) {
+        modelos.tirar(modeloBoss, morreu);
+        modeloBoss = null;
         soltarChunks();
         if (taskMonitoramento != null) {
             taskMonitoramento.cancel();

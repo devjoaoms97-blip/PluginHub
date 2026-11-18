@@ -66,7 +66,7 @@ Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes 
    - **Barracas:** 16, alugadas por 24 h com renovação, no preço de ~10% da renda da pesca.
    - **Pesca na barraca:** o próprio jogador fica pescando; a vara puxa sozinha e ele pode ficar AFK. Rende ~50% da pesca ativa (a parada normal rende 25%), sobe o Pescador e pega os raros.
    - **Estoque:** o que ele pesca vai pro estoque da barraca, que tem limite; cheio, para de guardar.
-3. **Bosses em 3D** 🔴: modelo próprio pelo FreeMinecraftModels pros 6 bosses (menos o Wither), feito por código (caixas, como as montarias), com animação de andar e de ataque, no tamanho de hoje.
+3. **Bosses em 3D** ✅ v1 (2026-11-17, `tools/pacote/bosses.py`, `teste-boss-modelos.js`; falta ver no jogo o tamanho e as animações): modelo próprio pelo FreeMinecraftModels pros 6 bosses (menos o Wither), feito por código (caixas, como as montarias), com animação de andar e de ataque, no tamanho de hoje.
 4. **Voto com recompensa** 🟡: votar em sites de lista de servidores dá recompensa (a definir).
 
 ## Mapa do rankup (decisões de 2026-10-23)

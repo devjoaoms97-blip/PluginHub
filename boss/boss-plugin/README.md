@@ -2,6 +2,17 @@
 
 Boss mundial agendado, com **múltiplos perfis de boss** (um por mob), fases dinâmicas, arsenal de ataques aleatórios, loot configurável em jogo e tag de campeão via LuckPerms.
 
+
+## Modelos 3D (2026-11-17)
+
+Os 6 bosses (menos o Wither) aparecem com um modelo 3D próprio, animado, do **FreeMinecraftModels**:
+- `fmm-modelo` em cada boss do config (`boss_tita`, `boss_carrasco`, `boss_rainha`, `boss_acougueiro`, `boss_estilhaco`, `boss_feiticeira`);
+- `modelos-3d: false` desliga todos.
+
+O mob continua sendo o boss (vida, dano, ataques e fases), só que invisível, e o modelo vai por cima. O FMM não usa o atributo de escala da entidade, então o modelo é aumentado com a escala do boss (`setScaleModifier`). As animações (andar, atacar, apanhar, morrer, nascer) o FMM toca sozinho, e a de morte toca quando o boss morre.
+
+Os modelos saem de `tools/pacote/bosses.py`, que gera os `.bbmodel` em `tools/pacote/bosses/` (pra `plugins/FreeMinecraftModels/models/` do servidor). Sem o FMM, ou sem o modelo, o boss fica com a cara de mob comum. `/boss modelo` diz se o boss ativo está com o modelo. Teste: `node tools/bots/teste-boss-modelos.js`.
+
 ## O que ele faz
 
 1. **7 perfis de boss**: 6 normais (Zumbi, Esqueleto, Aranha, Zumbi Porco, Creeper, Bruxa) que entram na aleatoriedade da agenda/comando, + 1 especial (Wither) que só sobe forçado (`/boss start wither`)

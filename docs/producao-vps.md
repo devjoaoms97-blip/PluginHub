@@ -93,6 +93,16 @@ Vale também pro `D:\BrasaMC`.
 - [ ] Ligado: `node tools/bots/montar-mapa.js construir loja porto dicas` (a porta da loja, o porto com as 16 barraquinhas cadastradas e a fala nova do Caçador de Tesouros). **No `D:\BrasaMC` não rode o `marcar` (é bot)**: `/setwarp pesca` em 150.5 65 10.5, olhando pro norte, na mão.
 - [ ] O tutorial `22-skills-de-profissao` do Discord, republicado.
 
+## Bosses em 3D (2026-11-17)
+
+Vale também pro `D:\BrasaMC`.
+
+- [ ] Os 6 `.bbmodel` de `tools/pacote/bosses/` em `plugins/FreeMinecraftModels/models/`.
+- [ ] O jar novo do `BossPlugin`.
+- [ ] No `plugins/BossPlugin/config.yml`, `fmm-modelo:` em cada boss (`zombie: boss_tita`, `skeleton: boss_carrasco`, `spider: boss_rainha`, `zombified_piglin: boss_acougueiro`, `creeper: boss_estilhaco`, `witch: boss_feiticeira`). O config que já existe no servidor não pega o padrão novo do jar.
+- [ ] Reiniciar. O FMM gera o pacote com os modelos, e o PacotePlugin junta: o sha1 do pacote muda, então troque também o arquivo da release `pacote` do GitHub pelo novo (com o sha1 do log do D:\BrasaMC).
+- [ ] Conferir no jogo, com `/boss start zombie` (e os outros): o tamanho do modelo no boss, as animações e o nome em cima.
+
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).

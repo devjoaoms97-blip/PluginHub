@@ -56,6 +56,12 @@ public class BossCommand implements CommandExecutor, TabCompleter {
                 }
             }
 
+            case "modelo" -> {
+                // pra staff e pros testes: o boss ativo está com o modelo 3D?
+                if (!plugin.getBossManager().estaAtivo()) sender.sendMessage("§cNenhum boss ativo no momento.");
+                else sender.sendMessage(plugin.getBossManager().temModelo() ? "§aO boss está com o modelo 3D." : "§eO boss está sem modelo 3D.");
+            }
+
             case "list" -> {
                 sender.sendMessage("§e§l--- Perfis de Boss ---");
                 plugin.getBossManager().getPerfis().forEach((id, perfil) -> sender.sendMessage(
