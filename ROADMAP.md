@@ -69,6 +69,13 @@ Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes 
 3. **Bosses em 3D** ✅ v1 (2026-11-17, `tools/pacote/bosses.py`, `teste-boss-modelos.js`; falta ver no jogo o tamanho e as animações): modelo próprio pelo FreeMinecraftModels pros 6 bosses (menos o Wither), feito por código (caixas, como as montarias), com animação de andar e de ataque, no tamanho de hoje.
 4. **Voto com recompensa** 🟡: votar em sites de lista de servidores dá recompensa (a definir).
 
+## Pedidos de 2026-11-18 (escopo combinado, nesta ordem)
+
+1. **Caixas** ✅ v1 (2026-11-18, `caixas-plugin`, `teste-caixas.js`): sistema genérico de caixas com chave, na Praça das Caixas do spawn (quadrante nordeste, no lugar da cerejeira), com 8 pedestais (4 usados). Clique esquerdo mostra os prêmios e as chances; direito com a chave abre a roleta; agachado abre todas. Prêmios: coins (% do próximo rank), itens raros, spawner e máquina. Chaves: **Voto** (cada voto), **Mina** (~1 a cada 3 h minerando), **Boss** (top 3 de dano) e **Tesouro** (baús das câmaras).
+2. **Voto com recompensa** 🔴: NuVotifier + plugin próprio. Cada voto dá uma Chave de Voto; `/votar` com os links; sequência diária (bônus em coins e chave extra no 7º dia); festa a cada 50 votos (chave pra todos online); ranking do mês (3, 2 e 1 Chave do Boss); lembrete no login.
+3. **Skills de profissão, segunda leva** 🔴: Caçador, Escavador, Alquimista e Ferreiro (detalhes em SkillsPlugin, abaixo).
+4. **Texturas** 🟡: os 12 achados raros das fazendas (as das chaves já entraram com as caixas).
+
 ## Mapa do rankup (decisões de 2026-10-23)
 
 O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividido em mundos, cada um com as próprias regras (PvP, proteção, mobs). Para isso, entram o Multiverse-Core (vários mundos) e o WorldEdit ou o FAWE (colar schematics).

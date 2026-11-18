@@ -104,6 +104,10 @@ campeao:
 recompensas:
   # Coins pros primeiros do ranking de dano: 1º, 2º, 3º... Lista vazia desativa.
   ranking-dano: [15000, 10000, 5000]
+  # Chaves de caixa (CaixasPlugin, 2026-11-18) pros primeiros do ranking de dano: quantas cada posição
+  # ganha, da caixa "chave-caixa". Lista vazia desativa.
+  ranking-chaves: [1, 1, 1]
+  chave-caixa: boss
   # Coins pro campeão (quem deu o último golpe), além do item. 0 desativa.
   campeao-dinheiro: 20000
   # XP de skill por participar: cada jogador ganha até esse XP, proporcional ao % da vida do boss

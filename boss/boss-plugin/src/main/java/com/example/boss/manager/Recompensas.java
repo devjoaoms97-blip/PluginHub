@@ -67,6 +67,7 @@ public class Recompensas {
         }
 
         darXpDeParticipacao();
+        darChaves(ranking);
 
         if (campeao != null && plugin.getConfig().getBoolean("recompensas.codigo-vip.ativado", false) && bossDaVip()) {
             int dias = Math.max(1, plugin.getConfig().getInt("recompensas.codigo-vip.dias", 7));
@@ -75,6 +76,28 @@ public class Recompensas {
             if (codigo != null) {
                 campeao.sendMessage("§6★ §eVocê ganhou um código de VIP de evento (" + dias + " dias): §f" + codigo
                         + " §7(use §f/vip resgatar " + codigo + "§7; se já tiver VIP, guarde pra quando ele acabar)");
+            }
+        }
+    }
+
+    /**
+     * Chaves de caixa (CaixasPlugin) pros primeiros do ranking de dano: {@code recompensas.ranking-chaves} é
+     * quantas cada posição ganha ([1, 1, 1] = uma pro 1º, 2º e 3º), da caixa {@code recompensas.chave-caixa}.
+     * Quem estiver offline recebe quando entrar. Sem o CaixasPlugin, nada.
+     */
+    private void darChaves(List<Map.Entry<UUID, Double>> ranking) {
+        List<Integer> qtds = plugin.getConfig().getIntegerList("recompensas.ranking-chaves");
+        String caixa = plugin.getConfig().getString("recompensas.chave-caixa", "boss");
+        org.bukkit.plugin.Plugin caixas = Bukkit.getPluginManager().getPlugin("CaixasPlugin");
+        if (qtds.isEmpty() || caixas == null || !caixas.isEnabled()) return;
+        for (int i = 0; i < Math.min(qtds.size(), ranking.size()); i++) {
+            if (qtds.get(i) <= 0) continue;
+            try {
+                caixas.getClass().getMethod("darChave", UUID.class, String.class, int.class, String.class)
+                        .invoke(caixas, ranking.get(i).getKey(), caixa, qtds.get(i), (i + 1) + "º no ranking de dano do boss");
+            } catch (ReflectiveOperationException e) {
+                plugin.getLogger().warning("CaixasPlugin#darChave falhou: " + e.getMessage());
+                return;
             }
         }
     }

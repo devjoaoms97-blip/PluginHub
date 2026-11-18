@@ -103,6 +103,17 @@ Vale também pro `D:\BrasaMC`.
 - [ ] Reiniciar. O FMM gera o pacote com os modelos, e o PacotePlugin junta: o sha1 do pacote muda, então troque também o arquivo da release `pacote` do GitHub pelo novo (com o sha1 do log do D:\BrasaMC).
 - [ ] Conferir no jogo, com `/boss start zombie` (e os outros): o tamanho do modelo no boss, as animações e o nome em cima.
 
+## Caixas (CaixasPlugin, 2026-11-18)
+
+Vale também pro `D:\BrasaMC`.
+
+- [ ] Os jars: `CaixasPlugin` (novo), `EstruturasPlugin` (a Praça das Caixas no spawn, estrutura `spring-caixas`), `BossPlugin` (a chave pro ranking de dano), `TesourosPlugin` (`chave:<caixa>` no loot), `PacotePlugin` (as texturas das chaves) e `AjudaPlugin`.
+- [ ] No `plugins/BossPlugin/config.yml`, em `recompensas`: `ranking-chaves: [1, 1, 1]` e `chave-caixa: boss`.
+- [ ] No `plugins/TesourosPlugin/loot.yml`, a chave em `raro`, `arcano` e `lendario` (`chave: {item: "chave:tesouro", qtd: [1, 1], peso: 6}`; 10 no arcano; `qtd: [1, 2]` e peso 14 no lendário).
+- [ ] No `plugins/AjudaPlugin/config.yml`: `caixas`, `caixa` e `chaves` em `comandos-permitidos.lista` e as duas linhas do `/caixas` na página `outros`; depois, `comandos reload`.
+- [ ] Ligado: `node tools/bots/montar-mapa.js construir caixas dicas` (a praça no lugar da cerejeira do nordeste, só aquele pedaço, as 4 caixas cadastradas e a fala nova da Banqueira).
+- [ ] O pacote de texturas mudou (as chaves): troque o arquivo da release `pacote` do GitHub pelo novo.
+
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).

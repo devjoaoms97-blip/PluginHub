@@ -54,6 +54,9 @@ comandos-permitidos:
     - pesca
     - porto
     - barraquinha
+    - caixas
+    - caixa
+    - chaves
     # ajuda e chat
     - tutorial
     - comandos
@@ -316,6 +319,8 @@ comandos:
       titulo: "Outros"
       resumo: "VIP, créditos, Discord e ajustes"
       comandos:
+        - "/caixas | As caixas da Praça das Caixas (spawn) e como ganhar cada chave"
+        - "/caixas resgatar | Pega as chaves guardadas (inventário cheio ou offline)"
         - "/vip | Benefícios do VIP"
         - "/creditos | Seus créditos e a loja de cosméticos"
         - "/montaria | Montaria (VIP)"

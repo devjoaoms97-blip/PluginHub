@@ -1,0 +1,137 @@
+# Configuração do CaixasPlugin (2026-11-18)
+#
+# Caixas com chave na Praça das Caixas do spawn. Cada caixa tem a sua chave (um item que se ganha votando,
+# minerando, no boss, nos tesouros...) e a sua tabela de prêmios. Clique esquerdo na caixa mostra os prêmios
+# e as chances; clique direito com a chave na mão abre (roleta); agachado + clique direito abre todas as
+# chaves da mão de uma vez, sem a roleta.
+#
+# Caixa nova: um bloco novo em "caixas" (a chave, os prêmios e o "como-conseguir") e o lugar dela com
+# /caixas local <id> (a estrutura "spring-caixas" já põe os pedestais e cadastra as quatro de agora). Quem dá
+# a chave: /caixas dar <jogador> <caixa> [qtd] (console também, pra outros plugins) ou a API
+# darChave(UUID, caixa, qtd, motivo). Jogador offline ou com o inventário cheio fica com a chave guardada
+# (/caixas resgatar, e ela chega sozinha quando ele entra).
+
+# Raridades dos prêmios: o nome e a cor na roleta e no menu. "anunciar": quem tira um prêmio dessas
+# raridades é anunciado pro servidor (e pro Discord, categoria "caixas" do DiscordPlugin).
+raridades:
+  comum: {nome: "Comum", cor: "&7", vidro: LIGHT_GRAY_STAINED_GLASS_PANE}
+  raro: {nome: "Raro", cor: "&9", vidro: BLUE_STAINED_GLASS_PANE}
+  epico: {nome: "Épico", cor: "&5", vidro: PURPLE_STAINED_GLASS_PANE}
+  lendario: {nome: "Lendário", cor: "&6", vidro: ORANGE_STAINED_GLASS_PANE}
+anunciar: [lendario]
+
+# A roleta: quantos giros e quanto tempo (em ticks) entre eles no começo e no fim (ela vai freando).
+roleta:
+  giros: 32
+  intervalo-inicial: 1
+  intervalo-final: 7
+
+# Chance de a chave da caixa "mina" cair a cada bloco quebrado à mão numa mina do RankupPlugin. Com uns
+# 4.000 blocos por hora, 1 em 12.000 dá ~1 chave a cada 3 h de mina. 0 desliga.
+mina:
+  caixa: mina
+  chance-por-bloco: 0.0000833
+
+# Os prêmios. Cada um tem "raridade", "peso" (a chance é o peso dividido pela soma dos pesos da caixa) e um
+# destes:
+#   coins: X          X% do preço do PRÓXIMO rank do jogador (RankupPlugin), como a /diaria; "minimo" é o
+#                     piso (e o valor sem o RankupPlugin). O dinheiro aparece no extrato do Bancário.
+#   item: "..."       fragmento, combustivel, mapa:<comum|raro|arcano|lendario>, spawner:<tipo>,
+#                     maquina:<tipo>, livro:<encantamento>:<nível>, chave:<caixa> ou um MATERIAL; qtd: [mín, máx]
+#   comando: "..."    um comando do console (%jogador% = o nome), com "nome" e "icone" pra roleta e o menu
+caixas:
+  voto:
+    nome: "&bCaixa de Voto"
+    chave:
+      nome: "&b&lChave de Voto"
+      modelo: "servidor:chave_voto"
+    como-conseguir: "&fVotando no servidor: &e/votar &f(uma chave por voto)."
+    premios:
+      coins-p: {raridade: comum, peso: 34, coins: 0.5, minimo: 300}
+      combustivel: {raridade: comum, peso: 14, item: combustivel, qtd: [2, 4]}
+      eficiencia: {raridade: comum, peso: 12, item: "livro:efficiency:3"}
+      coins-m: {raridade: raro, peso: 12, coins: 1.5, minimo: 800}
+      fragmento: {raridade: raro, peso: 8, item: fragmento}
+      mapa-comum: {raridade: raro, peso: 6, item: "mapa:comum"}
+      bau-comum: {raridade: raro, peso: 4, comando: "peixes dar %jogador% bau:comum 1", nome: "&9Baú do Mar Comum", icone: CHEST}
+      coins-g: {raridade: epico, peso: 3, coins: 4, minimo: 2000}
+      fragmentos: {raridade: epico, peso: 2, item: fragmento, qtd: [3, 3]}
+      mapa-raro: {raridade: epico, peso: 2, item: "mapa:raro"}
+      fortuna: {raridade: epico, peso: 1.5, item: "livro:fortune:3"}
+      coins-l: {raridade: lendario, peso: 0.6, coins: 10, minimo: 5000}
+      spawner: {raridade: lendario, peso: 0.5, item: "spawner:zumbi"}
+      tear: {raridade: lendario, peso: 0.4, item: "maquina:tear"}
+
+  mina:
+    nome: "&7Caixa da Mina"
+    chave:
+      nome: "&7&lChave da Mina"
+      modelo: "servidor:chave_mina"
+    como-conseguir: "&fMinerando: rara, cai sozinha da picareta (~1 a cada 3 h de mina)."
+    premios:
+      coins-p: {raridade: comum, peso: 30, coins: 0.75, minimo: 400}
+      eficiencia: {raridade: comum, peso: 14, item: "livro:efficiency:4"}
+      unbreaking: {raridade: comum, peso: 12, item: "livro:unbreaking:3"}
+      coins-m: {raridade: raro, peso: 14, coins: 2, minimo: 1000}
+      fragmentos: {raridade: raro, peso: 10, item: fragmento, qtd: [2, 3]}
+      mapa-comum: {raridade: raro, peso: 6, item: "mapa:comum"}
+      fortuna: {raridade: epico, peso: 4, item: "livro:fortune:3"}
+      coins-g: {raridade: epico, peso: 3, coins: 5, minimo: 2500}
+      fragmentos-g: {raridade: epico, peso: 3, item: fragmento, qtd: [5, 6]}
+      mapa-raro: {raridade: epico, peso: 2, item: "mapa:raro"}
+      coins-l: {raridade: lendario, peso: 0.8, coins: 12, minimo: 6000}
+      forja: {raridade: lendario, peso: 0.6, item: "maquina:forja"}
+      mapa-arcano: {raridade: lendario, peso: 0.6, item: "mapa:arcano"}
+
+  boss:
+    nome: "&4Caixa do Boss"
+    chave:
+      nome: "&4&lChave do Boss"
+      modelo: "servidor:chave_boss"
+    como-conseguir: "&fNo boss: os 3 primeiros do ranking de dano ganham uma (&e/warp boss&f)."
+    premios:
+      coins-m: {raridade: comum, peso: 30, coins: 1.5, minimo: 1000}
+      fragmentos: {raridade: comum, peso: 16, item: fragmento, qtd: [2, 3]}
+      afiada: {raridade: comum, peso: 10, item: "livro:sharpness:5"}
+      coins-g: {raridade: raro, peso: 14, coins: 4, minimo: 2500}
+      protecao: {raridade: raro, peso: 8, item: "livro:protection:4"}
+      mapa-raro: {raridade: raro, peso: 6, item: "mapa:raro"}
+      bau-raro: {raridade: raro, peso: 5, comando: "peixes dar %jogador% bau:raro 1", nome: "&5Baú do Mar Raro", icone: CHEST}
+      spawner-esq: {raridade: epico, peso: 3, item: "spawner:esqueleto"}
+      coins-e: {raridade: epico, peso: 3, coins: 8, minimo: 5000}
+      lapidadora: {raridade: epico, peso: 2, item: "maquina:lapidadora"}
+      coins-l: {raridade: lendario, peso: 1, coins: 20, minimo: 10000}
+      spawner-blaze: {raridade: lendario, peso: 0.6, item: "spawner:blaze"}
+      mapa-lendario: {raridade: lendario, peso: 0.4, item: "mapa:lendario"}
+
+  tesouro:
+    nome: "&6Caixa do Tesouro"
+    chave:
+      nome: "&6&lChave do Tesouro"
+      modelo: "servidor:chave_tesouro"
+    como-conseguir: "&fNos baús das câmaras do tesouro (mapas raros ou melhores)."
+    premios:
+      coins-m: {raridade: comum, peso: 28, coins: 2, minimo: 1500}
+      fragmentos: {raridade: comum, peso: 16, item: fragmento, qtd: [3, 4]}
+      mapa-comum: {raridade: comum, peso: 12, item: "mapa:comum", qtd: [2, 2]}
+      coins-g: {raridade: raro, peso: 14, coins: 5, minimo: 3000}
+      mapa-raro: {raridade: raro, peso: 8, item: "mapa:raro"}
+      bau-raro: {raridade: raro, peso: 6, comando: "peixes dar %jogador% bau:raro 1", nome: "&5Baú do Mar Raro", icone: CHEST}
+      spawner-slime: {raridade: epico, peso: 4, item: "spawner:slime"}
+      coins-e: {raridade: epico, peso: 3, coins: 10, minimo: 6000}
+      mapa-arcano: {raridade: epico, peso: 2.5, item: "mapa:arcano"}
+      reator: {raridade: lendario, peso: 0.8, item: "maquina:reator"}
+      coins-l: {raridade: lendario, peso: 0.8, coins: 25, minimo: 12000}
+      bau-lendario: {raridade: lendario, peso: 0.6, comando: "peixes dar %jogador% bau:lendario 1", nome: "&6Baú do Mar Lendário", icone: CHEST}
+      mapa-lendario: {raridade: lendario, peso: 0.4, item: "mapa:lendario"}
+
+# Mensagens (& = cores).
+mensagens:
+  prefixo: "&6✦ &eCaixas &8» "
+  sem-chave: "&cPra abrir a %caixa%&c, segure uma %chave%&c na mão. %como%"
+  ganhou: "&aVocê ganhou: %premio% &8(%raridade%&8)"
+  anuncio: "&6✦ &f%jogador% &etirou %premio% &ena %caixa%&e! &8(%raridade%&8)"
+  chave-recebida: "&a+%qtd% %chave% &8(%motivo%)"
+  chave-guardada: "&e%qtd% %chave% &eficou guardada (inventário cheio). Pegue com &f/caixas resgatar&e."
+  nada-pra-resgatar: "&7Você não tem chaves guardadas."
+  ocupado: "&cEspere a roleta terminar."

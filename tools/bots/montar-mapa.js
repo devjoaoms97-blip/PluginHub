@@ -10,6 +10,8 @@
 //     minapvp    só a mina PvP (saguão, campo e o poço de 41x41), depois do portão norte da avenida
 //     porto      o porto da /warp pesca (lago, píer e 16 barraquinhas do PescaPlugin), solto no vazio em x 480..560
 //                (só pela warp); apaga o porto antigo, que ficava ao norte da Loja Oficial
+//     caixas     a Praça das Caixas (CaixasPlugin) no quadrante nordeste do spawn, no lugar da cerejeira, e as
+//                4 caixas cadastradas (voto, mina, boss e tesouro); não mexe no resto do spawn
 //     loja       só a Loja Oficial (portão leste do spawn): prédio, vendedores, quadros e o Banco no fundo
 //     mobs       a /warp mobs (portão oeste do spawn): abre o portão "MOBS" num spawn que já existe e
 //                constrói o salão de estátuas, que cadastra os spawners no SpawnersPlugin
@@ -346,6 +348,20 @@ async function construirPorto() {
 }
 
 /**
+ * A Praça das Caixas (EstruturasPlugin "spring-caixas", 2026-11-18): o círculo do quadrante nordeste do spawn
+ * (centro 22, -22 do spawn; raio 9), no lugar da cerejeira, com os 8 pedestais e as 4 caixas, que a estrutura
+ * cadastra no CaixasPlugin. Só esse pedaço: as barracas e o resto do spawn ficam.
+ */
+async function construirCaixas() {
+  console.log('\n== Praça das Caixas (EstruturasPlugin: spring-caixas) ==')
+  const x = SPAWN.x + 22, z = SPAWN.z - 22
+  await t.console(`execute in minecraft:spawn run forceload add ${x - 10} ${z - 10} ${x + 10} ${z + 10}`)
+  await t.espera(1500)
+  await estrutura('spring-caixas', 'spawn', [SPAWN.x, SPAWN.z])
+  await t.console(`execute in minecraft:spawn run forceload remove ${x - 10} ${z - 10} ${x + 10} ${z + 10}`)
+}
+
+/**
  * A /warp mobs: o portão "MOBS" no oeste do spawn ("spring-oeste", só aquele pedaço, pra não mexer no
  * resto de um spawn que já existe), o salão de estátuas ("mobs") colado nele, apagando o que sobrou do
  * painel "Como começar". O salão cadastra a área e os spawners das estátuas no SpawnersPlugin.
@@ -548,6 +564,7 @@ const DICAS = [
   ] },
   { id: 'banqueira', skin: '2dcabf4751f4ad60c6e92d0fc9724fe252474de90c5d4ed8f62b15633455f42d', nome: '&2Banqueira Rosa', pos: [25, -9], falas: [
     '&fPra pagar alguém: &e/pix pagar <jogador> <valor>&f. Rápido, seguro e sem fila.',
+    '&fViu a praça aqui atrás? É a &6Praça das Caixas&f! Cada caixa abre com a chave dela: votando (&e/votar&f), minerando, no boss ou nos tesouros. Tudo em &e/caixas&f.',
     '&fConta que se repete? &e/pix agendar <jogador> <valor> <dias>&f paga agora e de novo a cada tantos dias.',
     '&fQuer dar dinheiro de presente? Compre uma folha de cheque com o &6Bancário&f, no Banco do fundo da Loja Oficial (&e/warp banco&f), e use &e/cheque <valor>&f. Quem ganhar deposita com ele.',
     '&fNa &6Loja Oficial&f o preço de venda é fixo: pode vender tudo de uma vez, que cada item vale o mesmo. Fica de olho nos eventos de &aALTA&f, que pagam mais!',
@@ -752,7 +769,7 @@ if (fase === 'cadastrar') {
 } else if (fase === 'construir' || fase === 'marcar') {
   const partes = {
     'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
-    boss: construirBoss, oficinas: construirOficinas, minapvp: construirMinaPvp, porto: construirPorto, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, corrida: construirCorrida, labirinto: construirLabirinto, saguao: construirSaguaoEventos, marcar: marcarComBot,
+    boss: construirBoss, oficinas: construirOficinas, minapvp: construirMinaPvp, porto: construirPorto, caixas: construirCaixas, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, corrida: construirCorrida, labirinto: construirLabirinto, saguao: construirSaguaoEventos, marcar: marcarComBot,
   }
   // "marcar" sozinho era o atalho antigo pra só a parte do bot
   const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)
@@ -767,6 +784,6 @@ if (fase === 'cadastrar') {
     await t.terminar()
   })
 } else {
-  console.log('Uso: node montar-mapa.js construir [minas|minapvp|porto|oficinas|loja|banco|mobs|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
+  console.log('Uso: node montar-mapa.js construir [minas|minapvp|porto|caixas|oficinas|loja|banco|mobs|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
     + '\n     node montar-mapa.js cadastrar [--minas]   (servidor desligado)')
 }

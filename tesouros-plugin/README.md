@@ -32,7 +32,7 @@ As raridades são **comum**, **raro**, **arcano** e **lendário**. O item é um 
 
 ## Loot (`loot.yml`)
 
-Cada raridade tem coins (`[mín, máx]`; iguais = valor fixo: 5 mil, 20 mil, 50 mil e 100 mil), entregues num cheque, e `rolagens` itens sorteados pelo peso, sem repetir (cada item sai no máximo uma vez por baú). Um item pode ser um material, `fragmento` (Fragmento Arcano do RankupPlugin), `livro:<encantamento>:<nível>`, `spawner:<tipo>` (SpawnersPlugin), `maquina:<tipo>` (MaquinasPlugin, nova), `combustivel` (Células de Combustível), ou qualquer item posto pela staff com `/tesouro loot add`. Quantidade maior que uma pilha vem em várias pilhas.
+Cada raridade tem coins (`[mín, máx]`; iguais = valor fixo: 5 mil, 20 mil, 50 mil e 100 mil), entregues num cheque, e `rolagens` itens sorteados pelo peso, sem repetir (cada item sai no máximo uma vez por baú). Um item pode ser um material, `fragmento` (Fragmento Arcano do RankupPlugin), `livro:<encantamento>:<nível>`, `spawner:<tipo>` (SpawnersPlugin), `maquina:<tipo>` (MaquinasPlugin, nova), `combustivel` (Células de Combustível), `chave:<caixa>` (chave do CaixasPlugin; a Chave do Tesouro está no raro, no arcano e no lendário), ou qualquer item posto pela staff com `/tesouro loot add`. Quantidade maior que uma pilha vem em várias pilhas.
 
 Os spawners e as máquinas saem do comum (spawner de Zumbi e Esqueleto) ao lendário (Golem de Ferro, Lapidadora e Reator Arcano), mais raros quanto mais caros. A máquina que sai acima do rank do jogador pode ser guardada e vendida, mas só é colocada e usada por quem tem o rank dela (ou já fez prestígio): o MaquinasPlugin bloqueia. O spawner não tem trava. **Os itens ainda vão ser calibrados.**
 

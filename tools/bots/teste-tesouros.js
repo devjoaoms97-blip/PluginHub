@@ -34,7 +34,7 @@ t.rodar(async () => {
   }
 
   console.log('\n== /warp tesouros ==')
-  let msgs = await t.capturar(dono, () => dono.chat('/warp tesouros'), 3000)
+  let msgs = await t.capturar(dono, () => dono.chat('/warp tesouros'), 5500) // 3 s de espera do Essentials
   t.verificar(msgs.some(m => m.includes('mundo dos tesouros')), 'foi pro mundo dos tesouros')
   t.verificar(Math.round(dono.entity.position.y) === SUP + 1, 'de pé no chão do superplano', `${dono.entity.position}`)
   t.verificar(dono.blockAt(dono.entity.position.offset(0, -1, 0))?.name === 'lodestone', 'chegou no centro do templo', dono.blockAt(dono.entity.position.offset(0, -1, 0))?.name)

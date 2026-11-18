@@ -18,6 +18,9 @@ O custo abaixo é para **subir do rank anterior até aquele rank**, não o total
 `/ranks` mostra seu próximo preço e bônus; `/mina` lista as minas liberadas, composição, porcentagem minerada e tempo de reset. Clique numa mina para entrar. O padrão é resetar por tempo (15 minutos) ou quando 80% for minerado; cada mina pode ter ajuste próprio, então confira o menu e o holograma.
 
 **Mina PvP** · `/warp minapvp`
+**🎁 Praça das Caixas**
+No spawn, entre o portão das Minas e o da Loja, ficam as caixas: **Voto**, **Mina**, **Boss** e **Tesouro**. Cada uma abre com a chave dela. Clique esquerdo na caixa mostra os prêmios e as chances; clique direito com a chave na mão gira a roleta (agachado, abre todas de uma vez). As chaves vêm de votar (`/votar`), minerar (rara), ficar entre os 3 que mais bateram no boss e dos baús dos tesouros. Tudo em `/caixas`.
+
 No fundo da Avenida das Minas, depois do portão **PVP**, fica a Mina PvP: **qualquer rank entra**, e a mistura dela (pedra, carvão, ferro, ouro, redstone, lápis-lazúli e ametista) rende como a mina da Redstone. A venda é automática, como nas outras. O saguão da entrada é seguro. A escada dele sobe até o arco, e de lá você pula 4 blocos pra dentro do campo, onde o PvP fica ligado e quem morre deixa tudo no chão. Do campo não se volta a pé: só com `/spawn` ou `/warp`, e só fora de combate.
 Todo dia, numa hora sorteada entre as **17h e as 21h**, a venda da Mina PvP vale **em dobro**. O chat avisa 10 minutos antes, e `/mina bonus` mostra o horário de hoje.
 

@@ -10,6 +10,7 @@
 #   item: "maquina:<tipo>"               máquina nova do MaquinasPlugin (tear, forja, reator...); só
 #                                        quem tem o rank dela coloca e usa, mas dá pra vender
 #   item: combustivel                    Células de Combustível do MaquinasPlugin
+#   item: "chave:<caixa>"                chave de caixa do CaixasPlugin (voto, mina, boss, tesouro)
 #   itemstack: ...                       um item qualquer, posto pelo /tesouro loot add (com nome, encantamentos...)
 # qtd: [mínimo, máximo] (padrão [1, 1]).
 
@@ -30,6 +31,7 @@ raro:
   coins: [20000, 20000]
   rolagens: 3
   itens:
+    chave: {item: "chave:tesouro", qtd: [1, 1], peso: 6}
     diamante: {item: DIAMOND, qtd: [4, 8], peso: 20}
     esmeralda: {item: EMERALD_BLOCK, qtd: [1, 3], peso: 15}
     maca: {item: GOLDEN_APPLE, qtd: [2, 4], peso: 10}
@@ -48,6 +50,7 @@ arcano:
   coins: [50000, 50000]
   rolagens: 4
   itens:
+    chave: {item: "chave:tesouro", qtd: [1, 1], peso: 10}
     diamante: {item: DIAMOND_BLOCK, qtd: [1, 3], peso: 15}
     sucata: {item: NETHERITE_SCRAP, qtd: [1, 2], peso: 10}
     maca: {item: ENCHANTED_GOLDEN_APPLE, qtd: [1, 1], peso: 8}
@@ -66,6 +69,7 @@ lendario:
   coins: [100000, 100000]
   rolagens: 5
   itens:
+    chave: {item: "chave:tesouro", qtd: [1, 2], peso: 14}
     netherite: {item: NETHERITE_INGOT, qtd: [1, 2], peso: 12}
     diamante: {item: DIAMOND_BLOCK, qtd: [3, 6], peso: 16}
     maca: {item: ENCHANTED_GOLDEN_APPLE, qtd: [1, 2], peso: 10}

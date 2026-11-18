@@ -10,6 +10,7 @@ import com.example.estruturas.estrutura.OficinasDaMina;
 import com.example.estruturas.estrutura.AvenidaDasMinas;
 import com.example.estruturas.estrutura.MinaPvp;
 import com.example.estruturas.estrutura.Porto;
+import com.example.estruturas.estrutura.SpawnCaixas;
 import com.example.estruturas.estrutura.BancoDaMina;
 import com.example.estruturas.estrutura.SpawnSemBanco;
 import com.example.estruturas.estrutura.BarracasDoSpawn;
@@ -57,6 +58,7 @@ public class Construtor {
         registrar(new AvenidaDasMinas());
         registrar(new MinaPvp());
         registrar(new Porto());
+        registrar(new SpawnCaixas());
         registrar(new OficinasDaMina());
         registrar(new LojaOficial());
         registrar(new PortaoOesteDoSpawn());

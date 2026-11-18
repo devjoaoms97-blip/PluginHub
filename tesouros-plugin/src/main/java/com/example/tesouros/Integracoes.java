@@ -53,6 +53,18 @@ public class Integracoes {
         }
     }
 
+    /** Chaves de caixa do CaixasPlugin (2026-11-18), ou null sem ele. */
+    public ItemStack chave(String caixa, int quantidade) {
+        Plugin caixas = habilitado("CaixasPlugin");
+        if (caixas == null) return null;
+        try {
+            return (ItemStack) caixas.getClass().getMethod("chave", String.class, int.class).invoke(caixas, caixa, quantidade);
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            avisar("CaixasPlugin#chave", e);
+            return null;
+        }
+    }
+
     /** Spawner do SpawnersPlugin daquele tipo (galinha, zumbi, golem...), ou null. */
     public ItemStack spawner(String tipo, int quantidade) {
         return itemDeTipo("SpawnersPlugin", "item", tipo, quantidade);

@@ -329,12 +329,62 @@ def frente_reator():
     return img
 
 
+# ---------------------------------------------------------------- chaves das caixas (CaixasPlugin, 2026-11-18)
+
+AZUL = [(24, 70, 140, 255), (46, 110, 200, 255), (100, 170, 240, 255), (200, 230, 255, 255)]
+VERMELHO = [(110, 14, 14, 255), (170, 30, 26, 255), (220, 70, 54, 255), (255, 170, 150, 255)]
+
+
+def _chave(metal, gema):
+    """Chave antiga na diagonal: argola com a gema da caixa no meio, haste e dentes, no metal dela."""
+    img = nova()
+    # argola (canto de cima, à esquerda)
+    argola = [(3, 1), (4, 1), (5, 1), (2, 2), (6, 2), (1, 3), (7, 3), (1, 4), (7, 4), (1, 5), (7, 5), (2, 6), (6, 6),
+              (3, 7), (4, 7), (5, 7)]
+    px(img, argola, metal[1])
+    px(img, [(3, 1), (2, 2), (1, 3), (1, 4)], metal[2])
+    px(img, [(4, 1), (2, 3)], metal[3])
+    px(img, [(2, 3), (3, 2), (3, 3), (4, 2), (4, 3), (5, 2), (5, 3), (6, 3), (2, 4), (6, 4), (2, 5), (3, 6), (4, 6), (5, 6),
+             (6, 5), (3, 5), (4, 5), (5, 5), (3, 4), (5, 4)], metal[0])
+    # a gema
+    px(img, [(4, 3), (3, 4), (4, 4), (5, 4), (4, 5)], gema[1])
+    px(img, [(4, 3), (3, 4)], gema[2])
+    px(img, [(4, 4)], gema[3])
+    # haste na diagonal
+    for i in range(7):
+        px(img, [(7 + i, 7 + i)], metal[1])
+        px(img, [(7 + i, 6 + i)], metal[2])
+    # dentes
+    px(img, [(10, 12), (11, 13), (9, 13), (12, 10), (13, 11)], metal[1])
+    px(img, [(9, 12), (12, 9)], metal[0])
+    px(img, [(14, 14), (14, 13)], metal[0])
+    return contornar(img)
+
+
+def chave_voto():
+    return _chave(OURO, AZUL)
+
+
+def chave_mina():
+    return _chave(ACO, PEDRA)
+
+
+def chave_boss():
+    return _chave(VINHO, VERMELHO)
+
+
+def chave_tesouro():
+    return _chave(OURO, OURO)
+
+
 PRODUTOS = {
     "tecido_fino": tecido_fino, "barra_de_aco": barra_de_aco, "essencia_destilada": essencia_destilada,
     "gema_lapidada": gema_lapidada, "cristal_de_energia": cristal_de_energia, "celula_combustivel": celula_combustivel,
     "fragmento_arcano": fragmento_arcano,
     # FazendasPlugin: a Escritura, a Ração e o Adubo
     "escritura": escritura, "racao": racao, "adubo": adubo,
+    # CaixasPlugin: as chaves das caixas
+    "chave_voto": chave_voto, "chave_mina": chave_mina, "chave_boss": chave_boss, "chave_tesouro": chave_tesouro,
 }
 FRENTES = {
     "tear": frente_tear, "forja": frente_forja, "destilaria": frente_destilaria,

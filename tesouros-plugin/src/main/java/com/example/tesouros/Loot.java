@@ -98,6 +98,7 @@ public class Loot {
         String minusculo = nome.toLowerCase(Locale.ROOT);
         if (minusculo.startsWith("spawner:")) return plugin.getIntegracoes().spawner(minusculo.substring(8), quantidade);
         if (minusculo.startsWith("maquina:")) return plugin.getIntegracoes().maquina(minusculo.substring(8));
+        if (minusculo.startsWith("chave:")) return plugin.getIntegracoes().chave(minusculo.substring(6), quantidade);
         if (nome.toLowerCase(Locale.ROOT).startsWith("livro:")) {
             String[] partes = nome.split(":");
             Enchantment ench = partes.length >= 2 ? Registry.ENCHANTMENT.get(NamespacedKey.minecraft(partes[1].toLowerCase(Locale.ROOT))) : null;

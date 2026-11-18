@@ -1,0 +1,19 @@
+name: CaixasPlugin
+version: '1.0.0'
+main: com.example.caixas.CaixasPlugin
+api-version: '26.2'
+author: Você
+description: Caixas com chave (voto, mina, boss, tesouro...) na Praça das Caixas do spawn, com roleta de prêmios.
+depend: [Vault]
+softdepend: [RankupPlugin, PixPlugin, TesourosPlugin, SpawnersPlugin, MaquinasPlugin, SkillsPlugin, DiscordPlugin]
+
+commands:
+  caixas:
+    description: As caixas do servidor e as suas chaves.
+    usage: "Uso: /caixas [resgatar]"
+    aliases: [caixa, chaves]
+
+permissions:
+  caixas.admin:
+    description: Dá chaves, posiciona as caixas e recarrega (/caixas dar, local, reload).
+    default: op

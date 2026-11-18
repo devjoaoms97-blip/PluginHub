@@ -55,6 +55,8 @@ Os modelos saem de `tools/pacote/bosses.py`, que gera os `.bbmodel` em `tools/pa
 ```yaml
 recompensas:
   ranking-dano: [15000, 10000, 5000]   # coins pro 1º, 2º e 3º (lista vazia desativa)
+  ranking-chaves: [1, 1, 1]            # Chaves do Boss (CaixasPlugin) pro 1º, 2º e 3º; offline recebe ao entrar
+  chave-caixa: boss
   campeao-dinheiro: 20000               # coins pro campeão, além do item (0 desativa)
   xp-skill-maximo: 3000                 # XP de skill de quem tirou 100% da vida do boss (0 desativa)
   xp-skill-minimo: 100                  # mínimo pra quem bateu pelo menos um pouco

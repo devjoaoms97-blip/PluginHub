@@ -37,7 +37,8 @@ import static com.example.estruturas.estrutura.Planta.laje;
  * (|z| = 63): o spawn não escreve nada além disso, pra não apagar as vizinhas.
  *
  * O conteúdo de cada quadrante (barracas, árvore, bancos, postes) é descrito uma vez no quadrante
- * nordeste (x > 0, z < 0) e girado 90° pros outros três.
+ * nordeste (x > 0, z < 0) e girado 90° pros outros três. No nordeste, no lugar da árvore, fica a Praça das
+ * Caixas ({@link PracaDasCaixas}, 2026-11-18).
  */
 public class ArenaSpringColiseu implements Estrutura {
 
@@ -144,7 +145,9 @@ public class ArenaSpringColiseu implements Estrutura {
      */
     @Override
     public List<String> getComandos(String mundo, int ox, int oy, int oz) {
-        return comandosDasBarracas(mundo, ox, oy, oz);
+        List<String> c = new ArrayList<>(comandosDasBarracas(mundo, ox, oy, oz));
+        c.addAll(PracaDasCaixas.comandos(mundo, ox, oy, oz));
+        return c;
     }
 
     /** Usado também pela "spring-barracas". Barraca que já existe não é recadastrada (o aluguel dela fica). */
@@ -767,6 +770,14 @@ public class ArenaSpringColiseu implements Estrutura {
     /** Árvore com bancos em volta e postes de luz; descritos no NE e girados {@code k} vezes. */
     private void gerarQuadrante(Planta p, int k) {
         Quadrante q = new Quadrante(p, k);
+        int[][] postes = {{3, -10}, {3, -16}, {3, -22}, {3, -28}, {3, -34}, {16, -3}, {22, -3}, {28, -3},
+                {34, -3}, {30, -14}, {14, -30}, {7, -7}};
+        if (k == 0) {
+            // no nordeste, entre o portão das Minas e o da Loja, a Praça das Caixas (2026-11-18) no lugar da árvore
+            PracaDasCaixas.gerar(p);
+            for (int[] pos : postes) q.poste(pos[0], pos[1]);
+            return;
+        }
         q.cerejeira(22, -22, 100 + k);
         // Caminho em anel em volta da árvore, com os bancos nele.
         for (int x = -7; x <= 7; x++) {
@@ -780,8 +791,6 @@ public class ArenaSpringColiseu implements Estrutura {
         q.banco(28, -22, BlockFace.EAST);
         q.banco(16, -22, BlockFace.WEST);
 
-        int[][] postes = {{3, -10}, {3, -16}, {3, -22}, {3, -28}, {3, -34}, {16, -3}, {22, -3}, {28, -3},
-                {34, -3}, {30, -14}, {14, -30}, {7, -7}};
         for (int[] pos : postes) q.poste(pos[0], pos[1]);
     }
 

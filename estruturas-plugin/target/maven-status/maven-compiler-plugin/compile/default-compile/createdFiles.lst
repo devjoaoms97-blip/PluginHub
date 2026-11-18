@@ -1,6 +1,8 @@
+com\example\estruturas\estrutura\PracaDasCaixas.class
 com\example\estruturas\estrutura\ArenaColiseu$Setor.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$RotacaoLeste.class
 com\example\estruturas\estrutura\ArenaAxePvP$Lado.class
+com\example\estruturas\estrutura\SpawnCaixas.class
 com\example\estruturas\estrutura\ArenaSpringColiseu$EspelhoZ.class
 com\example\estruturas\estrutura\ArenaSpringColiseu.class
 com\example\estruturas\estrutura\ArenaToxica.class
@@ -23,6 +25,7 @@ com\example\estruturas\estrutura\Estrutura.class
 com\example\estruturas\estrutura\Porto$Barraquinha.class
 com\example\estruturas\estrutura\ArenaColiseu.class
 com\example\estruturas\estrutura\ArenaMobs$Lugar.class
+com\example\estruturas\estrutura\PracaDasCaixas$Pedestal.class
 com\example\estruturas\EstruturasPlugin.class
 com\example\estruturas\estrutura\AvenidaDasMinas.class
 com\example\estruturas\estrutura\ArenaAxePvP$TipoPainel.class
