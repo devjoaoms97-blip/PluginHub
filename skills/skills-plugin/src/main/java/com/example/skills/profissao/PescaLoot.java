@@ -48,7 +48,8 @@ import java.util.concurrent.ThreadLocalRandom;
  *   <li>Itens de progressão e equipamento: fragmento, combustível, spawner, máquina, livro, Adaga.</li>
  * </ul>
  * <b>Pesca parada</b>: quem pesca do mesmo bloco e sem mexer a câmera há mais de {@code afk.minutos}
- * tem a chance vezes {@code afk.fator}. Mexer a câmera ou andar zera a conta.
+ * tem a chance vezes {@code afk.fator}. Mexer a câmera ou andar zera a conta. Na barraquinha alugada do
+ * porto (PescaPlugin) não tem desconto: lá a vara puxa sozinha, com a espera dobrada.
  */
 public class PescaLoot implements Listener {
 
@@ -140,8 +141,23 @@ public class PescaLoot implements Listener {
     /** A chance de a pesca vir especial, com a Vara do Pescador e o desconto da pesca parada. */
     private double chance(Player jogador) {
         double chance = chanceAtiva(jogador);
-        if (parado(jogador)) chance *= cfg().getDouble("afk.fator", 0.25);
+        // na barraquinha alugada do porto (PescaPlugin) a pesca parada vale inteira: lá a espera já é maior
+        if (parado(jogador) && !naBarraquinha(jogador)) chance *= cfg().getDouble("afk.fator", 0.25);
         return chance;
+    }
+
+    private java.lang.reflect.Method pescandoNaBarraca;
+
+    /** O jogador está pescando na barraquinha dele, no porto da /warp pesca ({@code PescaPlugin#pescandoNaBarraca})? */
+    private boolean naBarraquinha(Player jogador) {
+        org.bukkit.plugin.Plugin pesca = plugin.getServer().getPluginManager().getPlugin("PescaPlugin");
+        if (pesca == null || !pesca.isEnabled()) return false;
+        try {
+            if (pescandoNaBarraca == null) pescandoNaBarraca = pesca.getClass().getMethod("pescandoNaBarraca", Player.class);
+            return Boolean.TRUE.equals(pescandoNaBarraca.invoke(pesca, jogador));
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return false;
+        }
     }
 
     /** A chance de quem pesca ativo (sem o desconto da pesca parada), com a Vara do Pescador na mão. */

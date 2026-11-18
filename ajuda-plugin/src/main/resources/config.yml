@@ -50,6 +50,10 @@ comandos-permitidos:
   ativado: true
   mensagem: "&cComando desconhecido. Veja os comandos do servidor em &f/comandos&c."
   lista:
+    # porto da /warp pesca (PescaPlugin)
+    - pesca
+    - porto
+    - barraquinha
     # ajuda e chat
     - tutorial
     - comandos
@@ -225,7 +229,7 @@ comandos:
       titulo: "Teleporte"
       resumo: "Warps, tpa e casas"
       texto:
-        - "Warps: loja, banco, minas, minapvp, mobs, terrenos, eventos, boss, recursos, nether, end e tesouros."
+        - "Warps: loja, banco, minas, minapvp, pesca, mobs, terrenos, eventos, boss, recursos, nether, end e tesouros."
       comandos:
         - "/spawn | Volta pro spawn"
         - "/warp | Lista as warps"
@@ -292,6 +296,8 @@ comandos:
         - "/barraca vender <quantidade> <preço> | Anuncia o item da mão na sua barraca"
         - "/loja | Lojas abertas; /loja <jogador> leva até a dele"
         - "/loja anunciar [mensagem] | Anuncia a sua barraca no chat"
+        - "/warp pesca | Porto: alugue uma barraquinha e pesque parado (a vara puxa sozinha)"
+        - "/pesca | As barraquinhas do porto: livres, a sua, renovar e retirar"
     mundos:
       titulo: "Mundos"
       resumo: "Recursos, Nether, End e tesouros"

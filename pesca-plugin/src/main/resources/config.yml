@@ -1,0 +1,29 @@
+# Configuração do PescaPlugin (porto da /warp pesca, 2026-11-17)
+#
+# 16 barraquinhas na beira do lago do porto (estrutura "porto" do EstruturasPlugin, que cadastra as
+# barraquinhas sozinha). O jogador aluga uma, fica pescando nela (pode ficar parado, AFK) e a vara puxa
+# e lança de novo sozinha. O que ele pesca vai pro estoque da barraquinha (o barril), não pro inventário.
+# Conta pro Pescador, pras missões e pro loot especial das Skills como uma pesca normal.
+
+# Aluguel de cada barraquinha, por "horas-aluguel". Uma por jogador. Calibrado pra ~10% do que a
+# barraquinha rende num dia de uso (a pesca de quem fica nela rende ~50% da pesca ativa: R$ 2,5 mil/h
+# no Pescador 1 a ~R$ 29 mil/h no 50).
+preco: 10000
+horas-aluguel: 24
+# Até quantos períodos pagos de uma vez (renovar soma mais um, até esse total).
+periodos-maximos: 3
+
+# A espera até o peixe morder, vezes este fator, na barraquinha (2 = o dobro: rende ~metade da pesca
+# ativa). A pesca parada fora da barraquinha continua com o desconto das Skills (25% no loot especial).
+fator-espera: 2.0
+# Ticks entre puxar e lançar de novo (20 = 1 s).
+relancar-ticks: 20
+
+# Pilhas que cabem no estoque de cada barraquinha. Cheio, a vara para de puxar sozinha até o dono esvaziar.
+estoque-pilhas: 45
+
+# Quando o aluguel acaba, o estoque vai pra retirada do dono (/pesca retirar), por esse tempo.
+retirada-dias: 7
+
+integracao:
+  pix: true

@@ -27,6 +27,7 @@ Colheita dupla     3%    6%    9%   12%   15%
 ```
 
 **🎣 Pescador**: 8 XP por peixe ou item pescado (pescar parado vale).
+**Porto da `/warp pesca`:** alugue uma das 16 barraquinhas (`/pesca`, R$ 10.000 por 24 h). Nela, com a vara na mão, ela **puxa e lança sozinha** e o que vier vai pro barril da barraquinha (o estoque). Dá pra ficar parado: rende uns 50% da pesca ativa, sem o desconto da pesca parada no loot especial, e conta pro Pescador e pras missões.
 Bônus: a cada pesca, uma chance de **Mapa do Tesouro** e outra de **Fragmento Arcano** (troque no Cambista). Com vara de Isca III dá umas 400 pescas por hora: no 50, ~1 mapa e ~1 fragmento por hora.
 ```
 Nível       10       20       30       40       50

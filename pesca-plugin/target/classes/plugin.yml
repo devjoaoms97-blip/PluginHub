@@ -1,0 +1,19 @@
+name: PescaPlugin
+version: '1.0.0'
+main: com.example.pesca.PescaPlugin
+api-version: '26.2'
+author: Você
+description: Porto da /warp pesca, com barraquinhas alugadas em que a vara puxa sozinha e o pescado vai pro estoque.
+depend: [Vault]
+softdepend: [PixPlugin, SkillsPlugin]
+
+commands:
+  pesca:
+    description: Barraquinhas de pesca do porto.
+    usage: "Uso: /pesca [alugar <n> | renovar | autorenovar | sair | retirar]"
+    aliases: [porto, barraquinha]
+
+permissions:
+  pesca.admin:
+    description: Cadastra e libera barraquinhas (/pesca admin).
+    default: op

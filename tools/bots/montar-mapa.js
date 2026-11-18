@@ -8,6 +8,7 @@
 //     minas      os 12 poços (cheios de pedra) e a Avenida das Minas (EstruturasPlugin) em volta, com as oficinas
 //                e a mina PvP depois do portão do fundo
 //     minapvp    só a mina PvP (saguão, campo e o poço de 41x41), depois do portão norte da avenida
+//     porto      o porto da /warp pesca (lago, píer e 16 barraquinhas do PescaPlugin), ao norte da Loja Oficial
 //     loja       só a Loja Oficial (portão leste do spawn): prédio, vendedores, quadros e o Banco no fundo
 //     mobs       a /warp mobs (portão oeste do spawn): abre o portão "MOBS" num spawn que já existe e
 //                constrói o salão de estátuas, que cadastra os spawners no SpawnersPlugin
@@ -321,6 +322,18 @@ async function construirLoja() {
 }
 
 /**
+ * O porto da /warp pesca (EstruturasPlugin "porto", 2026-11-17), ao norte da Loja Oficial: lago, píer e as
+ * 16 barraquinhas, que a estrutura cadastra no PescaPlugin. Entra-se pela porta do canto do fundo da loja.
+ */
+async function construirPorto() {
+  console.log('\n== Porto da warp pesca (EstruturasPlugin: porto) ==')
+  await t.console('execute in minecraft:spawn run forceload add 80 -40 160 14')
+  await t.espera(2000)
+  await estrutura('porto', 'spawn', [0, 0])
+  await t.console('execute in minecraft:spawn run forceload remove 80 -40 160 14')
+}
+
+/**
  * A /warp mobs: o portão "MOBS" no oeste do spawn ("spring-oeste", só aquele pedaço, pra não mexer no
  * resto de um spawn que já existe), o salão de estátuas ("mobs") colado nele, apagando o que sobrou do
  * painel "Como começar". O salão cadastra a área e os spawners das estátuas no SpawnersPlugin.
@@ -500,6 +513,7 @@ const DICAS = [
   { id: 'cacador', skin: '98168ad709b573e59ab2807a0eff61ebfd7403da73806f9f88962ba4d9c091bb', nome: '&6Caçador de Tesouros', pos: [6, 38], falas: [
     '&fO boss sempre deixa cair um &6Mapa do Tesouro&f quando morre (o &8Flagelo&f, dois). Quanto mais raro, mais perigoso e mais rico: &fcomum&f, &9raro&f, &darcano&f e &6lendário&f.',
     '&fNas minas, a picareta às vezes acha um mapa também. Esse vai direto pra sua mochila.',
+    '&fGosta de pescar? No &e/warp pesca&f você aluga uma barraquinha no porto: a vara puxa sozinha e o peixe vai pro barril. Dá até pra pescar mapa assim!',
     '&fCom o mapa, é &e/warp tesouros&f. No templo da chegada, os hologramas dizem pra que lado fica cada direção. Segure o mapa na mão pra ver quanto falta até o X e cave o chão bem em cima dele.',
     '&fEmbaixo do X tem uma câmara cheia de guardiões, que vêm em ondas. O baú só destrava quando o último cair.',
     '&fChame o clã! Quem é do seu clã entra pelo buraco, e os amigos você chama com &e/tesouro convidar&f. Mas o tesouro é só de quem tinha o mapa.',
@@ -601,6 +615,7 @@ async function marcarComBot() {
     ['minas', 'spawn', 0.5, -24.5, 180],
     ['banco', 'spawn', 150.5, SPAWN.z + 0.5, -90], // no fundo da Loja Oficial, de frente pra escadaria do Banco
     ['minapvp', 'spawn', 0.5, -188.5, 180], // no saguão (seguro) da mina PvP, olhando pro arco do campo
+    ['pesca', 'spawn', 150.5, 10.5, 180], // no porto, logo depois da entrada (vinda da Loja Oficial), olhando pro lago
     ['terrenos', 'terrenos', 34.5, 34.5, 0],
     ['eventos', 'arenas', 0.5, 306.5, 180], // no saguão dos eventos, olhando pros portais
     ['loja', 'spawn', 67.5, SPAWN.z + 0.5, -90], // logo depois da porta da Loja Oficial, olhando pro salão
@@ -725,7 +740,7 @@ if (fase === 'cadastrar') {
 } else if (fase === 'construir' || fase === 'marcar') {
   const partes = {
     'limpar-antigo': limparAntigo, minas: construirMinas, spawn: construirSpawn, barracas: construirBarracas,
-    boss: construirBoss, oficinas: construirOficinas, minapvp: construirMinaPvp, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, corrida: construirCorrida, labirinto: construirLabirinto, saguao: construirSaguaoEventos, marcar: marcarComBot,
+    boss: construirBoss, oficinas: construirOficinas, minapvp: construirMinaPvp, porto: construirPorto, loja: construirLoja, banco: construirBanco, mobs: construirMobs, dicas: construirDicas, tutorial: construirTutorial, arenas: construirArenas, vietna: construirVietna, spleef: construirSpleef, correoucai: construirCorreOuCai, sobrevivencia: construirSobrevivencia, corrida: construirCorrida, labirinto: construirLabirinto, saguao: construirSaguaoEventos, marcar: marcarComBot,
   }
   // "marcar" sozinho era o atalho antigo pra só a parte do bot
   const pedidas = fase === 'marcar' ? ['marcar'] : process.argv.slice(3)
@@ -740,6 +755,6 @@ if (fase === 'cadastrar') {
     await t.terminar()
   })
 } else {
-  console.log('Uso: node montar-mapa.js construir [minas|minapvp|oficinas|loja|banco|mobs|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
+  console.log('Uso: node montar-mapa.js construir [minas|minapvp|porto|oficinas|loja|banco|mobs|spawn|barracas|boss|dicas|tutorial|arenas|marcar|limpar-antigo...]   (servidor ligado)'
     + '\n     node montar-mapa.js cadastrar [--minas]   (servidor desligado)')
 }

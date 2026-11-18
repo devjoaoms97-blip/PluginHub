@@ -98,7 +98,7 @@ t.rodar(async () => {
   const nomes = arvore ? arvore.nodes[arvore.rootIndex].children.map(i => arvore.nodes[i].extraNodeData?.name).filter(Boolean) : []
   const devem = ['tutorial', 'g', 'tpa', 'tpaccept', 'msg', 'tag', 'rankup', 'warp']
   const naoDevem = nomes.filter(n => n.includes(':') || ['pl', 'plugins', 'version', 'we', 'lp', 'etpa', 'tpyes', 'me'].includes(n))
-  t.verificar(nomes.length > 0 && nomes.length < 80 && devem.every(n => nomes.includes(n)) && naoDevem.length === 0,
+  t.verificar(nomes.length > 0 && nomes.length < 100 && devem.every(n => nomes.includes(n)) && naoDevem.length === 0,
     'o Tab do jogador só tem os comandos da lista (sem prefixo de plugin, WorldEdit, LuckPerms...)', `${nomes.length}: ${naoDevem.join(' ') || 'ok'}`)
   for (const cmd of ['/pl', '/essentials:tpa ' + outro.username, '/etpa ' + outro.username]) {
     msgs = await t.capturar(bot, () => bot.chat(cmd), 800)

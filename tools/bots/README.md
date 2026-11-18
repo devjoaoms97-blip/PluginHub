@@ -45,6 +45,7 @@ node teste-quiz.js          # Quiz: perguntas no chat, resposta errada, espera e
 node teste-farm-arenas.js   # abate nas arenas não paga Bounty nem conta no placar do clã
 node teste-combate.js       # combate 1.8: sem recarga, tempo entre golpes, bloqueio com a espada, segunda mão sem golpe
 node teste-mina-pvp.js      # mina PvP: saguão seguro, PvP no campo, qualquer rank vende, hora de bônus em dobro
+node teste-pesca-porto.js   # warp pesca: aluguel da barraquinha, a vara puxa sozinha e o peixe vai pro barril
 node teste-profissoes.js    # Minerador (3x3), Lenhador, Agricultor e Pescador (põe chances de 100% e volta o config)
 node teste-recursos.js      # mundo de recursos: /warp recursos, borda e reset (uns 2 minutos)
 node teste-nether-end.js    # /warp nether e /warp end, /mapa (com os outros jogadores), /luz, centro do End (proteção, PvP, gaiolas, dragão, ovo) e reset do Nether (uns 3 minutos)
@@ -98,6 +99,7 @@ Os testes de mina usam a mina `pedreira`. Para usar outra, passe o nome dela (`n
 | `teste-coleta.js` | Venda automática na mina pra quem não é VIP: o que se quebra vira dinheiro na hora, com o "+R$" na barra, sem nada no inventário nem no chão |
 | `teste-combate.js` | Velocidade de ataque, dois golpes seguidos com o dano inteiro, tempo entre golpes (no padrão de 5 ticks, o 2º golpe em 0,1 s não conta e em 0,35 s conta; com 10, em 0,35 s não conta; com 0 conta), bloqueio com a espada tirando metade do dano, sem bloqueio da espada com escudo na outra mão, o botão direito no inimigo com machado ou mão vazia na segunda mão sem golpear, e a espada sem golpear logo depois de disparar a besta, voltando meio segundo depois |
 | `teste-mina-pvp.js` | Mina PvP: a `/warp minapvp` chega no saguão, o `/mina bonus` diz o horário, o portão do fundo da avenida está aberto e o poço cheio, no saguão o golpe não tira vida e no campo tira, quem morre no campo deixa os itens no chão, o Camponês vende o minério na hora, a hora de bônus (forçada pela staff) paga o dobro e aparece no holograma, e desligada volta ao normal |
+| `teste-pesca-porto.js` | Porto da warp pesca: a `/warp pesca` chega no porto, o barril existe, o `/pesca` lista as livres, alugar cobra R$ 10.000 e é uma por jogador, parado na barraquinha com a vara a pesca puxa e lança sozinha (2 pescas no estoque, nada no inventário), outro jogador não abre o barril, o dono abre o estoque e o "Pegar tudo" leva pro inventário, vencido o aluguel a barraquinha fica livre e outro aluga |
 | `teste-rankup-extras.js` | Menu do `/ranks` (subir clicando), menu do `/mina` (ir clicando), holograma em cima da mina, rank na tab, prestígio só no último rank, volta pro primeiro com ✦ na tab e no chat |
 | `teste-pix-agendado.js` | Primeiro pagamento na hora com a taxa, quem recebe vê o agendamento, o próximo sai sozinho com quem recebe offline, sem saldo avisa e tenta de novo, cancelar tira da lista |
 | `teste-discord.js` | Teste por categoria com o nome certo, embed e sem @everyone, abertura do Gladiador sem cores e leilão de terreno na categoria leilões |

@@ -84,6 +84,15 @@ Vale também pro `D:\BrasaMC`.
 - [ ] Ligado: `node tools/bots/montar-mapa.js construir minas loja dicas` (a avenida com o portão, as oficinas, a mina PvP, a loja com o Banco e as falas novas do Guarda do Portão e da Banqueira) e o `marcar` (as warps `banco` e `minapvp`, com o bot da staff; **não rode bot no `D:\BrasaMC`**: lá, `/setwarp minapvp` em 0.5 65 -188.5 olhando pro norte e `/setwarp banco` em 150.5 65 43.5 olhando pro leste, na mão). O `construir minas` enche os 12 poços de pedra de novo: depois, `/mina admin resetar` em cada mina.
 - [ ] O tutorial `18-ranks-minas-e-novidades` (a Mina PvP) e o `03-dinheiro-e-loja` (o Banco na loja) do Discord, republicados.
 
+## Warp pesca (PescaPlugin, 2026-11-17)
+
+Vale também pro `D:\BrasaMC`.
+
+- [ ] Os jars: `PescaPlugin` (novo), `EstruturasPlugin` (a estrutura `porto` e a porta da loja), `SkillsPlugin` (sem o desconto da pesca parada na barraquinha) e `AjudaPlugin`.
+- [ ] No `plugins/AjudaPlugin/config.yml`: `pesca`, `porto` e `barraquinha` em `comandos-permitidos.lista` (sem eles, o `/pesca` não funciona pra jogador), as duas linhas da pesca na página `producao` e o `pesca` na lista de warps; depois, `comandos reload`.
+- [ ] Ligado: `node tools/bots/montar-mapa.js construir loja porto dicas` (a porta da loja, o porto com as 16 barraquinhas cadastradas e a fala nova do Caçador de Tesouros). **No `D:\BrasaMC` não rode o `marcar` (é bot)**: `/setwarp pesca` em 150.5 65 10.5, olhando pro norte, na mão.
+- [ ] O tutorial `22-skills-de-profissao` do Discord, republicado.
+
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).
