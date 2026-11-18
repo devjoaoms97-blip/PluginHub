@@ -49,9 +49,31 @@ async function status() {
   return { ...s, online: true, quantos: s.online };
 }
 
+/**
+ * POST na API do DiscordPlugin (loja: código, confirmar e entregar). Servidor desligado: lança um erro
+ * com offline = true.
+ */
+async function postar(rota, corpo) {
+  let resposta;
+  try {
+    resposta = await fetch(config.api.url + rota, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${config.api.token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(corpo),
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch {
+    const erro = new Error('O servidor do Minecraft está desligado agora. Tente de novo daqui a pouco.');
+    erro.offline = true;
+    throw erro;
+  }
+  if (resposta.status === 401) throw new Error('token da API recusado (PLUGIN_API_TOKEN)');
+  return resposta.json().catch(() => ({ ok: false, erro: 'resposta inválida do servidor' }));
+}
+
 /** A última foto dos jogadores, ou null se nunca deu pra pegar. */
 async function foto() {
   return site();
 }
 
-module.exports = { status, foto };
+module.exports = { status, foto, postar };

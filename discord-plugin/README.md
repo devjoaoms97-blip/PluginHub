@@ -64,6 +64,8 @@ O [bot do Discord](../discord-bot/README.md) roda separado e fala com o servidor
 | `POST /vinculo` | Confirma um código do `/vincular` (`codigo`, `discordId`, `discordNome`, `recompensa`) |
 | `POST /desvincular` | Desfaz pelo `discordId` ou pelo `nick` |
 | `POST /entregar` | Entrega uma compra da loja do Discord (`pagamento`, `pedido`, `uuid`, `creditos`): roda `loja.comandos` (por padrão `creditos dar`) e anota o pagamento em `entregas.yml`. O mesmo pagamento nunca é entregue duas vezes |
+| `POST /loja/codigo` | Loja do site: manda um código de 6 letras no chat do jogador (`nick`, precisa estar online). Um a cada 60 s por jogador; vale `loja.codigo-minutos` (10) |
+| `POST /loja/confirmar` | Confere o código (`nick`, `codigo`; 5 tentativas, uma vez só) e devolve o `uuid` pra entrega |
 | `GET /site` | A foto de todos os jogadores pro [site](../site/README.md): dinheiro (Vault), rank e prestígio, skills, clã, VIP, apoiador e votos, mais a lista dos clãs e o resumo do voto. Montada fora da thread do servidor a cada `site.intervalo-minutos` (5) e devolvida pronta; `/discord site` (staff) refaz na hora. Cada plugin entrega a parte dele por `dadosDoSite(UUID)` |
 
 - **`/vincular`** (todos) mostra um código de 6 letras, clicável pra copiar, que vale por `vinculo.codigo-minutos` (10). Quem já vinculou vê com qual Discord.

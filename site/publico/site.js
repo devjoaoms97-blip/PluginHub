@@ -172,3 +172,116 @@ if (abas) {
     history.replaceState(null, '', chip.href);
   });
 }
+
+// ---- loja: pacote → nick + código do jogo → Mercado Pago
+const compra = document.querySelector('[data-loja]');
+if (compra) {
+  const estado = { pacote: null, nick: '' };
+  const passo = (n) => {
+    compra.querySelectorAll('[data-etapa]').forEach((f) => { f.hidden = f.dataset.etapa !== String(n); });
+    compra.querySelectorAll('[data-etapa-marca]').forEach((m) => {
+      const k = Number(m.dataset.etapaMarca);
+      m.toggleAttribute('aria-current', k === n);
+      m.classList.toggle('feita', k < n);
+    });
+    const alvo = compra.querySelector(`[data-etapa="${n}"]`);
+    if (alvo) alvo.querySelectorAll('.revelar').forEach((el) => el.classList.add('visivel'));
+  };
+  const msg = compra.querySelector('[data-mensagem]');
+  const avisar = (texto, erro) => { msg.textContent = texto || ''; msg.classList.toggle('erro', Boolean(erro)); msg.classList.toggle('ok', Boolean(texto) && !erro); };
+  const nickInput = compra.querySelector('#loja-nick');
+  const codigoInput = compra.querySelector('#loja-codigo');
+  const cabecaNick = compra.querySelector('[data-nick-cabeca]');
+  const botaoCodigo = compra.querySelector('[data-enviar-codigo]');
+  const botaoPagar = compra.querySelector('[data-pagar]');
+  const resumo = compra.querySelector('[data-resumo]');
+  const NICK = /^[A-Za-z0-9_]{2,16}$/;
+
+  const postar = async (rota, corpo) => {
+    try {
+      const r = await fetch(rota, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+      return await r.json();
+    } catch {
+      return { ok: false, erro: 'Sem conexão. Tente de novo.' };
+    }
+  };
+
+  compra.addEventListener('click', (e) => {
+    const p = e.target.closest('[data-pacote]');
+    if (!p) return;
+    estado.pacote = p.dataset.pacote;
+    compra.querySelectorAll('[data-pacote]').forEach((b) => b.setAttribute('aria-pressed', b === p));
+    const nome = p.querySelector('.pacote-nome').textContent;
+    const creditos = p.querySelector('.pacote-creditos').textContent;
+    const preco = p.querySelector('.pacote-preco').textContent;
+    resumo.hidden = false;
+    resumo.querySelector('[data-resumo-texto]').textContent = `${nome} · ${creditos} · ${preco}`;
+    setTimeout(() => { passo(2); nickInput.focus(); }, calmo ? 0 : 220);
+  });
+  compra.querySelector('[data-voltar]').addEventListener('click', () => passo(1));
+
+  let tempoCabeca;
+  nickInput.addEventListener('input', () => {
+    clearTimeout(tempoCabeca);
+    const n = nickInput.value.trim();
+    tempoCabeca = setTimeout(() => { if (NICK.test(n)) cabecaNick.src = `https://mc-heads.net/avatar/${encodeURIComponent(n)}/48`; }, 400);
+    if (n !== estado.nick) { compra.querySelector('[data-campo-codigo]').hidden = true; botaoPagar.disabled = true; avisar(''); }
+  });
+
+  botaoCodigo.addEventListener('click', async () => {
+    const nick = nickInput.value.trim();
+    if (!NICK.test(nick)) return avisar('Digite o seu nick do Minecraft (letras, números e _).', true);
+    botaoCodigo.disabled = true;
+    botaoCodigo.textContent = 'Mandando…';
+    const r = await postar('/api/loja/codigo', { nick });
+    botaoCodigo.disabled = false;
+    botaoCodigo.textContent = 'Mandar de novo';
+    if (!r.ok) return avisar(r.erro, true);
+    estado.nick = nick;
+    compra.querySelector('[data-campo-codigo]').hidden = false;
+    avisar(`Código enviado no chat do jogo pra ${r.nick}. Digite ele aqui embaixo.`);
+    codigoInput.value = '';
+    codigoInput.focus();
+  });
+
+  codigoInput.addEventListener('input', () => {
+    codigoInput.value = codigoInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    botaoPagar.disabled = codigoInput.value.length !== 6;
+  });
+
+  compra.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (botaoPagar.disabled) return;
+    botaoPagar.disabled = true;
+    botaoPagar.textContent = 'Conferindo…';
+    const r = await postar('/api/loja/pedido', { nick: estado.nick, codigo: codigoInput.value, pacote: estado.pacote });
+    botaoPagar.textContent = 'Ir pro pagamento';
+    if (!r.ok) { botaoPagar.disabled = false; return avisar(r.erro, true); }
+    passo(3);
+    compra.querySelector('[data-link-pagamento]').href = r.link;
+    location.href = r.link;
+  });
+}
+
+// ---- página do pedido: se atualiza sozinha até entregar ou vencer
+const pedido = document.querySelector('[data-pedido]');
+if (pedido) {
+  const FINAIS = ['entregue', 'vencido', 'problema'];
+  const atualizar = async () => {
+    if (FINAIS.includes(pedido.dataset.pedidoEstado)) return;
+    try {
+      const r = await fetch(`/api/loja/pedido/${encodeURIComponent(pedido.dataset.pedido)}`, { cache: 'no-store' });
+      if (r.ok) {
+        const s = await r.json();
+        if (s.estado !== pedido.dataset.pedidoEstado) {
+          pedido.innerHTML = s.html;
+          pedido.dataset.pedidoEstado = s.estado;
+          pedido.classList.add('mudou');
+          setTimeout(() => pedido.classList.remove('mudou'), 900);
+        }
+      }
+    } catch { /* tenta de novo */ }
+    setTimeout(atualizar, 5000);
+  };
+  setTimeout(atualizar, 3000);
+}

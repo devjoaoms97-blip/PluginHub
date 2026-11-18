@@ -1,10 +1,13 @@
-com\example\discord\Entregas.class
 com\example\discord\Vinculos.class
 com\example\discord\Entregas$Resultado.class
+com\example\discord\CodigosLoja.class
+com\example\discord\DiscordPlugin$Encaminhamento.class
+com\example\discord\Vinculos$Pendente.class
+com\example\discord\DiscordPlugin.class
+com\example\discord\Entregas.class
+com\example\discord\CodigosLoja$Pendente.class
 com\example\discord\Vinculos$Vinculo.class
 com\example\discord\Vinculos$Resultado.class
 com\example\discord\ApiLocal.class
-com\example\discord\DiscordPlugin$Encaminhamento.class
 com\example\discord\DadosSite.class
-com\example\discord\Vinculos$Pendente.class
-com\example\discord\DiscordPlugin.class
+com\example\discord\CodigosLoja$Resultado.class

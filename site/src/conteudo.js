@@ -91,4 +91,51 @@ const RECURSOS = [
   },
 ];
 
-module.exports = { RECURSOS };
+// As novidades (/novidades), da mais nova pra mais antiga. Pra anunciar uma atualização, é só pôr uma
+// entrada no começo. `link` leva pra página da parte do servidor, se tiver.
+const NOVIDADES = [
+  {
+    data: '2026-11-18', titulo: 'Caixas, votos e mais quatro profissões',
+    itens: [
+      ['🎁', 'Praça das Caixas no spawn: Caixa de Voto, da Mina, do Boss e do Tesouro, com roleta e as chances à mostra.', 'caixas'],
+      ['🗳️', 'Votar dá Chave de Voto, sequência diária com bônus, Festa do Voto a cada 50 votos e ranking do mês.', 'caixas'],
+      ['📈', 'Skills novas: Caçador (cabeças de mob), Escavador (relíquias), Alquimista (poções mais longas) e Ferreiro (desconto nas oficinas).', 'skills'],
+      ['🌾', 'Os 12 achados raros das fazendas ganharam textura própria.', 'fazendas'],
+      ['🎣', 'O porto da pesca mudou pra longe do spawn: agora só pela /warp pesca.', 'pesca'],
+      ['🌐', 'Saiu o site, com rankings e o perfil de cada jogador.'],
+    ],
+  },
+  {
+    data: '2026-11-17', titulo: 'Mina PvP, porto da pesca e bosses em 3D',
+    itens: [
+      ['⚔️', 'Mina PvP no fundo da Avenida das Minas, com uma hora de venda em dobro todo dia.', 'rankup'],
+      ['🎣', 'Porto da pesca com 16 barracas pra alugar, em que a vara puxa sozinha.', 'pesca'],
+      ['🐉', 'Os bosses ganharam modelo próprio em 3D, com animação de andar e de ataque.', 'bosses'],
+      ['🌾', 'Fazendas nos terrenos: 12 tipos, até 4 por terreno, e um achado raro em cada.', 'fazendas'],
+    ],
+  },
+  {
+    data: '2026-11-10', titulo: 'Pesca com loot próprio e spawners nos terrenos',
+    itens: [
+      ['🐟', 'Peixes raros, o Baú do Mar e a Vara do Pescador.', 'pesca'],
+      ['🧱', 'Um spawner de cada tipo por terreno, e as máquinas trabalham pela metade com você offline.'],
+    ],
+  },
+  {
+    data: '2026-11-05', titulo: 'Kits do VIP, modpack e Discord oficial',
+    itens: [
+      ['👑', 'Kits do VIP diário, semanal e mensal, com máquinas e mapas do tesouro.'],
+      ['📦', 'Modpack oficial opcional: Sodium, shader e o servidor já na lista.'],
+      ['💬', 'O Discord oficial abriu, com vínculo de conta, tickets e status ao vivo.'],
+    ],
+  },
+  {
+    data: '2026-11-02', titulo: 'Eventos e as primeiras profissões',
+    itens: [
+      ['🎉', 'Eventos novos: Vietnã, Spleef, Corre ou Cai, Sobrevivência, Corrida Maluca, Labirinto do Fauno e Quiz.', 'eventos'],
+      ['⛏️', 'Skills de profissão: Minerador, Agricultor, Pescador e Lenhador.', 'skills'],
+    ],
+  },
+];
+
+module.exports = { RECURSOS, NOVIDADES };

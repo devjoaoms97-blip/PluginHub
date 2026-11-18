@@ -161,5 +161,7 @@ vinculo:
 # Comandos de console por pagamento aprovado (uma vez só por pagamento, anotado em entregas.yml).
 # %jogador% = nick, %creditos% = quantidade do pacote, %motivo% = "loja <pedido> (pagamento <id>)".
 loja:
+  # Validade do código que a loja do site manda pro jogador no chat (POST /loja/codigo).
+  codigo-minutos: 10
   comandos:
     - "creditos dar %jogador% %creditos% %motivo%"

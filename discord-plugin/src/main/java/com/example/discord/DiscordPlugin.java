@@ -236,7 +236,9 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
         int porta = getConfig().getInt("api.porta", 8155);
         site = new DadosSite(this, vinculos);
         site.iniciar();
-        api = new ApiLocal(this, vinculos, new Entregas(this), site);
+        CodigosLoja codigosLoja = new CodigosLoja(this);
+        getServer().getScheduler().runTaskTimer(this, codigosLoja::limpar, 20L * 60, 20L * 60);
+        api = new ApiLocal(this, vinculos, new Entregas(this), site, codigosLoja);
         try {
             api.ligar(endereco, porta, token);
             getLogger().info("API do bot em http://" + endereco + ":" + porta);

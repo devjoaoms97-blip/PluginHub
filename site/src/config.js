@@ -6,6 +6,9 @@
 //   SITE_ENDERECO                      onde escutar (padrão 127.0.0.1; na VPS, atrás do Caddy, continua assim)
 //   DISCORD_CONVITE                    o convite do Discord (ex: https://discord.gg/...); vazio: sem botão
 //   MODPACK_URL                        a página de download do modpack
+//   MP_ACCESS_TOKEN                    o Mercado Pago (o mesmo da loja do Discord; vazio: loja do site fechada)
+//   SITE_URL                           o endereço público do site (ex: https://brasamc.com.br): volta do
+//                                      Mercado Pago e imagem de prévia dos links. Vazio: http://127.0.0.1:<porta>
 // O servidor (teste ou oficial) vem do primeiro argumento, ou de SITE_SERVIDOR, ou de BOT_SERVIDOR.
 const fs = require('fs');
 const path = require('path');
@@ -43,4 +46,10 @@ module.exports = {
   ip: doServidor('SERVIDOR_IP'),
   discord: doServidor('DISCORD_CONVITE'),
   modpack: doServidor('MODPACK_URL') || 'https://github.com/devjoaoms97-blip/PluginHub/releases/tag/modpack-1.0.0',
+  mercadoPago: {
+    token: doServidor('MP_ACCESS_TOKEN'),
+    // só o teste muda (um Mercado Pago falso)
+    api: (env.MP_API_URL || 'https://api.mercadopago.com').replace(/\/$/, ''),
+  },
 };
+module.exports.url = (doServidor('SITE_URL') || `http://127.0.0.1:${module.exports.porta}`).replace(/\/$/, '');

@@ -146,6 +146,9 @@ Vale também pro `D:\BrasaMC`.
 - [ ] Os jars: `DiscordPlugin` 1.4 (a foto do site, `GET /site` e `/discord site`), `RankupPlugin`, `SkillsPlugin`, `ClasPlugin` e `VotoPlugin` (o `dadosDoSite` de cada um).
 - [ ] No `.env` do bot (o site usa o mesmo): `DISCORD_CONVITE=https://discord.gg/EBcwmY8p` e, se quiser outra porta, `SITE_PORTA`.
 - [ ] Rodar o site junto do bot: `cd site && npm run oficial` (fica em `127.0.0.1:8080`).
+- [ ] **Loja do site** (2026-11-18): o jar novo do `DiscordPlugin` (`/loja/codigo` e `/loja/confirmar`) e do `VotoPlugin` (o resumo da sequência pra página de votar). No `.env`: `SITE_URL_OFICIAL=https://<domínio>` (sem ele, o Mercado Pago não volta sozinho pro pedido e a imagem de prévia não aparece) e o `MP_ACCESS_TOKEN_OFICIAL` de produção, o mesmo da loja do Discord. A loja do site abre junto com a do Discord.
+- [ ] Gerar a imagem de prévia com o IP de verdade: com o site oficial ligado, `node site/gerar-previa.js` e subir o `previa.png`.
+- [ ] Antes de abrir: revisar `NOVIDADES` em `site/src/conteudo.js` (só o que já está no servidor dos jogadores).
 - [ ] **Domínio e HTTPS** (etapa 4): registrar o domínio (brasamc.com.br estava livre em 2026-10-25), apontar o registro A pra VPS e pôr o Caddy na frente (`brasamc.com.br { reverse_proxy 127.0.0.1:8080 }`), que tira o certificado sozinho. Liberar as portas 80 e 443.
 
 ## Antihack (GrimAC)

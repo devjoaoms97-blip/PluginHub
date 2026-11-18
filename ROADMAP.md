@@ -465,7 +465,7 @@ Ninguém sai do spawn, das minas, da arena do boss, da loja e das arenas (X1, Gl
 - [x] **Limite de valor** por cheque, ou cooldown. Valor máximo e cooldown no config; `cheque.limite.ignorar` pula os dois. O ID resgatado não resgata de novo (segura cópia por dupe).
 
 ### 👑 VipPlugin
-- [ ] **Site** (`site/`, começado em 2026-11-18, por etapas): 1) ✅ foto dos jogadores no DiscordPlugin (`GET /site`) e página inicial com o status ao vivo (`teste-site.js`); 2) ✅ rankings em abas, perfil por nick, uma página por parte do servidor e os efeitos (brilho, entrada ao rolar, faíscas); 3) loja de créditos com o código que chega no jogo e o Mercado Pago, com a mesma entrega da loja do Discord; 4) domínio e HTTPS na VPS. 🔴
+- [ ] **Site** (`site/`, começado em 2026-11-18, por etapas): 1) ✅ foto dos jogadores no DiscordPlugin (`GET /site`) e página inicial com o status ao vivo (`teste-site.js`); 2) ✅ rankings em abas, perfil por nick, uma página por parte do servidor e os efeitos (brilho, entrada ao rolar, faíscas); 3) ✅ loja de créditos com o código que chega no jogo e o Mercado Pago, com a mesma entrega da loja do Discord (`teste-loja-site.js`), mais regras, novidades, a página de votar e a imagem de prévia dos links; 4) domínio e HTTPS na VPS. 🔴
 - [x] ~~**Preço mínimo e máximo** no `/vip vender`.~~ Saiu em 2026-10-31: o preço da revenda é livre (economia entre jogadores, 100% orgânica).
 - [x] **Um warp diferente para cada tier.** `/vip setwarp <tier>`; o tier sem área própria vai pra área geral.
 - [x] **Saque fora do kit mensal do Ouro e do Diamante** (2026-10-27): o Cambista vende até Saque VI. Os kits ainda vão ser revistos.

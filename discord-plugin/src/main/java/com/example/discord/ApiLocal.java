@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
  * POST /vinculo      {"codigo","discordId","discordNome","recompensa":true} → {"ok","nick","uuid","recompensado"} ou {"ok":false,"erro"}
  * POST /desvincular  {"discordId"} ou {"nick"} → {"ok","nick","discordId"}
  * POST /entregar     {"pagamento","pedido","uuid","creditos"} → {"ok","nick","repetida"} (compra da loja; veja Entregas)
+ * POST /loja/codigo  {"nick"} → {"ok","nick"}: manda um código pro jogador (online) no chat, pra loja do site (veja CodigosLoja)
+ * POST /loja/confirmar {"nick","codigo"} → {"ok","uuid","nick"}
  * GET  /site         → a foto dos jogadores e dos clãs pro site (veja DadosSite), sem esperar o servidor
  * </pre>
  * Cada pedido roda na thread do servidor (mexe em jogador e roda comandos) e responde em até 5 s.
@@ -39,14 +41,16 @@ public class ApiLocal {
     private final Vinculos vinculos;
     private final Entregas entregas;
     private final DadosSite site;
+    private final CodigosLoja codigosLoja;
     private final Gson gson = new Gson();
     private HttpServer http;
 
-    public ApiLocal(DiscordPlugin plugin, Vinculos vinculos, Entregas entregas, DadosSite site) {
+    public ApiLocal(DiscordPlugin plugin, Vinculos vinculos, Entregas entregas, DadosSite site, CodigosLoja codigosLoja) {
         this.plugin = plugin;
         this.vinculos = vinculos;
         this.entregas = entregas;
         this.site = site;
+        this.codigosLoja = codigosLoja;
     }
 
     public void ligar(String endereco, int porta, String token) throws IOException {
@@ -107,6 +111,8 @@ public class ApiLocal {
             case "POST /vinculo" -> naThread(() -> vincular(pedido));
             case "POST /desvincular" -> naThread(() -> desvincular(pedido));
             case "POST /entregar" -> naThread(() -> entregar(pedido));
+            case "POST /loja/codigo" -> naThread(() -> resultadoLoja(codigosLoja.pedir(texto(pedido, "nick"))));
+            case "POST /loja/confirmar" -> naThread(() -> resultadoLoja(codigosLoja.confirmar(texto(pedido, "nick"), texto(pedido, "codigo"))));
             default -> null;
         };
         if (resposta == null) responder(troca, 404, erro("rota desconhecida: " + rota));
@@ -210,6 +216,15 @@ public class ApiLocal {
         r.addProperty("ok", true);
         r.addProperty("nick", res.nick());
         r.addProperty("repetida", res.repetida());
+        return r;
+    }
+
+    private JsonObject resultadoLoja(CodigosLoja.Resultado res) {
+        if (!res.ok()) return erro(res.erro());
+        JsonObject r = new JsonObject();
+        r.addProperty("ok", true);
+        r.addProperty("nick", res.nick());
+        if (res.uuid() != null) r.addProperty("uuid", res.uuid().toString());
         return r;
     }
 

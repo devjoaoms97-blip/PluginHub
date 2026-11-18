@@ -289,6 +289,11 @@ public class VotoPlugin extends JavaPlugin implements Listener {
             sites.add(site);
         }
         m.put("sites", sites);
+        m.put("sequencia", getConfig().getDoubleList("sequencia.percentual-do-proximo-rank"));
+        m.put("sequenciaMinimo", getConfig().getDouble("sequencia.minimo", 200));
+        m.put("chaveExtra", getConfig().getInt("sequencia.chave-extra", 1));
+        m.put("festaChaves", getConfig().getInt("festa.chaves", 1));
+        m.put("premiosMes", getConfig().getIntegerList("ranking-mes.premios"));
         return m;
     }
 
