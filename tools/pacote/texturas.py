@@ -377,6 +377,232 @@ def chave_tesouro():
     return _chave(OURO, OURO)
 
 
+# ---------------------------------------------------------------- achados raros das fazendas (2026-11-18)
+
+LARANJA_CENOURA = [(160, 70, 10, 255), (220, 110, 20, 255), (250, 160, 50, 255), (255, 210, 120, 255)]
+MARROM = [(46, 30, 22, 255), (70, 46, 32, 255), (100, 68, 46, 255), (140, 100, 70, 255)]
+BRANCO = [(190, 196, 206, 255), (222, 226, 232, 255), (246, 248, 250, 255)]
+VERMELHO_MACA = [(120, 14, 20, 255), (180, 30, 34, 255), (226, 60, 56, 255), (255, 150, 140, 255)]
+ROXO_CHORUS = [(60, 30, 80, 255), (100, 56, 130, 255), (150, 100, 180, 255), (220, 190, 240, 255)]
+CIANO_LUZ = [(20, 110, 120, 255), (40, 180, 190, 255), (120, 240, 230, 255), (220, 255, 250, 255)]
+BRILHO = (255, 255, 230, 255)
+
+
+def _faiscas(img, pontos):
+    for x, y in pontos:
+        px(img, [(x, y)], BRILHO)
+        px(img, [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)], OURO[3])
+
+
+def _fita(img, x, y):
+    """Fita de prêmio azul (roseta) com as pontas caindo."""
+    px(img, [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)], AZUL[2])
+    px(img, [(x - 1, y), (x + 2, y + 1), (x, y - 1), (x + 1, y + 2)], AZUL[1])
+    px(img, [(x, y + 2), (x, y + 3), (x + 2, y + 3)], AZUL[0])
+    px(img, [(x, y)], OURO[3])
+
+
+def raro_horta():
+    """Cenoura Premiada: cenoura dourada na diagonal, folhas verdes e a roseta azul."""
+    img = nova()
+    for i in range(8):
+        x, y = 3 + i, 12 - i
+        largura = 1 if i < 2 else 2 if i < 5 else 3
+        for d in range(largura):
+            px(img, [(x + d, y), (x, y - d)], OURO[1])
+        px(img, [(x, y)], OURO[2])
+    px(img, [(5, 10), (7, 8), (9, 6)], OURO[0])
+    px(img, [(11, 3), (12, 2), (13, 1), (12, 4), (13, 4), (14, 3), (11, 2)], VERDE[1])
+    px(img, [(12, 3), (13, 2)], VERDE[2])
+    _fita(img, 2, 2)
+    _faiscas(img, [(13, 9)])
+    return contornar(img)
+
+
+def raro_galinheiro():
+    """Ovo Dourado: ovo de ouro com reflexo e brilho."""
+    img = nova()
+    linhas = {3: (7, 8), 4: (6, 9), 5: (5, 10), 6: (5, 10), 7: (4, 11), 8: (4, 11), 9: (4, 11), 10: (4, 11), 11: (5, 10), 12: (5, 10), 13: (6, 9)}
+    for y, (a, b) in linhas.items():
+        for x in range(a, b + 1):
+            img.putpixel((x, y), OURO[1] if x < (a + b) / 2 + 1 else OURO[0])
+    px(img, [(6, 5), (6, 6), (5, 7), (5, 8)], OURO[3])
+    px(img, [(7, 4), (6, 7)], BRILHO)
+    _faiscas(img, [(12, 3), (2, 11)])
+    return contornar(img)
+
+
+def raro_pomar():
+    """Maçã Reluzente: maçã vermelha brilhante com folha e faíscas."""
+    img = nova()
+    linhas = {4: (5, 7), 5: (4, 11), 6: (3, 12), 7: (3, 12), 8: (3, 12), 9: (3, 12), 10: (4, 11), 11: (4, 11), 12: (5, 10), 13: (6, 9)}
+    for y, (a, b) in linhas.items():
+        for x in range(a, b + 1):
+            img.putpixel((x, y), VERMELHO_MACA[2] if x < (a + b) / 2 else VERMELHO_MACA[1])
+    px(img, [(8, 4), (8, 5)], VERMELHO_MACA[0])
+    px(img, [(8, 2), (8, 3)], MARROM[2])
+    px(img, [(9, 2), (10, 1), (10, 2), (11, 1)], VERDE[1])
+    px(img, [(5, 6), (5, 7), (4, 8)], VERMELHO_MACA[3])
+    px(img, [(6, 6)], BRILHO)
+    _faiscas(img, [(13, 4), (2, 12)])
+    return contornar(img)
+
+
+def raro_pocilga():
+    """Trufa Negra: trufa escura e rugosa, com um pedaço cortado mostrando o miolo marmorizado."""
+    img = nova()
+    linhas = {4: (6, 9), 5: (4, 11), 6: (3, 12), 7: (3, 12), 8: (2, 13), 9: (2, 13), 10: (3, 12), 11: (3, 12), 12: (4, 11), 13: (6, 9)}
+    for y, (a, b) in linhas.items():
+        for x in range(a, b + 1):
+            img.putpixel((x, y), MARROM[(x * 3 + y * 5) % 3])
+    for x, y in [(4, 7), (7, 5), (10, 6), (5, 10), (11, 9), (8, 12), (6, 8)]:
+        px(img, [(x, y)], MARROM[3])
+    # o corte: miolo claro com veios
+    px(img, [(9, 8), (10, 8), (11, 8), (9, 9), (10, 9), (11, 9), (12, 9), (10, 10), (11, 10)], (200, 180, 160, 255))
+    px(img, [(10, 9), (11, 8)], MARROM[1])
+    _faiscas(img, [(13, 3)])
+    return contornar(img)
+
+
+def raro_trigal():
+    """Espiga de Ouro: espiga de trigo dourada na vertical com a palha e as aristas."""
+    img = nova()
+    px(img, [(7, y) for y in range(9, 15)], OURO[0])
+    for y in range(2, 10):
+        for x in (6, 8):
+            if (y + x) % 2 == 0:
+                px(img, [(x, y)], OURO[2])
+            else:
+                px(img, [(x, y)], OURO[1])
+        px(img, [(7, y)], OURO[1])
+    px(img, [(5, 3), (5, 5), (5, 7), (9, 4), (9, 6), (9, 8)], OURO[1])
+    px(img, [(4, 2), (4, 4), (10, 3), (10, 5), (7, 1), (6, 0)], OURO[3])
+    px(img, [(8, 11), (9, 12), (6, 12), (5, 13)], OURO[0])
+    _faiscas(img, [(12, 10), (3, 9)])
+    return contornar(img)
+
+
+def raro_curral():
+    """Leite Premiado: garrafa de leite com tampa vermelha e a roseta azul de primeiro lugar."""
+    img = nova()
+    retangulo(img, 6, 2, 9, 3, VERMELHO_MACA[1])
+    px(img, [(6, 2)], VERMELHO_MACA[3])
+    retangulo(img, 7, 4, 8, 5, BRANCO[1])
+    retangulo(img, 5, 6, 10, 14, BRANCO[1])
+    retangulo(img, 5, 6, 6, 14, BRANCO[2])
+    retangulo(img, 9, 7, 10, 14, BRANCO[0])
+    retangulo(img, 5, 9, 10, 10, AZUL[1])
+    _fita(img, 10, 10)
+    _faiscas(img, [(3, 4)])
+    return contornar(img)
+
+
+def raro_ovelhas():
+    """Lã de Ouro: novelo de lã dourada com os fios enrolados."""
+    img = nova()
+    for y in range(3, 14):
+        for x in range(3, 14):
+            if (x - 8) ** 2 + (y - 8) ** 2 <= 25:
+                img.putpixel((x, y), OURO[1])
+    for x, y in [(5, 6), (6, 5), (7, 5), (9, 6), (10, 7), (11, 8), (5, 9), (6, 10), (7, 11), (9, 11), (10, 10), (8, 8), (7, 8), (9, 9)]:
+        px(img, [(x, y)], OURO[2])
+    for x, y in [(6, 7), (7, 7), (10, 9), (8, 10), (11, 10), (6, 12)]:
+        px(img, [(x, y)], OURO[0])
+    px(img, [(12, 12), (13, 13), (14, 13), (14, 14)], OURO[2])  # o fio solto
+    px(img, [(6, 5)], OURO[3])
+    _faiscas(img, [(3, 3)])
+    return contornar(img)
+
+
+def raro_apiario():
+    """Favo Real: pedaço de favo hexagonal dourado com geleia real (roxa) no meio."""
+    img = nova()
+    linhas = {3: (6, 9), 4: (5, 10), 5: (4, 11), 6: (3, 12), 7: (3, 12), 8: (3, 12), 9: (3, 12), 10: (4, 11), 11: (5, 10), 12: (6, 9)}
+    for y, (a, b) in linhas.items():
+        for x in range(a, b + 1):
+            img.putpixel((x, y), OURO[1])
+    for x, y in [(5, 5), (8, 5), (11, 7), (5, 8), (8, 8), (11, 10), (5, 11), (8, 11)]:
+        px(img, [(x, y), (x + 1, y)], OURO[0])
+    px(img, [(7, 7), (8, 7), (7, 8), (8, 9), (7, 9)], ROXO[2])
+    px(img, [(7, 7)], ROXO[3])
+    px(img, [(6, 3), (5, 4)], OURO[3])
+    _faiscas(img, [(13, 3)])
+    return contornar(img)
+
+
+def raro_aboboras():
+    """Abóbora Premiada: abóbora laranja gomada com talo verde e a roseta azul."""
+    img = nova()
+    for y in range(5, 14):
+        for x in range(2, 14):
+            if ((x - 7.5) / 6) ** 2 + ((y - 9) / 4.6) ** 2 <= 1:
+                gomo = (x - 2) % 4
+                img.putpixel((x, y), LARANJA[2] if gomo in (1, 2) else LARANJA[1])
+    px(img, [(5, y) for y in range(6, 13)] + [(9, y) for y in range(6, 13)], LARANJA[0])
+    px(img, [(7, 3), (7, 4), (8, 3)], VERDE[0])
+    px(img, [(8, 2), (9, 2)], VERDE[1])
+    px(img, [(4, 7), (4, 8)], LARANJA[3])
+    _fita(img, 11, 3)
+    return contornar(img)
+
+
+def raro_cogumelos():
+    """Cogumelo Luminoso: cogumelo de chapéu ciano brilhante com pintas claras e o pé claro."""
+    img = nova()
+    linhas = {3: (6, 9), 4: (4, 11), 5: (3, 12), 6: (2, 13), 7: (2, 13), 8: (3, 12)}
+    for y, (a, b) in linhas.items():
+        for x in range(a, b + 1):
+            img.putpixel((x, y), CIANO_LUZ[1] if y > 4 else CIANO_LUZ[2])
+    px(img, [(5, 5), (9, 4), (11, 6), (4, 7), (7, 6)], CIANO_LUZ[3])
+    px(img, [(x, 8) for x in range(4, 12)], CIANO_LUZ[0])
+    retangulo(img, 7, 9, 8, 14, BRANCO[1])
+    px(img, [(7, y) for y in range(9, 15)], BRANCO[2])
+    px(img, [(6, 14), (9, 14)], BRANCO[0])
+    _faiscas(img, [(1, 2), (14, 11)])
+    return contornar(img)
+
+
+def raro_verrugas():
+    """Verruga Ancestral: verruga do Nether antiga, vermelho-escura, com cristais de brilho."""
+    img = nova()
+    base = [(4, 9), (5, 8), (6, 9), (7, 7), (8, 8), (9, 6), (10, 7), (11, 8), (6, 6), (8, 5), (10, 4), (5, 11), (7, 10), (9, 10),
+            (11, 11), (8, 12), (6, 12), (10, 12), (7, 13), (9, 13), (8, 11), (4, 10), (12, 10)]
+    for x, y in base:
+        px(img, [(x, y), (x + 1, y)], VINHO[2])
+    for x, y in [(6, 6), (8, 5), (10, 4), (5, 8), (9, 6)]:
+        px(img, [(x, y)], VINHO[3])
+    for x, y in [(7, 10), (9, 12), (5, 11)]:
+        px(img, [(x, y)], VINHO[0])
+    px(img, [(8, 2), (8, 3), (7, 3), (9, 3), (8, 4)], CIANO_LUZ[2])  # cristal
+    px(img, [(8, 3)], CIANO_LUZ[3])
+    _faiscas(img, [(12, 3), (3, 5)])
+    return contornar(img)
+
+
+def raro_chorus():
+    """Fruta do Vazio: fruta do coro roxa, estourada, com estrelinhas do End em volta."""
+    img = nova()
+    linhas = {4: (6, 9), 5: (4, 11), 6: (3, 12), 7: (3, 12), 8: (3, 12), 9: (3, 12), 10: (4, 11), 11: (5, 10), 12: (6, 9)}
+    for y, (a, b) in linhas.items():
+        for x in range(a, b + 1):
+            img.putpixel((x, y), ROXO_CHORUS[1])
+    for x, y in [(5, 6), (8, 5), (10, 7), (6, 9), (9, 10), (7, 7), (11, 9), (4, 8)]:
+        px(img, [(x, y)], ROXO_CHORUS[2])
+    for x, y in [(7, 6), (9, 8), (5, 10)]:
+        px(img, [(x, y)], ROXO_CHORUS[3])
+    px(img, [(6, 8), (8, 9), (10, 6)], ROXO_CHORUS[0])
+    px(img, [(13, 2), (2, 3), (13, 13), (1, 12)], (240, 220, 255, 255))
+    px(img, [(12, 2), (14, 2), (13, 1), (13, 3)], ROXO_CHORUS[3])
+    return contornar(img)
+
+
+RAROS = {
+    "horta": raro_horta, "galinheiro": raro_galinheiro, "pomar": raro_pomar, "pocilga": raro_pocilga,
+    "trigal": raro_trigal, "curral": raro_curral, "ovelhas": raro_ovelhas, "apiario": raro_apiario,
+    "aboboras": raro_aboboras, "cogumelos": raro_cogumelos, "verrugas": raro_verrugas, "chorus": raro_chorus,
+}
+
+
 PRODUTOS = {
     "tecido_fino": tecido_fino, "barra_de_aco": barra_de_aco, "essencia_destilada": essencia_destilada,
     "gema_lapidada": gema_lapidada, "cristal_de_energia": cristal_de_energia, "celula_combustivel": celula_combustivel,
@@ -386,6 +612,8 @@ PRODUTOS = {
     # CaixasPlugin: as chaves das caixas
     "chave_voto": chave_voto, "chave_mina": chave_mina, "chave_boss": chave_boss, "chave_tesouro": chave_tesouro,
 }
+# FazendasPlugin: os 12 achados raros, "raro_<fazenda>"
+PRODUTOS.update({f"raro_{k}": v for k, v in RAROS.items()})
 FRENTES = {
     "tear": frente_tear, "forja": frente_forja, "destilaria": frente_destilaria,
     "lapidadora": frente_lapidadora, "reator": frente_reator,

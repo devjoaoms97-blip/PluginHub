@@ -74,7 +74,7 @@ Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes 
 1. **Caixas** ✅ v1 (2026-11-18, `caixas-plugin`, `teste-caixas.js`): sistema genérico de caixas com chave, na Praça das Caixas do spawn (quadrante nordeste, no lugar da cerejeira), com 8 pedestais (4 usados). Clique esquerdo mostra os prêmios e as chances; direito com a chave abre a roleta; agachado abre todas. Prêmios: coins (% do próximo rank), itens raros, spawner e máquina. Chaves: **Voto** (cada voto), **Mina** (~1 a cada 3 h minerando), **Boss** (top 3 de dano) e **Tesouro** (baús das câmaras).
 2. **Voto com recompensa** ✅ v1 (2026-11-18, `voto-plugin` + Votifier/azuvotifier 3.3.6, `teste-voto.js`; falta cadastrar o servidor nos sites): Cada voto dá uma Chave de Voto; `/votar` com os links; sequência diária (bônus em coins e chave extra no 7º dia); festa a cada 50 votos (chave pra todos online); ranking do mês (3, 2 e 1 Chave do Boss); lembrete no login.
 3. **Skills de profissão, segunda leva** ✅ v1 (2026-11-18, `teste-skills-leva2.js`): Caçador, Escavador, Alquimista e Ferreiro (detalhes em SkillsPlugin, abaixo).
-4. **Texturas** 🟡: os 12 achados raros das fazendas (as das chaves já entraram com as caixas).
+4. **Texturas** ✅ (2026-11-18): os 12 achados raros das fazendas (`servidor:raro_<fazenda>`) e as 4 chaves das caixas, desenhados por código no `texturas.py`.
 
 ## Mapa do rankup (decisões de 2026-10-23)
 
@@ -310,7 +310,7 @@ Uma **Escritura** (item negociável) vira uma construção 7x7 no terreno, com u
 - [x] **Fase 2, o visual:** uma construção 7x7 própria por tipo (plantações, colmeias, moinho, cogumelo gigante, chorus...), girada pro lado de quem colocou, com bichos parados (galinhas, porcos, vacas, ovelhas, abelhas) e maçãs penduradas no Pomar; o fazendeiro segura o item do tipo (skin opcional no config); a Escritura, a Ração e o Adubo com textura própria no pacote. Teste: `teste-fazendas-visual.js`.
 - [x] **Fase 3, a loja:** balcão **Corretor Rural** na Loja Oficial (o salão cresceu 13 blocos pro fundo, com um par de balcões novo: o do sul fica reservado) e o Leiloeiro contando as fazendas do terreno. A fazenda é do terreno: parada no leilão, passa pra quem arremata (com o cofre) e é desfeita quando o terreno volta à venda. Teste: `teste-fazendas-loja.js`. Na produção: `docs/producao-vps.md`.
 - [x] **Fase 4, o achado raro:** um item temático por fazenda (Ovo Dourado, Lã de Ouro, Favo Real...), guardado na fazenda até o dono pegar no menu (holograma e aviso no chat); ~1 a cada 48 h de produção, valendo 1,5 h de renda dela (+3%). Vende no **Corretor Rural** (não no Fazendeiro, como estava previsto: o catálogo do Fazendeiro só vende item do Minecraft pelo material). Visual de item do Minecraft com brilho; textura própria fica pra depois. Teste: `teste-fazendas-raro.js`.
-- [ ] Textura própria pros 12 achados raros no pacote (hoje usam o visual de um item do Minecraft com brilho). 🟢
+- [x] Textura própria pros 12 achados raros no pacote (2026-11-18, `tools/pacote/texturas.py`, `servidor:raro_<fazenda>` no `raro.modelo`).
 - [x] **Fase 5, a divulgação:** o `fazendas` na lista de comandos do jogador (sem ele, o Corretor Rural não abria pra quem não é da staff), o `/comandos producao` (agora "Produção") e o `/comandos terreno` falam das fazendas, o `/tutorial` cita elas no terreno, e o Seu Juca do Terreno ganhou duas falas. Teste: `teste-fazendas-jogador.js` (bot com a lista de comandos de um jogador comum).
 
 ### Montaria no spawn ✅ v1 (`montaria-plugin`)

@@ -133,6 +133,14 @@ Vale também pro `D:\BrasaMC`.
 - [ ] No `plugins/AjudaPlugin/config.yml`: `trofeus`, `cabecas` e `reliquias` em `comandos-permitidos.lista` e a linha do `/trofeus` na página de `dinheiro` (perto do `/peixes`); depois, `comandos reload`.
 - [ ] O tutorial novo `23-skills-de-profissao-2` do Discord.
 
+## Texturas dos achados raros das fazendas (2026-11-18)
+
+Vale também pro `D:\BrasaMC`.
+
+- [ ] Os jars `FazendasPlugin` e `PacotePlugin` (o pacote com as 12 texturas dos achados e as 4 chaves das caixas).
+- [ ] No `plugins/FazendasPlugin/config.yml`, em cada fazenda, `raro.modelo: servidor:raro_<id da fazenda>` (horta, galinheiro, pomar, pocilga, trigal, curral, ovelhas, apiario, aboboras, cogumelos, verrugas e chorus). O config que já existe não pega o padrão novo. Achado que já estava com algum jogador fica com o visual antigo.
+- [ ] O pacote mudou: troque o arquivo da release `pacote` do GitHub pelo novo.
+
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).

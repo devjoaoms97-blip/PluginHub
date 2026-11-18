@@ -164,13 +164,15 @@ public class FazendasPlugin extends JavaPlugin implements Listener {
     }
 
     /**
-     * O achado raro da fazenda (Ovo Dourado, Lã de Ouro...): papel com o visual de um item do Minecraft e
-     * brilho. Não serve pra nada além de vender no Corretor Rural.
+     * O achado raro da fazenda (Ovo Dourado, Lã de Ouro...): papel com a textura própria do pacote
+     * ({@code raro.modelo}, "servidor:raro_<fazenda>") e brilho. Não serve pra nada além de vender no Corretor Rural.
      */
     public ItemStack raro(Tipo t, int quantidade) {
         ItemStack item = new ItemStack(Material.PAPER, Math.max(1, quantidade));
         ItemMeta meta = item.getItemMeta();
-        meta.setItemModel(NamespacedKey.minecraft(t.raroModelo()));
+        // "servidor:raro_<fazenda>" (a textura do pacote, 2026-11-18) ou um item do Minecraft ("golden_carrot")
+        NamespacedKey modelo = NamespacedKey.fromString(t.raroModelo());
+        meta.setItemModel(modelo != null ? modelo : NamespacedKey.minecraft("gold_nugget"));
         meta.setDisplayName("§l" + t.raroNome());
         meta.setLore(List.of("§7Achado raro da fazenda " + t.nome() + "§7.", "§7Vende no §aCorretor Rural §7da Loja Oficial",
                 "§7por §a" + dinheiro(valorRaro(t)) + " §8(+ bônus do rank e do VIP)"));

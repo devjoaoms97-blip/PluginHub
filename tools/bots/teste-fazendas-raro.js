@@ -81,7 +81,14 @@ t.rodar(async () => {
     const ovos = Number(((await t.console(`minecraft:clear ${nome} minecraft:paper[minecraft:custom_data~{PublicBukkitValues:{"fazendasplugin:raro":"galinheiro"}}] 0`)).match(/Found (\d+)/) || [, 0])[1])
     t.verificar(ovos === 5, 'pegou os 5 Ovos Dourados no fazendeiro', `${ovos}`)
     const modelo = await t.console(`data get entity ${nome} Inventory[{components:{"minecraft:custom_data":{PublicBukkitValues:{"fazendasplugin:raro":"galinheiro"}}}}].components."minecraft:item_model"`)
-    t.verificar(modelo.includes('minecraft:egg'), 'o Ovo Dourado tem o visual de um ovo (com brilho)', modelo.slice(-30))
+    t.verificar(modelo.includes('servidor:raro_galinheiro'), 'o Ovo Dourado tem a textura própria do pacote (servidor:raro_galinheiro)', modelo.slice(-40))
+    // as 12 texturas dos achados estão no pacote que o servidor manda (2026-11-18)
+    const cfgPacote = fs.readFileSync(path.join(process.env.MC_TESTE || 'C:\\mc-teste', 'plugins', 'PacotePlugin', 'config.yml'), 'utf8')
+    const porta = (cfgPacote.match(/^porta: (\d+)/m) || [, '8765'])[1]
+    const zip = Buffer.from(await (await fetch(`http://localhost:${porta}/pacote.zip`)).arrayBuffer()).toString('latin1')
+    const faltam = ['horta', 'galinheiro', 'pomar', 'pocilga', 'trigal', 'curral', 'ovelhas', 'apiario', 'aboboras', 'cogumelos', 'verrugas', 'chorus']
+      .filter(f => !zip.includes(`assets/servidor/items/raro_${f}.json`))
+    t.verificar(faltam.length === 0, 'o pacote tem as 12 texturas dos achados raros', faltam.join(', '))
     j = await janela(bot, () => bot.activateEntity(npc))
     t.verificar(j?.slots[13]?.name === 'gray_stained_glass_pane', 'depois de pegar, o menu fica sem achados')
     if (j) bot.closeWindow(bot.currentWindow)

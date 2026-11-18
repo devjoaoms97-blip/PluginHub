@@ -53,7 +53,7 @@ Testes com bots: `teste-fazendas.js`, `teste-fazendas-visual.js`, `teste-fazenda
     - **Despensa:** +64 safras de insumo.
   - **Achados raros:** pega os itens raros que a fazenda guardou.
   - **Recolher a Escritura:** pede confirmação. Coleta o cofre, devolve o insumo que sobrou, os achados e a Escritura com os níveis, e a construção some.
-- **Achado raro:** a cada safra, a fazenda tem uma chance de achar o item raro dela, que fica guardado até o dono pegar no menu (o holograma mostra quantos; o dono online é avisado no chat).
+- **Achado raro:** a cada safra, a fazenda tem uma chance de achar o item raro dela (com textura própria no pacote desde 2026-11-18: `raro.modelo: servidor:raro_<fazenda>`, desenhada no `tools/pacote/texturas.py`), que fica guardado até o dono pegar no menu (o holograma mostra quantos; o dono online é avisado no chat).
   - **Frequência:** a chance sai pra dar ~1 achado a cada 48 h de produção (`raro.horas-online`), no ritmo do nível 0; com a Produtividade, um pouco mais.
   - **Valor:** 1,5 h da renda da fazenda (`raro.horas-de-renda`). Vende no Corretor Rural (o botão "Vender achados raros" vende todos de uma vez), com o bônus do rank e do VIP, menos o imposto, como a coleta. Soma ~3% na renda.
   - **O item:** papel com o visual de um item do Minecraft e brilho (`raro.modelo` de cada tipo): não se come, não se planta e não entra em receita. A staff dá com `/fazendas dar <jogador> raro <tipo> [qtd]`.
