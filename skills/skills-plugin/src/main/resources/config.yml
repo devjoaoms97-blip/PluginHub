@@ -292,3 +292,93 @@ lenhador:
   chance-derrubar-por-nivel: 0.004
   derrubar-mundos: [recursos]
   derrubar-max-troncos: 64
+
+# ---------------------------------------------------------------------------------------------
+# Skills de profissão, segunda leva (2026-11-18). Mesma conta das primeiras: ~515 mil XP até o 50, e a
+# meta é ~150 h fazendo só aquilo (o Pescador dá 3.200 XP/h). Chances = nível x "por-nivel" (+ prestígio).
+# ---------------------------------------------------------------------------------------------
+
+# Caçador: XP por mob morto pelo jogador, só os que nasceram sozinhos no mundo ("origens", o motivo do
+# nascimento): os de spawner, ovo, criação, comando e plugin (bosses, guardiões do tesouro, spawners do
+# SpawnersPlugin) não contam. ~250 mobs/h caçando: 14 XP cada (alguns valem mais, em "xp-mob").
+# Drop a mais (dobra o que o mob larga): 0.004 por nível = 20% no 50. A cabeça do mob (troféu, vende com
+# /trofeus vender; colocada, vira só enfeite): 0.0002 por nível = 1% no 50. Mob sem cabeça no jogo usa
+# uma cabeça de jogador com a "textura" (hash do textures.minecraft.net). Mob fora da lista: sem cabeça.
+cacador:
+  xp-por-mob: 14
+  xp-mob: {CREEPER: 18, ENDERMAN: 25, WITCH: 25, BLAZE: 25, GUARDIAN: 25, PHANTOM: 20, GHAST: 30, WITHER_SKELETON: 30,
+           COW: 4, PIG: 4, SHEEP: 4, CHICKEN: 3}
+  origens: [NATURAL, CHUNK_GEN, REINFORCEMENTS, JOCKEY, MOUNT, PATROL, DROWNED, SLIME_SPLIT, SILVERFISH_BLOCK, LIGHTNING, ENDER_PEARL]
+  chance-drop-extra-por-nivel: 0.004
+  chance-cabeca-por-nivel: 0.0002
+  cabecas:
+    zombie: {nome: "&2Cabeça de Zumbi", preco: 800, item: ZOMBIE_HEAD}
+    skeleton: {nome: "&fCabeça de Esqueleto", preco: 800, item: SKELETON_SKULL}
+    creeper: {nome: "&aCabeça de Creeper", preco: 1200, item: CREEPER_HEAD}
+    piglin: {nome: "&6Cabeça de Piglin", preco: 1500, item: PIGLIN_HEAD}
+    wither_skeleton: {nome: "&8Crânio de Esqueleto Wither", preco: 5000, item: WITHER_SKELETON_SKULL}
+    spider: {nome: "&8Cabeça de Aranha", preco: 800, textura: 7388173f4f82a14153e086bf137907256e512b21731f0470047bf2d453545d21}
+    cave_spider: {nome: "&3Cabeça de Aranha das Cavernas", preco: 1000, textura: 41645dfd77d09923107b3496e94eeb5c30329f97efc96ed76e226e98224}
+    enderman: {nome: "&5Cabeça de Enderman", preco: 2500, textura: a294d5c8bfa845831d7197309d69f8844e7da8ded288df97771b43961303f6a7}
+    blaze: {nome: "&eCabeça de Blaze", preco: 3000, textura: 737623f79f7eb4f3f80da65b652cc44b2148eea41f9ffe2e86a23bdf49ab77b1}
+    slime: {nome: "&aCabeça de Slime", preco: 1000, textura: 6061f98aaff1e406e06f6f13ffe06005873f3d1eaddb1b59e19dda0ed9ffb270}
+    magma_cube: {nome: "&cCabeça de Cubo de Magma", preco: 1500, textura: dc7b83f81e58f2a117985c662771833c34da684417c3aa7e2960b01275e31e9a}
+    ghast: {nome: "&fCabeça de Ghast", preco: 4000, textura: de8a38e9afbd3da10d19b577c55c7bfd6b4f2e407e44d4017b23be9167abff02}
+    zombified_piglin: {nome: "&dCabeça de Piglin Zumbificado", preco: 1200, textura: 7eabaecc5fae5a8a49c8863ff4831aaa284198f1a2398890c765e0a8de18da8c}
+    hoglin: {nome: "&6Cabeça de Hoglin", preco: 2000, textura: 7ad7b5aeb220c079e319cd70ac8800e80774a9313c22f38e77afb89999e6ec87}
+    phantom: {nome: "&9Cabeça de Phantom", preco: 2000, textura: adfe51801761660ebf6dae70e9cad588b2ef5e6cb2b3194d028a40ac0eebcdf5}
+    guardian: {nome: "&3Cabeça de Guardião", preco: 3000, textura: 18d2a7fea7f2e0d916c7c6d7914937bb8dd3fbfd7f9483a4a3912f5a0fc63d3}
+    witch: {nome: "&5Cabeça de Bruxa", preco: 2500, textura: 62cab4d1595d24da843de7f2fea29b7db9fe4b81f23bae7a86be71e0acaa4cf}
+    drowned: {nome: "&3Cabeça de Afogado", preco: 1200, textura: 57d49a3b2d6020a840a075950a02b55fda6bfcc7578d1d8e50cf3037cd31c8f7}
+    husk: {nome: "&eCabeça de Zumbi do Deserto", preco: 1000, textura: 95f26ccba20f16b5d356ca5245581e3e9cee1930847d227b5b89a13ee3168276}
+    stray: {nome: "&bCabeça de Errante", preco: 1000, textura: 93261d25f3e5321dc2a50ddcc2a991147947a9dff105168ce43dd7fe54ba1906}
+    cow: {nome: "&fCabeça de Vaca", preco: 300, textura: ddc48b0a654b0be4f22c7b9859df1744d8af22a7a80637fd7bd82bec232c792e}
+    pig: {nome: "&dCabeça de Porco", preco: 300, textura: dd7af9e0392c2cea5a9def3317457a0f871b044c45ca85a61838076c551973e5}
+    sheep: {nome: "&fCabeça de Ovelha", preco: 300, textura: c607a3737e99f142624152a68588f4bfaffb8cd3fa99c19971154cc74f0ddf71}
+    chicken: {nome: "&fCabeça de Galinha", preco: 250, textura: f5ddef3166e1f5ebacb17832ea40e0cd37e82f4fea5748370f48e18763ba12d5}
+
+# Escavador: XP por bloco de "blocos" quebrado à mão nos "mundos" (bloco colocado por jogador não conta).
+# ~3.000 blocos/h com pá boa: 1 XP cada. A cada bloco, chance de relíquia (0.00002 por nível = 0,1% no 50,
+# ~3 por hora), de Fragmento Arcano e de mapa do tesouro comum (0.0000067 por nível cada = ~1 por hora no
+# 50). A raridade da relíquia sai por faixa de nível (vale a do maior "nivel" alcançado); o item, pelo peso,
+# dentro da raridade. Vendem com /trofeus vender. No 50, ~R$ 15 mil/h em relíquias.
+escavador:
+  xp-por-bloco: 1
+  mundos: [recursos, recursos_nether]
+  blocos: [DIRT, GRASS_BLOCK, COARSE_DIRT, ROOTED_DIRT, PODZOL, MYCELIUM, DIRT_PATH, MUD, CLAY, SAND, RED_SAND, GRAVEL,
+           SOUL_SAND, SOUL_SOIL, SUSPICIOUS_SAND, SUSPICIOUS_GRAVEL]
+  chance-achado-por-nivel: 0.00002
+  chance-fragmento-por-nivel: 0.0000067
+  chance-mapa-por-nivel: 0.0000067
+  pesos-raridade:
+    - {nivel: 1, comum: 75, raro: 22, epico: 3, lendario: 0}
+    - {nivel: 25, comum: 58, raro: 30, epico: 10, lendario: 2}
+    - {nivel: 50, comum: 45, raro: 32, epico: 17, lendario: 6}
+  reliquias:
+    moeda: {nome: "&7Moeda Antiga", material: GOLD_NUGGET, raridade: comum, preco: 1500, peso: 50}
+    caco: {nome: "&7Caco de Cerâmica", material: BRICK, raridade: comum, preco: 1200, peso: 50}
+    fossil: {nome: "&9Fóssil", material: BONE, raridade: raro, preco: 4000, peso: 50}
+    flecha: {nome: "&9Ponta de Flecha Antiga", material: FLINT, raridade: raro, preco: 3500, peso: 50}
+    amuleto: {nome: "&5Amuleto Esquecido", material: HEART_OF_THE_SEA, raridade: epico, preco: 10000, peso: 50}
+    calice: {nome: "&5Cálice de Ouro", material: GOLDEN_CARROT, raridade: epico, preco: 9000, peso: 50}
+    coroa: {nome: "&6Coroa Perdida", material: GOLDEN_HELMET, raridade: lendario, preco: 30000, peso: 50}
+    ovo: {nome: "&6Ovo de Dinossauro", material: TURTLE_EGG, raridade: lendario, preco: 25000, peso: 50}
+
+# Alquimista: XP por poção pronta (com efeito: água, estranha, mundana e espessa não contam) tirada do
+# suporte (~360/h com vários suportes: 10 XP cada). Quem mexeu no suporte por último ganha, quando ele
+# termina, a poção mais longa (0.006 por nível = +30% no 50) e a chance de uma poção a mais, que pula do
+# suporte (0.003 por nível = 15% no 50).
+alquimista:
+  xp-por-pocao: 10
+  duracao-por-nivel: 0.006
+  chance-pocao-extra-por-nivel: 0.003
+
+# Ferreiro: XP pelo que se gasta nas oficinas (OficinasPlugin): por real no Ferreiro (reparo, Adaga), na
+# Bruxa (taxa) e nas coins do Cambista; por nível de XP gasto na mesa da Bruxa; por Fragmento Arcano gasto
+# no Cambista. Desconto nesses três (por cima do VIP): 0.005 por nível = 25% no 50, até "desconto-maximo".
+ferreiro:
+  xp-por-real: 0.1
+  xp-por-nivel-bruxa: 100
+  xp-por-fragmento: 400
+  desconto-por-nivel: 0.005
+  desconto-maximo: 0.5

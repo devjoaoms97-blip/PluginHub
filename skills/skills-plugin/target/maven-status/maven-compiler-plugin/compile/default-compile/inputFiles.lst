@@ -1,5 +1,6 @@
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\command\PeixesCommand.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\command\SkillsCommand.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\command\TrofeusCommand.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\gui\SkillsGUI.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\gui\SkillsGUIListener.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\item\AdagaUtil.java
@@ -21,7 +22,9 @@ C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\s
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\manager\XpManager.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\profissao\Integracoes.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\profissao\PescaLoot.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\profissao\Profissoes2Listener.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\profissao\ProfissoesListener.java
+C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\profissao\Trofeus.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\PvpXpLimitador.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\skill\LevelFormula.java
 C:\Users\João Marcos da Silva\Documents\GitHub\PluginHub\skills\skills-plugin\src\main\java\com\example\skills\skill\PlayerSkillData.java

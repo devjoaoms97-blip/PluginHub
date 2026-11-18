@@ -136,6 +136,19 @@ public class SkillsGUI {
                 linhas.add("§aDerrubar a árvore: §f" + pct(bonus.porNivel(id, skill, "lenhador.chance-derrubar-por-nivel"))
                         + " §7(machado, mundo de recursos)");
             }
+            case CACADOR -> {
+                linhas.add("§aDrop a mais: §f" + pct(bonus.porNivel(id, skill, "cacador.chance-drop-extra-por-nivel")));
+                linhas.add("§aCabeça do mob (troféu): §f" + pct(bonus.porNivel(id, skill, "cacador.chance-cabeca-por-nivel")));
+            }
+            case ESCAVADOR -> {
+                linhas.add("§aRelíquia: §f" + pct(bonus.porNivel(id, skill, "escavador.chance-achado-por-nivel")) + " §7por bloco");
+                linhas.add("§aFragmento Arcano e mapa: §f" + pct(bonus.porNivel(id, skill, "escavador.chance-fragmento-por-nivel")) + " §7por bloco");
+            }
+            case ALQUIMISTA -> {
+                linhas.add("§aDuração das poções: §f+" + pct(bonus.porNivel(id, skill, "alquimista.duracao-por-nivel")));
+                linhas.add("§aPoção a mais: §f" + pct(bonus.porNivel(id, skill, "alquimista.chance-pocao-extra-por-nivel")));
+            }
+            case FERREIRO -> linhas.add("§aDesconto no Ferreiro, na Bruxa e no Cambista: §f" + pct(plugin.descontoFerreiro(id)));
             default -> { }
         }
         return linhas;

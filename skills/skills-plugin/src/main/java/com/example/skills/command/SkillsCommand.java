@@ -74,6 +74,7 @@ public class SkillsCommand implements CommandExecutor, TabCompleter {
 
         if (args.length >= 2 && args[1].equalsIgnoreCase("reload")) {
             plugin.reloadConfig();
+            plugin.completarConfig();
             sender.sendMessage("§aConfig do SkillsPlugin recarregado.");
             return true;
         }

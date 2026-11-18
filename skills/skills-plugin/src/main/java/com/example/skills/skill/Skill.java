@@ -22,7 +22,12 @@ public enum Skill {
     MINERADOR("Minerador", Material.DIAMOND_PICKAXE, "Quebrar blocos nas minas", "minerador"),
     AGRICULTOR("Agricultor", Material.WHEAT, "Colher plantas maduras com a mão", "agricultor"),
     PESCADOR("Pescador", Material.FISHING_ROD, "Pescar (vale parado)", "pescador"),
-    LENHADOR("Lenhador", Material.IRON_AXE, "Cortar troncos de árvore", "lenhador");
+    LENHADOR("Lenhador", Material.IRON_AXE, "Cortar troncos de árvore", "lenhador"),
+    // segunda leva (2026-11-18)
+    CACADOR("Caçador", Material.SKELETON_SKULL, "Matar mobs (os de spawner não contam)", "cacador"),
+    ESCAVADOR("Escavador", Material.DIAMOND_SHOVEL, "Cavar terra, areia e cascalho no mundo de recursos", "escavador"),
+    ALQUIMISTA("Alquimista", Material.BREWING_STAND, "Tirar poções prontas do suporte", "alquimista"),
+    FERREIRO("Ferreiro", Material.ANVIL, "Gastar no Ferreiro, na Bruxa e no Cambista", "ferreiro");
 
     private final String nomeExibicao;
     private final Material icone;
@@ -48,7 +53,7 @@ public enum Skill {
         return descricaoXp;
     }
 
-    /** Skill de profissão (Minerador, Agricultor, Pescador, Lenhador): não é de combate. */
+    /** Skill de profissão (Minerador, Agricultor, Pescador, Lenhador, Caçador, Escavador, Alquimista, Ferreiro): não é de combate. */
     public boolean isProfissao() {
         return ordinal() >= MINERADOR.ordinal();
     }

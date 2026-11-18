@@ -238,6 +238,18 @@ public class OficinasPlugin extends JavaPlugin implements Listener {
         return Math.min(100, maior);
     }
 
+    /**
+     * O que sobra do preço com os descontos do Ferreiro, da Bruxa e do Cambista: o do VIP e o da skill
+     * Ferreiro do SkillsPlugin (2026-11-18), um em cima do outro.
+     */
+    double fatorDesconto(Player jogador) {
+        return (1 - descontoVip(jogador) / 100.0) * (1 - Math.max(0, Math.min(1, integracoes().descontoFerreiro(jogador))));
+    }
+
+    private Integracoes integracoes() {
+        return getIntegracoes();
+    }
+
     String dinheiro(double v) {
         return String.format(Locale.forLanguageTag("pt-BR"), "R$ %,.2f", v);
     }

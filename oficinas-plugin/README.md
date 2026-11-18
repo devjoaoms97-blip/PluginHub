@@ -45,6 +45,8 @@ O Cambista encanta o item da **mão** com níveis acima do máximo do jogo, pago
 
 ## Missões
 
+**Skill Ferreiro** (SkillsPlugin, 2026-11-18): o desconto dela (até 25% no nível 50) vale no Ferreiro (reparo e Adaga), na taxa da Bruxa e nas coins do Cambista, por cima do VIP; na mesa da Bruxa, é a chance de os níveis gastos voltarem. O que se gasta nos três dá XP de Ferreiro.
+
 O Ferreiro e a Bruxa contam pras missões do MissoesPlugin: `reparar` (cada item reparado) e `encantar` (cada item encantado na mesa da Bruxa ou no Cambista), com o material do item como alvo.
 
 ## A mesa da bruxa

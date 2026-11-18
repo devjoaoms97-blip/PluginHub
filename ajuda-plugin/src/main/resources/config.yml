@@ -54,6 +54,9 @@ comandos-permitidos:
     - pesca
     - porto
     - barraquinha
+    - trofeus
+    - cabecas
+    - reliquias
     - votar
     - vote
     - votos
@@ -197,6 +200,7 @@ comandos:
         - "/ricos | Os mais ricos do servidor"
         - "/tophoras | Quem mais jogou no servidor"
         - "/peixes | Peixes raros da pesca: preços, sua chance e /peixes vender"
+        - "/trofeus | Cabeças (Caçador) e relíquias (Escavador): quanto valem e /trofeus vender"
         - "/pix pagar <jogador> <valor> | Paga alguém"
         - "/pix receber <jogador> <valor> | Cobra alguém (ele aceita)"
         - "/pix pendentes | Cobranças em aberto"

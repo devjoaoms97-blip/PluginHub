@@ -1,6 +1,7 @@
 com\example\skills\skill\Skill.class
 com\example\skills\gui\SkillsGUI.class
 com\example\skills\profissao\PescaLoot.class
+com\example\skills\profissao\Profissoes2Listener.class
 com\example\skills\profissao\ProfissoesListener$1.class
 com\example\skills\manager\CombatTagManager.class
 com\example\skills\manager\ParryManager.class
@@ -20,16 +21,19 @@ com\example\skills\manager\RankingSkills$Posicao.class
 com\example\skills\manager\AtordoamentoManager$1.class
 com\example\skills\manager\PassiveSkillsTask.class
 com\example\skills\listener\MorteListener.class
+com\example\skills\command\TrofeusCommand.class
 com\example\skills\PvpXpLimitador.class
 com\example\skills\gui\SkillsGUIListener.class
 com\example\skills\manager\BonusCalculator.class
 com\example\skills\listener\PlayerConnectionListener.class
+com\example\skills\profissao\Trofeus.class
 com\example\skills\listener\CombatListener.class
 com\example\skills\SkillsPlugin.class
 com\example\skills\manager\AtordoamentoManager.class
 com\example\skills\manager\EventoXp.class
 com\example\skills\manager\SangramentoManager.class
 com\example\skills\command\PeixesCommand.class
+com\example\skills\profissao\Profissoes2Listener$1.class
 com\example\skills\profissao\ProfissoesListener.class
 com\example\skills\manager\RewardManager$1.class
 com\example\skills\manager\RewardManager.class

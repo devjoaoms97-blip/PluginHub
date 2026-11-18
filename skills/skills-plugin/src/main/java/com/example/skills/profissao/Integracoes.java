@@ -104,12 +104,17 @@ public class Integracoes {
 
     /** Registra no extrato do PixPlugin (/extrato) uma entrada de dinheiro, se ele estiver ligado. */
     public void extrato(Player jogador, double valor, String motivo) {
+        extrato(jogador, valor, motivo, "Pescaria");
+    }
+
+    /** Entrada de dinheiro no extrato, com o nome de quem pagou ("Pescaria", "Troféus"...). */
+    public void extrato(Player jogador, double valor, String motivo, String entidade) {
         Plugin pix = ativo("PixPlugin");
         if (pix == null) return;
         try {
             Object charges = pix.getClass().getMethod("getChargeManager").invoke(pix);
             charges.getClass().getMethod("registrarTransacaoComEntidade", java.util.UUID.class, String.class, double.class, boolean.class, String.class)
-                    .invoke(charges, jogador.getUniqueId(), "Pescaria", valor, true, motivo);
+                    .invoke(charges, jogador.getUniqueId(), entidade, valor, true, motivo);
         } catch (ReflectiveOperationException e) {
             if (!avisou) {
                 plugin.getLogger().warning("PixPlugin sem registrarTransacaoComEntidade (versão antiga?): " + e.getMessage());

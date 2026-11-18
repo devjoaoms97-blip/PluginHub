@@ -160,7 +160,7 @@ public class Servicos implements Listener {
                 if (item.getType().name().startsWith(chave.toUpperCase(Locale.ROOT))) preco = precos.getDouble(chave);
             }
         }
-        return Math.round(preco * (1 - plugin.descontoVip(jogador) / 100.0) * 100) / 100.0;
+        return Math.round(preco * plugin.fatorDesconto(jogador) * 100) / 100.0;
     }
 
     private void cliqueAdaga(Player jogador) {
@@ -179,6 +179,7 @@ public class Servicos implements Listener {
             return;
         }
         jogador.getInventory().setItemInMainHand(copia);
+        plugin.getIntegracoes().xpFerreiro(jogador, "reais", preco);
         jogador.playSound(jogador.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 0.8f, 1f);
         jogador.sendMessage(virar
                 ? "§d🗡 O ferreiro afiou sua espada: agora é uma §lAdaga§d! §7Golpes com ela treinam §dCrítico§7."
@@ -195,7 +196,7 @@ public class Servicos implements Listener {
         int niveis = item.getEnchantments().values().stream().mapToInt(Integer::intValue).sum();
         double porNivel = plugin.getConfig().getDouble("ferreiro.acrescimo-por-nivel-encantamento", 12) / 100.0;
         double preco = cheio * ((double) d.getDamage() / max) * (1 + porNivel * niveis) * item.getAmount();
-        preco *= 1 - plugin.descontoVip(jogador) / 100.0;
+        preco *= plugin.fatorDesconto(jogador);
         return Math.max(plugin.getConfig().getDouble("ferreiro.minimo", 1), Math.round(preco * 100) / 100.0);
     }
 
@@ -236,6 +237,7 @@ public class Servicos implements Listener {
             return;
         }
         if (!cobrar(jogador, total, "Reparo no Ferreiro")) return;
+        plugin.getIntegracoes().xpFerreiro(jogador, "reais", total);
         int reparados = 0;
         for (int i : alvos) {
             ItemStack item = jogador.getInventory().getItem(i);
@@ -264,8 +266,9 @@ public class Servicos implements Listener {
             jogador.sendMessage("§cA bruxa está sem o caldeirão (a mesa não foi configurada). Avise a staff.");
             return;
         }
-        double taxa = plugin.getConfig().getDouble("bruxa.taxa", 0) * (1 - plugin.descontoVip(jogador) / 100.0);
+        double taxa = plugin.getConfig().getDouble("bruxa.taxa", 0) * plugin.fatorDesconto(jogador);
         if (taxa > 0 && !cobrar(jogador, taxa, "Bruxa (encantamento)")) return;
+        if (taxa > 0) plugin.getIntegracoes().xpFerreiro(jogador, "reais", taxa);
         Location mesa = new Location(w, plugin.getConfig().getInt("bruxa.mesa.x"), plugin.getConfig().getInt("bruxa.mesa.y"),
                 plugin.getConfig().getInt("bruxa.mesa.z"));
         // force: a mesa fica embaixo do chão, cercada pelas 15 estantes; o menu calcula o poder por elas
@@ -456,6 +459,16 @@ public class Servicos implements Listener {
     public void aoEncantar(org.bukkit.event.enchantment.EnchantItemEvent evento) {
         if (!(evento.getInventory() instanceof org.bukkit.inventory.EnchantingInventory mesa) || !mesasDaBruxa.contains(mesa)) return;
         plugin.getIntegracoes().missao(evento.getEnchanter(), "ENCANTAR", evento.getItem().getType().name(), 1);
+        // skill Ferreiro: XP pelos níveis gastos e, com a chance do desconto dela, os níveis voltam
+        int niveis = evento.whichButton() + 1;
+        Player quem = evento.getEnchanter();
+        plugin.getIntegracoes().xpFerreiro(quem, "niveis", niveis);
+        if (java.util.concurrent.ThreadLocalRandom.current().nextDouble() < plugin.getIntegracoes().descontoFerreiro(quem)) {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                quem.giveExpLevels(niveis);
+                quem.sendMessage("§d✦ Ferreiro: §fa bruxa não cobrou os §d" + niveis + " nível(is)§f desta vez!");
+            });
+        }
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (mesasDaBruxa.contains(mesa)) mesa.setSecondary(new ItemStack(Material.LAPIS_LAZULI, 64));
         });

@@ -29,6 +29,10 @@ Ficam na última linha do menu. As chances crescem com o nível (nível × "por-
 | Minerador | 1 por bloco quebrado à mão numa mina (RankupPlugin) | 5% de chance de quebrar o 3x3 em volta, com picareta (o plano de frente pra quem minera; olhando pra cima ou pra baixo, o do chão) |
 | Agricultor | 3 por planta madura colhida com a mão (trigo, cenoura, batata, beterraba, verruga do Nether, cacau) | +20% na venda das categorias de `agricultor.categorias-venda` (o Fazendeiro, `Farm`) e 15% de colheita dupla (o que se colhe, não a semente) |
 | Pescador | 8 por pesca (pesca parada vale) | 1 em 400 pescas: mapa do tesouro (Comum 45% · Raro 30% · Arcano 18% · Lendário 7%); 1 em 400: Fragmento Arcano. ~1 de cada por hora com Isca III |
+| Caçador | 14 por mob morto (alguns valem mais, em `cacador.xp-mob`), só os que nasceram sozinhos (`cacador.origens`: spawner, ovo, criação, comando e plugin não contam) | 20% de drop a mais (dobra o que o mob larga) e 1% de a cabeça dele cair, troféu que vende com `/trofeus vender` (`cacador.cabecas`; mob sem cabeça no jogo usa cabeça de jogador com a textura dele) |
+| Escavador | 1 por bloco de `escavador.blocos` (terra, areia, cascalho...) quebrado nos `escavador.mundos` (recursos); colocado por jogador não conta | 0,1% de relíquia por bloco (~3/h a 3.000 blocos/h; 4 raridades por faixa de nível, `escavador.reliquias`, vendem com `/trofeus vender`), e ~1 Fragmento Arcano e ~1 mapa do tesouro comum por hora |
+| Alquimista | 10 por poção pronta tirada do suporte (com efeito) | Pra quem mexeu no suporte por último: +30% de duração e 15% de uma poção a mais pulando do suporte |
+| Ferreiro | Pelo gasto nas oficinas (OficinasPlugin): 0,1 por real no Ferreiro, na Bruxa e no Cambista, 100 por nível gasto na mesa da Bruxa, 400 por Fragmento Arcano no Cambista | 25% de desconto no Ferreiro (reparo e Adaga), na taxa da Bruxa e nas coins do Cambista, por cima do VIP; na Bruxa, a mesma chance de os níveis voltarem |
 | Lenhador | 3 por tronco cortado com a mão | 20% de tora a mais (na mina do bosque também) e, com machado, 20% de derrubar a árvore inteira |
 
 - **Os blocos extras do 3x3** passam pelo `RankupPlugin#quebrarExtra`: vão pra venda automática e contam pro reset da mina, mas não disparam o evento de quebra, então não dão Fragmento Arcano, mapa do tesouro, progresso de missão nem XP.
@@ -41,6 +45,15 @@ Ficam na última linha do menu. As chances crescem com o nível (nível × "por-
 - **PvE (mobs) conta metade do XP de arma** — configurável em `xp.multiplicador-pve`
 - **Nível máximo: 50** por skill, com curva de XP progressiva — configurável em `config.yml`
 - **Persistência real**: os dados ficam salvos em `plugins/SkillsPlugin/playerdata/<uuid>.yml`, sobrevivem a reinício do servidor
+
+### Segunda leva (2026-11-18)
+
+- **Config:** as seções `cacador`, `escavador`, `alquimista` e `ferreiro` entram sozinhas no config do servidor (chave por chave, ao ligar e no `/skills admin reload`), porque o Bukkit não usa o padrão do jar em seções inteiras que faltam.
+- **Troféus** (`/trofeus`, `/cabecas`, `/reliquias`): as cabeças e as relíquias têm a marca `skillsplugin:trofeu` e o preço no config; `/trofeus vender` vende os do inventário (extrato: "Troféus"). A loja não compra item com marca. Staff: `/trofeus dar <jogador> <cabeca:<mob>|reliquia:<id>> [qtd]`.
+- **Alquimista:** quem abre ou mexe no suporte por último é o dono da fermentação. As poções prontas ganham a marca `skillsplugin:fermentada` (que sai quando alguém tira do suporte e ganha o XP); a duração a mais é um efeito próprio, mais longo, junto do da poção.
+- **Ferreiro:** o OficinasPlugin pergunta `descontoFerreiro(UUID)` e chama `xpFerreiro(Player, tipo, quantidade)` por reflexão.
+
+Teste: `node tools/bots/teste-skills-leva2.js`.
 
 ## Comandos
 

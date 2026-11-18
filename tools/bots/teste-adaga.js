@@ -59,6 +59,8 @@ t.rodar(async () => {
   const nome = bot.username
   await t.espera(1000)
   await t.console(`eco set ${nome} 100000`)
+  // no nível máximo do Ferreiro (2026-11-18): 25% de desconto e nenhum prêmio de subir de nível no meio da conta
+  await t.console(`skills admin setlevel ${nome} ferreiro 50`)
 
   console.log('\n== Ferreiro: transformar ==')
   await t.console(`minecraft:clear ${nome}`)
@@ -73,7 +75,7 @@ t.rodar(async () => {
     const msgs = await t.capturar(bot, () => bot.clickWindow(SLOT_ADAGA, 0, 0), 1200)
     const depois = await saldo(nome)
     t.verificar(msgs.some(m => /agora é uma Adaga/.test(m)), 'mensagem de espada afiada', msgs.join(' | '))
-    t.verificar(Math.round(antes - depois) === 2000, 'cobrou R$ 2.000 (ferro)', `${antes} → ${depois}`)
+    t.verificar(Math.round(antes - depois) === 1500, 'cobrou R$ 1.500 (ferro, R$ 2.000 com os 25% do Ferreiro no 50)', `${antes} → ${depois}`)
     bot.closeWindow(janela)
   }
   await t.espera(500)
@@ -93,7 +95,7 @@ t.rodar(async () => {
     const antes = await saldo(nome)
     const msgs = await t.capturar(bot, () => bot.clickWindow(SLOT_ADAGA, 0, 0), 1200)
     const depois = await saldo(nome)
-    t.verificar(msgs.some(m => /desfez a Adaga/.test(m)) && Math.round(antes - depois) === 2000, 'desfez cobrando R$ 2.000', msgs.join(' | '))
+    t.verificar(msgs.some(m => /desfez a Adaga/.test(m)) && Math.round(antes - depois) === 1500, 'desfez cobrando R$ 1.500', msgs.join(' | '))
     bot.closeWindow(janela)
   }
   await t.espera(500)

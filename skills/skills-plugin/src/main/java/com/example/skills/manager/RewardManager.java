@@ -60,6 +60,10 @@ public class RewardManager {
             case AGRICULTOR -> Particle.COMPOSTER;
             case PESCADOR -> Particle.SPLASH;
             case LENHADOR -> Particle.CHERRY_LEAVES;
+            case CACADOR -> Particle.CRIT;
+            case ESCAVADOR -> Particle.WAX_OFF;
+            case ALQUIMISTA -> Particle.WITCH;
+            case FERREIRO -> Particle.LAVA;
         };
     }
 

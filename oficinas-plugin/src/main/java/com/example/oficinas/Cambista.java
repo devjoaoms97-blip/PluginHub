@@ -176,6 +176,8 @@ public class Cambista implements Listener {
         double preco = precoComDesconto(jogador, custo[1]);
         if (!plugin.getServicos().cobrar(jogador, preco, "Cambista (" + org.bukkit.ChatColor.stripColor(nome) + " " + romano(proximo) + ")")) return;
         tirarFragmentos(jogador, fragmentos);
+        plugin.getIntegracoes().xpFerreiro(jogador, "reais", preco);
+        plugin.getIntegracoes().xpFerreiro(jogador, "fragmentos", fragmentos);
 
         ItemMeta meta = item.getItemMeta();
         meta.addEnchant(ench, proximo, true);
@@ -286,7 +288,7 @@ public class Cambista implements Listener {
     }
 
     private double precoComDesconto(Player jogador, double preco) {
-        return Math.round(preco * (1 - plugin.descontoVip(jogador) / 100.0) * 100) / 100.0;
+        return Math.round(preco * plugin.fatorDesconto(jogador) * 100) / 100.0;
     }
 
     static String romano(int n) {

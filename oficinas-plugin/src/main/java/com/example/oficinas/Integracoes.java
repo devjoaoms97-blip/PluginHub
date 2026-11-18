@@ -83,6 +83,29 @@ public class Integracoes {
         return chamarAdaga(virar ? "transformarEmAdaga" : "desfazerAdaga", item);
     }
 
+    /** Desconto do Ferreiro do SkillsPlugin (fração, 0.25 = 25%), ou 0 sem ele. */
+    public double descontoFerreiro(org.bukkit.entity.Player jogador) {
+        Plugin skills = habilitado("SkillsPlugin");
+        if (skills == null) return 0;
+        try {
+            return ((Number) skills.getClass().getMethod("descontoFerreiro", java.util.UUID.class).invoke(skills, jogador.getUniqueId())).doubleValue();
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            avisar("SkillsPlugin#descontoFerreiro", e);
+            return 0;
+        }
+    }
+
+    /** XP da skill Ferreiro pelo que se gastou: "reais", "niveis" (mesa da Bruxa) ou "fragmentos". */
+    public void xpFerreiro(org.bukkit.entity.Player jogador, String tipo, double quantidade) {
+        Plugin skills = habilitado("SkillsPlugin");
+        if (skills == null || quantidade <= 0) return;
+        try {
+            skills.getClass().getMethod("xpFerreiro", org.bukkit.entity.Player.class, String.class, double.class).invoke(skills, jogador, tipo, quantidade);
+        } catch (ReflectiveOperationException e) {
+            avisar("SkillsPlugin#xpFerreiro", e);
+        }
+    }
+
     public boolean temSkills() {
         return habilitado("SkillsPlugin") != null;
     }

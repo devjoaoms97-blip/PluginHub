@@ -17,6 +17,11 @@ commands:
     usage: "Uso: /peixes [vender]"
     aliases: [peixaria]
     permission: skills.usar
+  trofeus:
+    description: As cabeças (Caçador) e as relíquias (Escavador) que você tem, e a venda delas.
+    usage: "Uso: /trofeus [vender]"
+    aliases: [cabecas, reliquias]
+    permission: skills.usar
 
 permissions:
   skills.usar:

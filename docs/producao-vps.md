@@ -124,6 +124,15 @@ Vale também pro `D:\BrasaMC`. Depois das Caixas (a chave é delas).
 - [ ] Cadastrar o servidor em cada site de lista (IP, porta 8192 e a chave pública de `plugins/Votifier/rsa/public.key`) e pôr o link de votar de cada um em `sites:` no `plugins/VotoPlugin/config.yml`; depois, `/votar admin reload`.
 - [ ] Testar com `/testvote username=<seu nick> serviceName=Teste` e votar de verdade num site.
 
+## Skills de profissão, segunda leva (2026-11-18)
+
+Vale também pro `D:\BrasaMC`.
+
+- [ ] Os jars: `SkillsPlugin` (Caçador, Escavador, Alquimista, Ferreiro e o `/trofeus`), `OficinasPlugin` (o desconto e o XP do Ferreiro) e `AjudaPlugin`.
+- [ ] Nada a copiar no config do SkillsPlugin: as seções novas entram sozinhas ao ligar (confira no log: "Config atualizado com as skills de profissão novas").
+- [ ] No `plugins/AjudaPlugin/config.yml`: `trofeus`, `cabecas` e `reliquias` em `comandos-permitidos.lista` e a linha do `/trofeus` na página de `dinheiro` (perto do `/peixes`); depois, `comandos reload`.
+- [ ] O tutorial novo `23-skills-de-profissao-2` do Discord.
+
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).

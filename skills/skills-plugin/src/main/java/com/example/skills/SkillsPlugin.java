@@ -60,6 +60,7 @@ public class SkillsPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        completarConfig();
 
         if (!setupEconomy()) {
             getLogger().warning("Vault (ou um plugin de economia) não foi encontrado!");
@@ -92,10 +93,15 @@ public class SkillsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SkillsGUIListener(), this);
         getServer().getPluginManager().registerEvents(new StunListener(this), this);
         getServer().getPluginManager().registerEvents(new MorteListener(this), this);
-        Integracoes integracoes = new Integracoes(this);
+        this.integracoes = new Integracoes(this);
+        this.trofeus = new com.example.skills.profissao.Trofeus(this);
         this.pescaLoot = new PescaLoot(this, integracoes);
         getServer().getPluginManager().registerEvents(pescaLoot, this);
         getServer().getPluginManager().registerEvents(new ProfissoesListener(this, integracoes), this);
+        getServer().getPluginManager().registerEvents(new com.example.skills.profissao.Profissoes2Listener(this, integracoes, trofeus), this);
+        com.example.skills.command.TrofeusCommand trofeusCmd = new com.example.skills.command.TrofeusCommand(this);
+        getCommand("trofeus").setExecutor(trofeusCmd);
+        getCommand("trofeus").setTabCompleter(trofeusCmd);
         PeixesCommand peixes = new PeixesCommand(this);
         getCommand("peixes").setExecutor(peixes);
         getCommand("peixes").setTabCompleter(peixes);
@@ -133,6 +139,31 @@ public class SkillsPlugin extends JavaPlugin {
      * permanentemente em 0%. Este método adiciona as chaves faltantes ao config.yml
      * existente, preservando os valores já configurados das demais skills.
      */
+    /**
+     * As seções das skills novas (2026-11-18) que faltam no config do servidor (feito antes delas) entram nele,
+     * chave por chave, com o valor do jar: sem elas, o Bukkit não usa o padrão em seções inteiras (cabeças,
+     * relíquias...). O que o servidor já tem fica como está. Roda ao ligar e no /skills admin reload.
+     */
+    public void completarConfig() {
+        var padrao = getConfig().getDefaults();
+        if (padrao == null) return;
+        boolean mudou = false;
+        for (String secao : java.util.List.of("cacador", "escavador", "alquimista", "ferreiro")) {
+            var s = padrao.getConfigurationSection(secao);
+            if (s == null) continue;
+            for (String k : s.getKeys(true)) {
+                String caminho = secao + "." + k;
+                if (padrao.isConfigurationSection(caminho) || getConfig().isSet(caminho)) continue;
+                getConfig().set(caminho, padrao.get(caminho));
+                mudou = true;
+            }
+        }
+        if (mudou) {
+            saveConfig();
+            getLogger().info("Config atualizado com as skills de profissão novas (Caçador, Escavador, Alquimista, Ferreiro).");
+        }
+    }
+
     private void garantirChavesNoConfig() {
         FileConfiguration config = getConfig();
         boolean modificado = false;
@@ -248,6 +279,43 @@ public class SkillsPlugin extends JavaPlugin {
         } catch (ReflectiveOperationException | ClassCastException e) {
             return 1;
         }
+    }
+
+    private Integracoes integracoes;
+    private com.example.skills.profissao.Trofeus trofeus;
+
+    public Integracoes getIntegracoes() {
+        return integracoes;
+    }
+
+    public com.example.skills.profissao.Trofeus getTrofeus() {
+        return trofeus;
+    }
+
+    /**
+     * OficinasPlugin (por reflexão): o desconto do Ferreiro (fração, 0.25 = 25%) no Ferreiro, na Bruxa e nas
+     * coins do Cambista. Cresce com o nível e o prestígio, até {@code ferreiro.desconto-maximo}.
+     */
+    public double descontoFerreiro(UUID jogadorId) {
+        return Math.min(getConfig().getDouble("ferreiro.desconto-maximo", 0.5),
+                bonusCalculator.porNivel(jogadorId, Skill.FERREIRO, "ferreiro.desconto-por-nivel"));
+    }
+
+    /**
+     * OficinasPlugin (por reflexão): XP do Ferreiro pelo que o jogador gastou. {@code tipo}: "reais" (coins
+     * no Ferreiro, na Bruxa e no Cambista), "niveis" (níveis de XP gastos na mesa da Bruxa) ou "fragmentos"
+     * (Fragmentos Arcanos no Cambista).
+     */
+    public void xpFerreiro(Player jogador, String tipo, double quantidade) {
+        double porUnidade = getConfig().getDouble("ferreiro.xp-por-" + switch (tipo) {
+            case "niveis" -> "nivel-bruxa";
+            case "fragmentos" -> "fragmento";
+            default -> "real";
+        });
+        double xp = porUnidade * quantidade;
+        if (xp <= 0 || jogador.getGameMode() == org.bukkit.GameMode.CREATIVE) return;
+        xpManager.adicionarXp(jogador, Skill.FERREIRO, xp);
+        xpManager.marcarEmUso(jogador.getUniqueId(), Skill.FERREIRO);
     }
 
     public PescaLoot getPescaLoot() {
