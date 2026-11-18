@@ -62,7 +62,7 @@ Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes 
    - **Banco e barracas:** o Banco sai do fundo da avenida e vai pro fim da Loja Oficial. O Compactador e o Cambista vão pras laterais das minas, um de cada lado.
    - **Hora de bônus:** todo dia, uma hora sorteada entre 17h e 21h (horário de pico) com venda em dobro, **só na mina PvP**, pra incentivar o PvP.
 2. **Warp pesca** ✅ v1 (2026-11-17, `pesca-plugin`, `teste-pesca-porto.js`):
-   - **Lugar:** um porto novo ao lado do spawn, com lago, píer e portão pro spawn, sem PvP.
+   - **Lugar:** um porto com lago e píer, sem PvP. Em 2026-11-18 saiu do lado da Loja Oficial e ficou longe de tudo, sem estrada: só pela `/warp pesca`.
    - **Barracas:** 16, alugadas por 24 h com renovação, no preço de ~10% da renda da pesca.
    - **Pesca na barraca:** o próprio jogador fica pescando; a vara puxa sozinha e ele pode ficar AFK. Rende ~50% da pesca ativa (a parada normal rende 25%), sobe o Pescador e pega os raros.
    - **Estoque:** o que ele pesca vai pro estoque da barraca, que tem limite; cheio, para de guardar.

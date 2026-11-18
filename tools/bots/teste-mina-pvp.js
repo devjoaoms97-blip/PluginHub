@@ -1,6 +1,8 @@
 // Mina PvP (2026-11-17): a /warp minapvp chega no saguão seguro; do arco pra dentro tem PvP; qualquer
 // rank (o bot é Camponês) minera e vende na hora; a hora de bônus (forçada pela staff) paga o dobro só
 // nela; quem morre no campo deixa os itens no chão; o portão norte da avenida e o Banco no fundo da Loja.
+// Desde 2026-11-18: o arco é a borda de um pulo de 4 blocos; do campo não se volta a pé, e o /spawn só sai
+// fora de combate.
 // Precisa do mapa (montar-mapa.js construir minas loja marcar) e da mina cadastrada (cadastrar --mina-pvp).
 // Uso: node teste-mina-pvp.js
 const { Vec3 } = require('vec3')
@@ -36,6 +38,17 @@ async function venderUmFerro(bot) {
   }, 1200)
   // só a barra da venda (a recompensa de missão também diz "+R$", mas no chat)
   return reais(msgs.find(m => m.startsWith('[barra]') && m.includes('+R$')))
+}
+
+/** Corre e pula na direção do ponto por um tempo. */
+async function andar(bot, alvo, ms) {
+  await bot.lookAt(alvo, true)
+  bot.setControlState('forward', true)
+  bot.setControlState('sprint', true)
+  bot.setControlState('jump', true)
+  await t.espera(ms)
+  bot.clearControlStates()
+  await t.espera(800)
 }
 
 t.rodar(async () => {
@@ -110,6 +123,36 @@ t.rodar(async () => {
   await t.espera(1500)
   const desligado = await venderUmFerro(a)
   t.verificar(Math.abs(desligado / normal - 1) < 0.05, 'desligada a hora de bônus, volta ao preço normal', `R$ ${desligado}`)
+
+  console.log('\n== O degrau: do saguão se pula no campo, do campo não se volta a pé ==')
+  t.verificar(await bloco(0, 68, -197, 'polished_diorite') && await bloco(0, 68, -198, 'polished_diorite') && await bloco(0, 65, -199, 'air'),
+    'o piso do arco é a borda de um pulo de 4 blocos')
+  await t.console(`minecraft:clear ${a.username}`)
+  await t.console(`effect clear ${a.username}`)
+  await t.console(`${W} minecraft:tp ${a.username} 0.5 65 -189.5 180 0`)
+  await t.espera(1500)
+  await andar(a, new Vec3(0.5, 66, -215), 5000)
+  let pa = a.entity.position
+  t.verificar(pa.z < -199 && pa.y < 66, 'subindo a escada do saguão, o jogador pula no campo', `${pa.x.toFixed(1)} ${pa.y.toFixed(1)} ${pa.z.toFixed(1)}`)
+  await t.console(`${W} minecraft:tp ${a.username} 0.5 65 -201.5 180 0`)
+  await t.espera(1000)
+  await andar(a, new Vec3(0.5, 70, -185), 6000)
+  pa = a.entity.position
+  t.verificar(pa.z < -198.6 && pa.y < 66, 'do campo, correndo e pulando contra a parede, não se volta pro saguão', `${pa.x.toFixed(1)} ${pa.y.toFixed(1)} ${pa.z.toFixed(1)}`)
+
+  console.log('\n== Do campo só se sai por comando, e fora de combate ==')
+  await t.console(`${W} minecraft:tp ${a.username} 0.5 65 -201.5 -90 0`)
+  await t.console(`${W} minecraft:tp ${b.username} 2.5 65 -201.5 90 0`)
+  await t.espera(5000) // invulnerável 4 s depois do teleporte
+  const levou = await golpe(b, a)
+  const preso = await t.capturar(a, () => a.chat('/spawn'), 4000)
+  pa = a.entity.position
+  t.verificar(levou > 0 && pa.z < -198 && preso.some(m => /combate/i.test(m)), 'em combate, o /spawn não tira do campo', `${levou.toFixed(1)} | ${preso.join(' | ')}`)
+  await t.espera(5500)
+  a.chat('/spawn')
+  await t.espera(5000) // 3 s de espera do Essentials
+  pa = a.entity.position
+  t.verificar(pa.z > -100, 'fora de combate, o /spawn tira do campo', `${pa.x.toFixed(1)} ${pa.y.toFixed(1)} ${pa.z.toFixed(1)}`)
 
   await t.console(`minecraft:clear ${a.username}`)
   await t.terminar(a, b)

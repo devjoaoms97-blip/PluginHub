@@ -1,6 +1,6 @@
 # PescaPlugin
 
-O porto da **/warp pesca** (2026-11-17): 16 barraquinhas alugadas na beira de um lago, ao norte da Loja Oficial. Quem aluga fica pescando nela, e pode ficar parado: a vara puxa e lança sozinha, e o pescado vai pro **estoque** da barraquinha (o barril), não pro inventário.
+O porto da **/warp pesca** (2026-11-17): 16 barraquinhas alugadas na beira de um lago, num porto longe de tudo, onde só se chega pela warp. Quem aluga fica pescando nela, e pode ficar parado: a vara puxa e lança sozinha, e o pescado vai pro **estoque** da barraquinha (o barril), não pro inventário.
 
 - **Aluguel:** `preco` (R$ 10.000) por `horas-aluguel` (24 h), uma por jogador, renovável até `periodos-maximos` (3) períodos pagos. Dá pra ligar a renovação automática, que cobra quando o aluguel acaba (se o dono tiver o dinheiro). O pagamento vai pro extrato do Bancário (PixPlugin).
 - **Pesca:** com a vara na mão e dentro da própria barraquinha:
@@ -32,6 +32,6 @@ O porto da **/warp pesca** (2026-11-17): 16 barraquinhas alugadas na beira de um
 
 ## Mapa
 
-A estrutura `porto` do EstruturasPlugin (`node tools/bots/montar-mapa.js construir porto`) monta o porto e cadastra as barraquinhas. Ela fica em x 80..160, z -40..14, e a entrada é o corredor da porta do canto do fundo da Loja Oficial (parte da estrutura `loja`). A warp `pesca` fica logo depois da entrada (`marcar`). Os dados ficam em `barracas.yml`.
+A estrutura `porto` do EstruturasPlugin (`node tools/bots/montar-mapa.js construir porto`) monta o porto e cadastra as barraquinhas. Ela fica em x 480..560, z -40..14 (origem `400 65 0`), solta no vazio do mundo spawn, sem estrada nem porta: só se chega pela `/warp pesca`, no calçadão sul (550.5 65 10.5, `marcar`), e só se sai por comando. Até 2026-11-18 ficava ao norte da Loja Oficial, com uma porta no fundo dela. Os dados ficam em `barracas.yml`.
 
 Teste: `node tools/bots/teste-pesca-porto.js`.

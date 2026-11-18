@@ -100,7 +100,6 @@ public class LojaOficial implements Estrutura {
         nave();
         for (Balcao b : BALCOES) balcao(b);
         new BancoDaMina().gerarEm(p);
-        portaDoPorto();
         telhado();
         fachada();
     }
@@ -434,39 +433,6 @@ public class LojaOficial implements Estrutura {
         v.setCandles(quantas);
         v.setLit(true);
         return v;
-    }
-
-    // ------------------------------------------------------------------ porta do porto
-
-    /**
-     * No canto do fundo, do lado do Banco, uma porta na parede norte e um corredor coberto até o muro do
-     * porto da /warp pesca (estrutura "porto", 2026-11-17), que começa no z 14 (dz -29).
-     */
-    private void portaDoPorto() {
-        int x1 = 149, x2 = 151;
-        for (int x = x1; x <= x2; x++) {
-            for (int y = 1; y <= 3; y++) set(x, y, -DZ_PAREDE, Material.AIR);
-            set(x, 0, -DZ_PAREDE, Material.POLISHED_ANDESITE);
-            set(x, 4, -DZ_PAREDE, VERMELHO);
-        }
-        for (int y = 1; y <= 5; y++) {
-            set(x1 - 1, y, -DZ_PAREDE + 1, eixo(Material.CRIMSON_STEM, Axis.Y));
-            set(x2 + 1, y, -DZ_PAREDE + 1, eixo(Material.CRIMSON_STEM, Axis.Y));
-        }
-        for (int x = x1 - 1; x <= x2 + 1; x++) set(x, 6, -DZ_PAREDE + 1, VERMELHO);
-        set(x1 + 1, 5, -DZ_PAREDE + 1, Material.SHROOMLIGHT);
-        // o corredor: de tijolo, coberto, com lanternas e o chão de tábua do porto
-        for (int dz = -DZ_PAREDE - 1; dz >= -DZ_PAREDE - 8; dz--) {
-            for (int x = x1 - 1; x <= x2 + 1; x++) {
-                set(x, -1, dz, Material.STONE);
-                boolean parede = x == x1 - 1 || x == x2 + 1;
-                set(x, 0, dz, parede ? PEDRA : Material.SPRUCE_PLANKS);
-                for (int y = 1; y <= 4; y++) set(x, y, dz, parede ? pedra(x, y, dz) : Material.AIR);
-                set(x, 5, dz, parede ? FAIXA : Material.SPRUCE_PLANKS);
-                set(x, 6, dz, laje(Material.SPRUCE_SLAB, false));
-            }
-            if (Math.floorMod(dz, 4) == 0) set(x1 + 1, 4, dz, lanterna(Material.LANTERN, true));
-        }
     }
 
     // ------------------------------------------------------------------ telhado e fachada

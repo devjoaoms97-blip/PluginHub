@@ -53,10 +53,12 @@ pvp-so-nas-caixas:
       moldura: {min: [-83, 62, 31], max: [-83, 70, 55]}
     # A Mina PvP (estrutura "minapvp", 2026-11-17), depois do portão norte da Avenida das Minas: PvP sempre,
     # do arco do saguão pra dentro (o campo e o poço). O saguão, onde a /warp minapvp chega, fica seguro.
+    # Desde 2026-11-18 o arco é a borda de um pulo de 4 blocos (subindo a escada do saguão): o painel fica
+    # nela, na altura dos olhos (a borda é y 68), e do campo não se volta a pé, só por comando.
     - nome: "mina pvp"
       min: [-28, 40, -249]
       max: [28, 100, -199]
-      paineis: [[0.5, 66.8, -196.5]]
+      paineis: [[0.5, 70.3, -197.5]]
 
   # Mundo das arenas: PvP só no piso de luta (o Gladiador e o duelo decidem quem bate em quem lá
   # dentro). A plateia do X1 (galeria em y 80), a do coliseu (deck de vidro em y 77) e o saguão ficam

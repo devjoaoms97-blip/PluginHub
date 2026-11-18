@@ -33,8 +33,8 @@ t.rodar(async () => {
   a.chat('/warp pesca')
   await t.espera(5000) // 3 s de espera do Essentials pra quem não é VIP
   const p = a.entity.position
-  t.verificar(p.x > 140 && p.x < 158 && p.z > 5 && p.z < 12, 'a /warp pesca chega no porto', `${p.x.toFixed(1)} ${p.y.toFixed(1)} ${p.z.toFixed(1)}`)
-  t.verificar(/passed/.test(await t.console(`${W} execute if block 91 65 8 minecraft:barrel`)), 'a barraquinha 1 tem o barril (o estoque)')
+  t.verificar(p.x > 540 && p.x < 558 && p.z > 5 && p.z < 12, 'a /warp pesca chega no porto', `${p.x.toFixed(1)} ${p.y.toFixed(1)} ${p.z.toFixed(1)}`)
+  t.verificar(/passed/.test(await t.console(`${W} execute if block 491 65 8 minecraft:barrel`)), 'a barraquinha 1 tem o barril (o estoque)')
   const lista = await t.capturar(a, () => a.chat('/pesca'), 1000)
   t.verificar(lista.some(m => /Barraquinhas de pesca/.test(m)) && lista.some(m => /Livres: .*\[1\]/.test(m)), 'o /pesca lista as barraquinhas livres', lista.find(m => /Livres/.test(m)))
 
@@ -50,7 +50,7 @@ t.rodar(async () => {
   console.log('\n== Pescando parado ==')
   // vara com Isca III pra o teste não demorar (com o dobro de espera: de 2 a 30 s por peixe)
   await t.console(`minecraft:item replace entity ${a.username} weapon.mainhand with minecraft:fishing_rod[enchantments={"minecraft:lure":3}]`)
-  await t.console(`${W} minecraft:tp ${a.username} 92.5 65 5.5 180 25`)
+  await t.console(`${W} minecraft:tp ${a.username} 492.5 65 5.5 180 25`)
   await t.espera(5000) // o Essentials deixa invulnerável 4 s depois do teleporte
   a.activateItem() // o primeiro lançamento é do jogador; depois, ela lança sozinha
   await t.espera(300)
@@ -66,14 +66,14 @@ t.rodar(async () => {
 
   console.log('\n== O barril ==')
   const alheio = await t.capturar(b, async () => {
-    await t.console(`${W} minecraft:tp ${b.username} 92.5 65 9.5 180 30`)
+    await t.console(`${W} minecraft:tp ${b.username} 492.5 65 9.5 180 30`)
     await t.espera(1500)
-    await abrirBarril(b, [91, 65, 8])
+    await abrirBarril(b, [491, 65, 8])
   }, 800)
   t.verificar(alheio.some(m => /barraquinha de .*Psa/.test(m)), 'outro jogador não abre o barril da barraquinha', alheio.find(m => /barraquinha/.test(m)))
-  await t.console(`${W} minecraft:tp ${a.username} 92.5 65 6.5 0 30`)
+  await t.console(`${W} minecraft:tp ${a.username} 492.5 65 6.5 0 30`)
   await t.espera(1500)
-  const janela = await abrirBarril(a, [91, 65, 8])
+  const janela = await abrirBarril(a, [491, 65, 8])
   const titulo = janela ? JSON.stringify(janela.title) : ''
   t.verificar(!!janela && /Estoque da barraquinha 1/.test(titulo) && janela.slots.slice(0, 45).some(s => s), 'o dono abre o estoque no barril', titulo)
   if (janela) {
@@ -86,8 +86,8 @@ t.rodar(async () => {
 
   console.log('\n== Fim do aluguel ==')
   await t.console(`minecraft:clear ${a.username}`)
-  await t.console(`${W} minecraft:tp ${a.username} 150.5 65 10.5 180 0`)
-  await t.console(`${W} minecraft:tp ${b.username} 150.5 65 10.5 180 0`)
+  await t.console(`${W} minecraft:tp ${a.username} 550.5 65 10.5 180 0`)
+  await t.console(`${W} minecraft:tp ${b.username} 550.5 65 10.5 180 0`)
   // um peixe no estoque, pra ver que ele vai pra retirada
   await t.console(`pesca admin vencer 1`)
   t.verificar(/1: livre/.test(await linhaDa('1')), 'vencido, a barraquinha fica livre de novo', await linhaDa('1'))

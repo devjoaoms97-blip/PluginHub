@@ -79,7 +79,7 @@ Vale também pro `D:\BrasaMC`.
 
 - [ ] Os jars novos: `EstruturasPlugin` (portão do fundo da avenida, `minapvp` e o Banco no fundo da loja), `RankupPlugin` (hora de bônus), `AreasPlugin`, `MontariaPlugin` e `AjudaPlugin` (padrões novos nos configs).
 - [ ] Com o servidor **desligado**: `node tools/bots/montar-mapa.js cadastrar --mina-pvp` põe a mina `pvp` no `minas.yml` sem mexer nas outras. (Ele também regrava as arenas do Duelo e do Gladiador e os configs que o `cadastrar` sempre mexe, iguais aos de antes.)
-- [ ] No `plugins/AreasPlugin/config.yml`, a caixa `mina pvp` em `pvp-so-nas-caixas.spawn` (min `[-28, 40, -249]`, max `[28, 100, -199]`, `paineis: [[0.5, 66.8, -196.5]]`) e `"mina pvp"` em `sethome.caixas-pvp`. No `plugins/MontariaPlugin/config.yml`, a caixa `mina pvp` em `proibido:` (mundo `spawn`, `[-31, 40, -252]` a `[31, 100, -186]`). Os configs que já existem no servidor não pegam os padrões novos dos jars.
+- [ ] No `plugins/AreasPlugin/config.yml`, a caixa `mina pvp` em `pvp-so-nas-caixas.spawn` (min `[-28, 40, -249]`, max `[28, 100, -199]`, `paineis: [[0.5, 70.3, -197.5]]`) e `"mina pvp"` em `sethome.caixas-pvp`. No `plugins/MontariaPlugin/config.yml`, a caixa `mina pvp` em `proibido:` (mundo `spawn`, `[-31, 40, -252]` a `[31, 100, -186]`). Os configs que já existem no servidor não pegam os padrões novos dos jars.
 - [ ] No `plugins/AjudaPlugin/config.yml`, as linhas novas da página `rankup` (`/warp minapvp` e `/mina bonus`), o `/warp banco` da página `dinheiro` ("no fundo da Loja Oficial") e o `minapvp` na lista de warps; depois, `comandos reload`.
 - [ ] Ligado: `node tools/bots/montar-mapa.js construir minas loja dicas` (a avenida com o portão, as oficinas, a mina PvP, a loja com o Banco e as falas novas do Guarda do Portão e da Banqueira) e o `marcar` (as warps `banco` e `minapvp`, com o bot da staff; **não rode bot no `D:\BrasaMC`**: lá, `/setwarp minapvp` em 0.5 65 -188.5 olhando pro norte e `/setwarp banco` em 150.5 65 43.5 olhando pro leste, na mão). O `construir minas` enche os 12 poços de pedra de novo: depois, `/mina admin resetar` em cada mina.
 - [ ] O tutorial `18-ranks-minas-e-novidades` (a Mina PvP) e o `03-dinheiro-e-loja` (o Banco na loja) do Discord, republicados.
@@ -88,9 +88,9 @@ Vale também pro `D:\BrasaMC`.
 
 Vale também pro `D:\BrasaMC`.
 
-- [ ] Os jars: `PescaPlugin` (novo), `EstruturasPlugin` (a estrutura `porto` e a porta da loja), `SkillsPlugin` (sem o desconto da pesca parada na barraquinha) e `AjudaPlugin`.
+- [ ] Os jars: `PescaPlugin` (novo), `EstruturasPlugin` (a estrutura `porto`, longe de tudo, e o degrau da `minapvp`), `SkillsPlugin` (sem o desconto da pesca parada na barraquinha) e `AjudaPlugin`.
 - [ ] No `plugins/AjudaPlugin/config.yml`: `pesca`, `porto` e `barraquinha` em `comandos-permitidos.lista` (sem eles, o `/pesca` não funciona pra jogador), as duas linhas da pesca na página `producao` e o `pesca` na lista de warps; depois, `comandos reload`.
-- [ ] Ligado: `node tools/bots/montar-mapa.js construir loja porto dicas` (a porta da loja, o porto com as 16 barraquinhas cadastradas e a fala nova do Caçador de Tesouros). **No `D:\BrasaMC` não rode o `marcar` (é bot)**: `/setwarp pesca` em 150.5 65 10.5, olhando pro norte, na mão.
+- [ ] Ligado: `node tools/bots/montar-mapa.js construir porto dicas` (o porto em x 480..560, só pela warp, com as 16 barraquinhas cadastradas, e a fala nova do Caçador de Tesouros). **No `D:\BrasaMC` não rode o `marcar` (é bot)**: `/setwarp pesca` em 550.5 65 10.5, olhando pro norte, na mão.
 - [ ] O tutorial `22-skills-de-profissao` do Discord, republicado.
 
 ## Bosses em 3D (2026-11-17)

@@ -39,6 +39,10 @@ public class MinaPvp implements Estrutura {
     private static final int ALTURA = 12;
     private static final int Y_LIMPAR = 22;
     private static final int MEIO_ARCO = 4;  // abertura x -4..4 no muro do saguão
+    // A borda do pulo (2026-11-18): o piso do arco fica DEGRAU blocos acima do campo, e uma escada no
+    // saguão sobe até ela. Do campo não dá pra subir de volta: só se sai por comando (/spawn, /warp...),
+    // que o "em combate" do CombatePlugin barra. Mesmo esquema do túnel da arena do boss.
+    static final int DEGRAU = 4;
 
     private static final Material PEDRA = Material.STONE_BRICKS;
     private static final Material FAIXA = Material.SMOOTH_STONE;
@@ -196,14 +200,16 @@ public class MinaPvp implements Estrutura {
 
     /**
      * Muro entre o saguão e o campo: tijolo até a cintura e grade em cima (dá pra ver a mina), com o arco
-     * do meio aberto e o letreiro "PVP" vermelho em cima dele, lido do saguão.
+     * do meio e o letreiro "PVP" vermelho em cima dele, lido do saguão. O piso do arco é a borda do pulo
+     * (DEGRAU acima do campo): uma escada no saguão sobe até ela, e do lado do campo a parede é lisa.
      */
     private void muroDoSaguao() {
         for (int x = -X_INT; x <= X_INT; x++) {
             for (int z = Z_MURO_SAGUAO - 1; z <= Z_MURO_SAGUAO; z++) {
                 if (Math.abs(x) <= MEIO_ARCO) {
                     for (int y = 1; y <= 7; y++) set(x, y, z, Material.AIR);
-                    set(x, 0, z, Math.abs(x) == MEIO_ARCO ? PEDRA : Material.POLISHED_DIORITE);
+                    for (int y = 0; y < DEGRAU; y++) set(x, y, z, pedra(x, y, z));
+                    set(x, DEGRAU, z, Math.abs(x) == MEIO_ARCO ? PEDRA : Material.POLISHED_DIORITE);
                     continue;
                 }
                 // tijolo até a cintura (y 1..3) e, na face do saguão, grade até o y 6 com laje em cima
@@ -252,7 +258,24 @@ public class MinaPvp implements Estrutura {
             }
         }
         escrever("PVP", -6, 16, Z_MURO_SAGUAO, Material.REDSTONE_BLOCK);
-        set(0, 7, Z_MURO_SAGUAO, lanterna(Material.LANTERN, true));
+        // a lanterna no alto do arco, longe da cabeça de quem pula da borda
+        set(0, 8, Z_MURO_SAGUAO, lanterna(Material.LANTERN, true));
+        escadaDoPulo();
+    }
+
+    /**
+     * A escada do saguão até a borda do pulo: DEGRAU degraus de diorito polido subindo pro norte, encostados
+     * no muro, com pedra por baixo. O de cima (z -196) termina no nível da borda: sobe-se andando, sem pular.
+     */
+    private void escadaDoPulo() {
+        for (int i = 1; i <= DEGRAU; i++) {
+            int z = Z_MURO_SAGUAO + 1 + DEGRAU - i; // -193 (1º degrau) .. -196 (último, na altura da borda)
+            for (int x = -MEIO_ARCO; x <= MEIO_ARCO; x++) {
+                for (int y = 1; y < i; y++) set(x, y, z, pedra(x, y, z));
+                boolean beira = Math.abs(x) == MEIO_ARCO;
+                set(x, i, z, escada(beira ? Material.STONE_BRICK_STAIRS : Material.POLISHED_DIORITE_STAIRS, BlockFace.NORTH, false));
+            }
+        }
     }
 
     private void escrever(String texto, int xInicio, int yTopo, int z, Material material) {
@@ -307,7 +330,7 @@ public class MinaPvp implements Estrutura {
 
     /** Ruínas (pedaços de muro) na calçada em volta do poço, pra se esconder e emboscar. */
     private void campo() {
-        int[][] ruinas = {{-25, -210}, {25, -210}, {-25, -226}, {25, -226}, {-25, -240}, {25, -240}, {-12, -247}, {12, -247}, {0, -201}};
+        int[][] ruinas = {{-25, -210}, {25, -210}, {-25, -226}, {25, -226}, {-25, -240}, {25, -240}, {-12, -247}, {12, -247}};
         for (int[] r : ruinas) ruina(r[0], r[1]);
         // bandeiras vermelhas nas pilastras do campo
         for (int s : new int[]{-1, 1}) {
@@ -351,6 +374,16 @@ public class MinaPvp implements Estrutura {
             int z = b.z() + ORIGEM_Z;
             if (!permitido(b.x(), b.y(), z, b.dados().getMaterial())) {
                 throw new IllegalStateException("Mina PvP: bloco proibido em " + b.x() + " " + (b.y() + 64) + " " + z);
+            }
+        }
+        // do campo, nada encostado na parede do pulo que sirva de degrau pra voltar
+        for (int x = -MEIO_ARCO - 2; x <= MEIO_ARCO + 2; x++) {
+            for (int z = Z_CAMPO; z >= Z_CAMPO - 2; z--) {
+                for (int y = 1; y <= DEGRAU + 1; y++) {
+                    if (get(x, y, z) != null && get(x, y, z) != Material.AIR) {
+                        throw new IllegalStateException("Mina PvP: bloco em " + x + " " + (y + 64) + " " + z + " vira degrau pra subir do campo");
+                    }
+                }
             }
         }
         for (int[] ponto : new int[][]{{0, -188}, {0, -192}}) {

@@ -17,20 +17,20 @@ import static com.example.estruturas.estrutura.Planta.laje;
 import static com.example.estruturas.estrutura.Planta.lanterna;
 
 /**
- * Porto da /warp pesca (2026-11-17), ao norte da Loja Oficial: um recinto murado com um lago no meio, um
- * píer de madeira atravessando e 16 barraquinhas de pesca na beira (8 em cada margem), cada uma com o
- * toldo listrado, o barril (o estoque, do PescaPlugin) e o lugar de pescar virado pro lago. Entra-se pela
- * porta do canto do fundo da Loja Oficial (o corredor é da loja) e pela /warp pesca.
+ * Porto da /warp pesca (2026-11-17): um recinto murado com um lago no meio, um píer de madeira atravessando e
+ * 16 barraquinhas de pesca na beira (8 em cada margem), cada uma com o toldo listrado, o barril (o estoque,
+ * do PescaPlugin) e o lugar de pescar virado pro lago. Fica longe de tudo, solto no vazio do mundo spawn,
+ * sem estrada nem porta: só se chega pela /warp pesca e só se sai por comando (2026-11-18; antes ficava ao
+ * norte da Loja Oficial, com uma porta no fundo dela).
  *
- * <p>Construir com {@code /estrutura construir porto spawn 0 65 0}: x e z são ABSOLUTOS e y é relativo ao
- * chão (y = 0 é o piso em 64). Ocupa x 80..160, z -40..14 (a loja começa no z 15).
+ * <p>Construir com {@code /estrutura construir porto spawn 400 65 0}: x e z são relativos à origem e y ao
+ * chão (y = 0 é o piso em 64). Com essa origem, ocupa x 480..560, z -40..14.
  */
 public class Porto implements Estrutura {
 
     static final int X_OESTE = 80, X_LESTE = 160, Z_NORTE = -40, Z_SUL = 14;
     static final int LAGO_X1 = 88, LAGO_X2 = 152, LAGO_Z1 = -30, LAGO_Z2 = 4;
     static final int PIER_X1 = 119, PIER_X2 = 121;
-    static final int ENTRADA_X1 = 149, ENTRADA_X2 = 151;
     private static final int ALTURA = 7;
 
     private static final Material PEDRA = Material.STONE_BRICKS;
@@ -179,18 +179,6 @@ public class Porto implements Estrutura {
                 if (d == 1 && Math.floorMod(u, 8) == 4) set(x, ALTURA + 1, z, lanterna(Material.LANTERN, false));
             }
         }
-        // a entrada, no muro sul, de frente pro corredor da Loja Oficial
-        for (int x = ENTRADA_X1; x <= ENTRADA_X2; x++) {
-            for (int z = Z_SUL - 2; z <= Z_SUL; z++) {
-                set(x, 0, z, Material.POLISHED_ANDESITE);
-                for (int y = 1; y <= 4; y++) set(x, y, z, Material.AIR);
-            }
-        }
-        for (int s : new int[]{ENTRADA_X1 - 1, ENTRADA_X2 + 1}) {
-            for (int y = 1; y <= 5; y++) set(s, y, Z_SUL - 2, eixo(Material.STRIPPED_SPRUCE_LOG, Axis.Y));
-        }
-        for (int x = ENTRADA_X1 - 1; x <= ENTRADA_X2 + 1; x++) set(x, 5, Z_SUL - 2, Material.RED_NETHER_BRICKS);
-        set(ENTRADA_X1 + 1, 4, Z_SUL - 2, lanterna(Material.LANTERN, true));
     }
 
     // ------------------------------------------------------------------ barraquinhas

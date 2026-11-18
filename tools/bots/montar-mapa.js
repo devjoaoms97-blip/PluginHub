@@ -8,7 +8,8 @@
 //     minas      os 12 poços (cheios de pedra) e a Avenida das Minas (EstruturasPlugin) em volta, com as oficinas
 //                e a mina PvP depois do portão do fundo
 //     minapvp    só a mina PvP (saguão, campo e o poço de 41x41), depois do portão norte da avenida
-//     porto      o porto da /warp pesca (lago, píer e 16 barraquinhas do PescaPlugin), ao norte da Loja Oficial
+//     porto      o porto da /warp pesca (lago, píer e 16 barraquinhas do PescaPlugin), solto no vazio em x 480..560
+//                (só pela warp); apaga o porto antigo, que ficava ao norte da Loja Oficial
 //     loja       só a Loja Oficial (portão leste do spawn): prédio, vendedores, quadros e o Banco no fundo
 //     mobs       a /warp mobs (portão oeste do spawn): abre o portão "MOBS" num spawn que já existe e
 //                constrói o salão de estátuas, que cadastra os spawners no SpawnersPlugin
@@ -64,7 +65,7 @@ const MINA = { lado: 21, fundo: 15 } // poço de 21 x 21, 15 de profundidade (y 
 // A mina PvP (2026-11-17): qualquer rank, depois do portão norte da avenida. A mistura rende no nível da
 // Redstone (mina 6, Escudeiro): ~R$ 88,7 mil/h no simulador (tools/economia/simular.py, 3 por mina e
 // Fortuna III), sem ser a melhor do servidor. O ponto da mina (teleporte e holograma) fica no saguão,
-// que é seguro: o PvP começa no arco do muro (AreasPlugin, caixa "mina pvp").
+// que é seguro: o PvP começa depois do arco do muro, a borda do pulo de 4 blocos (AreasPlugin, caixa "mina pvp").
 const MINA_PVP = {
   id: 'pvp', rank: 'campones', min: [-20, CHAO - MINA.fundo + 1, -244], max: [20, CHAO, -204],
   spawn: [0.5, CHAO + 1, -192.5, 180, 0],
@@ -322,15 +323,26 @@ async function construirLoja() {
 }
 
 /**
- * O porto da /warp pesca (EstruturasPlugin "porto", 2026-11-17), ao norte da Loja Oficial: lago, píer e as
- * 16 barraquinhas, que a estrutura cadastra no PescaPlugin. Entra-se pela porta do canto do fundo da loja.
+ * O porto da /warp pesca (EstruturasPlugin "porto"): lago, píer e as 16 barraquinhas, que a estrutura cadastra
+ * no PescaPlugin. Desde 2026-11-18 fica longe de tudo, solto no vazio do mundo spawn (x 480..560, z -40..14),
+ * sem estrada: só se chega pela /warp pesca. Antes ficava ao norte da Loja Oficial (x 80..160), com uma porta no
+ * fundo dela; esta parte apaga o que sobrou dele lá (o vazio de antes; a loja começa no z 15).
  */
+const PORTO = { origem: [400, 0], min: [480, -40], max: [560, 14] }
 async function construirPorto() {
-  console.log('\n== Porto da warp pesca (EstruturasPlugin: porto) ==')
+  console.log('\n== Porto antigo (ao norte da Loja Oficial): apagando ==')
   await t.console('execute in minecraft:spawn run forceload add 80 -40 160 14')
   await t.espera(2000)
-  await estrutura('porto', 'spawn', [0, 0])
+  for (let x = 80; x <= 160; x += 8) {
+    await t.console(`execute in minecraft:spawn run fill ${x} 57 -40 ${Math.min(x + 7, 160)} 80 14 minecraft:air`)
+  }
   await t.console('execute in minecraft:spawn run forceload remove 80 -40 160 14')
+  console.log('\n== Porto da warp pesca (EstruturasPlugin: porto) ==')
+  const fl = `${PORTO.min[0]} ${PORTO.min[1]} ${PORTO.max[0]} ${PORTO.max[1]}`
+  await t.console(`execute in minecraft:spawn run forceload add ${fl}`)
+  await t.espera(2000)
+  await estrutura('porto', 'spawn', PORTO.origem)
+  await t.console(`execute in minecraft:spawn run forceload remove ${fl}`)
 }
 
 /**
@@ -615,7 +627,7 @@ async function marcarComBot() {
     ['minas', 'spawn', 0.5, -24.5, 180],
     ['banco', 'spawn', 150.5, SPAWN.z + 0.5, -90], // no fundo da Loja Oficial, de frente pra escadaria do Banco
     ['minapvp', 'spawn', 0.5, -188.5, 180], // no saguão (seguro) da mina PvP, olhando pro arco do campo
-    ['pesca', 'spawn', 150.5, 10.5, 180], // no porto, logo depois da entrada (vinda da Loja Oficial), olhando pro lago
+    ['pesca', 'spawn', PORTO.origem[0] + 150.5, PORTO.origem[1] + 10.5, 180], // no calçadão sul do porto, olhando pro lago
     ['terrenos', 'terrenos', 34.5, 34.5, 0],
     ['eventos', 'arenas', 0.5, 306.5, 180], // no saguão dos eventos, olhando pros portais
     ['loja', 'spawn', 67.5, SPAWN.z + 0.5, -90], // logo depois da porta da Loja Oficial, olhando pro salão
