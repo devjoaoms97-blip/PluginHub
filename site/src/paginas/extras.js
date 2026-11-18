@@ -152,4 +152,57 @@ function paginaVotar({ foto, nick }) {
   return layout({ titulo: 'Votar', descricao: 'Vote na BrasaMC e ganhe Chaves de Voto, bônus de sequência e prêmios no ranking do mês.', ativo: '/votar', corpo });
 }
 
-module.exports = { paginaRegras, paginaNovidades, paginaVotar };
+// ---------------------------------------------------------------- jogar pelo celular
+
+const CELULAR = path.join(__dirname, '..', '..', '..', 'discord-bot', 'conteudo', 'tutoriais', '24-jogar-pelo-celular.md');
+
+/** Uma linha do tutorial: o markdown das regras, mais os links <https://...> e o {ip}. */
+function linhaTutorial(l) {
+  const ip = config.ip ? `\`${config.ip}\`` : 'do canal de status do Discord';
+  return markdown(l.replace(/`\{ip\}`/g, ip).replace(/\{ip\}/g, config.ip || 'do Discord'))
+    .replace(/&lt;(https:\/\/[^\s&]+)&gt;/g, (_, u) => `<a href="${u}" target="_blank" rel="noopener">${u.replace(/^https:\/\/(github\.com\/)?/, '')}</a>`);
+}
+
+/** /celular: o tutorial do Discord (24-jogar-pelo-celular.md), com as seções em cards e os passos numerados. */
+function paginaCelular() {
+  const linhas = fs.existsSync(CELULAR) ? fs.readFileSync(CELULAR, 'utf8').split(/\r?\n/) : ['# Jogar pelo celular'];
+  const titulo = (linhas.find((l) => l.startsWith('# ')) || '# Jogar pelo celular').slice(2).replace(/^📱\s*/, '').replace(/\s*\(Android\)$/, ' Android');
+  const blocos = [];
+  let atual = { titulo: null, linhas: [] };
+  blocos.push(atual);
+  for (const l of linhas) {
+    if (l.startsWith('# ') || !l.trim()) continue;
+    const secao = /^\*\*([^*]+)\*\*$/.exec(l.trim());
+    if (secao) blocos.push((atual = { titulo: secao[1], linhas: [] }));
+    else atual.linhas.push(l);
+  }
+  const conteudo = (b) => {
+    let html = '';
+    let lista = false;
+    for (const l of b.linhas) {
+      const item = /^•\s*(.*)$/.exec(l.trim());
+      const passo = /^\*\*(\d+)\.\*\*\s*(.*)$/.exec(l.trim());
+      if (item && !lista) { html += '<ul class="destaques">'; lista = true; }
+      if (!item && lista) { html += '</ul>'; lista = false; }
+      if (item) html += `<li>${linhaTutorial(item[1])}</li>`;
+      else if (passo) html += `<p class="regra"><span class="regra-num">${passo[1]}</span><span>${linhaTutorial(passo[2])}</span></p>`;
+      else html += `<p>${linhaTutorial(l)}</p>`;
+    }
+    return html + (lista ? '</ul>' : '');
+  };
+  const corpo = `
+<section class="cabecalho-pagina">
+  <div class="largura">
+    <a class="voltar" href="/">← Início</a>
+    <h1 class="surgir">📱 ${esc(titulo)}</h1>
+  </div>
+</section>
+<section class="largura bloco regras">
+  ${blocos.map((b) => (b.titulo
+    ? `<article class="regra-bloco revelar" data-brilho><h2>${esc(b.titulo)}</h2>${conteudo(b)}</article>`
+    : `<div class="regras-intro revelar">${conteudo(b)}</div>`)).join('')}
+</section>`;
+  return layout({ titulo: 'Jogar pelo celular', descricao: 'Como jogar a BrasaMC no celular Android, com um launcher de Minecraft Java.', ativo: '/celular', corpo });
+}
+
+module.exports = { paginaRegras, paginaNovidades, paginaVotar, paginaCelular };

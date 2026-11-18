@@ -76,6 +76,11 @@ Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes 
 3. **Skills de profissão, segunda leva** ✅ v1 (2026-11-18, `teste-skills-leva2.js`): Caçador, Escavador, Alquimista e Ferreiro (detalhes em SkillsPlugin, abaixo).
 4. **Texturas** ✅ (2026-11-18): os 12 achados raros das fazendas (`servidor:raro_<fazenda>`) e as 4 chaves das caixas, desenhados por código no `texturas.py`.
 
+## Celular (2026-11-18)
+
+- **Jogar pelo celular** ✅: o servidor já aceita o Minecraft Java rodando no Android por um launcher (Fold Craft Launcher ou Zalith Launcher 2, de graça e de código aberto), sem nada a mais no servidor. Tutorial `24-jogar-pelo-celular` no Discord e a página `/celular` do site, lida do mesmo arquivo. **Falta:** testar num celular de verdade antes de anunciar (os nomes das telas do launcher no tutorial são genéricos).
+- **Bedrock (Geyser + Floodgate)** ⏸️: instalado e tirado do servidor de teste em 2026-11-18, sem chegar a entrar ninguém. O Geyser 2.12.1 liga no Paper 26.2 (via ViaVersion) e aceita o Bedrock 26.40 a 26.63, mas só serve pra quem comprou o Bedrock: ele confere a conta Microsoft, então APK pirata não entra. Pra reavaliar se aparecer procura. Se voltar: `auth-type: floodgate` no Geyser, `.` no `allowedNicknameCharacters` do AuthMe (o Floodgate põe `.` antes do nick), o site aceitar nick com `.`, a porta UDP 19132 aberta, e conferir texturas próprias, bosses em 3D, NPCs, hologramas e o combate 1.8 do lado do Bedrock.
+
 ## Mapa do rankup (decisões de 2026-10-23)
 
 O servidor ainda usa o mundo padrão do Minecraft. O mapa do rankup fica dividido em mundos, cada um com as próprias regras (PvP, proteção, mobs). Para isso, entram o Multiverse-Core (vários mundos) e o WorldEdit ou o FAWE (colar schematics).

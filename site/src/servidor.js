@@ -10,7 +10,7 @@
 //   GET /loja              a loja de créditos;  GET /loja/pedido/<id>  a página do pedido
 //   POST /api/loja/codigo  manda o código pro jogo;  POST /api/loja/pedido  cria o pedido e o link
 //   GET /api/loja/pedido/<id>  o miolo da página do pedido (o site.js atualiza a cada 5 s)
-//   GET /regras, /novidades, /votar (?nick= mostra a sequência)
+//   GET /regras, /novidades, /celular, /votar (?nick= mostra a sequência)
 //   GET /previa            a arte da imagem de prévia dos links (o gerar-previa.js tira a foto dela)
 //   GET /api/status        o status ao vivo em HTML (o site.js troca o cartão a cada 30 s)
 //   GET /publico/...       CSS, JS e imagens da pasta publico/
@@ -25,7 +25,7 @@ const { recurso } = require('./paginas/recurso');
 const { paginaRankings } = require('./paginas/rankings');
 const { paginaJogador, naoAchou: jogadorNaoAchado } = require('./paginas/jogador');
 const { paginaLoja, paginaPedido, conteudoPedido } = require('./paginas/loja');
-const { paginaRegras, paginaNovidades, paginaVotar } = require('./paginas/extras');
+const { paginaRegras, paginaNovidades, paginaVotar, paginaCelular } = require('./paginas/extras');
 const { paginaPrevia } = require('./paginas/previa');
 const loja = require('./loja');
 
@@ -151,6 +151,7 @@ async function atender(req, res) {
   }
   if (rota === '/regras') return enviar(res, 200, paginaRegras());
   if (rota === '/novidades') return enviar(res, 200, paginaNovidades());
+  if (rota === '/celular') return enviar(res, 200, paginaCelular());
   if (rota === '/votar') {
     const foto = await dados.foto();
     const nick = (url.searchParams.get('nick') || '').trim().slice(0, 16);

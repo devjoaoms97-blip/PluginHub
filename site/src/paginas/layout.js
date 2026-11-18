@@ -56,7 +56,7 @@ ${corpo}
       <p class="fraco">Servidor de Minecraft rankup brasileiro.</p>
     </div>
     <nav class="rodape-links" aria-label="Rodapé">
-      <a href="/">Início</a><a href="/rankings">Rankings</a><a href="/votar">Votar</a><a href="/novidades">Novidades</a><a href="/regras">Regras</a><a href="/loja">Loja</a>${config.discord ? `<a href="${esc(config.discord)}" target="_blank" rel="noopener">Discord</a>` : ''}<a href="${esc(config.modpack)}" target="_blank" rel="noopener">Modpack</a>
+      <a href="/">Início</a><a href="/rankings">Rankings</a><a href="/votar">Votar</a><a href="/novidades">Novidades</a><a href="/regras">Regras</a><a href="/celular">Jogar no celular</a><a href="/loja">Loja</a>${config.discord ? `<a href="${esc(config.discord)}" target="_blank" rel="noopener">Discord</a>` : ''}<a href="${esc(config.modpack)}" target="_blank" rel="noopener">Modpack</a>
     </nav>
   </div>
   <p class="largura fraco rodape-aviso">Não é um produto oficial do Minecraft. Não aprovado nem associado à Mojang ou à Microsoft.</p>

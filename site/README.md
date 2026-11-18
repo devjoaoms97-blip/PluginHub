@@ -14,6 +14,7 @@ Site em Node, **sem dependências** (só o `http` do próprio Node), que roda se
 | `/loja/pedido/<id>` | O pedido: aguardando, em análise, pago, entregue, vencido ou com valor diferente. Se atualiza sozinho a cada 5 s. O id é aleatório (ninguém adivinha o pedido dos outros) |
 | `/votar` | Os sites de votação (os do `sites:` do VotoPlugin), o que cada voto dá, os 7 dias da sequência, a barra da Festa do Voto, o top 10 do mês e a sequência de um nick (`?nick=`) |
 | `/novidades` | As atualizações, da mais nova pra mais antiga. Pra anunciar uma, ponha uma entrada no começo de `NOVIDADES` em `src/conteudo.js` |
+| `/celular` | Como jogar pelo celular Android (launcher de Java: FCL ou Zalith 2), lido do tutorial do Discord `24-jogar-pelo-celular.md` |
 | `/regras` | As regras, lidas do mesmo arquivo do canal do Discord (`discord-bot/conteudo/regras.md`): mudou lá, muda aqui |
 
 **Efeitos:** o brilho que segue o mouse nos cards, os cards que sobem e o ícone que pula, a entrada dos elementos ao rolar a página, os números contando, as faíscas no topo da inicial e o ponto verde pulsando no status. Quem pede menos movimento no sistema (`prefers-reduced-motion`) vê tudo parado.

@@ -564,3 +564,5 @@ body.previa { width: 1200px; height: 630px; overflow: hidden; display: block; mi
 
 .votar-grade .cartoes-pequenos { grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 560px) { .votar-grade .cartoes-pequenos { grid-template-columns: 1fr; } }
+
+.regra-bloco code { overflow-wrap: anywhere; }

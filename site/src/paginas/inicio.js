@@ -67,7 +67,7 @@ ${r ? previaRankings(r) : ''}
     <li class="revelar"><span class="passo-num">2</span><div><strong>Adicione o servidor</strong> em Multijogador com o IP ${ip ? `<code>${esc(ip)}</code>` : 'que vai aparecer aqui'} e aceite o pacote de texturas.</div></li>
     <li class="revelar"><span class="passo-num">3</span><div><strong>Crie sua senha</strong> com <code>/register</code> e pegue o kit de iniciante com <code>/kit iniciante</code>.</div></li>
   </ol>
-  <p class="fraco revelar">Quer mais FPS? O <a href="${esc(config.modpack)}" target="_blank" rel="noopener">modpack oficial</a> já vem com Sodium, shader e o servidor na lista.</p>
+  <p class="fraco revelar">Quer mais FPS? O <a href="${esc(config.modpack)}" target="_blank" rel="noopener">modpack oficial</a> já vem com Sodium, shader e o servidor na lista. No celular Android? <a href="/celular">Veja como jogar</a>.</p>
 </section>
 
 ${votoSites.length ? `<section class="largura bloco revelar">
