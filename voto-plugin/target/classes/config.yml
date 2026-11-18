@@ -1,0 +1,55 @@
+# Configuração do VotoPlugin (2026-11-18)
+#
+# Os sites de lista de servidores avisam o voto pelo Votifier (o plugin "Votifier", fork azuvotifier do
+# NuVotifier): cada voto dá uma Chave de Voto (CaixasPlugin). Cadastre o servidor em cada site com o IP, a
+# porta do Votifier (plugins/Votifier/config.yml, 8192) e a chave pública dele (plugins/Votifier/rsa/public.key),
+# e ponha o link de votar do site em "sites" aqui embaixo.
+
+# Os links que aparecem no /votar (clicáveis). Sem nenhum, o /votar avisa que ainda não tem site.
+sites: []
+#  - {nome: "Minecraft Servidores", url: "https://exemplo.com/votar/brasamc"}
+
+# O que cada voto dá: chaves da caixa (CaixasPlugin). Jogador offline recebe quando entrar.
+chave:
+  caixa: voto
+  quantidade: 1
+
+# Sequência: votar em dias seguidos (pelo menos um voto por dia, no fuso abaixo). O PRIMEIRO voto de cada dia
+# paga o bônus do dia da sequência em coins: % do preço do PRÓXIMO rank (RankupPlugin), como a /diaria, com
+# o mínimo. No último dia vem também "chave-extra" chaves; depois, recomeça no dia 1. Faltou um dia, volta pro 1.
+sequencia:
+  percentual-do-proximo-rank: [0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1.0]
+  minimo: 200
+  chave-extra: 1
+fuso: America/Sao_Paulo
+
+# Festa do voto: a cada "votos" votos no servidor (de todo mundo), cada jogador online ganha "chaves" chaves.
+festa:
+  votos: 50
+  caixa: voto
+  chaves: 1
+  # avisa no chat quando faltarem esses votos
+  avisos: [25, 10, 5]
+
+# Ranking do mês: no começo de cada mês, os que mais votaram no mês anterior ganham chaves (1º, 2º, 3º...).
+ranking-mes:
+  caixa: boss
+  premios: [3, 2, 1]
+
+# Lembrete no login: quem ainda não votou hoje recebe um aviso clicável (depois de "atraso-segundos").
+lembrete:
+  ativado: true
+  atraso-segundos: 8
+
+# Anuncia cada voto no chat (e no Discord, categoria "votos" do DiscordPlugin).
+anunciar-votos: true
+
+mensagens:
+  prefixo: "&b✦ &3Voto &8» "
+  anuncio: "&b✦ &f%jogador% &7votou no servidor e ganhou uma &bChave de Voto&7! &f/votar"
+  obrigado: "&aObrigado por votar (%site%)! &7Sequência: &f%dia%/%dias% dias&7."
+  bonus: "&a+R$ %valor% &7pelo dia %dia% da sequência."
+  lembrete: "&b✦ &fVocê ainda não votou hoje! Cada voto dá uma &bChave de Voto&f. "
+  festa-falta: "&b✦ &fFaltam &e%falta% votos &fpra &bFesta do Voto&f: todo mundo online ganha chave! &7/votar"
+  festa: "&b&l✦ FESTA DO VOTO! &fO servidor chegou a &e%votos% votos&f: todo mundo online ganhou &b%chaves% Chave de Voto&f!"
+  ranking-pago: "&b✦ &fRanking de votos de &e%mes%&f: %lista%"

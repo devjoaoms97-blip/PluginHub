@@ -72,7 +72,7 @@ Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes 
 ## Pedidos de 2026-11-18 (escopo combinado, nesta ordem)
 
 1. **Caixas** ✅ v1 (2026-11-18, `caixas-plugin`, `teste-caixas.js`): sistema genérico de caixas com chave, na Praça das Caixas do spawn (quadrante nordeste, no lugar da cerejeira), com 8 pedestais (4 usados). Clique esquerdo mostra os prêmios e as chances; direito com a chave abre a roleta; agachado abre todas. Prêmios: coins (% do próximo rank), itens raros, spawner e máquina. Chaves: **Voto** (cada voto), **Mina** (~1 a cada 3 h minerando), **Boss** (top 3 de dano) e **Tesouro** (baús das câmaras).
-2. **Voto com recompensa** 🔴: NuVotifier + plugin próprio. Cada voto dá uma Chave de Voto; `/votar` com os links; sequência diária (bônus em coins e chave extra no 7º dia); festa a cada 50 votos (chave pra todos online); ranking do mês (3, 2 e 1 Chave do Boss); lembrete no login.
+2. **Voto com recompensa** ✅ v1 (2026-11-18, `voto-plugin` + Votifier/azuvotifier 3.3.6, `teste-voto.js`; falta cadastrar o servidor nos sites): Cada voto dá uma Chave de Voto; `/votar` com os links; sequência diária (bônus em coins e chave extra no 7º dia); festa a cada 50 votos (chave pra todos online); ranking do mês (3, 2 e 1 Chave do Boss); lembrete no login.
 3. **Skills de profissão, segunda leva** 🔴: Caçador, Escavador, Alquimista e Ferreiro (detalhes em SkillsPlugin, abaixo).
 4. **Texturas** 🟡: os 12 achados raros das fazendas (as das chaves já entraram com as caixas).
 

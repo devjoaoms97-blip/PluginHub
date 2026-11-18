@@ -114,6 +114,16 @@ Vale também pro `D:\BrasaMC`.
 - [ ] Ligado: `node tools/bots/montar-mapa.js construir caixas dicas` (a praça no lugar da cerejeira do nordeste, só aquele pedaço, as 4 caixas cadastradas e a fala nova da Banqueira).
 - [ ] O pacote de texturas mudou (as chaves): troque o arquivo da release `pacote` do GitHub pelo novo.
 
+## Voto com recompensa (VotoPlugin, 2026-11-18)
+
+Vale também pro `D:\BrasaMC`. Depois das Caixas (a chave é delas).
+
+- [ ] O `Votifier` (azuvotifier 3.3.6: `nuvotifier-bukkit-3.3.6-dist.jar` do Modrinth, projeto `azuvotifier`, sha1 `daa4a90861ddf9773207d4617193a3ba93275c2a`) e o `VotoPlugin` (novo) em `plugins/`. Reinicie: o Votifier cria a chave dele em `plugins/Votifier/rsa/`.
+- [ ] A porta **8192/TCP** liberada no firewall da VPS (é por ela que os sites avisam o voto).
+- [ ] No `plugins/AjudaPlugin/config.yml`: `votar`, `vote` e `votos` em `comandos-permitidos.lista` e a linha do `/votar` na página `outros`; depois, `comandos reload`.
+- [ ] Cadastrar o servidor em cada site de lista (IP, porta 8192 e a chave pública de `plugins/Votifier/rsa/public.key`) e pôr o link de votar de cada um em `sites:` no `plugins/VotoPlugin/config.yml`; depois, `/votar admin reload`.
+- [ ] Testar com `/testvote username=<seu nick> serviceName=Teste` e votar de verdade num site.
+
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).

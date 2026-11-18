@@ -54,6 +54,9 @@ comandos-permitidos:
     - pesca
     - porto
     - barraquinha
+    - votar
+    - vote
+    - votos
     - caixas
     - caixa
     - chaves
@@ -319,6 +322,7 @@ comandos:
       titulo: "Outros"
       resumo: "VIP, créditos, Discord e ajustes"
       comandos:
+        - "/votar | Links pra votar (cada voto dá uma Chave de Voto), sua sequência e o ranking do mês"
         - "/caixas | As caixas da Praça das Caixas (spawn) e como ganhar cada chave"
         - "/caixas resgatar | Pega as chaves guardadas (inventário cheio ou offline)"
         - "/vip | Benefícios do VIP"

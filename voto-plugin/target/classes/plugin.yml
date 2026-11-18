@@ -1,0 +1,19 @@
+name: VotoPlugin
+version: '1.0.0'
+main: com.example.voto.VotoPlugin
+api-version: '26.2'
+author: Você
+description: "Voto com recompensa pelo Votifier: Chave de Voto por voto, sequência diária, festa do voto, ranking do mês e lembrete."
+depend: [Vault]
+softdepend: [Votifier, CaixasPlugin, RankupPlugin, PixPlugin, DiscordPlugin]
+
+commands:
+  votar:
+    description: Links pra votar, sua sequência, a festa do voto e o ranking do mês.
+    usage: "Uso: /votar [top]"
+    aliases: [vote, votos]
+
+permissions:
+  voto.admin:
+    description: Comandos de staff do /votar (admin).
+    default: op
