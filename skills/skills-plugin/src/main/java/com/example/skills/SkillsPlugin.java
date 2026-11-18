@@ -322,6 +322,31 @@ public class SkillsPlugin extends JavaPlugin {
         return pescaLoot;
     }
 
+    /**
+     * API pública (DiscordPlugin, pro site): nível, prestígio e XP de cada skill, pela chave dela
+     * ("espadas", "minerador"...). Online vem do cache; offline, do playerdata. Vazio se o jogador
+     * nunca ganhou XP.
+     */
+    public java.util.Map<String, Object> dadosDoSite(UUID jogadorId) {
+        java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+        boolean online = getServer().getPlayer(jogadorId) != null;
+        java.io.File arquivo = new java.io.File(getDataFolder(), "playerdata/" + jogadorId + ".yml");
+        if (!online && !arquivo.exists()) return m;
+        var dados = online ? skillDataManager.get(jogadorId) : null;
+        var yaml = online ? null : org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(arquivo);
+        for (Skill s : Skill.values()) {
+            String chave = s.getChaveConfig();
+            java.util.Map<String, Object> d = new java.util.LinkedHashMap<>();
+            d.put("nome", s.getNomeExibicao());
+            d.put("profissao", s.isProfissao());
+            d.put("nivel", online ? dados.getNivel(s) : yaml.getInt(chave + ".nivel", 1));
+            d.put("prestigio", online ? dados.getPrestigio(s) : yaml.getInt(chave + ".prestigio", 0));
+            d.put("xp", Math.floor(online ? dados.getXp(s) : yaml.getDouble(chave + ".xp", 0)));
+            m.put(chave, d);
+        }
+        return m;
+    }
+
     public EventoXp getEventoXp() {
         return eventoXp;
     }

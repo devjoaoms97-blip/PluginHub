@@ -262,6 +262,36 @@ public class VotoPlugin extends JavaPlugin implements Listener {
         return l;
     }
 
+    /** API pública (DiscordPlugin, pro site): votos do mês, total e sequência de dias; null se nunca votou. */
+    public Map<String, Object> dadosDoSite(UUID jogador) {
+        String base = "jogadores." + jogador;
+        if (!dados.isConfigurationSection(base)) return null;
+        long ultimo = dados.getLong(base + ".ultimo-dia", Long.MIN_VALUE);
+        Map<String, Object> m = new java.util.LinkedHashMap<>();
+        m.put("mes", dados.getInt(base + ".mes"));
+        m.put("total", dados.getInt(base + ".total"));
+        m.put("sequencia", ultimo >= hoje() - 1 ? dados.getInt(base + ".sequencia") : 0);
+        m.put("votouHoje", ultimo == hoje());
+        return m;
+    }
+
+    /** API pública (DiscordPlugin, pro site): a festa do voto e os links de votação. */
+    public Map<String, Object> resumoDoSite() {
+        Map<String, Object> m = new java.util.LinkedHashMap<>();
+        m.put("festa", dados.getInt("festa.contador"));
+        m.put("festaMeta", getConfig().getInt("festa.votos", 50));
+        m.put("mes", dados.getString("mes"));
+        List<Map<String, Object>> sites = new ArrayList<>();
+        for (Map<?, ?> s : getConfig().getMapList("sites")) {
+            Map<String, Object> site = new java.util.LinkedHashMap<>();
+            site.put("nome", String.valueOf(s.get("nome")));
+            site.put("url", String.valueOf(s.get("url")));
+            sites.add(site);
+        }
+        m.put("sites", sites);
+        return m;
+    }
+
     private String nomeDe(String uuid) {
         return dados.getString("jogadores." + uuid + ".nome", uuid.substring(0, 8));
     }

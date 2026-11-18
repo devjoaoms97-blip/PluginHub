@@ -1,0 +1,14 @@
+{
+  "name": "brasamc-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site da BrasaMC: página inicial com o status ao vivo, rankings, perfil e loja de créditos",
+  "main": "src/servidor.js",
+  "scripts": {
+    "start": "node src/servidor.js",
+    "oficial": "node src/servidor.js oficial"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

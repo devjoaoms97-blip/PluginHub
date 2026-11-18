@@ -1,5 +1,5 @@
 name: DiscordPlugin
-version: '1.3.0'
+version: '1.4.0'
 main: com.example.discord.DiscordPlugin
 api-version: '26.2'
 author: Você
@@ -9,7 +9,7 @@ softdepend: [VipPlugin]
 commands:
   discord:
     description: Testa e recarrega a ponte com o Discord e cuida dos vínculos (staff).
-    usage: "Uso: /discord teste [categoria|todas] | /discord reload | /discord vinculo <jogador> | /discord desvincular <jogador>"
+    usage: "Uso: /discord teste [categoria|todas] | /discord reload | /discord site | /discord vinculo <jogador> | /discord desvincular <jogador>"
     permission: discord.admin
     permission-message: "§cVocê não tem permissão."
   vincular:

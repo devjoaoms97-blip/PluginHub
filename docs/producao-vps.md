@@ -141,6 +141,13 @@ Vale também pro `D:\BrasaMC`.
 - [ ] No `plugins/FazendasPlugin/config.yml`, em cada fazenda, `raro.modelo: servidor:raro_<id da fazenda>` (horta, galinheiro, pomar, pocilga, trigal, curral, ovelhas, apiario, aboboras, cogumelos, verrugas e chorus). O config que já existe não pega o padrão novo. Achado que já estava com algum jogador fica com o visual antigo.
 - [ ] O pacote mudou: troque o arquivo da release `pacote` do GitHub pelo novo.
 
+## Site (2026-11-18, etapa 1)
+
+- [ ] Os jars: `DiscordPlugin` 1.4 (a foto do site, `GET /site` e `/discord site`), `RankupPlugin`, `SkillsPlugin`, `ClasPlugin` e `VotoPlugin` (o `dadosDoSite` de cada um).
+- [ ] No `.env` do bot (o site usa o mesmo): `DISCORD_CONVITE=https://discord.gg/EBcwmY8p` e, se quiser outra porta, `SITE_PORTA`.
+- [ ] Rodar o site junto do bot: `cd site && npm run oficial` (fica em `127.0.0.1:8080`).
+- [ ] **Domínio e HTTPS** (etapa 4): registrar o domínio (brasamc.com.br estava livre em 2026-10-25), apontar o registro A pra VPS e pôr o Caddy na frente (`brasamc.com.br { reverse_proxy 127.0.0.1:8080 }`), que tira o certificado sozinho. Liberar as portas 80 e 443.
+
 ## Antihack (GrimAC)
 
 - [ ] O mesmo jar do `test-server/montar.ps1` (`grimac-bukkit-2.3.75-1299a2a.jar`, ou um mais novo que diga 26.2 no Modrinth).

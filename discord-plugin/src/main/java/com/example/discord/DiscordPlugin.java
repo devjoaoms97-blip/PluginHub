@@ -61,6 +61,7 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
     private final List<Encaminhamento> encaminhamentos = new ArrayList<>();
     private Vinculos vinculos;
     private ApiLocal api;
+    private DadosSite site;
 
     private record Encaminhamento(String categoria, Pattern padrao) {}
 
@@ -233,7 +234,9 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
         }
         String endereco = getConfig().getString("api.endereco", "127.0.0.1");
         int porta = getConfig().getInt("api.porta", 8155);
-        api = new ApiLocal(this, vinculos, new Entregas(this));
+        site = new DadosSite(this, vinculos);
+        site.iniciar();
+        api = new ApiLocal(this, vinculos, new Entregas(this), site);
         try {
             api.ligar(endereco, porta, token);
             getLogger().info("API do bot em http://" + endereco + ":" + porta);
@@ -344,6 +347,18 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
             reloadConfig();
             carregarEncaminhamentos();
             sender.sendMessage("§aConfig do Discord recarregado (" + encaminhamentos.size() + " encaminhamentos).");
+        } else if (sub.equals("site")) {
+            if (site == null) {
+                sender.sendMessage("§cA API está desligada (api.ativado): o site não tem dados.");
+                return true;
+            }
+            sender.sendMessage("§7Refazendo a foto do site...");
+            getServer().getScheduler().runTaskAsynchronously(this, () -> {
+                long inicio = System.currentTimeMillis();
+                site.montar();
+                long levou = System.currentTimeMillis() - inicio;
+                getServer().getScheduler().runTask(this, () -> sender.sendMessage("§aFoto do site refeita em " + levou + " ms."));
+            });
         } else if (sub.equals("teste")) {
             String alvo = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "teste";
             List<String> categorias = alvo.equals("todas") ? categorias() : List.of(alvo);
@@ -357,7 +372,7 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
                 sender.sendMessage("§a" + categoria + "§7: teste enviado.");
             }
         } else {
-            sender.sendMessage("§cUso: §f/discord teste [categoria|todas] §7| §f/discord reload §7| §f/discord vinculo <jogador> §7| §f/discord desvincular <jogador>");
+            sender.sendMessage("§cUso: §f/discord teste [categoria|todas] §7| §f/discord reload §7| §f/discord site §7| §f/discord vinculo <jogador> §7| §f/discord desvincular <jogador>");
         }
         return true;
     }
@@ -370,7 +385,7 @@ public class DiscordPlugin extends JavaPlugin implements Listener {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (command.getName().equalsIgnoreCase("vincular")) return List.of();
-        if (args.length == 1) return List.of("teste", "reload", "vinculo", "desvincular");
+        if (args.length == 1) return List.of("teste", "reload", "site", "vinculo", "desvincular");
         if (args.length == 2 && (args[0].equalsIgnoreCase("vinculo") || args[0].equalsIgnoreCase("desvincular"))) return null;
         if (args.length == 2 && args[0].equalsIgnoreCase("teste")) {
             List<String> opcoes = new ArrayList<>(categorias());

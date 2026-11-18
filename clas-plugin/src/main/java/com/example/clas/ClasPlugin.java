@@ -83,6 +83,42 @@ public class ClasPlugin extends JavaPlugin {
         return claManager != null && claManager.mesmoCla(a, b);
     }
 
+    /** API pública (DiscordPlugin, pro site): o clã do jogador e o cargo dele, ou null sem clã. */
+    public java.util.Map<String, Object> dadosDoSite(UUID jogador) {
+        Cla cla = claManager == null ? null : claManager.getClaDe(jogador);
+        if (cla == null) return null;
+        java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+        m.put("tag", cla.getTag());
+        m.put("nome", cla.getNome());
+        var cargo = cla.getCargo(jogador);
+        m.put("cargo", cargo == null ? "MEMBRO" : cargo.name());
+        return m;
+    }
+
+    /** API pública (DiscordPlugin, pro site): todos os clãs, na ordem do ranking (pontos, depois banco). */
+    public java.util.List<java.util.Map<String, Object>> clasDoSite() {
+        java.util.List<java.util.Map<String, Object>> lista = new java.util.ArrayList<>();
+        if (claManager == null) return lista;
+        for (Cla cla : claManager.ranking()) {
+            java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+            m.put("tag", cla.getTag());
+            m.put("nome", cla.getNome());
+            m.put("lider", cla.getLider() == null ? null : cla.getNomes().get(cla.getLider()));
+            m.put("membros", cla.getMembros().size());
+            m.put("pontos", cla.getPontos());
+            m.put("abates", cla.getAbates());
+            m.put("mortes", cla.getMortes());
+            m.put("bosses", cla.getBosses());
+            m.put("banco", cla.getBanco());
+            m.put("criadoEm", cla.getCriadoEm());
+            java.util.List<String> nomes = new java.util.ArrayList<>();
+            cla.getMembros().keySet().forEach(id -> nomes.add(cla.getNomes().getOrDefault(id, id.toString().substring(0, 8))));
+            m.put("nomes", nomes);
+            lista.add(m);
+        }
+        return lista;
+    }
+
     /** API pública (BountyPlugin, por reflexão): tag do clã do jogador, ou null se não tem clã. */
     public String tagDoCla(UUID jogador) {
         Cla cla = claManager == null ? null : claManager.getClaDe(jogador);

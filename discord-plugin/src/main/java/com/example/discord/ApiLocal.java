@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  * POST /vinculo      {"codigo","discordId","discordNome","recompensa":true} → {"ok","nick","uuid","recompensado"} ou {"ok":false,"erro"}
  * POST /desvincular  {"discordId"} ou {"nick"} → {"ok","nick","discordId"}
  * POST /entregar     {"pagamento","pedido","uuid","creditos"} → {"ok","nick","repetida"} (compra da loja; veja Entregas)
+ * GET  /site         → a foto dos jogadores e dos clãs pro site (veja DadosSite), sem esperar o servidor
  * </pre>
  * Cada pedido roda na thread do servidor (mexe em jogador e roda comandos) e responde em até 5 s.
  */
@@ -37,13 +38,15 @@ public class ApiLocal {
     private final DiscordPlugin plugin;
     private final Vinculos vinculos;
     private final Entregas entregas;
+    private final DadosSite site;
     private final Gson gson = new Gson();
     private HttpServer http;
 
-    public ApiLocal(DiscordPlugin plugin, Vinculos vinculos, Entregas entregas) {
+    public ApiLocal(DiscordPlugin plugin, Vinculos vinculos, Entregas entregas, DadosSite site) {
         this.plugin = plugin;
         this.vinculos = vinculos;
         this.entregas = entregas;
+        this.site = site;
     }
 
     public void ligar(String endereco, int porta, String token) throws IOException {
@@ -77,6 +80,16 @@ public class ApiLocal {
             return;
         }
         String rota = troca.getRequestMethod() + " " + troca.getRequestURI().getPath();
+        if (rota.equals("GET /site")) {
+            // A foto já está pronta em JSON: não passa pela thread do servidor.
+            byte[] bytes = site.json().getBytes(StandardCharsets.UTF_8);
+            troca.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+            troca.sendResponseHeaders(200, bytes.length);
+            try (OutputStream saida = troca.getResponseBody()) {
+                saida.write(bytes);
+            }
+            return;
+        }
         JsonObject corpo = new JsonObject();
         if (troca.getRequestMethod().equals("POST")) {
             String texto = new String(troca.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);

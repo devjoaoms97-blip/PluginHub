@@ -141,6 +141,11 @@ api:
   porta: 8155
   token: ""
 
+# O site (pasta site/ do repositório) lê pela API (GET /site) uma foto dos jogadores: dinheiro, rank,
+# skills, clã, VIP e votos. A foto é refeita a cada tantos minutos.
+site:
+  intervalo-minutos: 5
+
 # Vínculo da conta do Minecraft com a do Discord (/vincular no jogo, /vincular <código> no Discord).
 vinculo:
   codigo-minutos: 10

@@ -245,6 +245,22 @@ public class RankupPlugin extends JavaPlugin {
         return proximo == null ? null : proximo.nomeColorido();
     }
 
+    /**
+     * API pública (DiscordPlugin, pro site): o rank e o prestígio do jogador, só com tipos simples.
+     * {@code cor} vem com § (ex: "§a"); {@code posicao} começa em 1.
+     */
+    public java.util.Map<String, Object> dadosDoSite(UUID jogador) {
+        Rank rank = rankManager.getRankDe(jogador);
+        java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+        m.put("id", rank.id());
+        m.put("nome", rank.nome());
+        m.put("cor", rank.cor());
+        m.put("posicao", rankManager.indice(rank) + 1);
+        m.put("total", rankManager.getRanks().size());
+        m.put("prestigio", prestigioManager.nivel(jogador));
+        return m;
+    }
+
     /** Id do rank do jogador (ex: "fazendeiro"). */
     public String rankDe(UUID jogador) {
         return rankManager.getRankDe(jogador).id();
