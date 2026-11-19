@@ -5,7 +5,7 @@
 **Boss mundial**
 Um boss aparece todo dia às **20h**: de segunda a sábado, um dos normais, sorteado; no domingo, o **Wither**. `/boss proximo` mostra o próximo horário. Entre por `/warp boss`; o PvP começa depois do túnel.
 
-Venha de **netherite com Proteção** e maçãs douradas. Quando ele cai, chove equipamento de PvP no chão (netherite com **Proteção V**, armas, maçãs) e um **Mapa do Tesouro**: corra, que a arena tem PvP. O golpe final leva um prêmio sorteado e a tag de campeão; os três maiores danos ganham coins, e quem ajudou ganha XP de skill. O **Wither** paga **tudo em dobro**. Se o boss escapar após uma hora, o XP de skill cai 10% por até 24 h (ou até o próximo boss cair).
+Venha de **netherite com Proteção** e maçãs douradas. Quando ele cai, chove equipamento de PvP no chão (netherite com **Proteção V**, armas, maçãs) e um **Mapa do Tesouro**: corra, que a arena tem PvP. O golpe final leva um prêmio sorteado e a tag de campeão; os três maiores danos ganham **R$ 15.000, R$ 10.000 e R$ 5.000** e uma **Chave do Boss** cada, e quem ajudou ganha XP de skill. O **Wither** paga **tudo em dobro**, deixa **2 mapas** e o campeão dele ganha um **VIP Bronze de 7 dias**. Às vezes (10%) o boss vem **✦ ELITE ✦**: o dobro de vida, 50% mais dano e recompensas em dobro. Se o boss escapar após uma hora, o XP de skill cai 10% por até 24 h (ou até o próximo boss cair).
 
 O **Dragão do End** renasce às 21h, com PvP fora da plataforma verde: tutorial **Dragão do End**.
 

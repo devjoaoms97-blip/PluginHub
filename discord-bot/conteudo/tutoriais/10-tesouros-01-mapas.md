@@ -2,7 +2,9 @@
 
 ## Como conseguir um mapa
 
-**Derrotando o boss:** cada boss deixa cair exatamente 1 Mapa do Tesouro. A raridade é sorteada assim: **Comum 45% · Raro 30% · Arcano 18% · Lendário 7%**.
+**Derrotando o boss:** cada boss deixa cair 1 Mapa do Tesouro (o Wither, de domingo, deixa 2). A raridade é sorteada assim: **Comum 45% · Raro 30% · Arcano 18% · Lendário 7%**.
+
+**Outros jeitos:** o **Dragão do End** dá 1 mapa pra quem dá o último golpe (mesmas chances do boss); as skills **Pescador** e **Escavador** acham mapas de vez em quando; as **caixas** da Praça das Caixas e o **kit mensal do VIP** também trazem mapas; e o `/tutorial` dá um mapa comum no fim.
 
 **Minerando:** cada bloco quebrado dentro de uma mina válida tem **0,0625% de chance (1 em 1.600, em média)** de dar um mapa diretamente no inventário. A 4.000 blocos por hora, isso dá cerca de **2,5 mapas por hora**, ou um a cada 24 minutos em média. É uma média, não uma garantia.
 

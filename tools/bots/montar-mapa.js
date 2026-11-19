@@ -482,6 +482,7 @@ const DICAS = [
     '&fDe vez em quando a picareta acha um &dFragmento Arcano&f. Guarde! O &dCambista&f, no fundo da avenida, troca por encantamento acima do máximo.',
     '&fMuito minério ocupando a mochila? O &7Compactador&f, no fundo da avenida, transforma 9 em 1 bloco. De graça, e ainda desfaz.',
     '&fUma vez minha picareta achou um &6Mapa do Tesouro&f! Fui atrás e quase não voltei. O &6Caçador de Tesouros&f, no portão do boss, explica melhor.',
+    '&fMinerando, às vezes cai uma &bChave da Mina&f. Leve na &6Praça das Caixas&f, entre o portão das minas e o da loja, e gire a roleta!',
   ] },
   { id: 'mercadora', skin: 'c57948ce86408ba0ceff3f104b03e6567b0ab07f52c8d261c9a6893d5d92a366', nome: '&dDona Cida, a Mercadora', pos: [6, -6], falas: [
     '&fAs barracas do spawn são de vocês! Alugue uma com &e/barraca alugar&f e um vendedor com a SUA cara trabalha por você.',
@@ -499,6 +500,8 @@ const DICAS = [
   ] },
   { id: 'guia', skin: 'eeaf43c747497e20fe0667d67810aa1f3cb0aeb96fcc94b7ce18f5d165c8284d', nome: '&aZé, o Guia', pos: [6, 6], falas: [
     '&fBem-vindo! Pegue sua recompensa de todo dia com &e/diaria&f. Quanto mais dias seguidos, melhor.',
+    '&fChegou agora? &e/kit iniciante&f dá ferramentas, comida e tochas pra começar. Dá pra pegar de novo a cada 2 horas enquanto você for Camponês.',
+    '&fJá votou hoje? &e/votar&f: cada voto dá uma &bChave de Voto&f, e votando todo dia o bônus cresce até o 7º dia. A cada 50 votos do servidor, todo mundo online ganha uma chave!',
     '&fQuer um X1? &e/duelo <jogador> <valor>&f. Quem perde, perde os itens. Quem ganha, ganha o meu respeito.',
     '&fNa agenda atual: &6Gladiador&f por &bclã&f sábado às &e19h&f e &6individual&f domingo às &e19h&f. A borda fecha no centro!',
     '&fTodo dia, às &e10h&f e às &e16h&f, tem o &2Vietnã&f: pilares sobre a água, e quem cair tá fora. Entre com o inventário vazio: &e/vietna entrar&f. O último de pé leva um cheque!',
@@ -531,6 +534,7 @@ const DICAS = [
   { id: 'sentinela-boss', skin: '2241cc1466e4bde22f0756b88f79fa4def38e1dcc66b7522ab81558534c36b0a', nome: '&cSentinela do Portão', pos: [-6, 38], falas: [
     '&fTem boss &ctodo dia às 20h&f. No &cdomingo&f é o &8Flagelo das Trevas&f. Dez minutos antes, o chat avisa. &e/boss proximo&f diz quando.',
     '&fQuem dá o último golpe vira &6campeão&f e ganha a tag. Quem bate mais aparece no ranking de dano.',
+    '&fOs 3 que mais derem dano no boss levam uma &cChave do Boss&f. A caixa dela, na &6Praça das Caixas&f, tem até spawner!',
     '&fO boss só espera &c1 hora&f. Se ninguém derrotar, ele vai embora e o mal reina: XP de skill &c-10%&f até alguém derrubar o próximo.',
     '&fQuem morre na arena deixa os itens lá. Não leve nada que você não aceita perder.',
     '&fA arena tem cara de tóxica, mas pode pisar à vontade. O que mata mesmo é o boss. E o orgulho.',
@@ -544,6 +548,7 @@ const DICAS = [
     '&fGosta de pescar? No &e/warp pesca&f você aluga uma barraquinha no porto: a vara puxa sozinha e o peixe vai pro barril. Dá até pra pescar mapa assim!',
     '&fCom o mapa, é &e/warp tesouros&f. No templo da chegada, os hologramas dizem pra que lado fica cada direção. Segure o mapa na mão pra ver quanto falta até o X e cave o chão bem em cima dele.',
     '&fEmbaixo do X tem uma câmara cheia de guardiões, que vêm em ondas. O baú só destrava quando o último cair.',
+    '&fNos baús das câmaras raras, arcanas e lendárias às vezes vem uma &6Chave do Tesouro&f, pra caixa dela na &6Praça das Caixas&f.',
     '&fChame o clã! Quem é do seu clã entra pelo buraco, e os amigos você chama com &e/tesouro convidar&f. Mas o tesouro é só de quem tinha o mapa.',
     '&fMapa se vende e se troca. Uma barraca cheia de mapas lendários... isso sim é negócio.',
     '&cQuem morre na câmara perde tudo&f: o mapa, o tesouro e o que estiver carregando. E sair do servidor no meio da luta conta como morrer.',
@@ -558,6 +563,7 @@ const DICAS = [
     '&fAqui o combate é à moda antiga: sem barra de recarga, todo golpe sai com o dano inteiro, até 4 por segundo.',
     '&fBloquear com a espada tira metade do dano. Mas com escudo na outra mão, a espada não bloqueia: escolha.',
     '&fCada arma treina a própria skill: espada, machado, lança, maça e até o soco. Veja em &e/skills&f.',
+    '&fCaçando os mobs do &e/warp recursos&f você treina o &6Caçador&f: o bicho larga drop a mais e, com sorte, a própria cabeça, que vende no &e/trofeus&f. Mob de spawner não conta!',
     '&fTem recompensa pela sua cabeça? Confira em &e/bounty lista&f. Se não tiver, é porque você é bonzinho demais.',
     '&fLevante o escudo bem na hora do golpe: o &6Escudo Perfeito&f anula o dano e deixa o outro tonto por um segundo.',
     '&fSkill no 50? &e/skills prestigio <skill>&f volta pro 1, mas cada prestígio deixa ela mais forte. E no sábado e no domingo o XP de skill vale o dobro!',
@@ -584,6 +590,7 @@ const DICAS = [
     '&fNo seu terreno cabem até 8 &afazendas&f: compre a Escritura com o &aCorretor Rural&f, no fundo da &e/warp loja&f, e o dinheiro cai no cofre até você coletar no fazendeiro.',
     '&fA fazenda é do terreno: se ele for a leilão, quem arrematar leva a fazenda junto, com o cofre e tudo!',
     '&fMadeira, bicho e peixe, tem tudo no &e/warp recursos&f. Ele é refeito todo mês, então não construa casa lá!',
+    '&fCavando terra, areia e cascalho no &e/warp recursos&f você treina o &6Escavador&f, e às vezes acha uma relíquia antiga. Vende no &e/trofeus&f!',
     '&fQuartzo e netherita? &e/warp nether&f. Élitro e dragão? &e/warp end&f. Os dois também são refeitos todo mês: o End no dia 10, o Nether no dia 20 e o de recursos no dia 30 (&e/recursos&f mostra as datas).',
     '&fCaverna escura? &e/luz&f liga a visão noturna. De novo, desliga.',
     '&fPerdido? &e/mapa&f te dá o mapa do mundo em que você está. A setinha é você.',

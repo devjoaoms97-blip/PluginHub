@@ -11,7 +11,7 @@ Cabeça       0,2%   0,4%   0,6%   0,8%   1,0%
 ```
 
 **⛏ Escavador**: 1 XP por bloco de terra, grama, areia, cascalho, argila, lama ou areia das almas quebrado no `/warp recursos` (e no Nether de recursos). Bloco colocado por jogador não conta.
-Bônus: chance de achar uma **relíquia** (Moeda Antiga e Caco de Cerâmica, Fóssil e Ponta de Flecha, Amuleto e Cálice, e as lendárias Coroa Perdida e Ovo de Dinossauro, de R$ 1.200 a R$ 30.000, com `/trofeus vender`), e uma chance menor de **Fragmento Arcano** e de **Mapa do Tesouro**. Quanto maior o nível, mais raras as relíquias.
+Bônus: chance de achar uma **relíquia** (Moeda Antiga e Caco de Cerâmica, Fóssil e Ponta de Flecha, Amuleto e Cálice, e as lendárias Coroa Perdida e Ovo de Dinossauro, de R$ 1.200 a R$ 30.000, com `/trofeus vender`), e uma chance menor de **Fragmento Arcano** e de **Mapa do Tesouro** (comum). Quanto maior o nível, mais raras as relíquias.
 ```
 Nível          10      20      30      40      50
 Relíquia    0,02%   0,04%   0,06%   0,08%   0,10%
@@ -26,8 +26,8 @@ Duração       +6%   +12%   +18%   +24%   +30%
 Poção a mais   3%     6%     9%    12%    15%
 ```
 
-**⚒ Ferreiro**: XP pelo que você gasta nas oficinas da avenida das minas: no **Ferreiro** (reparo e Adaga), na **Bruxa** (por nível gasto na mesa) e no **Cambista** (coins e fragmentos).
-Bônus: **desconto** no Ferreiro e nas coins do Cambista, por cima do desconto do VIP. Na Bruxa, a mesma chance de ela **não cobrar os níveis** daquele encantamento.
+**⚒ Ferreiro**: XP pelo que você gasta nas oficinas da avenida das minas: no **Ferreiro** (reparo e Adaga), na **Bruxa** (o que ela cobra e cada nível gasto na mesa) e no **Cambista** (coins e fragmentos).
+Bônus: **desconto** no Ferreiro, na taxa da Bruxa e nas coins do Cambista, por cima do desconto do VIP. Na Bruxa, a mesma chance de ela **não cobrar os níveis** daquele encantamento.
 ```
 Nível          10     20     30     40     50
 Desconto       5%    10%    15%    20%    25%

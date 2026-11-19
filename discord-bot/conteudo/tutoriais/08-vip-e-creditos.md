@@ -3,7 +3,7 @@
 **VIPs**
 Bronze, Prata, Ouro e Diamante duram **30 dias**. `/vip tiers` compara os benefícios e `/vip check` mostra seu tempo restante. Os benefícios dependem do tier: descontos na loja, bônus de venda e XP, kits, cura e fome; voo, warp e partículas variam por tier.
 
-Cada VIP tem três kits: `/vip kit` (a cada 24 h), `/vip kitsemanal` (7 dias) e `/vip kitmensal` (30 dias, com o equipamento encantado, máquinas e mapas do tesouro). O que vem em cada um está no tutorial **Kits e benefícios de cada VIP**. Leve em conta que alguns desses itens podem ser perdidos em áreas de PvP. `/vip pocoes` junta as poções iguais do inventário em pilhas de até 10.
+Cada VIP tem três kits: `/vip kit` (a cada 24 h), `/vip kitsemanal` (7 dias) e `/vip kitmensal` (30 dias, com o equipamento encantado, máquinas e mapas do tesouro). O que vem em cada um está no tutorial **Kits e benefícios de cada VIP**. Leve em conta que alguns desses itens podem ser perdidos em áreas de PvP. `/vip pocoes` junta as poções iguais do inventário em pilhas de até 10. Todo VIP tem `/montaria`: um cavalo na hora, bem mais rápido que a pé (não entra nas minas, na Mina PvP nem na arena do boss). Com créditos dá pra trocar o visual dele por uma skin de montaria.
 
 Ao ativar um VIP pelo menu de créditos, clique esquerdo ativa para você; clique direito gera um código de presente de uso único. Um código **normal** ainda não resgatado pode ser revendido por coins com `/vip vender <preço> <código>`; quem compra usa `/vip resgatar <código>`. Códigos de prêmio de evento não podem ser revendidos, e um VIP já ativado também não pode ser revendido.
 

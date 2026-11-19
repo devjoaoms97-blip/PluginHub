@@ -14,7 +14,7 @@ Site em Node, **sem dependências** (só o `http` do próprio Node), que roda se
 | `/loja/pedido/<id>` | O pedido: aguardando, em análise, pago, entregue, vencido ou com valor diferente. Se atualiza sozinho a cada 5 s. O id é aleatório (ninguém adivinha o pedido dos outros) |
 | `/votar` | Os sites de votação (os do `sites:` do VotoPlugin), o que cada voto dá, os 7 dias da sequência, a barra da Festa do Voto, o top 10 do mês e a sequência de um nick (`?nick=`) |
 | `/novidades` | As atualizações, da mais nova pra mais antiga. Pra anunciar uma, ponha uma entrada no começo de `NOVIDADES` em `src/conteudo.js` |
-| `/celular` | Como jogar pelo celular Android (launcher de Java: FCL ou Zalith 2), lido do tutorial do Discord `24-jogar-pelo-celular.md` |
+| `/tutoriais` | Os tutoriais do fórum do Discord (`discord-bot/conteudo/tutoriais/*.md`), por grupo: Skills, Começando, Rankup/dinheiro/terrenos, PvP e eventos, Mundos e tesouros. Cada um em `/tutoriais/<nome>` (o nome do arquivo sem o número), com as seções em cards, as tabelas de nível e os outros do grupo do lado. Mudou o arquivo, muda o site e o Discord. O `/celular` leva pro de celular, e as páginas dos cards (`/servidor/<id>`) listam os tutoriais ligados (`tutoriais:` em `src/conteudo.js`) |
 | `/regras` | As regras, lidas do mesmo arquivo do canal do Discord (`discord-bot/conteudo/regras.md`): mudou lá, muda aqui |
 
 **Efeitos:** o brilho que segue o mouse nos cards, os cards que sobem e o ícone que pula, a entrada dos elementos ao rolar a página, os números contando, as faíscas no topo da inicial e o ponto verde pulsando no status. Quem pede menos movimento no sistema (`prefers-reduced-motion`) vê tudo parado.
@@ -29,7 +29,7 @@ Site em Node, **sem dependências** (só o `http` do próprio Node), que roda se
 
 Os pedidos ficam em `<DISCORD_PASTA>/site-<servidor>.json` (a referência no Mercado Pago é `site-<servidor>-<número>`, diferente das do bot). O Mercado Pago só volta sozinho pra página do pedido com `SITE_URL` em https. As vendas do site aparecem no log do site e no `entregas.yml` do DiscordPlugin (pedido "site #N"); o `#log-vendas` do Discord é só da loja do bot.
 
-**Mostrar pra alguém de fora, sem VPS:** `cloudflared tunnel --url http://127.0.0.1:8080` dá um endereço `https://....trycloudflare.com` temporário (muda a cada vez). Ligue o site com `SITE_URL` igual a ele.
+**Mostrar pra alguém de fora, sem VPS:** `cloudflared tunnel --url http://127.0.0.1:8080` dá um endereço `https://....trycloudflare.com` temporário (muda a cada vez). Ligue o site com `SITE_URL` igual a ele. O `site.bat` (ou `node publicar.js oficial`) faz tudo isso sozinho: abre o túnel, sobe o site com o link certo e mostra o link na janela; fechar a janela tira os dois do ar.
 
 ## De onde vêm os dados
 

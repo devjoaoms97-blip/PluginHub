@@ -35,6 +35,9 @@
 • Terrenos: 1 / 2 / 2 / 3
 • Baú pessoal (`/echest`): 18 / 27 / 36 / 54 espaços (sem VIP, 9)
 • Missão diária extra: no Ouro e no Diamante
+• Recompensa da `/diaria`: +20% / +40% / +60% / +100%
+• Coleta das fazendas: +3% / +6% / +9% / +12%
+• `/montaria` em todos os tiers
 • Ao ativar: dinheiro de 10% / 20% / 35% / 50% do próximo rank e 500 / 1.500 / 3.000 / 5.000 de XP em cada skill
 • Cura e fome com tempo menor quanto maior o tier; voo, partículas e warp VIP variam por tier (`/vip tiers`)
 

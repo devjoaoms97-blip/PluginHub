@@ -13,30 +13,32 @@ As chances abaixo são a probabilidade de cada item aparecer **ao menos uma vez 
 
 ### Baú raro · 3 itens
 
-- Diamante ×4–8: **53,0%** · bloco de esmeralda ×1–3: **42,9%**
-- Maçã dourada ×2–4: **30,7%** · frasco de experiência ×16–32: **30,7%**
-- Fragmento Arcano ×1–2: **30,7%** · células de combustível ×32–64: **35,8%**
-- Livro Eficiência V: **13,2%** · Inquebrável III: **13,2%** · Fortuna III: **13,2%**
-- Spawner de aranha: **10,0%** · creeper: **10,0%** · slime: **10,0%**
-- Máquina Tear: **6,7%**
+- Diamante ×4–8: **50,3%** · bloco de esmeralda ×1–3: **40,5%**
+- Maçã dourada ×2–4: **28,8%** · frasco de experiência ×16–32: **28,8%**
+- Fragmento Arcano ×1–2: **28,8%** · células de combustível ×32–64: **33,7%**
+- Livro Eficiência V: **12,3%** · Inquebrável III: **12,3%** · Fortuna III: **12,3%**
+- Spawner de aranha: **9,3%** · creeper: **9,3%** · slime: **9,3%**
+- Máquina Tear: **6,3%** · **Chave do Tesouro**: **18,1%**
 
 ### Baú arcano · 4 itens
 
-- Bloco de diamante ×1–3: **53,5%** · sucata de netherita ×1–2: **39,6%**
-- Maçã dourada encantada ×1: **33,0%** · Fragmento Arcano ×2–4: **53,5%**
-- Livro Remendo I: **29,4%** · Proteção IV: **29,4%** · Afiação V: **29,4%**
-- Totem da imortalidade ×1: **21,8%** · células de combustível ×64–128: **39,6%**
-- Spawner de enderman: **21,8%** · blaze: **17,7%**
-- Máquina Forja: **17,7%** · Destilaria: **13,5%**
+- Bloco de diamante ×1–3: **49,4%** · sucata de netherita ×1–2: **36,1%**
+- Maçã dourada encantada ×1: **29,9%** · Fragmento Arcano ×2–4: **49,4%**
+- Livro Remendo I: **26,6%** · Proteção IV: **26,6%** · Afiação V: **26,6%**
+- Totem da imortalidade ×1: **19,6%** · células de combustível ×64–128: **36,1%**
+- Spawner de enderman: **19,6%** · blaze: **16,0%**
+- Máquina Forja: **16,0%** · Destilaria: **12,2%**
+- **Chave do Tesouro**: **36,1%**
 
 ### Baú lendário · 5 itens
 
-- Barra de netherita ×1–2: **55,0%** · bloco de diamante ×3–6: **65,5%**
-- Maçã dourada encantada ×1–2: **48,4%** · Fragmento Arcano ×5–8: **63,1%**
-- Totem da imortalidade ×1–2: **40,8%** · livro Remendo I: **36,6%**
-- Estrela do Nether ×1: **22,6%** · élitro ×1: **22,6%**
-- Células de combustível ×128–256: **48,5%** · spawner de golem de ferro: **22,6%**
-- Spawner de blaze ×2–4: **27,6%** · Máquina Lapidadora: **17,4%** · Reator Arcano: **11,8%**
-- **Adaga** de netherita (Afiação V, Inquebrável III, Remendo): **17,4%**
+- Barra de netherita ×1–2: **49,4%** · bloco de diamante ×3–6: **59,9%**
+- Maçã dourada encantada ×1–2: **43,1%** · Fragmento Arcano ×5–8: **57,5%**
+- Totem da imortalidade ×1–2: **36,1%** · livro Remendo I: **32,3%**
+- Estrela do Nether ×1: **19,7%** · élitro ×1: **19,7%**
+- Células de combustível ×128–256: **43,1%** · spawner de golem de ferro: **19,7%**
+- Spawner de blaze ×2–4: **24,1%** · Máquina Lapidadora: **15,1%** · Reator Arcano: **10,3%**
+- **Adaga** de netherita (Afiação V, Inquebrável III, Remendo): **15,1%**
+- **Chave do Tesouro** ×1–2: **54,9%**
 
-Spawners, máquinas, fragmentos e combustível dependem dos plugins que fornecem esses itens. Máquinas acima do seu rank podem ser guardadas ou negociadas, mas exigem o rank correspondente para colocar e usar.
+A Chave do Tesouro abre a caixa dela na Praça das Caixas (veja **Caixas e votos**). Spawners, máquinas, fragmentos e combustível dependem dos plugins que fornecem esses itens. Máquinas acima do seu rank podem ser guardadas ou negociadas, mas exigem o rank correspondente para colocar e usar.

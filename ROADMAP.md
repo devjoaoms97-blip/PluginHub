@@ -76,6 +76,10 @@ Testado no servidor de teste pelos bots (`tools/bots/teste-foco.js` e os testes 
 3. **Skills de profissão, segunda leva** ✅ v1 (2026-11-18, `teste-skills-leva2.js`): Caçador, Escavador, Alquimista e Ferreiro (detalhes em SkillsPlugin, abaixo).
 4. **Texturas** ✅ (2026-11-18): os 12 achados raros das fazendas (`servidor:raro_<fazenda>`) e as 4 chaves das caixas, desenhados por código no `texturas.py`.
 
+## Conteúdo sincronizado (2026-11-18)
+
+Varredura dos textos pros jogadores contra os configs: tutoriais novos (25 Fazendas, 26 Pesca e o porto, 27 Caixas e votos), os antigos corrigidos (a Mina PvP e as warps novas no 01, 02 e 05; os balcões da loja no 03; as fazendas no 04; o boss com chaves, elite e o prêmio do Wither no 07; a montaria e os bônus do VIP no 08 e 19; as fontes de mapa no 10; as chances dos baús com a Chave do Tesouro no 12; o 18 reorganizado; Escavador e Ferreiro no 23; "21 skills" no 05), falas novas nos NPCs de dicas (voto, kit de iniciante, as chaves e o Caçador e o Escavador) e o site (até 8 fazendas, boss todo dia, tutoriais em `/tutoriais`). A ajuda do jogo (`/comandos`) já estava em dia.
+
 ## Celular (2026-11-18)
 
 - **Jogar pelo celular** ✅: o servidor já aceita o Minecraft Java rodando no Android por um launcher (Fold Craft Launcher ou Zalith Launcher 2, de graça e de código aberto), sem nada a mais no servidor. Tutorial `24-jogar-pelo-celular` no Discord e a página `/celular` do site, lida do mesmo arquivo. **Falta:** testar num celular de verdade antes de anunciar (os nomes das telas do launcher no tutorial são genéricos).

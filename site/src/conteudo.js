@@ -3,7 +3,7 @@
 
 const RECURSOS = [
   {
-    id: 'rankup', icone: '⛏️', titulo: 'Rankup com 12 minas',
+    id: 'rankup', tutoriais: ['rankup-e-minas', 'ranks-minas-e-novidades'], icone: '⛏️', titulo: 'Rankup com 12 minas',
     resumo: 'Minere, venda e suba de rank até o prestígio. Cada rank abre uma mina melhor, e a mina PvP rende mais pra quem tem coragem.',
     paragrafos: [
       'Você começa como Camponês e sobe rank a rank até Rei: Fazendeiro, Lenhador, Ferreiro, Mercador, Escudeiro, Clérigo, Cavaleiro, Barão, Conde, Duque e Rei. Cada rank abre uma mina nova na Avenida das Minas, com minérios que valem mais.',
@@ -16,7 +16,7 @@ const RECURSOS = [
   },
   {
     id: 'bosses', icone: '🐉', titulo: 'Bosses',
-    resumo: 'Bosses com modelo próprio e ataques especiais, toda semana. O ranking de dano paga em coins e em Chaves do Boss.',
+    resumo: 'Um boss todo dia às 20h, com modelo próprio e ataques especiais. O ranking de dano paga em coins e em Chaves do Boss.',
     paragrafos: [
       'Na arena enterrada ao sul do spawn aparecem o Titã Sombrio, o Carrasco Ósseo, a Rainha Aracnídea, o Açougueiro Infernal, o Estilhaço Verde, a Feiticeira Maldita e o Flagelo das Trevas, cada um com o próprio modelo em 3D e ataques diferentes.',
       'Todo mundo que bate ganha, mas o ranking de dano decide quem leva mais: os três primeiros recebem Chaves do Boss e o campeão ganha VIP de evento. A arena tem PvP ligado, então cuidado com quem está do lado.',
@@ -26,18 +26,18 @@ const RECURSOS = [
     ranking: 'clas',
   },
   {
-    id: 'fazendas', icone: '🌾', titulo: 'Terrenos e fazendas',
-    resumo: 'Compre um terreno, construa até 4 fazendas e deixe produzindo. Cada uma tem um achado raro que vale ouro.',
+    id: 'fazendas', tutoriais: ['fazendas', 'terrenos-maquinas-spawners'], icone: '🌾', titulo: 'Terrenos e fazendas',
+    resumo: 'Compre um terreno, construa até 8 fazendas e deixe produzindo. Cada uma tem um achado raro que vale ouro.',
     paragrafos: [
-      'Os terrenos são seus: compre com coins, construa o que quiser e chame os amigos. O imposto é semanal e se paga sozinho.',
-      'Dentro do terreno cabem até 4 fazendas, entre 12 tipos: horta, galinheiro, pomar, pocilga, trigal, curral, ovelhas, apiário, abóboras, cogumelos, verrugas e chorus. Elas produzem sozinhas e, de vez em quando, acham um item raro (como o Ovo Dourado) que vende caro no Corretor Rural.',
+      'Os terrenos são seus: compre com coins, construa o que quiser e chame os amigos. O imposto é semanal, e com o /terreno autopagar ele se paga sozinho.',
+      'Dentro do terreno cabem até 8 fazendas, entre 12 tipos: horta, galinheiro, pomar, pocilga, trigal, curral, ovelhas, apiário, abóboras, cogumelos, verrugas e chorus. Elas produzem sozinhas e, de vez em quando, acham um item raro (como o Ovo Dourado) que vende caro no Corretor Rural.',
     ],
-    lista: ['12 fazendas, até 4 por terreno', 'Achados raros com textura própria', 'Venda no Corretor Rural com o bônus do rank'],
+    lista: ['12 fazendas, até 8 por terreno', 'Achados raros com textura própria', 'Venda no Corretor Rural com o bônus do rank'],
     comandos: [['/terreno', 'compra e cuida do seu terreno'], ['/fazendas', 'suas fazendas e a produção']],
     ranking: 'dinheiro',
   },
   {
-    id: 'clas', icone: '🛡️', titulo: 'Clãs',
+    id: 'clas', tutoriais: ['clas-e-pvp', 'x1-e-duelos'], icone: '🛡️', titulo: 'Clãs',
     resumo: 'Monte seu clã, divida o banco, dispute o ranking de abates e de bosses.',
     paragrafos: [
       'Um clã tem tag no chat e na tab, banco próprio com extrato, cargos (líder, oficial e membro) e chat só de vocês.',
@@ -48,7 +48,7 @@ const RECURSOS = [
     ranking: 'clas',
   },
   {
-    id: 'eventos', icone: '⚔️', titulo: 'Eventos e PvP',
+    id: 'eventos', tutoriais: ['eventos', 'gladiador', 'x1-e-duelos', 'dragao-do-end'], icone: '⚔️', titulo: 'Eventos e PvP',
     resumo: 'Gladiador, X1 com aposta, Spleef, Vietnã, Corre ou Cai e recompensa por cabeça.',
     paragrafos: [
       'O Gladiador é o PvP em massa: todos contra todos numa arena com arquibancada, e o último vivo leva o prêmio. No X1, você desafia alguém e os dois apostam coins.',
@@ -58,7 +58,7 @@ const RECURSOS = [
     comandos: [['/gladiador entrar', 'entra no Gladiador'], ['/duelo <jogador> [valor]', 'desafia pro X1'], ['/eventos', 'eventos abertos'], ['/bounty', 'recompensas por cabeça']],
   },
   {
-    id: 'skills', icone: '📈', titulo: '21 skills',
+    id: 'skills', tutoriais: ['skills-e-combate', 'skills-guia-completo', 'skills-de-defesa', 'skills-de-profissao', 'skills-de-profissao-2'], icone: '📈', titulo: '21 skills',
     resumo: 'Treze de combate e oito de profissão: Minerador, Pescador, Caçador, Ferreiro... cada uma com bônus de verdade.',
     paragrafos: [
       'As skills de combate sobem com o que você usa: Espadas, Machado, Arqueiro, Tridente, Lanceiro, Marreteiro, Porradeiro, Esquiva, Defesa, Bloqueio, Crítico, Regeneração e Agilidade.',
@@ -69,7 +69,7 @@ const RECURSOS = [
     ranking: 'skills',
   },
   {
-    id: 'caixas', icone: '🎁', titulo: 'Caixas e votos',
+    id: 'caixas', tutoriais: ['caixas-e-votos'], icone: '🎁', titulo: 'Caixas e votos',
     resumo: 'Vote todo dia e ganhe chaves. Abra caixas na Praça das Caixas, com spawners, máquinas e itens raros.',
     paragrafos: [
       'Na Praça das Caixas, no spawn, ficam a Caixa de Voto, a da Mina, a do Boss e a do Tesouro. Clique com o botão esquerdo pra ver os prêmios e as chances; com a chave na mão, o direito gira a roleta.',
@@ -80,7 +80,7 @@ const RECURSOS = [
     ranking: 'votos',
   },
   {
-    id: 'pesca', icone: '🎣', titulo: 'Pesca e tesouros',
+    id: 'pesca', tutoriais: ['pesca-e-porto', 'tesouros-01-mapas', 'tesouros-02-camara', 'tesouros-03-recompensas', 'mundos-de-recursos'], icone: '🎣', titulo: 'Pesca e tesouros',
     resumo: 'Um porto com barracas de pesca e mapas do tesouro que levam a câmaras com guardiões.',
     paragrafos: [
       'O porto da pesca fica longe de tudo: alugue uma barraca e pesque até parado, com o estoque guardando o que vem. Os peixes raros vendem caro.',
@@ -111,7 +111,7 @@ const NOVIDADES = [
       ['⚔️', 'Mina PvP no fundo da Avenida das Minas, com uma hora de venda em dobro todo dia.', 'rankup'],
       ['🎣', 'Porto da pesca com 16 barracas pra alugar, em que a vara puxa sozinha.', 'pesca'],
       ['🐉', 'Os bosses ganharam modelo próprio em 3D, com animação de andar e de ataque.', 'bosses'],
-      ['🌾', 'Fazendas nos terrenos: 12 tipos, até 4 por terreno, e um achado raro em cada.', 'fazendas'],
+      ['🌾', 'Fazendas nos terrenos: 12 tipos, até 8 por terreno, e um achado raro em cada.', 'fazendas'],
     ],
   },
   {

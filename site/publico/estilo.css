@@ -566,3 +566,23 @@ body.previa { width: 1200px; height: 630px; overflow: hidden; display: block; mi
 @media (max-width: 560px) { .votar-grade .cartoes-pequenos { grid-template-columns: 1fr; } }
 
 .regra-bloco code { overflow-wrap: anywhere; }
+
+/* Tutoriais */
+.chips-grupos { margin: 18px 0 0; }
+.cartoes-tutoriais { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.cartao-tutorial h3 { margin: 0; }
+.tutorial-grade { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 28px; padding-top: 32px; align-items: start; }
+.tutorial-lado { top: 80px; }
+.tabela-texto { background: var(--fundo-2); border: 1px solid var(--borda); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font: .88rem/1.5 ui-monospace, "Cascadia Code", Consolas, monospace; color: var(--texto); margin: 0 0 14px; }
+.numerada { margin: 0 0 14px; padding-left: 1.4em; display: grid; gap: 8px; }
+.numerada li::marker { color: var(--brasa); font-weight: 700; }
+.regra-bloco > p:last-child, .regra-bloco > ul:last-child { margin-bottom: 0; }
+.lista-tutoriais { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 4px; }
+.lista-tutoriais a { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; color: var(--texto); text-decoration: none; font-size: .92rem; transition: background .2s, transform .2s var(--mola); }
+.lista-tutoriais a:hover { background: var(--fundo-2); color: var(--texto); transform: translateX(3px); }
+.lista-tutoriais a[aria-current="page"] { background: var(--fundo-2); color: var(--brasa-clara); font-weight: 600; }
+.guias-titulo { margin-top: 18px; }
+@media (max-width: 860px) {
+  .tutorial-grade { grid-template-columns: 1fr; }
+  .tutorial-lado { position: static; }
+}

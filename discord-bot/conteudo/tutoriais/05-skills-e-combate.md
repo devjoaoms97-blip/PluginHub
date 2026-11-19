@@ -1,10 +1,10 @@
 # ⚔️ Skills e combate
 
-**As 17 skills**
+**As 21 skills**
 Cada skill vai do nível 1 ao **50** e melhora um pouco **a cada nível**: o bônus não espera o 50, ele cresce aos poucos. `/skills` abre o menu, `/skills ver` resume no chat e `/skills top [skill]` mostra o ranking. Com uma arma ou ferramenta na mão, a skill dela aparece no placar da direita.
 ⚔ **Armas (8):** Espadas, Machado, Arqueiro, Porradeiro, Tridente, Lanceiro, Marreteiro e Crítico. Guia: **Skills de armas**.
 🛡 **Defesa (5):** Esquiva, Defesa, Bloqueio, Regeneração e Agilidade. Guia: **Skills de defesa**.
-⛏ **Profissão (4):** Minerador, Lenhador, Agricultor e Pescador, pra quem minera, corta, planta e pesca (a pesca tem loot próprio: peixes raros, Baú do Mar e mais). Guia: **Skills de profissão**.
+⛏ **Profissão (8):** Minerador, Lenhador, Agricultor e Pescador, pra quem minera, corta, planta e pesca (a pesca tem loot próprio: peixes raros, Baú do Mar e mais), e Caçador, Escavador, Alquimista e Ferreiro, pra quem caça, cava, faz poção e gasta nas oficinas. Guias: **Skills de profissão** e **Caçador, Escavador, Alquimista e Ferreiro**.
 
 **XP e dinheiro por nível**
 Nas armas, cada ponto de dano dá **2 XP contra jogador**, **1 contra mob** e um quarto disso contra mob de spawner. Em PvP, o XP contra a mesma pessoa cai depois de um tempo (teto diário por vítima). Cada nível novo paga **R$ 25 × o nível** (o nível 10 paga R$ 250).
@@ -28,6 +28,6 @@ A barra de recarga do ataque fica escondida: todo golpe sai com o dano inteiro, 
 - Com escudo, levantar bem na hora do golpe faz o **Escudo Perfeito** (veja **Skills de defesa**).
 
 **Onde há PvP**
-Sempre: arena do boss (depois do túnel), `/warp recursos`, `/warp nether` e `/warp end` (menos o quadrado verde de chegada), e os pisos do X1 e do Gladiador. Na `/warp mobs`, só na fase ligada do ciclo. O resto do spawn, a Avenida das Minas, a Loja Oficial, as plateias e os terrenos são seguros.
+Sempre: arena do boss (depois do túnel), a **Mina PvP** no fundo da avenida (do arco do saguão pra dentro), `/warp recursos`, `/warp nether` e `/warp end` (menos o quadrado verde de chegada), e os pisos do X1 e do Gladiador. Na `/warp mobs`, só na fase ligada do ciclo. O resto do spawn, a Avenida das Minas (fora a Mina PvP), a Loja Oficial, as plateias e os terrenos são seguros.
 
 Morrer em área de risco pode custar os itens que você carrega. Sair do servidor marcado em combate é morte. Entre só com o que aceita perder.

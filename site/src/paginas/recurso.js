@@ -2,8 +2,17 @@
 const { RECURSOS } = require('../conteudo');
 const { layout } = require('./layout');
 const { esc } = require('./util');
+const tutoriais = require('../tutoriais');
 
 const ABAS = { rank: 'o ranking de rank', clas: 'o ranking dos clãs', skills: 'o ranking das skills', votos: 'o ranking de votos', dinheiro: 'os mais ricos' };
+
+/** Os tutoriais ligados a esta parte do servidor (os nomes vêm dos próprios arquivos). */
+function guias(d) {
+  const todos = tutoriais.lista();
+  const lista = (d.tutoriais || []).map((s) => todos.find((t) => t.slug === s)).filter(Boolean);
+  if (!lista.length) return '';
+  return `<h2 class="guias-titulo">Tutoriais</h2><ul class="lista-tutoriais">${lista.map((t) => `<li><a href="/tutoriais/${t.slug}"><span aria-hidden="true">${t.icone}</span>${esc(t.titulo)}</a></li>`).join('')}</ul>`;
+}
 
 function recurso(id) {
   const i = RECURSOS.findIndex((r) => r.id === id);
@@ -28,6 +37,7 @@ function recurso(id) {
     <h2>Comandos</h2>
     <dl>${d.comandos.map(([c, o]) => `<div><dt><button type="button" class="comando" data-copiar="${esc(c)}" title="Copiar"><code>${esc(c)}</code></button></dt><dd>${esc(o)}</dd></div>`).join('')}</dl>
     <p class="fraco">Clique num comando pra copiar.</p>
+    ${guias(d)}
   </aside>
 </section>
 <section class="largura bloco">
