@@ -5,10 +5,9 @@ import { COR } from './marca';
 import { Fagulhas, Final, Texto, limita } from './Teaser';
 import config from '../reels.json';
 
-// Os brutos são 1920x1020 (a Game Bar corta a barra de título). O corte vertical pega o centro,
-// o que deixa de fora o placar (direita) e o chat (esquerda) e mantém a barra do boss no topo.
-const ALTURA = 1920;
-const LARGURA = Math.round((1920 * ALTURA) / 1020);
+// Os brutos podem vir deitados (1920x1020 da Game Bar, 1920x1080 do OBS) ou já em pé (1080x1920 do
+// OBS com a janela do jogo em 9:16). O objectFit "cover" preenche a tela vertical: o deitado perde as
+// laterais (placar e chat ficam de fora) e o em pé entra inteiro.
 
 const Clipe = ({ arquivo, inicio, zoom = [1, 1.08] }) => {
   const f = useCurrentFrame();
@@ -21,7 +20,7 @@ const Clipe = ({ arquivo, inicio, zoom = [1, 1.08] }) => {
         startFrom={Math.round(inicio * fps)}
         volume={0.25}
         style={{
-          position: 'absolute', height: ALTURA, width: LARGURA, left: (1080 - LARGURA) / 2, top: 0,
+          position: 'absolute', width: 1080, height: 1920, left: 0, top: 0, objectFit: 'cover',
           transform: `scale(${escala})`, filter: 'brightness(1.15) contrast(1.12) saturate(1.15)',
         }}
       />

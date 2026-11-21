@@ -176,3 +176,10 @@ Dicas:
 - Para PvP, use o `lutar` em vez do `minecraft:damage ... by <jogador>`: nos testes, esse comando às vezes dizia "Applied" sem tirar vida.
 - Use `minecraft:tp` para levar os bots: o `tp` da Essentials recusa lugares que acha perigosos ("Há um buraco no chão!").
 - No 26.2, o `setworldspawn` vale para o servidor todo, não só para o mundo em que roda. Rodar ele em outro mundo muda onde os jogadores novos entram.
+
+## Gravação de vídeo (só no servidor de teste)
+
+- `figurantes.js <nick> [quantos] [raio]`: bots que andam como gente em volta de você, pra encher as cenas. No chat: `!aqui`, `!raio N`, `!parem`, `!andem`, `!lutar` (lutam com o boss na arena).
+- `camera.js` (carregado pelo `figurantes.js`): câmera em trilho. `!cena <nome>`, `!ponto`, `!desfazer`, `!limpar`, `!cenas`, `!gravar <segundos>`, `!parar`. O percurso vira um datapack (`world/datapacks/camera_brasa`) que move um `item_display` uma vez por tique, e o jogador fica espectando ele.
+- `mapa-altura.js <mundo> <x1> <z1> <x2> <z2> [passo] [yMax]`: grade com a altura do terreno (carrega os chunks com `forceload` enquanto mede), pra planejar a câmera.
+- Roteiro e dicas em `tools/divulgacao/roteiro-gravacao.md`.

@@ -51,7 +51,7 @@ export const Fagulhas = ({ quantas = 70 }) => {
 export const Texto = ({ children, tamanho, cor = COR.branco, estilo }) => (
   <div
     style={{
-      fontFamily: FONTE, fontSize: tamanho, color: cor, fontWeight: 700, textAlign: 'center', lineHeight: 1.05,
+      fontFamily: FONTE, fontSize: tamanho, color: cor, fontWeight: 900, letterSpacing: '-0.02em', textAlign: 'center', lineHeight: 1.05,
       textShadow: `0 8px 0 ${COR.contorno}, 0 0 40px ${COR.laranja}88`, ...estilo,
     }}
   >
