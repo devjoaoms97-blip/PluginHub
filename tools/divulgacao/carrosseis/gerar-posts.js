@@ -1,7 +1,10 @@
-// Gera os carrosséis do Instagram (1080x1350) em divulgacao/posts/<post>/NN.png,
-// tirando foto de um HTML com o Edge ou o Chrome sem janela.
-// Uso: node gerar-posts.js [post]   (sem argumento, gera todos)
-// Para trocar o IP em todos os posts, mude IP abaixo e rode de novo.
+// Gera as imagens do Instagram tirando foto de um HTML com o Edge ou o Chrome sem janela:
+//   posts/<post>/NN.png        carrosséis do feed (1080x1350), com o IP no rodapé
+//   stories/<destaque>/NN.png  os mesmos tutoriais em story (1080x1920), SEM IP nem site,
+//                              pra salvar nos destaques (o IP fica só na bio)
+//   stories/capas/<nome>.png   as capas redondas dos destaques
+// Uso: node gerar-posts.js [filtro]   (sem argumento, gera tudo; o filtro compara o começo do nome)
+// Para trocar o IP nos posts do feed, mude IP abaixo e rode de novo.
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
@@ -110,13 +113,131 @@ const POSTS = {
   ],
 };
 
+// Os destaques reaproveitam os posts, trocando o IP por "na bio do perfil" e o texto de feed pelo de story.
+function paraStory(slides) {
+  const trocas = [
+    [`<span class="ip">${IP}</span>`, '<b>na bio do perfil</b>'],
+    ['arrasta pro lado →', 'toca pra passar →'],
+    ['Salva esse post e chama os amigos', 'Chama os amigos pra jogar junto'],
+  ];
+  const trocar = (v) => typeof v === 'string' ? trocas.reduce((t, [a, b]) => t.split(a).join(b), v)
+    : Array.isArray(v) ? v.map(trocar)
+    : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, trocar(x)]))
+    : v;
+  return slides.map(trocar);
+}
+const DESTAQUES = {
+  'como-entrar': paraStory(POSTS['02-como-entrar']),
+  'celular': paraStory(POSTS['03-celular']),
+  'o-servidor': paraStory(POSTS['01-bem-vindo']),
+
+  // Só destaque (nada de IP nem site). Dados dos tutoriais 07, 08, 19 e do regras.md.
+  'eventos': [
+    { tipo: 'capa', topo: 'Agenda', titulo: 'Eventos<br>todo dia', sub: 'Boss, arenas, quiz e Gladiador.<br>Prêmio em dinheiro de verdade do jogo.', dica: 'toca pra passar →' },
+    { tipo: 'texto', icone: '🐉', titulo: 'Boss às 20h', linhas: [
+      'De segunda a sábado, um boss sorteado.',
+      'Domingo é o <b>Wither</b>: tudo em dobro.',
+      'Top 3 de dano: <b>R$ 15 mil, 10 mil e 5 mil</b> + Chave do Boss.',
+      'Às vezes ele vem <b>✦ ELITE ✦</b>.',
+    ] },
+    { tipo: 'grade', titulo: 'Arenas todo dia', itens: [
+      ['☘️', 'Vietnã', '10h e 16h'],
+      ['❄️', 'Spleef', '13h e 18h'],
+      ['🏃', 'Corre ou Cai', '11h e 17h'],
+      ['🏁', 'Corrida Maluca', '9h e 14h'],
+      ['🌙', 'Labirinto', '8h e 23h'],
+      ['🛡️', 'Sobrevivência', '22h'],
+    ] },
+    { tipo: 'texto', icone: '🎒', titulo: 'Ninguém perde nada', linhas: [
+      'Nas arenas todo mundo recebe o <b>mesmo kit</b>.',
+      'Entra de inventário vazio e sai com tudo.',
+      'O vencedor leva um <b>cheque de R$ 10 mil</b>.',
+      'Tudo em <span class="cmd">/warp eventos</span>',
+    ] },
+    { tipo: 'texto', icone: '⚔️', titulo: 'E ainda', linhas: [
+      '<b>Gladiador</b>: por clã sábado e individual domingo, às 19h.',
+      '<b>Quiz</b> no chat às 12h e 15h: R$ 5 mil.',
+      '<b>Mine-sena</b>: sorteio todo dia às 18h.',
+      '<b>Dragão do End</b> às 21h.',
+    ] },
+    { tipo: 'fim', titulo: 'Bora pro evento 🔥', linhas: ['<span class="cmd">/eventos</span> mostra a agenda', 'Avisos no Discord (link na bio)', 'XP de skill em dobro no fim de semana'] },
+  ],
+
+  'vip': [
+    { tipo: 'capa', topo: 'VIP', titulo: 'Seja VIP<br>na BrasaMC', sub: '4 tiers, 30 dias cada.<br>Kit todo dia, montaria e bônus em tudo.', dica: 'toca pra passar →' },
+    { tipo: 'grade', titulo: 'Os 4 tiers', itens: [
+      ['🥉', 'Bronze', '100 créditos · R$ 10'],
+      ['🥈', 'Prata', '200 créditos · R$ 20'],
+      ['🥇', 'Ouro', '350 créditos · R$ 35'],
+      ['💎', 'Diamante', '500 créditos · R$ 50'],
+    ] },
+    { tipo: 'texto', icone: '🎁', titulo: 'Três kits', linhas: [
+      '<b>Diário</b>: comida, maçãs douradas e XP.',
+      '<b>Semanal</b>: diamantes, totem e maçãs.',
+      '<b>Mensal</b>: equipamento encantado, <b>máquina</b> e <b>mapas do tesouro</b>.',
+      'No Diamante vem até élitro e tridente.',
+    ] },
+    { tipo: 'texto', icone: '📈', titulo: 'Bônus em tudo', linhas: [
+      'XP nas skills: <b>+10% a +50%</b>.',
+      'Vende mais e paga menos: <b>3% a 12%</b>.',
+      '<span class="cmd">/diaria</span> rende até <b>+100%</b>.',
+      'Baú pessoal de até <b>54</b> espaços e até <b>3 terrenos</b>.',
+    ] },
+    { tipo: 'texto', icone: '🐎', titulo: 'E mais', linhas: [
+      '<span class="cmd">/montaria</span>: um cavalo rápido na hora.',
+      'Voo, partículas e warp VIP, conforme o tier.',
+      'Dá pra gerar um <b>código de presente</b> e dar pra um amigo.',
+      'Cosméticos: rastros, cor do nome e efeito de abate.',
+    ] },
+    { tipo: 'fim', titulo: 'Como pegar o seu', linhas: ['Créditos no nosso Discord (link na bio)', 'No jogo: <span class="cmd">/creditos</span>', 'Compare com <span class="cmd">/vip tiers</span>'] },
+  ],
+
+  'regras': [
+    { tipo: 'capa', topo: 'Leia antes de jogar', titulo: 'Regras', sub: 'Valem no servidor e no Discord.<br>Não conhecer não livra da punição.', dica: 'toca pra passar →' },
+    { tipo: 'texto', icone: '🤝', titulo: 'Respeito', linhas: [
+      'Sem ofensa, preconceito, assédio ou ameaça.',
+      'Sem conteúdo adulto ou chocante, nem em skin, placa ou construção.',
+      'Sem divulgar outros servidores ou dados de ninguém.',
+    ] },
+    { tipo: 'texto', icone: '🎮', titulo: 'Jogo limpo', linhas: [
+      'Proibido hack, cliente com vantagem e macro.',
+      'Achou bug ou dupe? <b>Reporte</b>. Usar dá ban.',
+      'Nada de farmar com amigo ou conta fake.',
+      'Uma conta por pessoa nos eventos com prêmio.',
+    ] },
+    { tipo: 'texto', icone: '💰', titulo: 'Comércio', linhas: [
+      'Golpe é proibido: combinou, cumpriu.',
+      'Use o <b>Pix do jogo</b> e as <b>barracas</b>, que deixam registro.',
+      'Nada de vender coins, itens ou contas por dinheiro de verdade.',
+    ] },
+    { tipo: 'texto', icone: '🏗️', titulo: 'Construção e chat', linhas: [
+      'Respeite o terreno dos outros.',
+      'Construção ofensiva ou que dá lag é removida.',
+      'Sem spam, flood ou caps lock.',
+      'Suporte é por ticket no Discord, não por DM.',
+    ] },
+    { tipo: 'texto', icone: '⚖️', titulo: 'Punições', linhas: [
+      'Advertência, mute ou banimento, conforme a gravidade.',
+      'Achou injusto? Abra um ticket de <b>Apelação</b>.',
+      'Regras completas no Discord (link na bio).',
+    ] },
+  ],
+};
+// Capas: o Instagram recorta um círculo no meio da imagem.
+const CAPAS = { 'como-entrar': '🎮', 'celular': '📱', 'o-servidor': 'chama', 'eventos': '⚔️', 'vip': '💎', 'regras': '📜' };
+
+const FORMATOS = {
+  post: { altura: 1350, padding: '90px 90px 70px', ip: true },
+  story: { altura: 1920, padding: '250px 90px 260px', ip: false },
+};
+
 // ---- Visual ---------------------------------------------------------------------------------
 const CSS = `
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:1080px;height:1350px;overflow:hidden}
+html,body{width:1080px;overflow:hidden}
 body{font-family:Inter,'Segoe UI',sans-serif;color:#f5ece6;
   background:radial-gradient(ellipse 120% 70% at 50% 108%,#6b2409 0%,#2a0f06 45%,#120b08 78%);
-  display:flex;flex-direction:column;padding:90px 90px 70px;position:relative}
+  display:flex;flex-direction:column;position:relative}
 body::before{content:'';position:absolute;inset:0;opacity:.07;
   background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
   background-size:54px 54px;pointer-events:none}
@@ -151,6 +272,12 @@ b{color:#ffd166}
 .rodape{display:flex;justify-content:space-between;align-items:center;font-size:30px;color:#b8a69b;position:relative}
 .rodape .ip{font-size:28px}
 .pag{font-weight:700;color:#ffb347}
+.capa-destaque{align-items:center;justify-content:center;padding:0!important}
+.circulo{width:760px;height:760px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 55%,#5a1d08 0%,#2a0f06 60%,#120b08 100%);
+  box-shadow:0 0 120px rgba(242,107,29,.35)}
+.circulo .e{font-size:330px;line-height:1}
+.circulo svg{width:400px;height:400px;filter:drop-shadow(0 0 50px rgba(242,107,29,.6))}
 `;
 
 function cabecalho() {
@@ -181,33 +308,49 @@ function corpo(s) {
   }
 }
 
-function pagina(s, i, total) {
-  const capa = s.tipo === 'capa';
+function documento(f, corpoHtml, classe = '') {
   return `<!doctype html><html><head><meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<style>${CSS}</style></head><body>
-${capa ? '' : cabecalho()}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>${CSS}html,body{height:${f.altura}px}body{padding:${f.padding}}</style></head>
+<body class="${classe}">${corpoHtml}</body></html>`;
+}
+
+function pagina(s, i, total, f) {
+  const capa = s.tipo === 'capa';
+  return documento(f, `${capa ? '' : cabecalho()}
 <main>${corpo(s)}</main>
-<div class="rodape"><span>${INSTA}</span><span class="ip">${IP}</span><span class="pag">${i + 1}/${total}</span></div>
-</body></html>`;
+<div class="rodape"><span>${INSTA}</span>${f.ip ? `<span class="ip">${IP}</span>` : ''}<span class="pag">${i + 1}/${total}</span></div>`);
 }
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'brasa-posts-'));
 const escolhido = process.argv[2];
-for (const [nome, slides] of Object.entries(POSTS)) {
-  if (escolhido && !nome.startsWith(escolhido)) continue;
-  const pasta = path.join(__dirname, 'posts', nome);
-  fs.mkdirSync(pasta, { recursive: true });
-  slides.forEach((s, i) => {
-    const html = path.join(tmp, `${nome}-${i}.html`);
-    fs.writeFileSync(html, pagina(s, i, slides.length));
-    const png = path.join(pasta, `${String(i + 1).padStart(2, '0')}.png`);
-    execFileSync(navegador, [
-      '--headless=new', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1',
-      '--virtual-time-budget=6000', '--window-size=1080,1350', `--screenshot=${png}`,
-      'file:///' + html.replace(/\\/g, '/'),
-    ], { stdio: 'ignore' });
-  });
-  console.log(`${nome}: ${slides.length} slides`);
+let n = 0;
+function foto(html, png, altura) {
+  const arquivo = path.join(tmp, `${n++}.html`);
+  fs.writeFileSync(arquivo, html);
+  fs.mkdirSync(path.dirname(png), { recursive: true });
+  execFileSync(navegador, [
+    '--headless=new', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1',
+    '--virtual-time-budget=6000', `--window-size=1080,${altura}`, `--screenshot=${png}`,
+    'file:///' + arquivo.split(path.sep).join('/'),
+  ], { stdio: 'ignore' });
+}
+function gerar(conjunto, pasta, f) {
+  for (const [nome, slides] of Object.entries(conjunto)) {
+    if (escolhido && !nome.startsWith(escolhido) && !pasta.startsWith(escolhido)) continue;
+    slides.forEach((s, i) => foto(pagina(s, i, slides.length, f),
+      path.join(__dirname, pasta, nome, `${String(i + 1).padStart(2, '0')}.png`), f.altura));
+    console.log(`${pasta}/${nome}: ${slides.length} slides`);
+  }
+}
+gerar(POSTS, 'posts', FORMATOS.post);
+gerar(DESTAQUES, 'stories', FORMATOS.story);
+if (!escolhido || 'stories'.startsWith(escolhido) || escolhido === 'capas') {
+  for (const [nome, icone] of Object.entries(CAPAS)) {
+    const dentro = icone === 'chama' ? chama : `<span class="e">${icone}</span>`;
+    foto(documento(FORMATOS.story, `<div class="circulo">${dentro}</div>`, 'capa-destaque'),
+      path.join(__dirname, 'stories', 'capas', `${nome}.png`), FORMATOS.story.altura);
+  }
+  console.log(`stories/capas: ${Object.keys(CAPAS).length} capas`);
 }
 fs.rmSync(tmp, { recursive: true, force: true });
