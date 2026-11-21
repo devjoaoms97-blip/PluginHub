@@ -152,7 +152,7 @@
    "x": 10.54,
    "y": 68.08,
    "z": 19.42,
-   "yaw": -70.0,
+   "yaw": -70,
    "pitch": 19.6,
    "dim": "minecraft:spawn"
   },
@@ -160,7 +160,7 @@
    "x": 10.35,
    "y": 68.08,
    "z": 24.98,
-   "yaw": -106.0,
+   "yaw": -106,
    "pitch": 19.6,
    "dim": "minecraft:spawn"
   },
@@ -168,7 +168,7 @@
    "x": 13.46,
    "y": 68.08,
    "z": 29.59,
-   "yaw": -142.0,
+   "yaw": -142,
    "pitch": 19.6,
    "dim": "minecraft:spawn"
   },
@@ -176,7 +176,7 @@
    "x": 18.69,
    "y": 68.08,
    "z": 31.49,
-   "yaw": -178.0,
+   "yaw": -178,
    "pitch": 19.6,
    "dim": "minecraft:spawn"
   },
@@ -184,7 +184,7 @@
    "x": 24.03,
    "y": 68.08,
    "z": 29.96,
-   "yaw": 146.0,
+   "yaw": 146,
    "pitch": 19.6,
    "dim": "minecraft:spawn"
   },
@@ -192,7 +192,7 @@
    "x": 27.46,
    "y": 68.08,
    "z": 25.58,
-   "yaw": 110.0,
+   "yaw": 110,
    "pitch": 19.6,
    "dim": "minecraft:spawn"
   }
@@ -377,6 +377,192 @@
    "yaw": 0,
    "pitch": 88,
    "dim": "minecraft:spawn"
+  }
+ ],
+ "r1": [
+  {
+   "x": 905,
+   "y": 138,
+   "z": -255,
+   "yaw": 175,
+   "pitch": 18,
+   "dim": "minecraft:recursos"
+  },
+  {
+   "x": 890,
+   "y": 136,
+   "z": -320,
+   "yaw": 165,
+   "pitch": 16,
+   "dim": "minecraft:recursos"
+  },
+  {
+   "x": 865,
+   "y": 124,
+   "z": -385,
+   "yaw": 140,
+   "pitch": 22,
+   "dim": "minecraft:recursos"
+  },
+  {
+   "x": 848,
+   "y": 112,
+   "z": -402,
+   "yaw": 135,
+   "pitch": 24,
+   "dim": "minecraft:recursos"
+  }
+ ],
+ "r2": [
+  {
+   "x": -600,
+   "y": 88,
+   "z": 650,
+   "yaw": 180,
+   "pitch": -6,
+   "dim": "minecraft:recursos"
+  },
+  {
+   "x": -600,
+   "y": 136,
+   "z": 590,
+   "yaw": 180,
+   "pitch": -2,
+   "dim": "minecraft:recursos"
+  },
+  {
+   "x": -600,
+   "y": 172,
+   "z": 540,
+   "yaw": 180,
+   "pitch": 6,
+   "dim": "minecraft:recursos"
+  },
+  {
+   "x": -600,
+   "y": 200,
+   "z": 480,
+   "yaw": 180,
+   "pitch": 12,
+   "dim": "minecraft:recursos"
+  },
+  {
+   "x": -600,
+   "y": 206,
+   "z": 425,
+   "yaw": 180,
+   "pitch": 14,
+   "dim": "minecraft:recursos"
+  }
+ ],
+ "r4": [
+  {
+   "x": 52.611512357490206,
+   "y": 82.23859026346064,
+   "z": 57.22500542528898,
+   "yaw": 129.6001,
+   "pitch": 6.9000645,
+   "dim": "minecraft:recursos_nether"
+  },
+  {
+   "x": 27.838770715519804,
+   "y": 82.23859026346064,
+   "z": 35.28893962907432,
+   "yaw": 133.8003,
+   "pitch": 6.7500644,
+   "dim": "minecraft:recursos_nether"
+  },
+  {
+   "x": -8.28561194388121,
+   "y": 72.51459166985936,
+   "z": -14.145875917823217,
+   "yaw": 139.49951,
+   "pitch": 24.150045,
+   "dim": "minecraft:recursos_nether"
+  },
+  {
+   "x": -47.02818327909788,
+   "y": 58.691181689352454,
+   "z": -47.50588391217265,
+   "yaw": 130.49902,
+   "pitch": 19.650043,
+   "dim": "minecraft:recursos_nether"
+  }
+ ],
+ "r5": [
+  {
+   "x": -377.26291582151606,
+   "y": 74.66823717003619,
+   "z": 262.3635942664536,
+   "yaw": 138.45,
+   "pitch": 17.800024,
+   "dim": "minecraft:recursos_nether"
+  },
+  {
+   "x": -394.97680101264666,
+   "y": 76.90788900815693,
+   "z": 241.05995364038162,
+   "yaw": 136.95004,
+   "pitch": 34.00002,
+   "dim": "minecraft:recursos_nether"
+  },
+  {
+   "x": -413.3285012166495,
+   "y": 69.79776348961971,
+   "z": 197.4931701247676,
+   "yaw": 46.799736,
+   "pitch": 23.350014,
+   "dim": "minecraft:recursos_nether"
+  },
+  {
+   "x": -448.7363530917259,
+   "y": 69.79776348961971,
+   "z": 178.75720551770354,
+   "yaw": -31.050209,
+   "pitch": 22.300013,
+   "dim": "minecraft:recursos_nether"
+  }
+ ],
+ "r6": [
+  {
+   "x": 0.5,
+   "y": 64.5,
+   "z": 37,
+   "yaw": 180,
+   "pitch": 2,
+   "dim": "minecraft:recursos_end"
+  },
+  {
+   "x": 0.5,
+   "y": 70,
+   "z": 22,
+   "yaw": 180,
+   "pitch": 8,
+   "dim": "minecraft:recursos_end"
+  },
+  {
+   "x": 0.5,
+   "y": 90,
+   "z": 2,
+   "yaw": 180,
+   "pitch": 22,
+   "dim": "minecraft:recursos_end"
+  },
+  {
+   "x": 0.5,
+   "y": 108,
+   "z": -22,
+   "yaw": 180,
+   "pitch": 30,
+   "dim": "minecraft:recursos_end"
+  },
+  {
+   "x": 0.5,
+   "y": 114,
+   "z": -32,
+   "yaw": 360,
+   "pitch": 32,
+   "dim": "minecraft:recursos_end"
   }
  ]
 }

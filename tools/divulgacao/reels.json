@@ -942,6 +942,172 @@
           ]
         ]
       ]
+    },
+    "Recursos": {
+      "clima": "epico",
+      "trovao": 8,
+      "cenas": [
+        [
+          "r1.mp4",
+          6,
+          75,
+          [
+            [
+              "MUNDO DE",
+              80,
+              "branco"
+            ],
+            [
+              "RECURSOS",
+              150,
+              "amarelo"
+            ]
+          ]
+        ],
+        [
+          "r2.mp4",
+          8,
+          75,
+          [
+            [
+              "EXPLORE",
+              140,
+              "amarelo"
+            ],
+            [
+              "para coletar recursos",
+              56,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "r3.mp4",
+          3,
+          60,
+          [
+            [
+              "DESÇA NAS",
+              80,
+              "branco"
+            ],
+            [
+              "CAVERNAS",
+              140,
+              "amarelo"
+            ]
+          ]
+        ],
+        [
+          "r3.mp4",
+          21.5,
+          60,
+          [
+            [
+              "MINÉRIO",
+              140,
+              "amarelo"
+            ],
+            [
+              "de sobra",
+              60,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "r4.mp4",
+          2,
+          60,
+          [
+            [
+              "NETHER",
+              170,
+              "vermelho"
+            ]
+          ]
+        ],
+        [
+          "r4.mp4",
+          13,
+          60,
+          [
+            [
+              "lava e fungos",
+              60,
+              "branco"
+            ],
+            [
+              "pra todo lado",
+              60,
+              "laranja"
+            ]
+          ]
+        ],
+        [
+          "r5.mp4",
+          5,
+          75,
+          [
+            [
+              "BASTIÕES",
+              130,
+              "amarelo"
+            ],
+            [
+              "cheios de ouro",
+              60,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "r6.mp4",
+          3,
+          60,
+          [
+            [
+              "E O END",
+              140,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "r6.mp4",
+          14.5,
+          90,
+          [
+            [
+              "O DRAGÃO",
+              140,
+              "vermelho"
+            ],
+            [
+              "renasce todo dia às 21h",
+              54,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "r6.mp4",
+          20,
+          75,
+          [
+            [
+              "RESETAM",
+              130,
+              "amarelo"
+            ],
+            [
+              "todo mês: recursos novos sempre",
+              48,
+              "branco"
+            ]
+          ]
+        ]
+      ]
     }
   }
 }

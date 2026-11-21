@@ -34,6 +34,11 @@ tela base e saída em **1080x1920**, 60 fps, MP4, em `tools/divulgacao/public/br
 - **Tour** (2026-11-21, postado): `t1` a `t6` em `public/brutos`, reel `Tour` no `reels.json`.
 - **Tesouros** (2026-11-21, postado): `x.mp4` (mapa lendário, câmara com os figurantes no `!brigar`,
   Guardião Ancestral), reel `Tesouros`. Faltou a abertura do baú (escura e pequena na gravação).
+- **Recursos** (2026-11-21, pronto): `r1` a `r6` (cerejeiras, picos, caverna, Nether, bastião, End
+  com o dragão), reel `Recursos`. Com shader, o Nether fica preto na câmera em trilho (o shader só
+  aplica a visão noturna quando a câmera é o próprio jogador): grave o Nether voando no criativo ou
+  sem shader (K). O bot da câmera tem que estar no mesmo mundo (o chat é local); ao trocar de mundo,
+  teleporte antes e ponha em espectador depois (o Multiverse volta o modo de jogo).
 
 ## Prioridade 1: os 3 primeiros Reels
 
