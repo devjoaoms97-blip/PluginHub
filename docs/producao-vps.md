@@ -146,7 +146,7 @@ Vale também pro `D:\BrasaMC`.
 ## Site (2026-11-18, etapa 1)
 
 - [ ] Os jars: `DiscordPlugin` 1.4 (a foto do site, `GET /site` e `/discord site`), `RankupPlugin`, `SkillsPlugin`, `ClasPlugin` e `VotoPlugin` (o `dadosDoSite` de cada um).
-- [ ] No `.env` do bot (o site usa o mesmo): `DISCORD_CONVITE=https://discord.gg/EBcwmY8p` e, se quiser outra porta, `SITE_PORTA`.
+- [ ] No `.env` do bot (o site usa o mesmo): `DISCORD_CONVITE=https://discord.gg/qzKCNVa2NN` e, se quiser outra porta, `SITE_PORTA`.
 - [ ] Rodar o site junto do bot: `cd site && npm run oficial` (fica em `127.0.0.1:8080`).
 - [ ] **Loja do site** (2026-11-18): o jar novo do `DiscordPlugin` (`/loja/codigo` e `/loja/confirmar`) e do `VotoPlugin` (o resumo da sequência pra página de votar). No `.env`: `SITE_URL_OFICIAL=https://<domínio>` (sem ele, o Mercado Pago não volta sozinho pro pedido e a imagem de prévia não aparece) e o `MP_ACCESS_TOKEN_OFICIAL` de produção, o mesmo da loja do Discord. A loja do site abre junto com a do Discord.
 - [ ] Gerar a imagem de prévia com o IP de verdade: com o site oficial ligado, `node site/gerar-previa.js` e subir o `previa.png`.
