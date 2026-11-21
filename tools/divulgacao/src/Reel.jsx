@@ -9,21 +9,41 @@ import config from '../reels.json';
 // OBS com a janela do jogo em 9:16). O objectFit "cover" preenche a tela vertical: o deitado perde as
 // laterais (placar e chat ficam de fora) e o em pé entra inteiro.
 
-const Clipe = ({ arquivo, inicio, zoom = [1, 1.08] }) => {
+// Desfoque do chat do jogo (canto inferior esquerdo do bruto em pé), quando a gravação saiu com ele
+// aberto: "ofuscarChat": true no reel. Fica dentro do zoom, então acompanha a imagem. Uma segunda cópia do vídeo, borrada, por cima só onde fica o chat; a máscara esfuma as bordas pra
+// não aparecer um retângulo.
+const MASCARA_CHAT = 'radial-gradient(ellipse 760px 330px at 230px 1740px, black 0%, black 62%, transparent 100%)';
+
+const Clipe = ({ arquivo, inicio, zoom = [1, 1.08], ofuscarChat = false }) => {
   const f = useCurrentFrame();
   const { durationInFrames, fps } = useVideoConfig();
   const escala = interpolate(f, [0, durationInFrames], zoom);
   return (
     <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: 'black' }}>
-      <OffthreadVideo
-        src={staticFile(`brutos/${arquivo}`)}
-        startFrom={Math.round(inicio * fps)}
-        volume={0.25}
-        style={{
-          position: 'absolute', width: 1080, height: 1920, left: 0, top: 0, objectFit: 'cover',
-          transform: `scale(${escala})`, filter: 'brightness(1.15) contrast(1.12) saturate(1.15)',
-        }}
-      />
+      <div style={{ position: 'absolute', width: 1080, height: 1920, left: 0, top: 0, transform: `scale(${escala})` }}>
+        <OffthreadVideo
+          src={staticFile(`brutos/${arquivo}`)}
+          startFrom={Math.round(inicio * fps)}
+          volume={0.25}
+          style={{
+            position: 'absolute', width: 1080, height: 1920, left: 0, top: 0, objectFit: 'cover',
+            filter: 'brightness(1.15) contrast(1.12) saturate(1.15)',
+          }}
+        />
+        {ofuscarChat && (
+          <OffthreadVideo
+            src={staticFile(`brutos/${arquivo}`)}
+            startFrom={Math.round(inicio * fps)}
+            muted
+            style={{
+              // um pouco maior que a tela, senão a borda esquerda do borrão fica transparente
+              position: 'absolute', width: 1080, height: 1920, left: 0, top: 0, objectFit: 'cover',
+              transform: 'scale(1.08)', filter: 'blur(24px) brightness(1.05) contrast(1.12) saturate(1.15)',
+              maskImage: MASCARA_CHAT, WebkitMaskImage: MASCARA_CHAT,
+            }}
+          />
+        )}
+      </div>
       {/* Escurece em cima e embaixo pra o texto ler bem. */}
       <AbsoluteFill style={{ background: 'linear-gradient(rgba(0,0,0,0.55) 0%, transparent 28%, transparent 62%, rgba(0,0,0,0.75) 100%)' }} />
     </AbsoluteFill>
@@ -67,7 +87,7 @@ export const Reel = ({ id }) => {
         t += dur;
         return (
           <Sequence key={i} from={de} durationInFrames={dur}>
-            <Clipe arquivo={arquivo} inicio={inicio} />
+            <Clipe arquivo={arquivo} inicio={inicio} ofuscarChat={!!config.reels[id].ofuscarChat} />
             <Fagulhas quantas={25} />
             <Chamada linhas={linhas} />
             <Flash />

@@ -832,6 +832,116 @@
           ]
         ]
       ]
+    },
+    "Tesouros": {
+      "clima": "epico",
+      "trovao": 5,
+      "ofuscarChat": false,
+      "cenas": [
+        [
+          "x.mp4",
+          8,
+          75,
+          [
+            [
+              "ACHEI UM MAPA",
+              90,
+              "branco"
+            ],
+            [
+              "LENDÁRIO",
+              160,
+              "amarelo"
+            ]
+          ]
+        ],
+        [
+          "x.mp4",
+          124,
+          60,
+          [
+            [
+              "CHAMEI A GALERA",
+              90,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "x.mp4",
+          131.5,
+          60,
+          [
+            [
+              "18 BLOCOS",
+              120,
+              "amarelo"
+            ],
+            [
+              "debaixo da terra",
+              60,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "x.mp4",
+          136,
+          75,
+          [
+            [
+              "4 ONDAS",
+              150,
+              "vermelho"
+            ],
+            [
+              "de guardiões",
+              60,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "x.mp4",
+          244,
+          60,
+          []
+        ],
+        [
+          "x.mp4",
+          302,
+          90,
+          [
+            [
+              "O GUARDIÃO",
+              100,
+              "branco"
+            ],
+            [
+              "ANCESTRAL",
+              130,
+              "vermelho"
+            ]
+          ]
+        ],
+        [
+          "x.mp4",
+          313.5,
+          75,
+          [
+            [
+              "E O BAÚ",
+              110,
+              "branco"
+            ],
+            [
+              "É SEU",
+              150,
+              "amarelo"
+            ]
+          ]
+        ]
+      ]
     }
   }
 }

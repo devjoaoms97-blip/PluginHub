@@ -11,6 +11,7 @@
 //   !andem    voltam a andar
 //   !raio 20  muda o raio
 //   !lutar    vão pra arena do boss e lutam com ele (!andem ou !parem pra sair da luta)
+//   !brigar   lutam com o mob hostil mais perto ali mesmo (guardiões do tesouro, mobs)
 // E a câmera em trilho (camera.js):
 //   !cena t1      escolhe a cena (os pontos ficam salvos por cena em cenas-camera.json)
 //   !ponto        marca onde você está e pra onde olha
@@ -251,6 +252,15 @@ async function principal() {
         if (!/sword|axe/.test(vis.mao || '')) await cmd(`minecraft:item replace entity ${b.username} weapon.mainhand with minecraft:${ARMA_DE_LUTA[i % ARMA_DE_LUTA.length]}`)
       }
       console.log('  lutando')
+    }
+    if (msg === '!brigar') {
+      // lutam com o mob hostil mais perto ali mesmo (guardiões da câmara do tesouro, mobs), sem ir pra arena
+      lutando = true; parados = false
+      for (const [i, b] of bots.entries()) {
+        const vis = VISUAIS[i % VISUAIS.length]
+        if (!/sword|axe/.test(vis.mao || '')) await cmd(`minecraft:item replace entity ${b.username} weapon.mainhand with minecraft:${ARMA_DE_LUTA[i % ARMA_DE_LUTA.length]}`)
+      }
+      console.log('  brigando onde estão')
     }
     if (msg === '!andem' || msg === '!parem') lutando = false
     if (msg === '!parem') { parados = true; console.log('  parados') }

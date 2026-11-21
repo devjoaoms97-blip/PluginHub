@@ -22,11 +22,18 @@ tela base e saída em **1080x1920**, 60 fps, MP4, em `tools/divulgacao/public/br
 - O Remotion sai em `yuvj420p`, que muito celular não toca. Pra postar, converta com o ffmpeg do
   `node_modules/@remotion/compositor-win32-x64-msvc`: `-c:v libx264 -pix_fmt yuv420p -crf 18
   -c:a copy -movflags +faststart` (o `saida/tour-celular.mp4` foi feito assim).
+- Gameplay em pé: grave em **F5** (terceira pessoa). Na janela estreita o jogo empurra a mão pra
+  fora da tela, então em primeira pessoa a espada não aparece.
+- Antes de gravar: chat oculto, rastro de cosmético desligado (os corações poluem a luta) e escala
+  da interface 3 ou 4 se for mostrar um baú ou menu. Se o chat escapar, `"ofuscarChat": true` no
+  reel borra o canto dele.
 - A capa vai à parte (1080x1920, título na faixa do meio, que é o que o perfil mostra).
 
 ## Feito
 
 - **Tour** (2026-11-21, postado): `t1` a `t6` em `public/brutos`, reel `Tour` no `reels.json`.
+- **Tesouros** (2026-11-21, postado): `x.mp4` (mapa lendário, câmara com os figurantes no `!brigar`,
+  Guardião Ancestral), reel `Tesouros`. Faltou a abertura do baú (escura e pequena na gravação).
 
 ## Prioridade 1: os 3 primeiros Reels
 
