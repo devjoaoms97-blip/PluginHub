@@ -2,7 +2,7 @@
 
 Ponte com o Discord. Os outros plugins mandam os anúncios para cá, e cada **categoria** vai para o seu webhook (ou para o padrão) como um **embed**, com título, cor e, quando configurado, a menção ao cargo 🔔 da categoria.
 
-| Categoria | Quem manda | O quê | Canal na BrasaMC |
+| Categoria | Quem manda | O quê | Canal no BrasaMC |
 |---|---|---|---|
 | `boss` | BossPlugin | Boss apareceu (marca 🔔 Boss); derrotado, com o campeão e o ranking; maldição | `#eventos` |
 | `gladiador` | GladiadorPlugin | Inscrições abertas (marca 🔔 Gladiador), resultado e destaques | `#eventos` |

@@ -1,4 +1,4 @@
-# Site da BrasaMC
+# Site do BrasaMC
 
 Site em Node, **sem dependências** (só o `http` do próprio Node), que roda separado do servidor do Minecraft, como o [bot do Discord](../discord-bot/README.md): no PC por enquanto, na VPS depois. Ele lê os dados pela API local do [DiscordPlugin](../discord-plugin/README.md), a mesma do bot.
 

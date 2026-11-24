@@ -9,7 +9,20 @@ const INTERVALO_MS = 60_000;
 const dinheiro = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const hora = (ms) => `<t:${Math.floor(ms / 1000)}:R>`;
 
+/** Antes do lançamento: sem online/offline (o servidor ainda não é dos jogadores). */
+function emBreve() {
+  return new EmbedBuilder().setTitle('BrasaMC').setColor(0xf26b1d).setDescription([
+    '🛠️ **Em preparação: o BrasaMC abre em breve!**',
+    '',
+    `📢 A data sai primeiro no <#${config.canal('anuncios')}>. Clique em 🔔 no <#${config.canal('boas-vindas')}> pra ser marcado.`,
+    `📝 O que já está pronto: <#${config.canal('changelog')}>`,
+    `👀 Prévias e vídeos: <#${config.canal('spoilers')}>`,
+    `📸 Bastidores no Instagram: ${config.instagram}`,
+  ].join('\n'));
+}
+
 function montar(s) {
+  if (!config.lancado) return emBreve();
   const mem = config.memoria.status ||= {};
   const online = !!s;
   if (mem.online !== online) {
@@ -48,10 +61,17 @@ async function atualizar(cliente) {
   } catch {
     // servidor desligado: o painel mostra offline
   }
-  cliente.user.setActivity(s ? `BrasaMC · ${s.online} online` : 'BrasaMC · servidor desligado', { type: ActivityType.Playing });
+  cliente.user.setActivity(!config.lancado ? 'BrasaMC · em breve' : s ? `BrasaMC · ${s.online} online` : 'BrasaMC · servidor desligado', { type: ActivityType.Playing });
 
   const canal = await cliente.channels.fetch(config.canal('status')).catch(() => null);
   if (!canal) return;
+  // antes do lançamento o canal fica só com o painel: os avisos antigos de online/desligado saem (uma vez)
+  if (!config.lancado && !config.memoria.statusLimpo) {
+    const antigas = await canal.messages.fetch({ limit: 100 }).catch(() => null);
+    for (const m of antigas ? antigas.values() : []) if (m.id !== config.memoria.painelStatus) await m.delete().catch(() => {});
+    config.memoria.statusLimpo = true;
+    config.salvarMemoria();
+  }
   const conteudo = { embeds: [montar(s)] };
   const id = config.memoria.painelStatus;
   const atual = id && await canal.messages.fetch(id).catch(() => null);

@@ -1,4 +1,4 @@
-// Bot do Discord da BrasaMC. Fala com o servidor do Minecraft pela API local do DiscordPlugin.
+// Bot do Discord do BrasaMC. Fala com o servidor do Minecraft pela API local do DiscordPlugin.
 //   npm start            (lê a config de C:\mc-teste\discord\.env; BOT_SERVIDOR escolhe teste/oficial)
 //   npm run oficial      (o mesmo, no oficial; rodam os dois juntos)
 const { Client, Events, GatewayIntentBits, MessageFlags } = require('discord.js');

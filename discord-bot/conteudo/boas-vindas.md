@@ -1,4 +1,4 @@
-# 🔥 Bem-vindo à BrasaMC!
+# 🔥 Bem-vindo ao BrasaMC!
 
 Servidor brasileiro de **Rankup medieval**: comece como **Camponês**, minere, venda, enriqueça e suba até **Rei**. No caminho tem boss, Gladiador, duelos com aposta, clãs, terrenos, máquinas e muito mais.
 

@@ -31,7 +31,7 @@ async function painel(guild) {
   if (!canal) return console.warn('[tickets] canal #abrir-ticket não encontrado');
   const embed = new EmbedBuilder()
     .setColor(COR)
-    .setTitle('🎫 Suporte da BrasaMC')
+    .setTitle('🎫 Suporte do BrasaMC')
     .setDescription([
       'Precisa de ajuda? Escolha o tipo no menu abaixo e conte o que houve.',
       'Abre um canal **privado**, só seu e da staff.',
@@ -222,7 +222,7 @@ async function fechar(interacao) {
   }
   const dono = await interacao.client.users.fetch(ticket.dono).catch(() => null);
   if (dono) {
-    await dono.send(`Seu ticket **#${ticket.numero}** (${ticket.assunto}) na BrasaMC foi fechado.\nResolução: ${motivo}`)
+    await dono.send(`Seu ticket **#${ticket.numero}** (${ticket.assunto}) no BrasaMC foi fechado.\nResolução: ${motivo}`)
       .catch(() => {}); // DM fechada: tudo bem
   }
   delete tickets()[canal.id];

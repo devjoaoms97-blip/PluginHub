@@ -40,9 +40,17 @@ tela base e saída em **1080x1920**, 60 fps, MP4, em `tools/divulgacao/public/br
   sem shader (K). O bot da câmera tem que estar no mesmo mundo (o chat é local); ao trocar de mundo,
   teleporte antes e ponha em espectador depois (o Multiverse volta o modo de jogo).
 
+- **Eventos** (2026-11-23, pronto): `e1` Corre ou Cai, `e2`/`e2b` Spleef, `e3`/`e3b` Vietnã (jogando e
+  da arquibancada), `e4` Sobrevivência, `e5` Corrida Maluca, `e6` Labirinto (escuro de propósito, dá
+  suspense), reel `Eventos`. Figurantes: `!evento <id>`, `!comecar`, `!fim`; com 9 (o máximo, o servidor
+  é de 10) rodam numa janela separada (`node figurantes.js Viagrinha 9 8`), senão o Claude Code mata o
+  processo quando falta memória. Feche os navegadores antes: Minecraft com shader, servidor, OBS e bots
+  passam de 12 GB. Pra gravar, no teste: Spleef derretendo desde o começo e pilares do Vietnã sumindo
+  aos 30 s (um a cada 6 s).
+
 ## Prioridade 1: os 3 primeiros Reels
 
-### ReelTour (refazer) "Bem-vindo à BrasaMC"
+### ReelTour (refazer) "Bem-vindo ao BrasaMC"
 | Arquivo | O que gravar |
 |---|---|
 | `t1.mp4` | Voando por cima do spawn, devagar, até a fonte/centro |

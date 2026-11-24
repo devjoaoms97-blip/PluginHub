@@ -51,7 +51,7 @@ function paginaRegras() {
     }).join('')}</article>`
     : `<div class="regras-intro revelar">${b.linhas.map((l) => `<p>${markdown(l)}</p>`).join('')}</div>`)).join('')}
 </section>`;
-  return layout({ titulo: 'Regras', descricao: 'As regras da BrasaMC, no servidor e no Discord.', ativo: '/regras', corpo });
+  return layout({ titulo: 'Regras', descricao: 'As regras do BrasaMC, no servidor e no Discord.', ativo: '/regras', corpo });
 }
 
 // ---------------------------------------------------------------- novidades
@@ -78,7 +78,7 @@ function paginaNovidades() {
     </li>`).join('')}
   </ol>
 </section>`;
-  return layout({ titulo: 'Novidades', descricao: 'As últimas atualizações da BrasaMC.', ativo: '/novidades', corpo });
+  return layout({ titulo: 'Novidades', descricao: 'As últimas atualizações do BrasaMC.', ativo: '/novidades', corpo });
 }
 
 // ---------------------------------------------------------------- votar
@@ -149,7 +149,7 @@ function paginaVotar({ foto, nick }) {
     </div>
   </aside>
 </section>`;
-  return layout({ titulo: 'Votar', descricao: 'Vote na BrasaMC e ganhe Chaves de Voto, bônus de sequência e prêmios no ranking do mês.', ativo: '/votar', corpo });
+  return layout({ titulo: 'Votar', descricao: 'Vote no BrasaMC e ganhe Chaves de Voto, bônus de sequência e prêmios no ranking do mês.', ativo: '/votar', corpo });
 }
 
 module.exports = { paginaRegras, paginaNovidades, paginaVotar };

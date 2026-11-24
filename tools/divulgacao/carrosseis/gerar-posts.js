@@ -25,6 +25,27 @@ if (!navegador) throw new Error('Não achei o Edge nem o Chrome. Passe o caminho
 const chama = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'site', 'publico', 'brasa.svg'), 'utf8')
   .replace(/<!--.*?-->/gs, '');
 
+// ---- Agenda dos eventos, lida do config do eventos-plugin ----------------------------------
+// Os eventos de arena e o Quiz vêm do config (mudou lá, roda de novo). Boss, dragão e Mine-sena
+// são de outros plugins e ficam fixos aqui.
+const EVENTOS_INFO = {
+  labirinto: ['🌑', 'Labirinto do Fauno'], corrida: ['🎢', 'Corrida Maluca'], vietna: ['🌿', 'Vietnã'],
+  correoucai: ['🏃', 'Corre ou Cai'], quiz: ['✏️', 'Quiz'], spleef: ['❄️', 'Spleef'], sobrevivencia: ['⚔️', 'Sobrevivência'],
+};
+function agendaDoDia() {
+  const cfg = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'eventos-plugin', 'src', 'main', 'resources', 'config.yml'), 'utf8');
+  const itens = [];
+  for (const [id, [e, nome]] of Object.entries(EVENTOS_INFO)) {
+    const m = cfg.match(new RegExp(`^${id}:[\\s\\S]*?^  agenda: \\[([^\\]]*)\\]`, 'm'));
+    if (!m) throw new Error(`agenda de ${id} não achada no config`);
+    for (const h of m[1].match(/\d\d:\d\d/g) || []) itens.push([h, e, nome]);
+  }
+  itens.push(['18:00', '🎟️', 'Mine-sena'], ['20:00', '🐉', 'Boss'], ['21:00', '🐲', 'Dragão do End']);
+  return itens.sort((a, b) => a[0].localeCompare(b[0])).map(([h, e, nome]) => [e, h.replace(':00', 'h'), nome]);
+}
+const AGENDA = agendaDoDia();
+const metade = Math.ceil(AGENDA.length / 2);
+
 // ---- Conteúdo dos posts -------------------------------------------------------------------
 // Cada slide: { tipo: 'capa' | 'texto' | 'grade' | 'passos' | 'fim', ... }
 const POSTS = {
@@ -62,7 +83,7 @@ const POSTS = {
   ],
 
   '02-como-entrar': [
-    { tipo: 'capa', topo: 'Passo a passo', titulo: 'Como entrar<br>na BrasaMC', sub: 'Leva 2 minutos. Original ou pirata.', dica: 'arrasta pro lado →' },
+    { tipo: 'capa', topo: 'Passo a passo', titulo: 'Como entrar<br>no BrasaMC', sub: 'Leva 2 minutos. Original ou pirata.', dica: 'arrasta pro lado →' },
     { tipo: 'passos', titulo: '1. Abra o Minecraft', passos: [
       `Minecraft <b>Java</b>, versão <b>${VERSAO}</b>`,
       'Serve o launcher oficial, o TLauncher ou outro',
@@ -87,7 +108,7 @@ const POSTS = {
   ],
 
   '03-celular': [
-    { tipo: 'capa', topo: 'Android', titulo: 'Jogue a BrasaMC<br>no celular', sub: 'Minecraft Java no Android, de graça.<br>Sem pagar o Bedrock.', dica: 'arrasta pro lado →' },
+    { tipo: 'capa', topo: 'Android', titulo: 'Jogue o BrasaMC<br>no celular', sub: 'Minecraft Java no Android, de graça.<br>Sem pagar o Bedrock.', dica: 'arrasta pro lado →' },
     { tipo: 'texto', icone: '📱', titulo: 'Antes de começar', linhas: [
       'Só <b>Android</b> (no iPhone não dá).',
       '<b>6 GB de RAM</b> ou mais é o ideal.',
@@ -111,7 +132,75 @@ const POSTS = {
     ], nota: 'Lento? Distância de renderização em 6 ou 8.' },
     { tipo: 'fim', titulo: 'Bora jogar junto 🔥', linhas: ['Passo a passo completo no Discord', 'Manda pro amigo que só tem celular'] },
   ],
+
+  // Sem IP (pré-lançamento) e sem número de eventos (a lista vai crescer).
+  '04-agenda-eventos': [
+    { tipo: 'capa', topo: 'Todo dia no BrasaMC', titulo: 'Agenda<br>dos eventos', sub: 'Do café da manhã até de madrugada,<br>sempre tem alguma coisa valendo prêmio.', dica: 'arrasta pro lado →' },
+    { tipo: 'grade', titulo: 'Manhã e tarde', itens: AGENDA.slice(0, metade) },
+    { tipo: 'grade', titulo: 'Tarde e noite', itens: AGENDA.slice(metade) },
+    { tipo: 'texto', icone: '📅', titulo: 'E no fim de semana', linhas: [
+      '<b>Gladiador</b> sábado às 19h, por clã.',
+      '<b>Gladiador individual</b> domingo às 19h.',
+      'Domingo o boss das 20h é o <b>Wither</b>: tudo em dobro.',
+      '<b>XP de skill em dobro</b> sábado e domingo.',
+    ] },
+    { tipo: 'texto', icone: '💰', titulo: 'Vale a pena entrar', linhas: [
+      'Eventos de arena: <b>cheque de R$ 10.000</b> no jogo.',
+      'Entrada <b>de graça</b>, e ninguém perde itens.',
+      'Dentro do jogo, <span class="cmd">/eventos</span> mostra a agenda e o próximo.',
+      'E vem mais evento por aí.',
+    ] },
+    { tipo: 'fim', titulo: 'Salva pra não perder 🔥', linhas: ['O servidor abre em breve', 'Link do Discord na bio'] },
+  ],
+
+  // A mesma agenda numa imagem só, pro feed.
+  '05-agenda-imagem': [
+    { tipo: 'agenda', titulo: 'Agenda dos eventos', sub: 'Todo dia no BrasaMC, valendo prêmio no jogo', itens: AGENDA,
+      fimDeSemana: '<b>Fim de semana:</b> Gladiador por clã no sábado e individual no domingo, às 19h · Wither no domingo às 20h · XP de skill em dobro',
+      nota: 'Entrada de graça · <span class="cmd">/eventos</span> no jogo · e vem mais evento por aí' },
+  ],
+
+  // Curiosidades: pra alcançar quem ainda não conhece o servidor (fecha com o gancho do BrasaMC).
+  '06-curiosidades-01': [
+    { tipo: 'capa', topo: 'Curiosidades', titulo: '7 coisas que você<br>não sabia sobre<br>o Minecraft', sub: 'A número 2 parece mentira,<br>mas é real.', dica: 'arrasta pro lado →' },
+    { tipo: 'texto', icone: '🐷', titulo: '1. O Creeper era<br>pra ser um porco', linhas: [
+      'O Notch trocou a <b>altura</b> pelo <b>comprimento</b> sem querer ao modelar um porco.',
+      'Saiu aquele bicho comprido e esquisito. Ele gostou e deixou: virou o <b>Creeper</b>.',
+    ] },
+    { tipo: 'texto', icone: '🐱', titulo: '2. O Ghast tem<br>voz de gato', linhas: [
+      'Os sons do Ghast vieram do <b>gato do C418</b>, o compositor das músicas do jogo.',
+      'O gato fez um barulho estranho enquanto dormia, e ele gravou.',
+    ] },
+    { tipo: 'texto', icone: '⏱️', titulo: '3. Feito em<br>uma semana', linhas: [
+      'A primeira versão, a <b>"Cave Game"</b>, foi feita pelo Notch em cerca de <b>uma semana</b>, em 2009.',
+      'Hoje o Minecraft é o <b>jogo mais vendido da história</b>, com mais de 300 milhões de cópias.',
+    ] },
+    { tipo: 'texto', icone: '👻', titulo: '4. O Herobrine<br>nunca existiu', linhas: [
+      'Ele nasceu de um vídeo e de uma história inventada na internet.',
+      'Mesmo assim, por anos, várias atualizações traziam a piada nas notas: <b>"Removido o Herobrine"</b>.',
+    ] },
+    { tipo: 'texto', icone: '🌍', titulo: '5. O mundo<br>tinha um fim', linhas: [
+      'Nas versões antigas, a uns <b>12,5 milhões de blocos</b> do centro, o terreno enlouquecia: eram as <b>Far Lands</b>.',
+      'Paredes gigantes e buracos sem sentido, por causa de um limite de cálculo do jogo.',
+    ] },
+    { tipo: 'texto', icone: '🌙', titulo: '6. A lua tem<br>8 fases', linhas: [
+      'Um dia no Minecraft dura <b>20 minutos</b>, e a lua muda de fase toda noite.',
+      'E isso muda o jogo: na <b>lua cheia</b>, nascem mais slimes nos pântanos.',
+    ] },
+    { tipo: 'texto', icone: '🐉', titulo: '7. O dragão<br>quase não existiu', linhas: [
+      'O <b>End</b> e o <b>Ender Dragon</b> entraram só perto do lançamento da versão 1.0, em 2011.',
+      'Antes disso, o Minecraft não tinha um "chefão final".',
+    ] },
+    { tipo: 'texto', icone: '🔥', titulo: 'E no BrasaMC...', linhas: [
+      'O <b>dragão do End renasce todo dia</b> às 21h.',
+      '<b>Bosses em 3D</b> todo dia às 20h, e eventos valendo prêmio o dia inteiro.',
+      'O servidor abre <b>em breve</b>.',
+    ] },
+    { tipo: 'fim', titulo: 'Qual você não sabia? 👇', linhas: ['Comenta o número', 'Manda pro amigo que se acha expert', 'Discord na bio'] },
+  ],
 };
+
+const SEM_IP = new Set(['04-agenda-eventos', '05-agenda-imagem', '06-curiosidades-01']);
 
 // Os destaques reaproveitam os posts, trocando o IP por "na bio do perfil" e o texto de feed pelo de story.
 function paraStory(slides) {
@@ -164,7 +253,7 @@ const DESTAQUES = {
   ],
 
   'vip': [
-    { tipo: 'capa', topo: 'VIP', titulo: 'Seja VIP<br>na BrasaMC', sub: '4 tiers, 30 dias cada.<br>Kit todo dia, montaria e bônus em tudo.', dica: 'toca pra passar →' },
+    { tipo: 'capa', topo: 'VIP', titulo: 'Seja VIP<br>no BrasaMC', sub: '4 tiers, 30 dias cada.<br>Kit todo dia, montaria e bônus em tudo.', dica: 'toca pra passar →' },
     { tipo: 'grade', titulo: 'Os 4 tiers', itens: [
       ['🥉', 'Bronze', '100 créditos · R$ 10'],
       ['🥈', 'Prata', '200 créditos · R$ 20'],
@@ -272,6 +361,16 @@ b{color:#ffd166}
 .rodape{display:flex;justify-content:space-between;align-items:center;font-size:30px;color:#b8a69b;position:relative}
 .rodape .ip{font-size:28px}
 .pag{font-weight:700;color:#ffb347}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.ag-col{background:rgba(44,34,29,.85);border:2px solid #3a2c25;border-radius:22px;padding:10px 18px}
+.ag-lin{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:2px solid rgba(255,255,255,.07)}
+.ag-lin:last-child{border-bottom:0}
+.ag-h{font-weight:900;font-size:32px;color:#ffb347;width:68px}
+.ag-e{font-size:32px;width:42px;text-align:center}
+.ag-n{font-size:28px;font-weight:700;color:#fff;white-space:nowrap}
+.ag-fds{margin-top:26px;background:rgba(242,107,29,.12);border:2px solid #f26b1d;border-radius:22px;padding:20px 26px;font-size:30px;line-height:1.4}
+.ag-nota{margin-top:22px;font-size:28px;color:#b8a69b;text-align:center}
+.ag-nota .cmd{font-size:26px}
 .capa-destaque{align-items:center;justify-content:center;padding:0!important}
 .circulo{width:760px;height:760px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:radial-gradient(circle at 50% 55%,#5a1d08 0%,#2a0f06 60%,#120b08 100%);
@@ -300,6 +399,16 @@ function corpo(s) {
     case 'passos':
       return `<h1 class="pixel">${s.titulo}</h1><ol>${s.passos.map((p) => `<li>${p}</li>`).join('')}</ol>
         ${s.nota ? `<p class="nota">${s.nota}</p>` : ''}`;
+    case 'agenda': {
+      const meio = Math.ceil(s.itens.length / 2);
+      const coluna = (lista) => `<div class="ag-col">${lista.map(([e, h, n]) =>
+        `<div class="ag-lin"><span class="ag-h">${h}</span><span class="ag-e">${e}</span><span class="ag-n">${n}</span></div>`).join('')}</div>`;
+      return `<h1 class="pixel" style="font-size:80px;margin-bottom:10px">${s.titulo}</h1>
+        <p class="sub" style="font-size:36px;color:#ffd166;margin-bottom:34px">${s.sub}</p>
+        <div class="ag">${coluna(s.itens.slice(0, meio))}${coluna(s.itens.slice(meio))}</div>
+        <div class="ag-fds">📅 ${s.fimDeSemana}</div>
+        <p class="ag-nota">${s.nota}</p>`;
+    }
     case 'fim':
       return `<div class="capa-chama">${chama}</div><h1 class="pixel">${s.titulo}</h1>
         <ul class="fim">${s.linhas.map((l) => `<li>${l}</li>`).join('')}</ul>`;
@@ -315,11 +424,12 @@ function documento(f, corpoHtml, classe = '') {
 <body class="${classe}">${corpoHtml}</body></html>`;
 }
 
+let postAtual = '';
 function pagina(s, i, total, f) {
   const capa = s.tipo === 'capa';
   return documento(f, `${capa ? '' : cabecalho()}
 <main>${corpo(s)}</main>
-<div class="rodape"><span>${INSTA}</span>${f.ip ? `<span class="ip">${IP}</span>` : ''}<span class="pag">${i + 1}/${total}</span></div>`);
+<div class="rodape"><span>${INSTA}</span>${f.ip && !SEM_IP.has(postAtual) ? `<span class="ip">${IP}</span>` : ''}${total > 1 ? `<span class="pag">${i + 1}/${total}</span>` : '<span></span>'}</div>`);
 }
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'brasa-posts-'));
@@ -338,6 +448,7 @@ function foto(html, png, altura) {
 function gerar(conjunto, pasta, f) {
   for (const [nome, slides] of Object.entries(conjunto)) {
     if (escolhido && !nome.startsWith(escolhido) && !pasta.startsWith(escolhido)) continue;
+    postAtual = nome;
     slides.forEach((s, i) => foto(pagina(s, i, slides.length, f),
       path.join(__dirname, pasta, nome, `${String(i + 1).padStart(2, '0')}.png`), f.altura));
     console.log(`${pasta}/${nome}: ${slides.length} slides`);

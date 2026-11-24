@@ -1,0 +1,834 @@
+{
+ "duracao": 65.0,
+ "falas": [
+  {
+   "ini": 0.0,
+   "fim": 6.33,
+   "palavras": [
+    {
+     "texto": "Sete",
+     "ini": 0.096,
+     "fim": 0.501
+    },
+    {
+     "texto": "coisas",
+     "ini": 0.513,
+     "fim": 0.872
+    },
+    {
+     "texto": "que",
+     "ini": 0.883,
+     "fim": 0.976
+    },
+    {
+     "texto": "você",
+     "ini": 0.988,
+     "fim": 1.231
+    },
+    {
+     "texto": "não",
+     "ini": 1.242,
+     "fim": 1.369
+    },
+    {
+     "texto": "sabia",
+     "ini": 1.381,
+     "fim": 1.786
+    },
+    {
+     "texto": "sobre",
+     "ini": 1.798,
+     "fim": 2.052
+    },
+    {
+     "texto": "o",
+     "ini": 2.064,
+     "fim": 2.087
+    },
+    {
+     "texto": "Minecraft.",
+     "ini": 2.099,
+     "fim": 2.805
+    },
+    {
+     "texto": "A",
+     "ini": 3.6,
+     "fim": 3.681
+    },
+    {
+     "texto": "número",
+     "ini": 3.692,
+     "fim": 4.028
+    },
+    {
+     "texto": "seis",
+     "ini": 4.039,
+     "fim": 4.34
+    },
+    {
+     "texto": "parece",
+     "ini": 4.352,
+     "fim": 4.687
+    },
+    {
+     "texto": "mentira.",
+     "ini": 4.699,
+     "fim": 5.174
+    }
+   ]
+  },
+  {
+   "ini": 6.33,
+   "fim": 14.53,
+   "palavras": [
+    {
+     "texto": "Um:",
+     "ini": 6.426,
+     "fim": 6.635
+    },
+    {
+     "texto": "o",
+     "ini": 6.993,
+     "fim": 7.086
+    },
+    {
+     "texto": "Creeper",
+     "ini": 7.098,
+     "fim": 7.398
+    },
+    {
+     "texto": "era",
+     "ini": 7.41,
+     "fim": 7.618
+    },
+    {
+     "texto": "pra",
+     "ini": 7.63,
+     "fim": 7.757
+    },
+    {
+     "texto": "ser",
+     "ini": 7.769,
+     "fim": 7.966
+    },
+    {
+     "texto": "um",
+     "ini": 7.977,
+     "fim": 8.07
+    },
+    {
+     "texto": "porco.",
+     "ini": 8.081,
+     "fim": 8.463
+    },
+    {
+     "texto": "O",
+     "ini": 9.258,
+     "fim": 9.362
+    },
+    {
+     "texto": "Notch",
+     "ini": 9.374,
+     "fim": 9.733
+    },
+    {
+     "texto": "trocou",
+     "ini": 9.744,
+     "fim": 10.034
+    },
+    {
+     "texto": "as",
+     "ini": 10.045,
+     "fim": 10.161
+    },
+    {
+     "texto": "medidas",
+     "ini": 10.173,
+     "fim": 10.601
+    },
+    {
+     "texto": "do",
+     "ini": 10.612,
+     "fim": 10.682
+    },
+    {
+     "texto": "modelo",
+     "ini": 10.693,
+     "fim": 11.11
+    },
+    {
+     "texto": "sem",
+     "ini": 11.122,
+     "fim": 11.307
+    },
+    {
+     "texto": "querer,",
+     "ini": 11.318,
+     "fim": 11.642
+    },
+    {
+     "texto": "e",
+     "ini": 11.943,
+     "fim": 11.99
+    },
+    {
+     "texto": "saiu",
+     "ini": 12.001,
+     "fim": 12.337
+    },
+    {
+     "texto": "esse",
+     "ini": 12.349,
+     "fim": 12.522
+    },
+    {
+     "texto": "bicho",
+     "ini": 12.534,
+     "fim": 12.858
+    },
+    {
+     "texto": "comprido.",
+     "ini": 12.869,
+     "fim": 13.367
+    }
+   ]
+  },
+  {
+   "ini": 14.53,
+   "fim": 21.19,
+   "palavras": [
+    {
+     "texto": "Dois:",
+     "ini": 14.626,
+     "fim": 15.089
+    },
+    {
+     "texto": "a",
+     "ini": 15.274,
+     "fim": 15.344
+    },
+    {
+     "texto": "lua",
+     "ini": 15.355,
+     "fim": 15.633
+    },
+    {
+     "texto": "tem",
+     "ini": 15.645,
+     "fim": 15.83
+    },
+    {
+     "texto": "oito",
+     "ini": 15.842,
+     "fim": 16.085
+    },
+    {
+     "texto": "fases.",
+     "ini": 16.096,
+     "fim": 16.617
+    },
+    {
+     "texto": "E",
+     "ini": 17.412,
+     "fim": 17.505
+    },
+    {
+     "texto": "na",
+     "ini": 17.516,
+     "fim": 17.62
+    },
+    {
+     "texto": "lua",
+     "ini": 17.632,
+     "fim": 17.852
+    },
+    {
+     "texto": "cheia",
+     "ini": 17.863,
+     "fim": 18.164
+    },
+    {
+     "texto": "nascem",
+     "ini": 18.176,
+     "fim": 18.523
+    },
+    {
+     "texto": "mais",
+     "ini": 18.535,
+     "fim": 18.755
+    },
+    {
+     "texto": "slimes",
+     "ini": 18.766,
+     "fim": 19.252
+    },
+    {
+     "texto": "nos",
+     "ini": 19.264,
+     "fim": 19.449
+    },
+    {
+     "texto": "pântanos.",
+     "ini": 19.461,
+     "fim": 20.028
+    }
+   ]
+  },
+  {
+   "ini": 21.19,
+   "fim": 28.5,
+   "palavras": [
+    {
+     "texto": "Três:",
+     "ini": 21.286,
+     "fim": 21.68
+    },
+    {
+     "texto": "a",
+     "ini": 21.911,
+     "fim": 21.969
+    },
+    {
+     "texto": "primeira",
+     "ini": 21.981,
+     "fim": 22.293
+    },
+    {
+     "texto": "versão",
+     "ini": 22.305,
+     "fim": 22.698
+    },
+    {
+     "texto": "foi",
+     "ini": 22.71,
+     "fim": 22.849
+    },
+    {
+     "texto": "feita",
+     "ini": 22.86,
+     "fim": 23.103
+    },
+    {
+     "texto": "em",
+     "ini": 23.115,
+     "fim": 23.196
+    },
+    {
+     "texto": "mais",
+     "ini": 23.208,
+     "fim": 23.416
+    },
+    {
+     "texto": "ou",
+     "ini": 23.427,
+     "fim": 23.566
+    },
+    {
+     "texto": "menos",
+     "ini": 23.578,
+     "fim": 23.833
+    },
+    {
+     "texto": "uma",
+     "ini": 23.844,
+     "fim": 24.087
+    },
+    {
+     "texto": "semana.",
+     "ini": 24.099,
+     "fim": 24.585
+    },
+    {
+     "texto": "Hoje",
+     "ini": 25.38,
+     "fim": 25.681
+    },
+    {
+     "texto": "é",
+     "ini": 25.692,
+     "fim": 25.727
+    },
+    {
+     "texto": "o",
+     "ini": 25.739,
+     "fim": 25.785
+    },
+    {
+     "texto": "jogo",
+     "ini": 25.796,
+     "fim": 26.097
+    },
+    {
+     "texto": "mais",
+     "ini": 26.109,
+     "fim": 26.352
+    },
+    {
+     "texto": "vendido",
+     "ini": 26.364,
+     "fim": 26.769
+    },
+    {
+     "texto": "da",
+     "ini": 26.78,
+     "fim": 26.861
+    },
+    {
+     "texto": "história.",
+     "ini": 26.873,
+     "fim": 27.336
+    }
+   ]
+  },
+  {
+   "ini": 28.5,
+   "fim": 34.27,
+   "palavras": [
+    {
+     "texto": "Quatro:",
+     "ini": 28.596,
+     "fim": 29.013
+    },
+    {
+     "texto": "o",
+     "ini": 29.244,
+     "fim": 29.302
+    },
+    {
+     "texto": "Herobrine",
+     "ini": 29.314,
+     "fim": 29.8
+    },
+    {
+     "texto": "nunca",
+     "ini": 29.812,
+     "fim": 30.159
+    },
+    {
+     "texto": "existiu.",
+     "ini": 30.17,
+     "fim": 30.633
+    },
+    {
+     "texto": "Era",
+     "ini": 31.428,
+     "fim": 31.648
+    },
+    {
+     "texto": "só",
+     "ini": 31.66,
+     "fim": 31.856
+    },
+    {
+     "texto": "uma",
+     "ini": 31.868,
+     "fim": 32.042
+    },
+    {
+     "texto": "lenda",
+     "ini": 32.053,
+     "fim": 32.354
+    },
+    {
+     "texto": "da",
+     "ini": 32.366,
+     "fim": 32.447
+    },
+    {
+     "texto": "internet.",
+     "ini": 32.458,
+     "fim": 33.118
+    }
+   ]
+  },
+  {
+   "ini": 34.27,
+   "fim": 43.72,
+   "palavras": [
+    {
+     "texto": "Cinco:",
+     "ini": 34.366,
+     "fim": 34.887
+    },
+    {
+     "texto": "o",
+     "ini": 35.119,
+     "fim": 35.176
+    },
+    {
+     "texto": "mundo",
+     "ini": 35.188,
+     "fim": 35.535
+    },
+    {
+     "texto": "tinha",
+     "ini": 35.547,
+     "fim": 35.767
+    },
+    {
+     "texto": "um",
+     "ini": 35.778,
+     "fim": 35.882
+    },
+    {
+     "texto": "fim.",
+     "ini": 35.894,
+     "fim": 36.183
+    },
+    {
+     "texto": "A",
+     "ini": 36.978,
+     "fim": 37.117
+    },
+    {
+     "texto": "doze",
+     "ini": 37.129,
+     "fim": 37.453
+    },
+    {
+     "texto": "milhões",
+     "ini": 37.464,
+     "fim": 37.789
+    },
+    {
+     "texto": "e",
+     "ini": 37.8,
+     "fim": 37.916
+    },
+    {
+     "texto": "meio",
+     "ini": 37.927,
+     "fim": 38.147
+    },
+    {
+     "texto": "de",
+     "ini": 38.159,
+     "fim": 38.24
+    },
+    {
+     "texto": "blocos",
+     "ini": 38.252,
+     "fim": 38.645
+    },
+    {
+     "texto": "do",
+     "ini": 38.657,
+     "fim": 38.749
+    },
+    {
+     "texto": "centro,",
+     "ini": 38.761,
+     "fim": 39.212
+    },
+    {
+     "texto": "o",
+     "ini": 39.478,
+     "fim": 39.559
+    },
+    {
+     "texto": "terreno",
+     "ini": 39.571,
+     "fim": 39.918
+    },
+    {
+     "texto": "enlouquecia.",
+     "ini": 39.93,
+     "fim": 40.67
+    },
+    {
+     "texto": "Eram",
+     "ini": 41.469,
+     "fim": 41.782
+    },
+    {
+     "texto": "as",
+     "ini": 41.793,
+     "fim": 41.909
+    },
+    {
+     "texto": "Far Lands.",
+     "ini": 41.92,
+     "fim": 42.545
+    }
+   ]
+  },
+  {
+   "ini": 43.72,
+   "fim": 50.36,
+   "palavras": [
+    {
+     "texto": "Seis:",
+     "ini": 43.816,
+     "fim": 44.268
+    },
+    {
+     "texto": "os",
+     "ini": 44.545,
+     "fim": 44.661
+    },
+    {
+     "texto": "sons",
+     "ini": 44.673,
+     "fim": 44.927
+    },
+    {
+     "texto": "do",
+     "ini": 44.939,
+     "fim": 45.043
+    },
+    {
+     "texto": "Ghast",
+     "ini": 45.055,
+     "fim": 45.39
+    },
+    {
+     "texto": "vieram",
+     "ini": 45.402,
+     "fim": 45.622
+    },
+    {
+     "texto": "do",
+     "ini": 45.633,
+     "fim": 45.738
+    },
+    {
+     "texto": "gato",
+     "ini": 45.749,
+     "fim": 46.073
+    },
+    {
+     "texto": "do",
+     "ini": 46.085,
+     "fim": 46.177
+    },
+    {
+     "texto": "C418,",
+     "ini": 46.189,
+     "fim": 47.126
+    },
+    {
+     "texto": "o",
+     "ini": 47.439,
+     "fim": 47.52
+    },
+    {
+     "texto": "compositor",
+     "ini": 47.532,
+     "fim": 48.168
+    },
+    {
+     "texto": "das",
+     "ini": 48.18,
+     "fim": 48.342
+    },
+    {
+     "texto": "músicas",
+     "ini": 48.353,
+     "fim": 48.747
+    },
+    {
+     "texto": "do",
+     "ini": 48.758,
+     "fim": 48.851
+    },
+    {
+     "texto": "jogo.",
+     "ini": 48.863,
+     "fim": 49.21
+    }
+   ]
+  },
+  {
+   "ini": 50.36,
+   "fim": 55.65,
+   "palavras": [
+    {
+     "texto": "Sete:",
+     "ini": 50.456,
+     "fim": 50.989
+    },
+    {
+     "texto": "o",
+     "ini": 51.209,
+     "fim": 51.29
+    },
+    {
+     "texto": "dragão",
+     "ini": 51.301,
+     "fim": 51.648
+    },
+    {
+     "texto": "do",
+     "ini": 51.66,
+     "fim": 51.764
+    },
+    {
+     "texto": "End",
+     "ini": 51.776,
+     "fim": 52.03
+    },
+    {
+     "texto": "só",
+     "ini": 52.042,
+     "fim": 52.216
+    },
+    {
+     "texto": "entrou",
+     "ini": 52.227,
+     "fim": 52.482
+    },
+    {
+     "texto": "no",
+     "ini": 52.493,
+     "fim": 52.586
+    },
+    {
+     "texto": "jogo",
+     "ini": 52.597,
+     "fim": 52.898
+    },
+    {
+     "texto": "perto",
+     "ini": 52.91,
+     "fim": 53.222
+    },
+    {
+     "texto": "da",
+     "ini": 53.234,
+     "fim": 53.338
+    },
+    {
+     "texto": "versão",
+     "ini": 53.35,
+     "fim": 53.697
+    },
+    {
+     "texto": "um",
+     "ini": 53.709,
+     "fim": 53.813
+    },
+    {
+     "texto": "ponto",
+     "ini": 53.824,
+     "fim": 54.148
+    },
+    {
+     "texto": "zero.",
+     "ini": 54.16,
+     "fim": 54.484
+    }
+   ]
+  },
+  {
+   "ini": 55.65,
+   "fim": 65.0,
+   "palavras": [
+    {
+     "texto": "E",
+     "ini": 55.746,
+     "fim": 55.839
+    },
+    {
+     "texto": "no",
+     "ini": 55.85,
+     "fim": 55.943
+    },
+    {
+     "texto": "BrasaMC,",
+     "ini": 55.955,
+     "fim": 56.8
+    },
+    {
+     "texto": "ele",
+     "ini": 57.008,
+     "fim": 57.135
+    },
+    {
+     "texto": "renasce",
+     "ini": 57.147,
+     "fim": 57.563
+    },
+    {
+     "texto": "todo",
+     "ini": 57.575,
+     "fim": 57.853
+    },
+    {
+     "texto": "dia,",
+     "ini": 57.864,
+     "fim": 58.165
+    },
+    {
+     "texto": "às",
+     "ini": 58.327,
+     "fim": 58.489
+    },
+    {
+     "texto": "nove",
+     "ini": 58.501,
+     "fim": 58.802
+    },
+    {
+     "texto": "da",
+     "ini": 58.813,
+     "fim": 58.894
+    },
+    {
+     "texto": "noite.",
+     "ini": 58.906,
+     "fim": 59.299
+    },
+    {
+     "texto": "O",
+     "ini": 60.094,
+     "fim": 60.21
+    },
+    {
+     "texto": "servidor",
+     "ini": 60.222,
+     "fim": 60.754
+    },
+    {
+     "texto": "abre",
+     "ini": 60.766,
+     "fim": 60.997
+    },
+    {
+     "texto": "em",
+     "ini": 61.009,
+     "fim": 61.101
+    },
+    {
+     "texto": "breve!",
+     "ini": 61.113,
+     "fim": 61.541
+    },
+    {
+     "texto": "Link",
+     "ini": 62.34,
+     "fim": 62.71
+    },
+    {
+     "texto": "do",
+     "ini": 62.722,
+     "fim": 62.849
+    },
+    {
+     "texto": "Discord",
+     "ini": 62.861,
+     "fim": 63.405
+    },
+    {
+     "texto": "na",
+     "ini": 63.416,
+     "fim": 63.532
+    },
+    {
+     "texto": "bio!",
+     "ini": 63.544,
+     "fim": 63.844
+    }
+   ]
+  }
+ ]
+}

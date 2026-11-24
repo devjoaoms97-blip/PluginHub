@@ -208,6 +208,43 @@ async function canais(servidor, lista) {
   console.log('\nCanais');
   let comunidade = servidor.features.includes('COMMUNITY');
   const adiados = [];
+
+  // Recriados vazios uma vez só: apaga o atual antes de garantir, e o garantir cria de novo.
+  estado.recriados ||= [];
+  for (const chave of E.recriarCanais || []) {
+    if (estado.recriados.includes(chave)) continue;
+    const def = E.categorias.flatMap((c) => c.canais).find((c) => c.chave === chave);
+    const atual = lista.find((c) => c.id === estado.canais[chave]) || (def && lista.find((c) => c.name === def.nome));
+    if (atual) {
+      await fazer(`- apagar #${atual.name} pra criar de novo, vazio (some o histórico)`, async () => {
+        await api('DELETE', `/channels/${atual.id}`);
+        lista.splice(lista.indexOf(atual), 1);
+      });
+    }
+    if (APLICAR) { delete estado.canais[chave]; estado.recriados.push(chave); }
+  }
+
+  // Categorias que saem com tudo dentro.
+  for (const d of E.apagarCategorias || []) {
+    const cat = lista.find((c) => c.id === estado.canais[`cat:${d.chave}`])
+      || lista.find((c) => c.type === TIPO.categoria && (d.adotar || []).includes(c.name));
+    if (!cat) continue;
+    for (const filho of lista.filter((c) => c.parent_id === cat.id)) {
+      await fazer(`- apagar ${filho.name} (de ${cat.name})`, async () => {
+        await api('DELETE', `/channels/${filho.id}`);
+        lista.splice(lista.indexOf(filho), 1);
+      });
+    }
+    await fazer(`- apagar a categoria ${cat.name}`, async () => {
+      await api('DELETE', `/channels/${cat.id}`);
+      lista.splice(lista.indexOf(cat), 1);
+    });
+    if (APLICAR) {
+      delete estado.canais[`cat:${d.chave}`];
+      for (const k of Object.keys(estado.canais)) if (!lista.some((c) => c.id === estado.canais[k])) delete estado.canais[k];
+    }
+  }
+
   for (const cat of E.categorias) {
     const c = await garantirCanal(cat, lista, undefined, cat.acesso, comunidade, adiados);
     const idCat = c ? c.id : `(nova:${cat.chave})`;

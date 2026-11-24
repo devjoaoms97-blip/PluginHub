@@ -34,7 +34,7 @@ async function painel(guild) {
   if (!canal) return console.warn('[loja] canal #loja-vip não encontrado');
   const embed = new EmbedBuilder()
     .setColor(COR)
-    .setTitle('🛒 Loja de créditos da BrasaMC')
+    .setTitle('🛒 Loja de créditos do BrasaMC')
     .setDescription([
       'Créditos compram **VIP** e **cosméticos** na loja do jogo (`/creditos`).',
       '',
@@ -194,7 +194,7 @@ async function entregar(id, pedido, chave, guild) {
     ));
   const usuario = await guild.client.users.fetch(pedido.discordId).catch(() => null);
   await usuario?.send({ embeds: [new EmbedBuilder().setColor(0x2ecc71).setTitle('✅ Pagamento aprovado!')
-    .setDescription(`**${numero(pedido.creditos)} créditos** entregues na conta **${r.nick || pedido.nick}** (pedido #${pedido.numero}).\nUse no jogo com \`/creditos\`. Obrigado pelo apoio à BrasaMC! 🔥`)] })
+    .setDescription(`**${numero(pedido.creditos)} créditos** entregues na conta **${r.nick || pedido.nick}** (pedido #${pedido.numero}).\nUse no jogo com \`/creditos\`. Obrigado pelo apoio ao BrasaMC! 🔥`)] })
     .catch(() => {});
 }
 

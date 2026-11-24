@@ -14,7 +14,7 @@ import config from '../reels.json';
 // não aparecer um retângulo.
 const MASCARA_CHAT = 'radial-gradient(ellipse 760px 330px at 230px 1740px, black 0%, black 62%, transparent 100%)';
 
-const Clipe = ({ arquivo, inicio, zoom = [1, 1.08], ofuscarChat = false }) => {
+export const Clipe = ({ arquivo, inicio, zoom = [1, 1.08], ofuscarChat = false, volume = 0.25 }) => {
   const f = useCurrentFrame();
   const { durationInFrames, fps } = useVideoConfig();
   const escala = interpolate(f, [0, durationInFrames], zoom);
@@ -24,7 +24,7 @@ const Clipe = ({ arquivo, inicio, zoom = [1, 1.08], ofuscarChat = false }) => {
         <OffthreadVideo
           src={staticFile(`brutos/${arquivo}`)}
           startFrom={Math.round(inicio * fps)}
-          volume={0.25}
+          volume={volume}
           style={{
             position: 'absolute', width: 1080, height: 1920, left: 0, top: 0, objectFit: 'cover',
             filter: 'brightness(1.15) contrast(1.12) saturate(1.15)',

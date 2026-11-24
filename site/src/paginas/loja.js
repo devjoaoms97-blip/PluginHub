@@ -79,14 +79,14 @@ function paginaLoja() {
     <div class="cartao revelar"><div class="cartao-icone" aria-hidden="true">💬</div><h3>Problema com o pagamento?</h3><p>Abra um ticket de Pagamento no ${config.discord ? `<a href="${esc(config.discord)}" target="_blank" rel="noopener">Discord</a>` : 'Discord'} com o número do pedido.</p></div>
   </div>
 </section>`;
-  return layout({ titulo: 'Loja', descricao: 'Compre créditos da BrasaMC com Pix ou cartão: VIP e cosméticos, com entrega automática.', ativo: '/loja', corpo });
+  return layout({ titulo: 'Loja', descricao: 'Compre créditos do BrasaMC com Pix ou cartão: VIP e cosméticos, com entrega automática.', ativo: '/loja', corpo });
 }
 
 const ESTADOS = {
   aguardando: { icone: '⏳', titulo: 'Aguardando o pagamento', texto: 'Assim que o Mercado Pago aprovar, os créditos caem sozinhos. Esta página se atualiza.' },
   analise: { icone: '🔎', titulo: 'Pagamento em análise', texto: 'O banco está analisando. Quando aprovar, os créditos caem sozinhos (pode levar algumas horas).' },
   pago: { icone: '💸', titulo: 'Pago! Entregando…', texto: 'O pagamento foi aprovado. Os créditos chegam assim que o servidor confirmar (se ele estiver desligado, quando voltar).' },
-  entregue: { icone: '✅', titulo: 'Créditos entregues!', texto: 'Use no jogo com /creditos. Obrigado pelo apoio à BrasaMC! 🔥' },
+  entregue: { icone: '✅', titulo: 'Créditos entregues!', texto: 'Use no jogo com /creditos. Obrigado pelo apoio ao BrasaMC! 🔥' },
   vencido: { icone: '⌛', titulo: 'O link venceu', texto: 'Ninguém pagou este pedido a tempo. Faça um pedido novo na loja.' },
   problema: { icone: '⚠️', titulo: 'Pagamento com valor diferente', texto: 'Nada foi entregue. Abra um ticket de Pagamento no Discord com o número do pedido.' },
 };

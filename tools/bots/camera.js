@@ -137,7 +137,7 @@ async function prepararPercurso(em, tiques, dim) {
   fs.rmSync(pasta, { recursive: true, force: true })
   fs.mkdirSync(pasta, { recursive: true })
   fs.writeFileSync(path.join(pack, 'pack.mcmeta'), JSON.stringify({
-    pack: { description: 'Câmera em trilho da BrasaMC (tools/bots/camera.js)', min_format: [107, 0], max_format: [107, 1] },
+    pack: { description: 'Câmera em trilho do BrasaMC (tools/bots/camera.js)', min_format: [107, 0], max_format: [107, 1] },
   }))
   for (let i = 0; i <= tiques; i++) {
     const p = em(suave(i / tiques))

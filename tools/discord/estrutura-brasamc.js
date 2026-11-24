@@ -1,4 +1,4 @@
-// Como o Discord da BrasaMC deve ficar. O estrutura.js compara isto com o servidor e cria ou
+// Como o Discord do BrasaMC deve ficar. O estrutura.js compara isto com o servidor e cria ou
 // ajusta o que faltar. Cada item tem uma "chave" fixa: renomear aqui renomeia lá, sem duplicar.
 //
 // acesso dos canais e categorias:
@@ -10,6 +10,11 @@
 // "substituir" lista cargos antigos que são apagados e recriados do zero (some de quem tinha).
 
 const STAFF = ['diretor', 'subdiretor', 'moderador', 'ajudante'];
+
+// Antes do lançamento, o que só faz sentido com o servidor aberto (feed do jogo, vínculo, loja, modpack
+// com o IP) fica só pra staff. No dia do lançamento: true e rodar o estrutura.js de novo.
+const LANCADO = false;
+const ABERTO = LANCADO ? 'leitura' : 'staff';
 const DIRECAO = ['diretor', 'subdiretor'];
 
 module.exports = {
@@ -24,7 +29,6 @@ module.exports = {
     canalRegras: 'regras',
     canalAvisosDiscord: 'staff', // avisos do próprio Discord pra moderação
     canalSistema: 'geral', // "fulano entrou" do Discord: no #boas-vindas empurraria a mensagem fixa
-    canalAfk: 'afk-voz',
   },
 
   // De cima pra baixo (a ordem vale abaixo do cargo do bot).
@@ -62,16 +66,18 @@ module.exports = {
     {
       chave: 'inicio', nome: '📌 INÍCIO', acesso: 'leitura',
       canais: [
-        { chave: 'boas-vindas', nome: '👋・boas-vindas', topico: 'Bem-vindo à BrasaMC! Comece por aqui.' },
+        { chave: 'boas-vindas', nome: '👋・boas-vindas', topico: 'Bem-vindo ao BrasaMC! Comece por aqui.' },
         { chave: 'regras', nome: '📜・regras', topico: 'Regras do Discord e do servidor.' },
-        { chave: 'anuncios', nome: '📢・anuncios', tipo: 'anuncios', topico: 'Novidades e avisos oficiais da BrasaMC.' },
+        { chave: 'anuncios', nome: '📢・anuncios', tipo: 'anuncios', topico: 'Novidades e avisos oficiais do BrasaMC.' },
         { chave: 'changelog', nome: '📝・changelog', topico: 'O que mudou no servidor, atualização por atualização.' },
         { chave: 'status', nome: '🟢・status', topico: 'Servidor online, jogadores e próximos eventos (atualizado pelo bot).' },
-        { chave: 'modpack', nome: '🧩・modpack', topico: 'Modpack opcional: mais FPS e shaders. Downloads e como instalar.' },
+        { chave: 'faq', nome: '❓・faq', topico: 'Perguntas frequentes: quando abre, versão, original ou pirata, VIP.' },
+        { chave: 'spoilers', nome: '👀・spoilers', topico: 'Prévias, vídeos e prints do que está chegando.' },
+        { chave: 'modpack', nome: '🧩・modpack', acesso: ABERTO, topico: 'Modpack opcional: mais FPS e shaders. Downloads e como instalar.' },
       ],
     },
     {
-      chave: 'conta', nome: '🔗 CONTA E LOJA', acesso: 'leitura',
+      chave: 'conta', nome: '🔗 CONTA E LOJA', acesso: ABERTO,
       canais: [
         { chave: 'vincular-conta', nome: '🔗・vincular-conta', topico: 'Vincule sua conta do Minecraft e ganhe o cargo e os avisos.' },
         { chave: 'loja-vip', nome: '🛒・loja-vip', topico: 'Compre créditos com Pix ou cartão. Entrega automática na conta vinculada.' },
@@ -84,7 +90,7 @@ module.exports = {
       ],
     },
     {
-      chave: 'feed', nome: '🎮 NO SERVIDOR', acesso: 'leitura',
+      chave: 'feed', nome: '🎮 NO SERVIDOR', acesso: ABERTO,
       canais: [
         { chave: 'eventos', nome: '🐉・eventos', topico: 'Boss, Gladiador, XP em dobro e alta no mercado, ao vivo.' },
         { chave: 'mercado', nome: '🏛️・mercado', topico: 'Leilões de terrenos e barracas, aluguéis e vagas.' },
@@ -119,11 +125,6 @@ module.exports = {
         { chave: 'voz-suporte', nome: '🎧 Suporte', tipo: 'voz' },
       ],
     },
-    // Os canais de outros jogos continuam todos aqui, só muda o nome da categoria.
-    { chave: 'outros-jogos', nome: '🎲 OUTROS JOGOS', adotar: ['▁▂▃▄▅▆▇•jogos•▇▆▅▄▃▂▁'], acesso: 'manter', canais: [] },
-    { chave: 'afk', nome: '💤 AFK', adotar: ['▁▂▃▄▅▆▇•afk•▇▆▅▄▃▂▁'], acesso: 'manter', canais: [
-      { chave: 'afk-voz', nome: '🛌 • afk', adotar: ['🛌 • afk'], tipo: 'voz', acesso: 'manter' },
-    ] },
     {
       chave: 'staff', nome: '🛡️ STAFF', adotar: ['▁▂▃▄▅▆▇ Administração ▇▆▅▄▃▂▁'], acesso: 'staff',
       canais: [
@@ -139,6 +140,15 @@ module.exports = {
 
   // Canais que existiam e saem (pela chave do estado). O #chat-do-jogo era da ponte de chat, que não vai ter.
   apagarCanais: ['chat-do-jogo'],
+
+  // Categorias apagadas com todos os canais dentro (as do antigo Discord dos amigos; decisão de 2026-11-23).
+  apagarCategorias: [
+    { chave: 'outros-jogos', adotar: ['🎲 OUTROS JOGOS'] },
+    { chave: 'afk', adotar: ['💤 AFK'] },
+  ],
+
+  // Canais apagados e criados de novo, vazios, uma vez só (o #geral tinha anos de conversa dos amigos).
+  recriarCanais: ['geral'],
 
   // Categoria do DiscordPlugin → canal. O estrutura.js cria um webhook por categoria e grava as URLs.
   webhooks: {
@@ -168,4 +178,5 @@ module.exports = {
 
   STAFF,
   DIRECAO,
+  LANCADO,
 };

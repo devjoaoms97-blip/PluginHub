@@ -69,7 +69,7 @@ ${skills.length ? `<section class="largura bloco">
   ${grupo('Combate', false)}
   ${grupo('Profissão', true)}
 </section>` : ''}`;
-  return layout({ titulo: j.nick, descricao: `Perfil de ${j.nick} na BrasaMC: rank, skills, clã e rankings.`, ativo: '/rankings', corpo });
+  return layout({ titulo: j.nick, descricao: `Perfil de ${j.nick} no BrasaMC: rank, skills, clã e rankings.`, ativo: '/rankings', corpo });
 }
 
 /** Sem o nick exato: sugestões que começam com o que foi digitado. */

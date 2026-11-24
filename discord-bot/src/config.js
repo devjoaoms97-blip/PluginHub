@@ -50,8 +50,12 @@ module.exports = {
     token: doServidor('PLUGIN_API_TOKEN'),
   },
   idadeMinimaDias: Number(env.IDADE_MINIMA_DIAS || 30),
+  // Antes do lançamento (LANCADO vazio ou false no .env): boas-vindas e #status de "em breve" e o IP
+  // escondido em todo texto. No dia, LANCADO_OFICIAL=true e reiniciar o bot.
+  lancado: doServidor('LANCADO') === 'true',
   // Endereço pra entrar no servidor, mostrado no #status (vazio: não mostra).
-  ipDoServidor: doServidor('SERVIDOR_IP'),
+  ipDoServidor: doServidor('LANCADO') === 'true' ? doServidor('SERVIDOR_IP') : '',
+  instagram: doServidor('INSTAGRAM_URL') || 'https://www.instagram.com/brasa_mc/',
   mercadoPago: { token: doServidor('MP_ACCESS_TOKEN') },
   cargo: (chave) => estrutura.cargos[chave],
   canal: (chave) => estrutura.canais[chave],

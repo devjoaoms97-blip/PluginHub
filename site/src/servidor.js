@@ -1,4 +1,4 @@
-// Site da BrasaMC: um servidor HTTP do próprio Node, sem dependências. Escuta em 127.0.0.1 (na VPS, o
+// Site do BrasaMC: um servidor HTTP do próprio Node, sem dependências. Escuta em 127.0.0.1 (na VPS, o
 // Caddy fica na frente com o domínio e o HTTPS) e fala com o servidor do Minecraft pela API local do
 // DiscordPlugin (src/dados.js).
 //

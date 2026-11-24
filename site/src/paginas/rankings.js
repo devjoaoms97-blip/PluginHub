@@ -118,7 +118,7 @@ function paginaRankings({ foto, aba, skill }) {
     ${paineis[a.id]}
   </div>`).join('')}
 </section>`;
-  return layout({ titulo: 'Rankings', descricao: 'Os mais ricos, os maiores ranks, as skills, os clãs e os votos do mês na BrasaMC.', ativo: '/rankings', corpo });
+  return layout({ titulo: 'Rankings', descricao: 'Os mais ricos, os maiores ranks, as skills, os clãs e os votos do mês no BrasaMC.', ativo: '/rankings', corpo });
 }
 
 module.exports = { paginaRankings };

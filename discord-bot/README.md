@@ -1,4 +1,4 @@
-# Bot do Discord da BrasaMC
+# Bot do Discord do BrasaMC
 
 Bot em Node ([discord.js](https://discord.js.org) 14) que roda **separado do servidor do Minecraft**: no PC por enquanto, na VPS depois. Ele fala com o servidor pela API local do [DiscordPlugin](../discord-plugin/README.md). Os avisos do jogo (boss, leilões...) continuam saindo pelos webhooks do plugin, mesmo com o bot desligado.
 

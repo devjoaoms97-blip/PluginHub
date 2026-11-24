@@ -2,7 +2,7 @@
   "name": "brasamc-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Site da BrasaMC: página inicial com o status ao vivo, rankings, perfil e loja de créditos",
+  "description": "Site do BrasaMC: página inicial com o status ao vivo, rankings, perfil e loja de créditos",
   "main": "src/servidor.js",
   "scripts": {
     "start": "node src/servidor.js",

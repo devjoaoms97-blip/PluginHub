@@ -1,4 +1,4 @@
-# 📜 Regras da BrasaMC
+# 📜 Regras do BrasaMC
 
 Valem no servidor e no Discord. Não conhecer as regras não livra ninguém da punição.
 

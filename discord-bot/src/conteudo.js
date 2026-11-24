@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, MessageFlags } = require('discord.js');
 const config = require('./config');
 
 const PASTA = path.join(__dirname, '..', 'conteudo');
@@ -24,6 +24,7 @@ function ler(arquivo) {
   const [primeira, ...resto] = bruto.split('\n');
   const texto = resto.join('\n').trim()
     .replace(/\{ip\}/g, config.ipDoServidor || 'em breve')
+    .replace(/\{instagram\}/g, config.instagram)
     .replace(/\{#([a-z0-9:-]+)\}/g, (_, chave) => (config.canal(chave) ? `<#${config.canal(chave)}>` : `#${chave}`));
   if (texto.length > 4096) throw new Error(`${path.basename(arquivo)} passou de 4096 caracteres`);
   return { titulo: primeira.replace(/^#\s*/, '').trim(), texto };
@@ -52,10 +53,15 @@ function embed({ titulo, texto }) {
 }
 
 async function boasVindas(guild) {
-  const botoes = new ActionRowBuilder().addComponents(AVISOS.filter((a) => config.cargo(a.cargo)).map((a) =>
+  // antes do lançamento, só o aviso de novidades (é por ele que sai a data) e o link do Instagram
+  const avisos = config.lancado ? AVISOS : [{ ...AVISOS.find((a) => a.cargo === 'ping-novidades'), rotulo: 'Me avise do lançamento' }];
+  const botoes = new ActionRowBuilder().addComponents(avisos.filter((a) => config.cargo(a.cargo)).map((a) =>
     new ButtonBuilder().setCustomId(`aviso:${a.cargo}`).setLabel(a.rotulo).setEmoji(a.emoji).setStyle(ButtonStyle.Secondary)));
+  if (!config.lancado) {
+    botoes.addComponents(new ButtonBuilder().setLabel('Instagram').setEmoji('📸').setStyle(ButtonStyle.Link).setURL(config.instagram));
+  }
   await fixa(guild, 'boas-vindas', 'boas-vindas', {
-    embeds: [embed(ler(path.join(PASTA, 'boas-vindas.md')))],
+    embeds: [embed(ler(path.join(PASTA, config.lancado ? 'boas-vindas.md' : 'boas-vindas-pre.md')))],
     components: botoes.components.length ? [botoes] : [],
   });
 }
@@ -67,7 +73,8 @@ async function tutoriais(guild) {
   const arquivos = fs.readdirSync(path.join(PASTA, 'tutoriais')).filter((a) => a.endsWith('.md')).sort().reverse();
   for (const arquivo of arquivos) {
     const chave = `tutorial:${arquivo.replace(/\.md$/, '')}`;
-    const conteudo = ler(path.join(PASTA, 'tutoriais', arquivo));
+    let conteudo;
+    try { conteudo = ler(path.join(PASTA, 'tutoriais', arquivo)); } catch (e) { console.warn(`[conteudo] ${e.message}`); continue; }
     const mensagem = { embeds: [embed(conteudo)] };
     const hash = resumo({ titulo: conteudo.titulo, mensagem });
     const salvo = memoria()[chave];
@@ -88,11 +95,63 @@ async function tutoriais(guild) {
   }
 }
 
+/**
+ * Uma mensagem por arquivo de conteudo/<pasta> (anuncios, changelog, spoilers), na ordem do nome
+ * (AAAA-MM-DD-assunto.md: o mais antigo primeiro). Publicada uma vez, editada se o texto mudar.
+ * Uma linha "anexo: caminho" (a partir da raiz do repositório) manda o arquivo junto, só na primeira vez.
+ * Nos anúncios, a primeira publicação marca o cargo 🔔 Novidades.
+ */
+async function serie(guild, pasta, canalChave, marcar) {
+  const dir = path.join(PASTA, pasta);
+  if (!fs.existsSync(dir)) return;
+  const canal = await guild.channels.fetch(config.canal(canalChave)).catch(() => null);
+  if (!canal) return console.warn(`[conteudo] canal ${canalChave} não encontrado`);
+  for (const arquivo of fs.readdirSync(dir).filter((a) => a.endsWith('.md')).sort()) {
+    const chave = `${pasta}:${arquivo.replace(/\.md$/, '')}`;
+    const conteudo = ler(path.join(dir, arquivo));
+    const anexos = [...conteudo.texto.matchAll(/^anexo:\s*(.+)$/gm)].map((m) => path.join(PASTA, '..', '..', m[1].trim()));
+    conteudo.texto = conteudo.texto.replace(/^anexo:.*$\n?/gm, '').trim();
+    // com vídeo, o texto vai na própria mensagem (fica em cima do vídeo; o embed ficaria embaixo)
+    const comVideo = anexos.length > 0;
+    const corpo = comVideo
+      ? { content: `## ${conteudo.titulo}\n${conteudo.texto}`.slice(0, 2000), embeds: [] }
+      : { embeds: [embed(conteudo)] };
+    const hash = resumo({ titulo: conteudo.titulo, texto: conteudo.texto, comVideo });
+    const salvo = memoria()[chave];
+    const atual = salvo && await canal.messages.fetch(salvo.mensagem).catch(() => null);
+    if (atual && salvo.hash === hash) continue;
+    if (atual) await atual.edit({ ...corpo, allowedMentions: { parse: [] } });
+    else {
+      const cargo = marcar && config.cargo('ping-novidades');
+      const msg = await canal.send({
+        ...corpo,
+        content: [cargo ? `<@&${cargo}>` : '', corpo.content || ''].filter(Boolean).join('\n') || undefined,
+        allowedMentions: { roles: cargo ? [cargo] : [] },
+        files: anexos.filter((a) => fs.existsSync(a)),
+      });
+      memoria()[chave] = { mensagem: msg.id };
+      // canal de anúncios: publica também pra quem segue o canal em outro servidor
+      if (canal.type === ChannelType.GuildAnnouncement) await msg.crosspost().catch(() => {});
+    }
+    memoria()[chave].hash = hash;
+    config.salvarMemoria();
+    console.log(`[conteudo] ${chave} ${atual ? 'atualizado' : 'publicado'}`);
+  }
+}
+
 async function publicar(guild) {
-  await boasVindas(guild);
-  await fixa(guild, 'regras', 'regras', { embeds: [embed(ler(path.join(PASTA, 'regras.md')))] });
-  await fixa(guild, 'modpack', 'modpack', { embeds: [embed(ler(path.join(PASTA, 'modpack.md')))] });
-  await tutoriais(guild);
+  // cada parte por si: um texto com problema não segura o resto
+  const passos = [
+    ['boas-vindas', () => boasVindas(guild)],
+    ['regras', () => fixa(guild, 'regras', 'regras', { embeds: [embed(ler(path.join(PASTA, 'regras.md')))] })],
+    ['modpack', () => fixa(guild, 'modpack', 'modpack', { embeds: [embed(ler(path.join(PASTA, 'modpack.md')))] })],
+    ['faq', () => config.canal('faq') && fixa(guild, 'faq', 'faq', { embeds: [embed(ler(path.join(PASTA, 'faq.md')))] })],
+    ['tutoriais', () => tutoriais(guild)],
+    ['anuncios', () => serie(guild, 'anuncios', 'anuncios', true)],
+    ['changelog', () => serie(guild, 'changelog', 'changelog', false)],
+    ['spoilers', () => serie(guild, 'spoilers', 'spoilers', false)],
+  ];
+  for (const [nome, passo] of passos) await Promise.resolve().then(passo).catch((e) => console.warn(`[conteudo] ${nome}: ${e.message}`));
 }
 
 /** Botões dos cargos de aviso: clica, ganha; clica de novo, tira. */

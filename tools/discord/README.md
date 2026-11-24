@@ -1,4 +1,4 @@
-# Discord da BrasaMC
+# Discord do BrasaMC
 
 Scripts que montam e conferem o servidor do Discord pela API, sem clicar em nada. Sem dependências (Node 18+).
 

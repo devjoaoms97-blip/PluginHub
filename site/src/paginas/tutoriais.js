@@ -27,7 +27,7 @@ ${tutoriais.GRUPOS.map((g) => {
   </div>
 </section>`;
   }).join('')}`;
-  return layout({ titulo: 'Tutoriais', descricao: 'Os tutoriais da BrasaMC: skills, rankup, dinheiro, clãs, eventos, tesouros e mais.', ativo: '/tutoriais', corpo });
+  return layout({ titulo: 'Tutoriais', descricao: 'Os tutoriais do BrasaMC: skills, rankup, dinheiro, clãs, eventos, tesouros e mais.', ativo: '/tutoriais', corpo });
 }
 
 function paginaTutorial(slug) {
@@ -54,7 +54,7 @@ function paginaTutorial(slug) {
     <a class="pequeno" href="/tutoriais">Todos os tutoriais →</a>
   </aside>` : ''}
 </section>`;
-  return layout({ titulo: t.titulo, descricao: `${t.titulo}: tutorial da BrasaMC.`, ativo: '/tutoriais', corpo });
+  return layout({ titulo: t.titulo, descricao: `${t.titulo}: tutorial do BrasaMC.`, ativo: '/tutoriais', corpo });
 }
 
 module.exports = { paginaTutoriais, paginaTutorial };

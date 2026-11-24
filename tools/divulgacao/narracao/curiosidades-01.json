@@ -1,0 +1,126 @@
+{
+  "_leia": "Reel narrado: cada fala vira um trecho com o vídeo de fundo (arquivo em public/brutos e segundo de início) e um título no alto (opcional). A voz é gerada por narracao/gerar.py (edge-tts) e a legenda segue a fala palavra por palavra. \"carta\" (opcional) mostra imagens de public/narracao/icones e um texto curto num cartão no meio da tela; nas falas com carta o vídeo de fundo fica mais escuro.",
+  "voz": "pt-BR-AntonioNeural",
+  "velocidade": "+8%",
+  "musica": "audio/Recursos.wav",
+  "falas": [
+    {
+      "texto": "Sete coisas que você não sabia sobre o Minecraft. A número seis parece mentira.",
+      "video": [
+        "e2b.mp4",
+        36
+      ],
+      "titulo": "7 CURIOSIDADES"
+    },
+    {
+      "texto": "Um: o Creeper era pra ser um porco. O Notch trocou as medidas do modelo sem querer, e saiu esse bicho comprido.",
+      "video": [
+        "t1.mp4",
+        4
+      ],
+      "titulo": "1. O CREEPER ERA UM PORCO",
+      "carta": {
+        "imagens": [
+          "porco",
+          "creeper"
+        ],
+        "seta": true,
+        "texto": "modelo errado"
+      }
+    },
+    {
+      "texto": "Dois: a lua tem oito fases. E na lua cheia nascem mais slimes nos pântanos.",
+      "video": [
+        "r1.mp4",
+        6
+      ],
+      "titulo": "2. A LUA TEM 8 FASES",
+      "carta": {
+        "imagens": [
+          "luas"
+        ],
+        "texto": "8 fases",
+        "larga": true,
+        "fundo": "#0b1030"
+      }
+    },
+    {
+      "texto": "Três: a primeira versão foi feita em mais ou menos uma semana. Hoje é o jogo mais vendido da história.",
+      "video": [
+        "t2.mp4",
+        3
+      ],
+      "titulo": "3. FEITO EM UMA SEMANA",
+      "carta": {
+        "imagens": [
+          "relogio"
+        ],
+        "texto": "2009 · 7 dias"
+      }
+    },
+    {
+      "texto": "Quatro: o Herobrine nunca existiu. Era só uma lenda da internet.",
+      "video": [
+        "e6.mp4",
+        118
+      ],
+      "titulo": "4. O HEROBRINE",
+      "carta": {
+        "imagens": [
+          "herobrine"
+        ],
+        "texto": "lenda da internet"
+      }
+    },
+    {
+      "texto": "Cinco: o mundo tinha um fim. A doze milhões e meio de blocos do centro, o terreno enlouquecia. Eram as Far Lands.",
+      "video": [
+        "r2.mp4",
+        8
+      ],
+      "titulo": "5. O FIM DO MUNDO",
+      "carta": {
+        "imagens": [
+          "grama"
+        ],
+        "texto": "12.500.000 blocos"
+      }
+    },
+    {
+      "texto": "Seis: os sons do Ghast vieram do gato do C418, o compositor das músicas do jogo.",
+      "video": [
+        "r5.mp4",
+        5
+      ],
+      "titulo": "6. O GHAST É UM GATO",
+      "carta": {
+        "imagens": [
+          "ghast"
+        ],
+        "texto": "miau? 🐱"
+      }
+    },
+    {
+      "texto": "Sete: o dragão do End só entrou no jogo perto da versão um ponto zero.",
+      "video": [
+        "r6.mp4",
+        14.5
+      ],
+      "titulo": "7. O DRAGÃO",
+      "carta": {
+        "imagens": [
+          "ovo-dragao"
+        ],
+        "texto": "versão 1.0 · 2011"
+      }
+    },
+    {
+      "texto": "E no BrasaMC, ele renasce todo dia, às nove da noite. O servidor abre em breve! Link do Discord na bio!",
+      "video": [
+        "e5.mp4",
+        9.5
+      ],
+      "titulo": "BRASAMC"
+    }
+  ]
+}

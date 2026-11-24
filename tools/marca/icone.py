@@ -1,5 +1,5 @@
 """
-Gera o ícone da BrasaMC em pixel art: uma chama sobre um monte de brasas, em 32x32,
+Gera o ícone do BrasaMC em pixel art: uma chama sobre um monte de brasas, em 32x32,
 ampliado sem suavizar (512 px pro Discord, 1024 px pro app do bot).
 
     python tools/marca/icone.py            # grava brasamc-512.png e brasamc-1024.png aqui do lado

@@ -1,4 +1,4 @@
-// Paleta da BrasaMC, a mesma do tools/marca/icone.py.
+// Paleta do BrasaMC, a mesma do tools/marca/icone.py.
 // Inter Black: a fonte pixelada (Pixelify Sans) deixava o C parecido com O ("BRASAMO") e o 2 com 8.
 import { loadFont } from '@remotion/google-fonts/Inter';
 

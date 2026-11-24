@@ -5,7 +5,7 @@
 **Boss mundial**
 Um boss aparece todo dia às **20h**: de segunda a sábado, um dos normais, sorteado; no domingo, o **Wither**. `/boss proximo` mostra o próximo horário. Entre por `/warp boss`; o PvP começa depois do túnel.
 
-Venha de **netherite com Proteção** e maçãs douradas. Quando ele cai, chove equipamento de PvP no chão (netherite com **Proteção V**, armas, maçãs) e um **Mapa do Tesouro**: corra, que a arena tem PvP. O golpe final leva um prêmio sorteado e a tag de campeão; os três maiores danos ganham **R$ 15.000, R$ 10.000 e R$ 5.000** e uma **Chave do Boss** cada, e quem ajudou ganha XP de skill. O **Wither** paga **tudo em dobro**, deixa **2 mapas** e o campeão dele ganha um **VIP Bronze de 7 dias**. Às vezes (10%) o boss vem **✦ ELITE ✦**: o dobro de vida, 50% mais dano e recompensas em dobro. Se o boss escapar após uma hora, o XP de skill cai 10% por até 24 h (ou até o próximo boss cair).
+Venha de **netherite com Proteção** e maçãs douradas. Quando ele cai, chove equipamento de PvP no chão (netherite com **Proteção V**, armas, maçãs) e um **Mapa do Tesouro**: corra, que a arena tem PvP. O golpe final leva um prêmio sorteado e a tag de campeão; os três maiores danos ganham **R$ 15.000, R$ 10.000 e R$ 5.000** e uma **Chave do Boss** cada, e quem ajudou ganha XP de skill. O **Wither** paga **tudo em dobro**, deixa **2 mapas** e o campeão dele ganha um **VIP Bronze de 7 dias**. Às vezes (10%) o boss vem **✦ ELITE ✦**: o dobro de vida, 50% mais dano e recompensas em dobro.
 
 O **Dragão do End** renasce às 21h, com PvP fora da plataforma verde: tutorial **Dragão do End**.
 
@@ -19,7 +19,7 @@ Nos três primeiros, ninguém perde vida: quem cai na água está fora, e o últ
 
 ☘ **Vietnã**, todo dia às **10h** e **16h** (`/vietna entrar`): pilares sobre a água. Kit: arco, bolas de neve, cargas de vento e vara de pesca. Depois de 2 minutos, o topo de um pilar fica **vermelho** e ele cai pouco depois: saia de cima!
 
-❄ **Spleef**, todo dia às **13h** e **18h** (`/spleef entrar`): três pisos de neve. Kit: uma pá. Quebre o chão debaixo dos outros: quem cai desce um piso, e do último cai na água. Depois de 2 minutos, a neve começa a virar **gelo** e sumir.
+❄ **Spleef**, todo dia às **13h** e **18h** (`/spleef entrar`): três pisos de neve. Kit: uma pá. Quebre o chão debaixo dos outros: quem cai desce um piso, e do último cai na água. Com o tempo, a neve vira **gelo** e some.
 
 ✦ **Corre ou Cai**, todo dia às **11h** e **17h** (`/correoucai entrar`): três pisos coloridos e nenhum kit. O bloco onde você pisa fica **vermelho** e some meio segundo depois: não pare de correr! Quem cai vai pro piso de baixo, e do último cai na água.
 
@@ -34,10 +34,7 @@ Pra assistir: `/<evento> assistir`.
 **Quiz**
 ✎ Todo dia às **12h** e **15h**, sem inscrição: 10 perguntas no chat. Responda com `/quiz <resposta>`, de onde estiver: quem acertar primeiro marca 1 ponto, e quem fizer mais pontos leva **R$ 5.000** (dividido no empate).
 
-**Mine-sena**
-Sorteio todo dia às 18h: veja o tutorial **Dinheiro, loja e Pix**.
-
-**Loja e skills**
-📈 Em eventos de **ALTA**, alguns itens pagam mais na Loja Oficial. ✨ XP de skill em dobro aos sábados e domingos. Anúncios em {#eventos}.
+**Mais**
+🎟 Mine-sena todo dia às 18h. 📈 Em **ALTA**, itens pagam mais na Loja. ✨ XP de skill em dobro no fim de semana.
 
 🔔 Para receber menções, ative os cargos de aviso em {#boas-vindas}.

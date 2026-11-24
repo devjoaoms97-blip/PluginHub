@@ -1,5 +1,5 @@
 # 📱 Jogar pelo celular (Android)
-A BrasaMC é Minecraft **Java**. No celular, ela roda por um **launcher de Java para Android**, que é de graça e de código aberto. Com ele, tudo funciona igual ao PC: texturas, bosses, NPCs e combate.
+O BrasaMC é Minecraft **Java**. No celular, ele roda por um **launcher de Java para Android**, que é de graça e de código aberto. Com ele, tudo funciona igual ao PC: texturas, bosses, NPCs e combate.
 O Minecraft **Bedrock** (o da Play Store) não entra no servidor.
 
 **Antes de começar**
@@ -23,7 +23,7 @@ Não baixe de site de APK: tem muita cópia com vírus usando esses nomes.
 (ou baixe o `.mrpack` de {#modpack} e use **Importar de um arquivo local**). Ele já instala o 26.2, o Fabric e o Sodium, e põe o servidor na lista.
 **5.** Selecione a versão **BrasaMC** e toque em **Iniciar jogo**. A primeira vez demora: ele baixa o Minecraft e os mods.
 **6.** **Desligue os shaders**, que o modpack traz ligados e pesam demais no celular: **Opções → Vídeo → Pacotes de shaders → Desligado**.
-**7.** Em **Multijogador**, entre na BrasaMC (o IP é `{ip}`), aceite o pacote de texturas e, na primeira vez, digite `/register <senha> <senha>`.
+**7.** Em **Multijogador**, entre no BrasaMC (o IP é `{ip}`), aceite o pacote de texturas e, na primeira vez, digite `/register <senha> <senha>`.
 Não quer o modpack? Em **Download → Jogo**, instale a **26.2** com o **Fabric** e adicione o servidor à mão.
 
 **Se ficar lento**

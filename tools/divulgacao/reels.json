@@ -1108,6 +1108,153 @@
           ]
         ]
       ]
+    },
+    "Eventos": {
+      "clima": "epico",
+      "trovao": 7,
+      "cenas": [
+        [
+          "e5.mp4",
+          5,
+          75,
+          [
+            [
+              "TODO DIA",
+              150,
+              "amarelo"
+            ],
+            [
+              "tem evento valendo dinheiro",
+              50,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "e1.mp4",
+          18,
+          60,
+          [
+            [
+              "CORRE OU CAI",
+              120,
+              "amarelo"
+            ],
+            [
+              "o chão some atrás de você",
+              52,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "e2b.mp4",
+          10,
+          60,
+          [
+            [
+              "SPLEEF",
+              170,
+              "amarelo"
+            ],
+            [
+              "quebre o chão dos outros",
+              52,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "e3.mp4",
+          9.5,
+          60,
+          [
+            [
+              "VIETNÃ",
+              170,
+              "laranja"
+            ],
+            [
+              "derrube todos dos pilares",
+              52,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "e4.mp4",
+          66,
+          75,
+          [
+            [
+              "SOBREVIVÊNCIA",
+              104,
+              "vermelho"
+            ],
+            [
+              "10 ondas de invasores",
+              56,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "e5.mp4",
+          9.5,
+          60,
+          [
+            [
+              "CORRIDA",
+              150,
+              "amarelo"
+            ],
+            [
+              "MALUCA",
+              150,
+              "laranja"
+            ]
+          ]
+        ],
+        [
+          "e2b.mp4",
+          36,
+          60,
+          [
+            [
+              "R$ 10.000",
+              150,
+              "amarelo"
+            ],
+            [
+              "pro vencedor",
+              60,
+              "branco"
+            ]
+          ]
+        ],
+        [
+          "e6.mp4",
+          118,
+          90,
+          [
+            [
+              "LABIRINTO",
+              124,
+              "branco"
+            ],
+            [
+              "DO FAUNO",
+              124,
+              "vermelho"
+            ],
+            [
+              "se tiver coragem",
+              50,
+              "branco"
+            ]
+          ]
+        ]
+      ]
     }
   }
 }
