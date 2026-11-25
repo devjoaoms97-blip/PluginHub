@@ -29,7 +29,7 @@ public class Invulnerabilidade implements Listener {
     }
 
     public int ticksEntreGolpes() {
-        return Math.max(0, plugin.getConfig().getInt("invulnerabilidade.ticks-entre-golpes", 5));
+        return Math.max(0, plugin.getConfig().getInt("invulnerabilidade.ticks-entre-golpes", 2));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

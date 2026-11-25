@@ -560,7 +560,7 @@ const DICAS = [
     '&fBarraca normal pode renovar sozinha: &e/barraca autorenovar&f, enquanto tiver saldo na conta.',
   ] },
   { id: 'mestre-armas', skin: '3f230b7b1b09b471491a61675a3efa3ba65522cc4d004090d28ee6f3d133b822', nome: '&4Mestre de Armas Duda', pos: [-36, -6], falas: [
-    '&fAqui o combate é à moda antiga: sem barra de recarga, todo golpe sai com o dano inteiro, até 4 por segundo.',
+    '&fAqui o combate é à moda antiga: sem barra de recarga, todo golpe sai com o dano inteiro, até 10 por segundo.',
     '&fBloquear com a espada tira metade do dano. Mas com escudo na outra mão, a espada não bloqueia: escolha.',
     '&fCada arma treina a própria skill: espada, machado, lança, maça e até o soco. Veja em &e/skills&f.',
     '&fCaçando os mobs do &e/warp recursos&f você treina o &6Caçador&f: o bicho larga drop a mais e, com sorte, a própria cabeça, que vende no &e/trofeus&f. Mob de spawner não conta!',

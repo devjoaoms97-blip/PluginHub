@@ -71,7 +71,7 @@ Vale também pro `D:\BrasaMC`, que é anterior às fazendas.
 Vale também pro `D:\BrasaMC`.
 
 - [ ] Os jars novos: `CombatePlugin` (sem o golpe da segunda mão) e `BossPlugin` (só um comentário a menos).
-- [ ] No `plugins/CombatePlugin/config.yml`: `ticks-entre-golpes: 5` em `invulnerabilidade:` (ou `/combate intervalo 5`), e apagar o `separar-maos` e o bloco `duas-maos:`, que não valem mais. O config que já existe no servidor não pega o padrão novo do jar.
+- [ ] No `plugins/CombatePlugin/config.yml`: `ticks-entre-golpes: 2` em `invulnerabilidade:` (ou `/combate intervalo 2`), e apagar o `separar-maos` e o bloco `duas-maos:`, que não valem mais. O config que já existe no servidor não pega o padrão novo do jar.
 - [ ] As falas novas do Mestre de Armas Duda: `node tools/bots/montar-mapa.js construir dicas` ou, na mão, `dica fala mestre-armas <texto>` com as duas falas trocadas do `montar-mapa.js`.
 - [ ] O tutorial `05-skills-e-combate` do Discord republicado (sem o "Combate com duas mãos").
 

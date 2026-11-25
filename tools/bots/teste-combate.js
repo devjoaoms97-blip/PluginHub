@@ -1,4 +1,4 @@
-// Combate no estilo 1.8 (CombatePlugin): sem recarga de ataque, tempo entre golpes de 0,25 s,
+// Combate no estilo 1.8 (CombatePlugin): sem recarga de ataque, tempo entre golpes de 0,1 s (2 ticks),
 // bloqueio com a espada (só sem escudo na segunda mão), a segunda mão que não golpeia mais e a besta
 // que trava a espada logo depois de disparar. Luta no pátio da arena de X1 (axepvp), onde o PvP vale. Precisa das arenas (node montar-mapa.js). Uso: node teste-combate.js
 const t = require('./lib')
@@ -51,16 +51,18 @@ t.rodar(async () => {
   const rajada = ms => golpe(a, b, async e => { a.attack(e); await t.espera(ms); a.attack(e) })
   await t.console('combate intervalo 5')
   const cedo = await rajada(100)
-  t.verificar(cedo < g1 * 1.4, 'padrão (5 ticks): o 2º golpe em 0,1 s não conta', `${cedo.toFixed(1)} (um golpe: ${g1.toFixed(1)})`)
+  t.verificar(cedo < g1 * 1.4, 'com 5 ticks: o 2º golpe em 0,1 s não conta', `${cedo.toFixed(1)} (um golpe: ${g1.toFixed(1)})`)
   const quatroPorSegundo = await rajada(350)
-  t.verificar(quatroPorSegundo >= g1 * 1.8, 'padrão (5 ticks): o 2º golpe em 0,35 s conta', quatroPorSegundo.toFixed(1))
+  t.verificar(quatroPorSegundo >= g1 * 1.8, 'com 5 ticks: o 2º golpe em 0,35 s conta', quatroPorSegundo.toFixed(1))
   await t.console('combate intervalo 10')
   const jogo = await rajada(350)
   t.verificar(jogo < g1 * 1.4, 'com 10 (o do jogo): o 2º golpe em 0,35 s não conta', jogo.toFixed(1))
   await t.console('combate intervalo 0')
   const semEspera = await rajada(100)
   t.verificar(semEspera >= g1 * 1.8, 'com 0: os dois golpes em 0,1 s contam', `${semEspera.toFixed(1)}`)
-  await t.console('combate intervalo 5')
+  await t.console('combate intervalo 2')
+  const padrao = await rajada(150)
+  t.verificar(padrao >= g1 * 1.8, 'padrão (2 ticks): o 2º golpe em 0,15 s conta', padrao.toFixed(1))
 
   console.log('\n== Bloqueio com a espada ==')
   const comp = await t.console(`data get entity ${b.username} SelectedItem.components`)

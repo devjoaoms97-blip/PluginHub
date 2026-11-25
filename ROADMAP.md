@@ -255,13 +255,14 @@ Três pisos coloridos sobre a água, sem kit: o bloco em que se pisa fica vermel
 - [x] **Quiz** (`/quiz`, 2026-11-02): rodada de 10 perguntas no chat (servidor, Minecraft, contas e palavras embaralhadas), resposta com `/quiz <resposta>` em 20 s, 1 ponto pra quem acertar primeiro e R$ 5.000 pra quem fizer mais pontos (dividido no empate). Sem inscrição e sem mínimo de jogadores. Todo dia às 12:00 e 15:00.
 
 ### Combate 1.8 ✅ v1 (`combate-plugin`)
-Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo entre golpes configurável** (`/combate intervalo`; 0,25 s desde 2026-11-17) e **bloqueio com a espada** (só sem escudo na segunda mão). O golpe com a segunda mão existiu de 2026-10-23 a 2026-11-17 e foi removido por decisão do dono do servidor. Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado continuam como no jogo atual.
+Decisões de 2026-10-23, no servidor todo: **sem recarga de ataque**, **tempo entre golpes configurável** (`/combate intervalo`; 0,25 s de 2026-11-17 a 2026-11-25, 0,1 s desde então) e **bloqueio com a espada** (só sem escudo na segunda mão). O golpe com a segunda mão existiu de 2026-10-23 a 2026-11-17 e foi removido por decisão do dono do servidor. Ataque em área, repulsão, regeneração, maçãs, ender pearl, escudo e machado continuam como no jogo atual.
 
 **Próximos passos**
 - [ ] Testar jogando e decidir o que fazer com a maça, a lança e o machado do kit mensal do VIP, que ficam fortes sem recarga. 🟢
 - [ ] Conferir no jogo a animação da espada bloqueando. 🟢
 - [x] **Corrigido (2026-10-24):** com espada na principal, o botão direito num inimigo bloqueava em vez de bater com a segunda mão (o cliente nunca manda o clique da segunda mão quando a principal "faz algo").
 - [ ] Calibrar o tempo entre golpes jogando (o dano por segundo muda com ele). 🟢
+- [x] **PvP fica igual ao da 1.8** (decisão de 2026-11-25): não vai virar 1.5.2. A divulgação diz "igual à 1.8, sem delay de ataque".
 - [x] **Besta numa mão e espada na outra** (2026-10-24): carregar trava a espada (besta e arco). Enquanto a besta carrega (ou o arco é puxado), e por 0,5 s depois de disparar, nenhum golpe corpo a corpo conta. Bater e depois carregar continua livre.
 
 ### Ponte com o Discord ✅ v1 (`discord-plugin`)
